@@ -1,0 +1,30 @@
+# Verificación de despliegue — 7 de octubre de 2026
+
+Entorno local Windows, Node **22.23.3** (descarga oficial verificada con SHA-256) y pnpm **11.19.0**. Se conservó el código existente y se ajustaron runtime, tipos de Node, empaquetado y documentación. El lockfile corresponde a este proyecto y sus versiones están fijadas.
+
+| Comprobación | Resultado |
+|---|---|
+| Instalación `pnpm install --frozen-lockfile --prod=false` | Correcta; se verificó nuevamente con el store local ya descargado, sin modificar el lockfile |
+| `pnpm typecheck` | Correcto; genera tipos de rutas antes de ejecutar TypeScript |
+| `pnpm test` | 8 pruebas de dominio correctas |
+| `pnpm test:db` | 7 migraciones y 13 grupos de comprobaciones SQL correctos |
+| `pnpm test:load` | 50.000 filas persistidas por RPC en bloques de 250; un bloque repetido no duplicó registros; carga en 29,7 s en PGlite |
+| `pnpm build` | Build de producción Next.js 16.3.8 correcto, con salida standalone |
+| Servidor standalone con Node 22 | Escucha en `0.0.0.0`; healthcheck HTTP 200 y JSON esperado; login, JavaScript, iconos, service worker y manifest accesibles |
+| Acceso sin autenticación en producción | `/api/workspace` devuelve 401 y `/demo` devuelve 404 con demo deshabilitada |
+| Dependencias del trabajador | Instalación congelada y `pnpm prune --prod` correctos en una copia aislada; dependencias de desarrollo excluidas; los siete módulos del trabajador cargan con esas dependencias |
+| Marca y configuración | Curated Financial en metadata, manifest, iconos e interfaz; ejemplos externos usan dominios ficticios o documentación oficial |
+| Revisión previa a publicación | Archivos preparados sin credenciales locales, firmas de tokens, `.env` reales ni carpetas generadas; todas las variables de `.env.example` documentadas; comprobación de whitespace correcta |
+| Docker y contenedores | **No ejecutados:** Docker no está instalado en este equipo. Construir ambas imágenes y comprobar sus healthchecks en el servidor Coolify |
+
+La prueba HTTP se ejecutó temporalmente en el puerto 3100 para no ocupar el 3000 de desarrollo; el Dockerfile fija **3000**. No se ejecutó el trabajador contra la cola real como parte de las pruebas de empaquetado ni se enviaron correos o verificaciones pagas.
+
+Las pruebas SQL utilizan PGlite y esquemas simulados de Auth/Storage. No reemplazan las pruebas contra servicios reales ni el recorrido de [aceptación del piloto](ACCEPTANCE.md). El healthcheck web comprueba vida del proceso, no disponibilidad de Supabase, Gmail o Bouncer.
+
+## Validación en Coolify
+
+1. Desplegar la web usando `/Dockerfile`, configurar variables públicas para Build y Runtime y secretos solo para Runtime.
+2. Consultar el dominio HTTPS con `/api/health` y comprobar respuesta 200.
+3. Desplegar el trabajador usando `/Dockerfile.worker`, sin dominio ni healthcheck HTTP; conservar el healthcheck de la imagen.
+4. Comprobar logs de ambos recursos, login/MFA e importación pequeña que llegue a estado completado.
+5. Completar las integraciones y validaciones de aceptación antes de enviar campañas a clientes reales.

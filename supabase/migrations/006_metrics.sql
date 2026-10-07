@@ -1,0 +1,16 @@
+begin;
+create function public.workspace_stats(search_text text default '',stage_filter text default null,owner_filter uuid default null,campaign_filter uuid default null,since_filter timestamptz default null) returns jsonb language sql stable security invoker set search_path='' as $$
+ with filtered as(select * from public.opportunity_workspace o where o.archived_at is null and (search_text='' or o.company ilike '%'||search_text||'%' or o.contact ilike '%'||search_text||'%' or o.email ilike '%'||search_text||'%') and (stage_filter is null or o.stage::text=stage_filter) and (owner_filter is null or o.seller_id=owner_filter or o.closer_id=owner_filter) and (campaign_filter is null or o.campaign_id=campaign_filter) and (since_filter is null or o.created_at>=since_filter)), counts as(select stage,count(*) n from filtered group by stage)
+ select jsonb_build_object('total',count(*),'active_count',count(*) filter(where stage not in ('funded','lost','paused')),'active_amount',coalesce(sum(amount) filter(where stage not in ('funded','lost','paused')),0),'funded_count',count(*) filter(where stage='funded'),'funded_amount',coalesce(sum(funded_amount),0),'review_count',count(*) filter(where stage in ('analysis','documents_pending')),'verified',count(*) filter(where verification='valid'),'contacted',count(*) filter(where last_contact is not null),'applications',count(*) filter(where application_complete),'transferred',count(*) filter(where handed_off_at is not null),'offers',count(*) filter(where exists(select 1 from public.offers f where f.opportunity_id=filtered.id)),'without_action',count(*) filter(where next_action=''),'stage_counts',coalesce((select jsonb_object_agg(stage,n) from counts),'{}'::jsonb),'overdue',(select count(*) from public.tasks t where t.opportunity_id in(select id from filtered) and t.status='open' and t.due_at<now()),'unread',(select count(*) from public.conversations c where c.opportunity_id in(select id from filtered) and c.needs_attention)) from filtered
+$$;
+grant execute on function public.workspace_stats(text,text,uuid,uuid,timestamptz) to authenticated,service_role;
+revoke execute on function public.workspace_stats(text,text,uuid,uuid,timestamptz) from public,anon;
+create table public.submission_documents (outbox_id uuid not null references public.outbox,document_id uuid not null references public.documents,submission_id uuid not null references public.submissions,storage_path text not null,content_hash text not null,sent_at timestamptz not null default now(),primary key(outbox_id,document_id));
+alter table public.submission_documents enable row level security;
+revoke all on public.submission_documents from anon,authenticated;
+grant select on public.submission_documents to authenticated;
+grant all on public.submission_documents to service_role;
+create policy submission_documents_read on public.submission_documents for select to authenticated using(exists(select 1 from public.submissions s where s.id=submission_id and public.can_area(s.opportunity_id,'closer')));
+alter table public.outbox add column attachment_snapshot jsonb not null default '[]';
+alter table public.documents add column required boolean not null default true;
+commit;
