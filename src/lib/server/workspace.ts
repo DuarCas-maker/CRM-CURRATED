@@ -26,6 +26,32 @@ export async function loadWorkspace(
     days > 0
       ? new Date(Date.now() - Math.min(days, 36500) * 86400000).toISOString()
       : null;
+  const preparing = !caseId && params.get("view") === "leads";
+  let leadResponse: { data: Workspace["leads"] | null; count: number | null } =
+    { data: [], count: 0 };
+  if (preparing) {
+    let leadQuery = db
+      .from("lead_workspace")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false });
+    if (params.get("lead_status") === "converted")
+      leadQuery = leadQuery.not("opportunity_id", "is", null);
+    else leadQuery = leadQuery.is("opportunity_id", null);
+    if (search)
+      leadQuery = leadQuery.or(
+        `company.ilike.%${search}%,contact.ilike.%${search}%,email.ilike.%${search}%`,
+      );
+    if (owner) leadQuery = leadQuery.eq("seller_id", owner);
+    if (since) leadQuery = leadQuery.gte("created_at", since);
+    if (
+      ["pending", "valid", "invalid", "uncertain"].includes(
+        params.get("stage") || "",
+      )
+    )
+      leadQuery = leadQuery.eq("verification", params.get("stage"));
+    const result = await leadQuery.range(page * 100, page * 100 + 99);
+    leadResponse = { data: checkDb(result) || [], count: result.count };
+  }
   let query = db
     .from(
       !caseId && params.get("view") === "tasks"
@@ -43,18 +69,18 @@ export async function loadWorkspace(
       query = query.or(
         `company.ilike.%${search}%,contact.ilike.%${search}%,email.ilike.%${search}%`,
       );
-    if (stage) query = query.eq("stage", stage);
+    if (stage && !preparing) query = query.eq("stage", stage);
     if (owner) query = query.or(`seller_id.eq.${owner},closer_id.eq.${owner}`);
     if (campaign) query = query.eq("campaign_id", campaign);
     if (since) query = query.gte("created_at", since);
   }
   const response = await query.range(page * 100, page * 100 + 99);
-  const opportunities = checkDb(response) || [];
+  const opportunities = preparing ? [] : checkDb(response) || [];
   const caseIds = opportunities.map((o) => o.id);
   const stats = checkDb(
     await db.rpc("workspace_stats", {
       search_text: search,
-      stage_filter: stage,
+      stage_filter: preparing ? null : stage,
       owner_filter: owner,
       campaign_filter: campaign,
       since_filter: since,
@@ -168,14 +194,17 @@ export async function loadWorkspace(
     ...data,
     profile,
     opportunities,
+    leads: leadResponse.data || [],
     messages: messages.reverse(),
     attachments,
     preferences,
     notifications: preferences.internal ? data.notifications : [],
     demo: false,
     page,
-    listTotal: response.count || 0,
-    hasMore: (response.count || 0) > (page + 1) * 100,
+    listTotal: (preparing ? leadResponse.count : response.count) || 0,
+    hasMore:
+      ((preparing ? leadResponse.count : response.count) || 0) >
+      (page + 1) * 100,
     stats,
   } as Workspace;
 }

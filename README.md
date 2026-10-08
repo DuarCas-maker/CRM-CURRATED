@@ -2,7 +2,7 @@
 
 Aplicación interna en Next.js y TypeScript, con Supabase como fuente de verdad y un trabajador independiente para operaciones persistentes. Interfaz en español e inglés. Implementación inicial del PRD del 5 de octubre de 2026.
 
-**Estado: implementación local para revisión y conexión de servicios; todavía no es un piloto validado en producción.** La demostración usa datos ficticios y memoria temporal. La aplicación real exige Supabase, invitación y MFA; no cambia a datos ficticios si una integración falla.
+**Estado: aplicación desplegada; integraciones y recorrido del piloto pendientes de validación.** La demostración usa datos ficticios y memoria temporal. La aplicación real exige Supabase, invitación y MFA; no cambia a datos ficticios si una integración falla. La corrección de preparación de leads requiere aplicar la migración 008 antes de actualizar el despliegue.
 
 ## Probar la interfaz
 
@@ -19,7 +19,7 @@ Abrir [la demostración](http://localhost:3000/demo). Permite recorrer los cinco
 
 ## Conectar Supabase
 
-1. Crear un proyecto dedicado. Aplicar, en orden, los siete archivos de `supabase/migrations/` sobre una base nueva. Incluyen tablas, funciones, políticas RLS, permisos y buckets privados. No ejecutar sobre una instalación ajena o una base con tablas homónimas.
+1. Crear un proyecto dedicado. Aplicar, en orden, los ocho archivos de `supabase/migrations/` sobre una base nueva. Incluyen tablas, funciones, políticas RLS, permisos y buckets privados. No ejecutar sobre una instalación ajena o una base con tablas homónimas.
 
    Para la instalación inicial de Daniel, `supabase/install/curated-initial.sql` reúne las migraciones 001–007 en una sola transacción y registra `daniel@curatedfinancial.com` como invitación pendiente de superadmin. Ejecutar el archivo completo en SQL Editor con el rol `postgres`, **en lugar de** ejecutar los siete archivos individuales. Rechaza un esquema `public` que ya tenga tablas. No crea el usuario en Auth ni envía correo; al usar este archivo, omitir el INSERT del paso 5 y continuar con la creación o invitación del usuario en Auth. El archivo es una copia de las migraciones al 6 de octubre de 2026, no una migración adicional.
 
@@ -56,6 +56,10 @@ Un resultado incierto de envío se busca por su `Message-ID`. No se reenvía a c
 ## Importaciones y Bouncer
 
 Se aceptan CSV y XLSX, hasta 50 MB y 50.000 filas. Para archivos XLS antiguos, exportar a XLSX o CSV. Se puede seleccionar hoja y ajustar columnas antes de confirmar. Los archivos originales se guardan en un bucket privado. La carga crea un trabajo; el worker persiste bloques de 250 y conserva el progreso, las coincidencias y el informe descargable.
+
+La importación crea **leads en preparación**, sin expediente, checklist ni oportunidad comercial. Bouncer confirma el resultado: solo un correo válido y no bloqueado convierte el lead a oportunidad, en la misma transacción y una única vez. Inválidos, inciertos, errores técnicos y peticiones de resultado incierto permanecen en preparación. La pestaña «Convertidos a oportunidades» permite consultar los resultados y abrir el expediente. Crear una oportunidad manual para una nueva solicitud de un cliente existente exige un correo ya verificado; los contactos nuevos se crean con «Nuevo lead».
+
+La migración 008 conserva los IDs, estados, documentos e historial existentes. Los casos anteriores sin verificación válida quedan fuera del flujo comercial hasta validar el contacto; tras la validación se recuperan sus mismos expedientes. La regla se aplica con permisos de base de datos y a los contadores, además de la interfaz. Cambiar posteriormente el resultado del correo no elimina un expediente que ya tuvo una validación válida; las campañas siguen comprobando la verificación vigente y las bajas antes de enviar.
 
 Configurar `BOUNCER_API_KEY`. La pantalla muestra el máximo previsto de verificaciones para los contactos pendientes o inciertos seleccionados en la página. La reserva de cada verificación se persiste antes de enviar la petición; reintentar el mismo trabajo no vuelve a cobrar automáticamente una solicitud incierta. Los errores técnicos no convierten el contacto en inválido. Un contacto válido deja de ser seleccionable para scrub inicial.
 
@@ -100,7 +104,7 @@ El repositorio es independiente: [CRM-CURRATED](https://github.com/DuarCas-maker
 5. Habilitar healthcheck HTTP: método **GET**, esquema **http**, host **127.0.0.1**, puerto **3000**, path **`/api/health`**, respuesta esperada **200**, intervalo **30 s**, timeout **5 s**, inicio **30 s**, reintentos **3**. El Dockerfile también contiene un healthcheck para ejecuciones Docker fuera de Coolify.
 6. Guardar y desplegar. Verificar `https://crm.TU-DOMINIO.com/api/health`: debe devolver `{"status":"ok","service":"curated-crm"}`. Probar login/MFA, assets e importación pequeña después de crear el trabajador.
 
-Las migraciones **no se ejecutan automáticamente** al desplegar. Si la instalación Supabase ya tiene 001–007, conservarla y no volver a ejecutar el instalador inicial. En Supabase Auth actualizar Site URL y redirects al dominio HTTPS del CRM, autorizar `${APP_ORIGIN}/auth/password` y conservar la plantilla de invitación descrita arriba.
+Las migraciones **no se ejecutan automáticamente** al desplegar. Si la instalación Supabase ya tiene 001–007, ejecutar únicamente `supabase/migrations/008_lead_preparation.sql` en SQL Editor antes de desplegar esta versión de la web y del trabajador. No volver a ejecutar el instalador inicial. Para una instalación nueva realizada con `curated-initial.sql` (contiene 001–007), aplicar también 008 después del instalador. En Supabase Auth actualizar Site URL y redirects al dominio HTTPS del CRM, autorizar `${APP_ORIGIN}/auth/password` y conservar la plantilla de invitación descrita arriba.
 
 ### Crear el trabajador en Coolify
 

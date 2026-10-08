@@ -78,6 +78,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [owner, setOwner] = useState("all");
   const [campaignFilter, setCampaignFilter] = useState("all");
   const [period, setPeriod] = useState("all");
+  const [leadStatus, setLeadStatus] = useState("preparing");
   const [selected, setSelected] = useState<string | null>(null);
   const [modal, setModal] = useState<string | null>(null);
   const [extraSteps, setExtraSteps] = useState<number[]>([]);
@@ -106,6 +107,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     campaign: campaignFilter,
     period,
     view,
+    lead_status: leadStatus,
     page: String(selected ? 0 : page),
     ...(selected ? { case: selected } : {}),
   }).toString();
@@ -134,7 +136,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
   }, [requestParams, initial.demo]);
   useEffect(() => {
     setPage(0);
-  }, [query, stage, owner, campaignFilter, period, view]);
+  }, [query, stage, owner, campaignFilter, period, view, leadStatus]);
   useEffect(() => {
     if (initial.demo || expandedHistory) return;
     const controller = new AbortController();
@@ -178,6 +180,31 @@ export default function CRM({ initial }: { initial: Workspace }) {
       (period === "all" ||
         new Date(o.created_at).getTime() >=
           Date.now() - Number(period) * 86400000),
+  );
+  const filteredLeads = data.leads.filter(
+    (l) =>
+      (profile.role === "superadmin" ||
+        profile.role === "seller_admin" ||
+        (profile.role === "seller" && l.seller_id === profile.id)) &&
+      `${l.company} ${l.contact} ${l.email}`
+        .toLowerCase()
+        .includes(query.toLowerCase()) &&
+      (stage === "all" || l.verification === stage) &&
+      (owner === "all" || l.seller_id === owner) &&
+      (leadStatus === "converted"
+        ? l.opportunity_id !== null
+        : l.opportunity_id === null) &&
+      (period === "all" ||
+        new Date(l.created_at).getTime() >=
+          Date.now() - Number(period) * 86400000),
+  );
+  const verificationCandidates = filteredLeads.filter(
+    (l) =>
+      !l.suppressed &&
+      ["pending", "uncertain"].includes(l.verification) &&
+      !["queued", "submitted", "uncertain_request"].includes(
+        l.verification_state || "",
+      ),
   );
   const visibleIds = new Set(visible.map((o) => o.id));
   const tasks = data.tasks.filter(
@@ -358,6 +385,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     setMobile(false);
     setQuery("");
     setStage("all");
+    setCampaignFilter("all");
   };
   const nav: {
     id: View;
@@ -368,16 +396,16 @@ export default function CRM({ initial }: { initial: Workspace }) {
   }[] = [
     { id: "overview", es: "Resumen", en: "Overview", icon: LayoutDashboard },
     {
-      id: "pipeline",
-      es: "Oportunidades",
-      en: "Opportunities",
-      icon: KanbanSquare,
-    },
-    {
       id: "leads",
       es: "Preparación de leads",
       en: "Lead preparation",
       icon: Users,
+    },
+    {
+      id: "pipeline",
+      es: "Oportunidades",
+      en: "Opportunities",
+      icon: KanbanSquare,
     },
     {
       id: "inbox",
@@ -501,7 +529,11 @@ export default function CRM({ initial }: { initial: Workspace }) {
       <div className="input-icon">
         <Search size={17} />
         <input
-          aria-label={t(locale, "Buscar oportunidades", "Search opportunities")}
+          aria-label={
+            view === "leads"
+              ? t(locale, "Buscar leads", "Search leads")
+              : t(locale, "Buscar oportunidades", "Search opportunities")
+          }
           placeholder={t(
             locale,
             "Buscar empresa, contacto o correo…",
@@ -519,11 +551,31 @@ export default function CRM({ initial }: { initial: Workspace }) {
         <option value="all">
           {t(locale, "Todos los estados", "All stages")}
         </option>
-        {stages.map((s) => (
-          <option key={s} value={s}>
-            {stageLabels[locale][s]}
-          </option>
-        ))}
+        {view === "leads"
+          ? ["pending", "valid", "invalid", "uncertain"].map((s) => (
+              <option key={s} value={s}>
+                {t(
+                  locale,
+                  {
+                    pending: "Pendiente",
+                    valid: "Válido",
+                    invalid: "Inválido",
+                    uncertain: "Incierto",
+                  }[s]!,
+                  {
+                    pending: "Pending",
+                    valid: "Valid",
+                    invalid: "Invalid",
+                    uncertain: "Uncertain",
+                  }[s]!,
+                )}
+              </option>
+            ))
+          : stages.map((s) => (
+              <option key={s} value={s}>
+                {stageLabels[locale][s]}
+              </option>
+            ))}
       </select>
       <select
         aria-label="Owner"
@@ -791,10 +843,14 @@ export default function CRM({ initial }: { initial: Workspace }) {
                       ) && (
                         <button
                           className="button primary"
-                          onClick={() => setModal("opportunity")}
+                          onClick={() =>
+                            setModal(view === "leads" ? "lead" : "opportunity")
+                          }
                         >
                           <Plus size={17} />
-                          {t(locale, "Nueva oportunidad", "New opportunity")}
+                          {view === "leads"
+                            ? t(locale, "Nuevo lead", "New lead")
+                            : t(locale, "Nueva oportunidad", "New opportunity")}
                         </button>
                       )}
                     </>
@@ -1064,11 +1120,30 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 <>
                   <div className="split-heading">
                     <div className="tabs">
-                      <button className="active">
+                      <button
+                        className={leadStatus === "preparing" ? "active" : ""}
+                        onClick={() => {
+                          setLeadStatus("preparing");
+                          setStage("all");
+                        }}
+                      >
                         {t(
                           locale,
                           "Bandeja de preparación",
                           "Preparation inbox",
+                        )}
+                      </button>
+                      <button
+                        className={leadStatus === "converted" ? "active" : ""}
+                        onClick={() => {
+                          setLeadStatus("converted");
+                          setStage("all");
+                        }}
+                      >
+                        {t(
+                          locale,
+                          "Convertidos a oportunidades",
+                          "Converted to opportunities",
                         )}
                       </button>
                     </div>
@@ -1083,6 +1158,13 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     )}
                   </div>
                   <section className="panel">
+                    <p className="muted">
+                      {t(
+                        locale,
+                        "Los leads permanecen aquí hasta que Bouncer confirme un correo válido. Los inválidos, inciertos y bloqueados no pasan al flujo comercial.",
+                        "Leads stay here until Bouncer confirms a valid email. Invalid, uncertain and suppressed leads do not enter the sales pipeline.",
+                      )}
+                    </p>
                     {filters}
                     <div className="table-scroll">
                       <table>
@@ -1092,20 +1174,14 @@ export default function CRM({ initial }: { initial: Workspace }) {
                             <th>{t(locale, "Empresa", "Business")}</th>
                             <th>Email</th>
                             <th>{t(locale, "Verificación", "Verification")}</th>
-                            <th>{t(locale, "Campaña", "Campaign")}</th>
+                            <th>{t(locale, "Responsable", "Owner")}</th>
+                            <th>{t(locale, "Resultado", "Result")}</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {filtered.map((o) => (
+                          {filteredLeads.map((o) => (
                             <tr key={o.id}>
-                              <td>
-                                <button
-                                  className="text-button"
-                                  onClick={() => setSelected(o.id)}
-                                >
-                                  {o.contact}
-                                </button>
-                              </td>
+                              <td>{o.contact}</td>
                               <td>{o.company}</td>
                               <td>{o.email}</td>
                               <td>
@@ -1114,11 +1190,49 @@ export default function CRM({ initial }: { initial: Workspace }) {
                                   locale={locale}
                                 />
                               </td>
+                              <td>{name(o.seller_id)}</td>
                               <td>
-                                {data.campaigns.find(
-                                  (c) => c.id === o.campaign_id,
-                                )?.name ||
-                                  t(locale, "En preparación", "In preparation")}
+                                {o.opportunity_id ? (
+                                  <button
+                                    className="text-button"
+                                    onClick={() => {
+                                      setSelected(o.opportunity_id);
+                                      setView("pipeline");
+                                    }}
+                                  >
+                                    {t(
+                                      locale,
+                                      "Ver oportunidad",
+                                      "View opportunity",
+                                    )}
+                                  </button>
+                                ) : o.suppressed ? (
+                                  t(locale, "Bloqueado", "Suppressed")
+                                ) : ["queued", "submitted"].includes(
+                                    o.verification_state || "",
+                                  ) ? (
+                                  t(
+                                    locale,
+                                    "Verificación en proceso",
+                                    "Verification in progress",
+                                  )
+                                ) : o.verification_state ===
+                                  "uncertain_request" ? (
+                                  t(
+                                    locale,
+                                    "Verificación requiere revisión",
+                                    "Verification needs review",
+                                  )
+                                ) : o.verification_state ===
+                                  "technical_error" ? (
+                                  t(
+                                    locale,
+                                    "Error técnico; revisar",
+                                    "Technical error; review",
+                                  )
+                                ) : (
+                                  t(locale, "En preparación", "In preparation")
+                                )}
                               </td>
                             </tr>
                           ))}
@@ -1126,6 +1240,19 @@ export default function CRM({ initial }: { initial: Workspace }) {
                       </table>
                     </div>
                   </section>
+                  {!filteredLeads.length && (
+                    <Empty
+                      title={t(
+                        locale,
+                        leadStatus === "converted"
+                          ? "Todavía no hay leads convertidos"
+                          : "No hay leads pendientes con estos filtros",
+                        leadStatus === "converted"
+                          ? "No converted leads yet"
+                          : "No pending leads match these filters",
+                      )}
+                    />
+                  )}
                   <section className="panel spaced">
                     <div className="section-heading">
                       <h2>
@@ -1957,8 +2084,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     ? t(locale, "Cargando…", "Loading…")
                     : t(
                         locale,
-                        `Página ${page + 1} · ${data.listTotal ?? visible.length} oportunidades con estos filtros`,
-                        `Page ${page + 1} · ${data.listTotal ?? visible.length} opportunities matching these filters`,
+                        `Página ${page + 1} · ${data.listTotal ?? (view === "leads" ? filteredLeads.length : visible.length)} ${view === "leads" ? "leads" : "oportunidades"} con estos filtros`,
+                        `Page ${page + 1} · ${data.listTotal ?? (view === "leads" ? filteredLeads.length : visible.length)} ${view === "leads" ? "leads" : "opportunities"} matching these filters`,
                       )}
                 </span>
                 <div className="card-actions">
@@ -2025,6 +2152,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                       "Nueva oportunidad",
                       "New opportunity",
                     ),
+                    lead: t(locale, "Nuevo lead", "New lead"),
                     task: t(locale, "Nueva tarea", "New task"),
                     campaign: t(locale, "Nueva campaña", "New campaign"),
                     lender: t(locale, "Nuevo lender", "New lender"),
@@ -2065,8 +2193,28 @@ export default function CRM({ initial }: { initial: Workspace }) {
               {error}
             </div>
           )}
-          {modal === "opportunity" && (
-            <form onSubmit={(e) => submit(e, "create_opportunity")}>
+          {["opportunity", "lead"].includes(modal) && (
+            <form
+              onSubmit={(e) =>
+                submit(
+                  e,
+                  modal === "lead" ? "create_lead" : "create_opportunity",
+                )
+              }
+            >
+              <p className="muted">
+                {modal === "lead"
+                  ? t(
+                      locale,
+                      "Este contacto quedará en preparación hasta validar su correo con Bouncer.",
+                      "This contact stays in preparation until Bouncer validates the email.",
+                    )
+                  : t(
+                      locale,
+                      "Una nueva solicitud requiere un cliente con correo ya verificado. Para un contacto nuevo, créalo primero en Preparación de leads.",
+                      "A new request requires a customer with a verified email. Add new contacts in Lead preparation first.",
+                    )}
+              </p>
               <div className="form-grid">
                 <Field
                   name="company"
@@ -2503,11 +2651,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
             <form
               onSubmit={(e) =>
                 submit(e, "verify_contacts", {
-                  contact_ids: filtered
-                    .filter((o) =>
-                      ["pending", "uncertain"].includes(o.verification),
-                    )
-                    .map((o) => o.contact_id),
+                  contact_ids: verificationCandidates.map((o) => o.contact_id),
                 })
               }
             >
@@ -2515,13 +2659,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 <ShieldCheck size={34} />
                 <strong>
                   {
-                    new Set(
-                      filtered
-                        .filter((o) =>
-                          ["pending", "uncertain"].includes(o.verification),
-                        )
-                        .map((o) => o.contact_id),
-                    ).size
+                    new Set(verificationCandidates.map((o) => o.contact_id))
+                      .size
                   }
                 </strong>
                 <span>
@@ -2543,6 +2682,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 <SaveButton
                   locale={locale}
                   busy={busy}
+                  disabled={verificationCandidates.length === 0}
                   label={t(
                     locale,
                     "Iniciar verificación",
@@ -2558,7 +2698,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 e.preventDefault();
                 const f = new FormData(e.currentTarget);
                 setPeriod(String(f.get("period")));
-                setCampaignFilter(String(f.get("campaign")));
+                setCampaignFilter(
+                  view === "leads" ? "all" : String(f.get("campaign")),
+                );
                 setModal(null);
               }}
             >
@@ -2566,8 +2708,10 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 name="period"
                 label={t(
                   locale,
-                  "Creación de oportunidad",
-                  "Opportunity created",
+                  view === "leads"
+                    ? "Creación del lead"
+                    : "Creación de oportunidad",
+                  view === "leads" ? "Lead created" : "Opportunity created",
                 )}
                 value={period}
               >
@@ -2584,20 +2728,22 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   {t(locale, "Últimos 90 días", "Last 90 days")}
                 </option>
               </Field>
-              <Field
-                name="campaign"
-                label={t(locale, "Campaña", "Campaign")}
-                value={campaignFilter}
-              >
-                <option value="all">
-                  {t(locale, "Todas", "All campaigns")}
-                </option>
-                {data.campaigns.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
+              {view !== "leads" && (
+                <Field
+                  name="campaign"
+                  label={t(locale, "Campaña", "Campaign")}
+                  value={campaignFilter}
+                >
+                  <option value="all">
+                    {t(locale, "Todas", "All campaigns")}
                   </option>
-                ))}
-              </Field>
+                  {data.campaigns.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </Field>
+              )}
               <div className="modal-footer">
                 <SaveButton
                   locale={locale}

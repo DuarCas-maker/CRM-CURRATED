@@ -53,6 +53,7 @@ export function demoAction(
       );
   };
   switch (kind) {
+    case "create_lead":
     case "create_opportunity": {
       required(
         "company",
@@ -66,7 +67,12 @@ export function demoAction(
         throw new Error("Access denied");
       const email = normalizeEmail(text("email"));
       if (!validEmail(email)) throw new Error("Invalid email");
-      const existing = d.opportunities.find((o) => o.email === email);
+      const existing =
+        d.leads.find((l) => l.email === email) ||
+        d.opportunities.find((o) => o.email === email);
+      if (kind === "create_opportunity" && existing?.verification !== "valid")
+        throw new Error("Verifica el lead primero / Verify the lead first");
+      if (kind === "create_lead" && existing) break;
       const created: Opportunity = {
         id: id(),
         contact_id: existing?.contact_id || id(),
@@ -95,6 +101,14 @@ export function demoAction(
         funded_at: null,
         funded_lender_id: null,
       };
+      if (kind === "create_lead") {
+        d.leads.unshift({
+          ...created,
+          suppressed: false,
+          opportunity_id: null,
+        });
+        break;
+      }
       d.opportunities.unshift(created);
       for (let i = 0; i < 5; i++)
         d.documents.push({
@@ -445,35 +459,27 @@ export function demoAction(
           batch.errors++;
           continue;
         }
-        if (d.opportunities.some((o) => o.email === normalized.email)) {
+        if (
+          d.leads.some((o) => o.email === normalized.email) ||
+          d.opportunities.some((o) => o.email === normalized.email)
+        ) {
           batch.duplicates++;
           continue;
         }
         batch.imported++;
-        const base = d.opportunities[0];
-        d.opportunities.push({
-          ...base,
+        d.leads.push({
           id: id(),
           contact_id: id(),
           ...normalized,
-          stage: "new",
+          product: "Business loan",
+          suppressed: false,
+          opportunity_id: null,
           verification: "pending",
           seller_id: user.id,
-          closer_id: null,
           amount: 0,
-          campaign_id: null,
-          handed_off_at: null,
-          application_signed: false,
-          application_complete: false,
-          funded_amount: null,
-          funded_at: null,
-          funded_lender_id: null,
-          summary: "",
-          last_contact: null,
           next_action: "",
           next_action_at: null,
           created_at: now,
-          updated_at: now,
         });
       }
       d.imports.unshift(batch);

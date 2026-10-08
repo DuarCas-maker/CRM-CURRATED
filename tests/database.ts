@@ -72,9 +72,22 @@ const input = {
   next_action_at: new Date().toISOString(),
 };
 const key = randomUUID();
-const created = await command("create_opportunity", input, key);
-const repeated = await command("create_opportunity", input, key);
-assert.equal(created.id, repeated.id);
+await assert.rejects(command("create_opportunity", input), /Verify the lead/);
+const createdLead = await command("create_lead", input, key);
+const repeated = await command("create_lead", input, key);
+assert.equal(createdLead.id, repeated.id);
+assert.equal((await db.query("select * from opportunities")).rows.length, 0);
+await db.exec("reset role");
+await db.query(
+  "update contacts set verification='valid' where email='sample@example.com'",
+);
+const created = (
+  await db.query<{ id: string }>(
+    "select opportunity_id as id from leads where id=$1",
+    [createdLead.id],
+  )
+).rows[0];
+await asUser(users.seller);
 assert.equal(
   (
     await db.query<{ seller_id: string }>(
@@ -225,8 +238,9 @@ await command("fund", {
   lender_id: lender.id,
   amount: 39000,
   // Use the database date: UTC may already be tomorrow in the local evening.
-  funded_at: (await db.query<{ date: string }>("select current_date::text as date"))
-    .rows[0].date,
+  funded_at: (
+    await db.query<{ date: string }>("select current_date::text as date")
+  ).rows[0].date,
 });
 assert.equal(
   Number(
@@ -301,9 +315,49 @@ const freshContact = (
     "select id from contacts where email='fresh@example.com'",
   )
 ).rows[0].id;
-await db.query(
-  "insert into verifications(contact_id,request_key,result) values($1,$2,'pending')",
-  [freshContact, "test-verification"],
+assert.equal(
+  (
+    await db.query("select * from opportunities where contact_id=$1", [
+      freshContact,
+    ])
+  ).rows.length,
+  0,
+);
+assert.equal(
+  (await db.query("select * from leads where contact_id=$1", [freshContact]))
+    .rows.length,
+  1,
+);
+await asUser(users.seller_admin);
+assert.equal(
+  (
+    await db.query("select * from lead_workspace where contact_id=$1", [
+      freshContact,
+    ])
+  ).rows.length,
+  1,
+);
+await command("verify_contacts", { contact_ids: [freshContact] });
+await asUser(otherSeller);
+assert.equal(
+  (
+    await db.query("select * from lead_workspace where contact_id=$1", [
+      freshContact,
+    ])
+  ).rows.length,
+  0,
+);
+await assert.rejects(
+  command("verify_contacts", { contact_ids: [freshContact] }),
+  /administrator/,
+);
+await asUser(users.closer_admin);
+assert.equal((await db.query("select * from lead_workspace")).rows.length, 0);
+await asUser(users.seller_admin, "aal1");
+assert.equal((await db.query("select * from lead_workspace")).rows.length, 0);
+await db.exec("reset role");
+console.log(
+  "PASS imports remain leads, preparation respects ownership, area and MFA",
 );
 const reserved = (
   await db.query<{ id: string; email: string }>(
@@ -333,6 +387,31 @@ assert.equal(
     )
   ).rows[0].verification,
   "valid",
+);
+assert.equal(
+  (
+    await db.query("select * from opportunities where contact_id=$1", [
+      freshContact,
+    ])
+  ).rows.length,
+  1,
+);
+await db.query("select apply_verification_results($1,$2)", [
+  "batch-test",
+  JSON.stringify([
+    { email: "fresh@example.com", result: "valid", reason: "accepted_email" },
+  ]),
+]);
+assert.equal(
+  (
+    await db.query("select * from opportunities where contact_id=$1", [
+      freshContact,
+    ])
+  ).rows.length,
+  1,
+);
+console.log(
+  "PASS valid verification converts exactly once, including provider replay",
 );
 const account = randomUUID();
 await db.query(
@@ -727,6 +806,102 @@ await assert.rejects(
 console.log(
   "PASS multi-step sequences preserve delays and require unsubscribe; sellers cannot change lenders",
 );
+// No validation outcome other than valid can open a commercial case.
+await asUser(users.seller_admin);
+const outcomes = ["invalid", "uncertain", "valid", "valid"] as const;
+const outcomeContacts: string[] = [];
+for (let i = 0; i < outcomes.length; i++) {
+  const lead = await command("create_lead", {
+    ...input,
+    email: `outcome${i}@example.com`,
+    company: `Outcome ${i}`,
+    seller_id: users.seller_admin,
+  });
+  const row = (
+    await db.query<{ contact_id: string }>(
+      "select contact_id from leads where id=$1",
+      [lead.id],
+    )
+  ).rows[0];
+  outcomeContacts.push(row.contact_id);
+}
+await db.exec("reset role");
+await db.query("select suppress_contact($1,'Test block')", [
+  outcomeContacts[3],
+]);
+await asUser(users.seller_admin);
+await command("verify_contacts", { contact_ids: outcomeContacts });
+await db.exec("reset role");
+assert.equal(
+  (
+    await db.query("select * from verifications where contact_id=$1", [
+      outcomeContacts[3],
+    ])
+  ).rows.length,
+  0,
+);
+for (let i = 0; i < 3; i++) {
+  await db.query(
+    "update verifications set state='submitted',provider_batch_id=$1 where contact_id=$2",
+    [`outcome-${i}`, outcomeContacts[i]],
+  );
+  await db.query("select apply_verification_results($1,$2)", [
+    `outcome-${i}`,
+    JSON.stringify([
+      { email: `outcome${i}@example.com`, result: outcomes[i], reason: "test" },
+    ]),
+  ]);
+  assert.equal(
+    (
+      await db.query("select * from opportunities where contact_id=$1", [
+        outcomeContacts[i],
+      ])
+    ).rows.length,
+    i === 2 ? 1 : 0,
+  );
+}
+await db.query("update contacts set verification='valid' where id=$1", [
+  outcomeContacts[3],
+]);
+assert.equal(
+  (
+    await db.query("select * from opportunities where contact_id=$1", [
+      outcomeContacts[3],
+    ])
+  ).rows.length,
+  0,
+);
+await assert.rejects(
+  db.query(
+    "insert into opportunities(contact_id,company,seller_id) values($1,'Bypass',$2)",
+    [outcomeContacts[0], users.seller_admin],
+  ),
+  /Verify the lead/,
+);
+await asUser(users.seller_admin);
+const renewal = await command("create_opportunity", {
+  ...input,
+  email: "outcome2@example.com",
+  seller_id: users.seller_admin,
+});
+assert.ok(renewal.id);
+await db.exec("reset role");
+assert.equal(
+  (
+    await db.query("select * from opportunities where contact_id=$1", [
+      outcomeContacts[2],
+    ])
+  ).rows.length,
+  2,
+);
+assert.equal(
+  (await db.query("select * from contacts where id=$1", [outcomeContacts[2]]))
+    .rows.length,
+  1,
+);
+console.log(
+  "PASS invalid, uncertain and blocked leads stay in preparation; verified customers can have new requests",
+);
 if (process.env.CRM_LOAD_ROWS === "50000") {
   await db.exec("reset role");
   const loadBatch = randomUUID();
@@ -771,6 +946,24 @@ if (process.env.CRM_LOAD_ROWS === "50000") {
     imported: 50000,
     status: "completed",
   });
+  assert.equal(
+    (
+      await db.query<{ n: number }>(
+        "select count(*)::int n from leads where batch_id=$1",
+        [loadBatch],
+      )
+    ).rows[0].n,
+    50000,
+  );
+  assert.equal(
+    (
+      await db.query(
+        "select o.id from opportunities o join leads l on l.contact_id=o.contact_id where l.batch_id=$1",
+        [loadBatch],
+      )
+    ).rows.length,
+    0,
+  );
   console.log(
     `PASS 50,000 persisted rows in 250-row chunks, including a replay: ${Math.round(performance.now() - started)} ms`,
   );

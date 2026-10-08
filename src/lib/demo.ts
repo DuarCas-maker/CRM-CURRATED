@@ -220,7 +220,13 @@ export function demoWorkspace(): Workspace {
   return structuredClone({
     profile: profiles[0],
     profiles,
-    opportunities,
+    opportunities: opportunities.filter((o) => o.verification === "valid"),
+    leads: opportunities.map((o) => ({
+      ...o,
+      id: `lead-${o.id}`,
+      opportunity_id: o.verification === "valid" ? o.id : null,
+      suppressed: false,
+    })),
     demo: true,
     tasks: opportunities
       .filter((o) => o.next_action)

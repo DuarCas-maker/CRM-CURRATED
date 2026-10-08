@@ -1,6 +1,6 @@
-# Estado de aceptación — 7 de octubre de 2026
+# Estado de aceptación — 8 de octubre de 2026
 
-Código implementado y probado localmente. **No declarar el MVP listo para piloto hasta completar la columna de validación externa y cotejar el formulario original.** El usuario confirmó las migraciones 001–007, acceso del superadmin e importación con trabajador en la instancia Supabase conectada. Quedan pendientes las pruebas externas completas de permisos, Gmail, Bouncer, formulario y el despliegue de web/trabajador en Coolify. Las credenciales locales no se incluyen en el repositorio.
+Código implementado y probado localmente. **No declarar el MVP listo para piloto hasta completar la columna de validación externa y cotejar el formulario original.** El usuario confirmó las migraciones 001–007, acceso del superadmin, importación con trabajador, despliegue de web/trabajador en Coolify y configuración de Bouncer. Se comprobó HTTPS y HTTP 200 en `https://crm.finlabinc.com/api/health`. Quedan pendientes aplicar la migración 008, desplegar el flujo separado de leads/oportunidades y las pruebas externas completas de permisos, Gmail, Bouncer y formulario. Las credenciales locales no se incluyen en el repositorio.
 
 | # | Criterio del PRD | Evidencia local | Validación pendiente en el piloto |
 |---|---|---|---|
@@ -30,7 +30,7 @@ Código implementado y probado localmente. **No declarar el MVP listo para pilot
 - El catálogo permite crear y editar lenders y guardar referencias documentales en las notas. No convierte guidelines en reglas, conforme a la fase posterior del PRD.
 - El PDF usa las fuentes estándar de PDF para texto latino. Debe validarse contra los caracteres del formulario real; caracteres fuera de esa cobertura requieren incorporar una fuente Unicode antes de producción.
 - Las comprobaciones SQL usan Postgres embebido con Auth/Storage simulados. No equivalen a una auditoría de seguridad ni a pruebas completas contra una instancia de Supabase.
-- No se ejecutó Docker/Coolify ni se enviaron correos, solicitudes a lenders o verificaciones pagas reales.
+- El usuario realizó el despliegue Docker/Coolify. No se enviaron desde este entorno correos, solicitudes a lenders ni verificaciones pagas reales.
 
 ## Recorrido de lanzamiento
 

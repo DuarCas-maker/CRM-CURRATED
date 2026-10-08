@@ -21,6 +21,15 @@ La prueba HTTP se ejecutó temporalmente en el puerto 3100 para no ocupar el 300
 
 Las pruebas SQL utilizan PGlite y esquemas simulados de Auth/Storage. No reemplazan las pruebas contra servicios reales ni el recorrido de [aceptación del piloto](ACCEPTANCE.md). El healthcheck web comprueba vida del proceso, no disponibilidad de Supabase, Gmail o Bouncer.
 
+## Corrección de preparación de leads — 8 de octubre de 2026
+
+- Separación persistente de leads y oportunidades; la importación no crea expedientes. Una confirmación válida de Bouncer convierte una sola vez y mantiene pendientes, inválidos, inciertos y bloqueados fuera del flujo comercial.
+- Node 22: typecheck y build de producción correctos. Diez pruebas de dominio/migración y todos los grupos de aceptación SQL correctos.
+- Prueba de 50.000 filas: 50.000 leads y cero oportunidades para ese lote, en bloques de 250 y con un replay sin duplicación; 17,1 s en PGlite.
+- La actualización de 001–007 a 008 conserva el ID, estado, notas y cinco documentos de un caso anterior no verificado; permanece en preparación hasta validar y después recupera el mismo expediente.
+- Navegador sobre el servidor standalone local: preparación muestra pendientes/inciertos, convertidos muestra los verificados con enlace al caso; un grupo ya convertido muestra cero verificaciones y no permite iniciar otra; etiquetas verificadas en español e inglés. No se consumieron créditos de Bouncer.
+- En la instancia existente, aplicar únicamente `008_lead_preparation.sql` antes de actualizar/desplegar la web y el trabajador. No volver a ejecutar el instalador inicial.
+
 ## Validación en Coolify
 
 1. Desplegar la web usando `/Dockerfile`, configurar variables públicas para Build y Runtime y secretos solo para Runtime.

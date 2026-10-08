@@ -57,6 +57,25 @@ export interface Opportunity {
   funded_at: string | null;
   funded_lender_id: string | null;
 }
+export interface Lead {
+  id: string;
+  contact_id: string;
+  company: string;
+  contact: string;
+  email: string;
+  phone: string;
+  industry: string;
+  product: string;
+  amount: number;
+  seller_id: string;
+  next_action: string;
+  next_action_at: string | null;
+  verification: Verification;
+  verification_state?: string | null;
+  suppressed: boolean;
+  opportunity_id: string | null;
+  created_at: string;
+}
 export interface Activity {
   id: string;
   opportunity_id: string;
@@ -205,6 +224,7 @@ export interface Workspace {
   profile: Profile;
   profiles: Profile[];
   opportunities: Opportunity[];
+  leads: Lead[];
   tasks: Task[];
   activities: Activity[];
   documents: Document[];

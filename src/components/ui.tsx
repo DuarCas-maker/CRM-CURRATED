@@ -165,13 +165,19 @@ export function SaveButton({
   busy,
   locale,
   label,
+  disabled = false,
 }: {
   busy: boolean;
   locale: Locale;
   label?: string;
+  disabled?: boolean;
 }) {
   return (
-    <button className="button primary" type="submit" disabled={busy}>
+    <button
+      className="button primary"
+      type="submit"
+      disabled={busy || disabled}
+    >
       {busy && <LoaderCircle size={16} className="spin" />}
       {label || t(locale, "Guardar", "Save")}
     </button>
