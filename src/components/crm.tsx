@@ -79,6 +79,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [campaignFilter, setCampaignFilter] = useState("all");
   const [period, setPeriod] = useState("all");
   const [leadStatus, setLeadStatus] = useState("preparing");
+  const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [modal, setModal] = useState<string | null>(null);
   const [extraSteps, setExtraSteps] = useState<number[]>([]);
@@ -206,6 +207,32 @@ export default function CRM({ initial }: { initial: Workspace }) {
         l.verification_state || "",
       ),
   );
+  const selectedVerificationCandidates = verificationCandidates.filter((l) =>
+    selectedLeadIds.includes(l.contact_id),
+  );
+  const allVerifiableLeadsSelected =
+    verificationCandidates.length > 0 &&
+    selectedVerificationCandidates.length === verificationCandidates.length;
+  useEffect(() => {
+    setSelectedLeadIds([]);
+  }, [
+    query,
+    stage,
+    owner,
+    period,
+    view,
+    leadStatus,
+    page,
+    profile.id,
+    profile.role,
+  ]);
+  const toggleLeadSelection = (contactId: string, checked: boolean) => {
+    setSelectedLeadIds((previous) =>
+      checked
+        ? [...new Set([...previous, contactId])]
+        : previous.filter((id) => id !== contactId),
+    );
+  };
   const visibleIds = new Set(visible.map((o) => o.id));
   const tasks = data.tasks.filter(
     (task) =>
@@ -348,6 +375,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
         await refresh();
         requestKeys.current.delete(fingerprint);
       }
+      if (kind === "verify_contacts") setSelectedLeadIds([]);
       setToast(
         data.demo
           ? t(
@@ -1147,13 +1175,23 @@ export default function CRM({ initial }: { initial: Workspace }) {
                         )}
                       </button>
                     </div>
-                    {isAdmin && (
+                    {isAdmin && leadStatus === "preparing" && (
                       <button
                         className="button"
                         onClick={() => setModal("verify")}
+                        disabled={
+                          busy ||
+                          loading ||
+                          selectedVerificationCandidates.length === 0
+                        }
                       >
                         <ShieldCheck size={17} />
-                        {t(locale, "Verificar correos", "Verify emails")}
+                        {t(
+                          locale,
+                          "Verificar seleccionados",
+                          "Verify selected",
+                        )}
+                        {` (${selectedVerificationCandidates.length})`}
                       </button>
                     )}
                   </div>
@@ -1166,10 +1204,78 @@ export default function CRM({ initial }: { initial: Workspace }) {
                       )}
                     </p>
                     {filters}
+                    {isAdmin && leadStatus === "preparing" && (
+                      <div className="lead-selection-bar">
+                        <div>
+                          <strong aria-live="polite">
+                            {t(
+                              locale,
+                              `${selectedVerificationCandidates.length} seleccionados · ${verificationCandidates.length} verificables en esta página`,
+                              `${selectedVerificationCandidates.length} selected · ${verificationCandidates.length} verifiable on this page`,
+                            )}
+                          </strong>
+                          <p className="muted">
+                            {t(
+                              locale,
+                              "Marca algunos leads o usa la casilla del encabezado para seleccionar todos los verificables de esta página.",
+                              "Choose individual leads or use the header checkbox to select all verifiable leads on this page.",
+                            )}
+                          </p>
+                        </div>
+                        <button
+                          className="text-button"
+                          disabled={
+                            busy || selectedVerificationCandidates.length === 0
+                          }
+                          onClick={() => setSelectedLeadIds([])}
+                        >
+                          {t(locale, "Limpiar selección", "Clear selection")}
+                        </button>
+                      </div>
+                    )}
                     <div className="table-scroll">
                       <table>
                         <thead>
                           <tr>
+                            {isAdmin && leadStatus === "preparing" && (
+                              <th className="lead-selection-cell">
+                                <input
+                                  type="checkbox"
+                                  className="lead-checkbox"
+                                  aria-label={t(
+                                    locale,
+                                    "Seleccionar todos los leads verificables de esta página",
+                                    "Select all verifiable leads on this page",
+                                  )}
+                                  title={t(
+                                    locale,
+                                    "Seleccionar todos los leads verificables de esta página",
+                                    "Select all verifiable leads on this page",
+                                  )}
+                                  checked={allVerifiableLeadsSelected}
+                                  ref={(input) => {
+                                    if (input)
+                                      input.indeterminate =
+                                        selectedVerificationCandidates.length >
+                                          0 && !allVerifiableLeadsSelected;
+                                  }}
+                                  disabled={
+                                    busy ||
+                                    loading ||
+                                    verificationCandidates.length === 0
+                                  }
+                                  onChange={(event) =>
+                                    setSelectedLeadIds(
+                                      event.target.checked
+                                        ? verificationCandidates.map(
+                                            (l) => l.contact_id,
+                                          )
+                                        : [],
+                                    )
+                                  }
+                                />
+                              </th>
+                            )}
                             <th>{t(locale, "Contacto", "Contact")}</th>
                             <th>{t(locale, "Empresa", "Business")}</th>
                             <th>Email</th>
@@ -1181,6 +1287,46 @@ export default function CRM({ initial }: { initial: Workspace }) {
                         <tbody>
                           {filteredLeads.map((o) => (
                             <tr key={o.id}>
+                              {isAdmin && leadStatus === "preparing" && (
+                                <td className="lead-selection-cell">
+                                  <input
+                                    type="checkbox"
+                                    className="lead-checkbox"
+                                    aria-label={t(
+                                      locale,
+                                      `Seleccionar ${o.contact || o.company}`,
+                                      `Select ${o.contact || o.company}`,
+                                    )}
+                                    checked={selectedVerificationCandidates.some(
+                                      (l) => l.contact_id === o.contact_id,
+                                    )}
+                                    disabled={
+                                      busy ||
+                                      loading ||
+                                      !verificationCandidates.some(
+                                        (l) => l.contact_id === o.contact_id,
+                                      )
+                                    }
+                                    title={
+                                      !verificationCandidates.some(
+                                        (l) => l.contact_id === o.contact_id,
+                                      )
+                                        ? t(
+                                            locale,
+                                            "Este lead ya fue verificado, está bloqueado o tiene una verificación en proceso o pendiente de revisión.",
+                                            "This lead is already verified, suppressed, or has a verification in progress or awaiting review.",
+                                          )
+                                        : undefined
+                                    }
+                                    onChange={(event) =>
+                                      toggleLeadSelection(
+                                        o.contact_id,
+                                        event.target.checked,
+                                      )
+                                    }
+                                  />
+                                </td>
+                              )}
                               <td>{o.contact}</td>
                               <td>{o.company}</td>
                               <td>{o.email}</td>
@@ -2649,18 +2795,29 @@ export default function CRM({ initial }: { initial: Workspace }) {
           )}
           {modal === "verify" && (
             <form
-              onSubmit={(e) =>
-                submit(e, "verify_contacts", {
-                  contact_ids: verificationCandidates.map((o) => o.contact_id),
-                })
-              }
+              onSubmit={(e) => {
+                if (
+                  busy ||
+                  loading ||
+                  selectedVerificationCandidates.length === 0
+                ) {
+                  e.preventDefault();
+                  return;
+                }
+                return submit(e, "verify_contacts", {
+                  contact_ids: selectedVerificationCandidates.map(
+                    (o) => o.contact_id,
+                  ),
+                });
+              }}
             >
               <div className="verification-estimate">
                 <ShieldCheck size={34} />
                 <strong>
                   {
-                    new Set(verificationCandidates.map((o) => o.contact_id))
-                      .size
+                    new Set(
+                      selectedVerificationCandidates.map((o) => o.contact_id),
+                    ).size
                   }
                 </strong>
                 <span>
@@ -2674,15 +2831,17 @@ export default function CRM({ initial }: { initial: Workspace }) {
               <p>
                 {t(
                   locale,
-                  "Se verifican los contactos pendientes o inciertos de esta página. Los reintentos técnicos no convierten un correo en inválido. La operación consumirá créditos de Bouncer.",
-                  "Pending or uncertain contacts on this page will be verified. Technical errors do not mark addresses invalid. This operation uses Bouncer credits.",
+                  "Se verificarán únicamente los leads seleccionados. Los reintentos técnicos no convierten un correo en inválido. La operación consumirá créditos de Bouncer.",
+                  "Only the selected leads will be verified. Technical errors do not mark addresses invalid. This operation uses Bouncer credits.",
                 )}
               </p>
               <div className="modal-footer">
                 <SaveButton
                   locale={locale}
                   busy={busy}
-                  disabled={verificationCandidates.length === 0}
+                  disabled={
+                    loading || selectedVerificationCandidates.length === 0
+                  }
                   label={t(
                     locale,
                     "Iniciar verificación",
