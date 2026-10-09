@@ -80,14 +80,43 @@ export async function requireUser() {
     );
   return { db, user, profile: profile as Profile };
 }
+function normalizedOrigin(value: string | null | undefined): string | null {
+  try {
+    const url = new URL(value?.trim() || "");
+    if (
+      !["http:", "https:"].includes(url.protocol) ||
+      url.username ||
+      url.password ||
+      url.pathname !== "/" ||
+      url.search ||
+      url.hash
+    )
+      return null;
+    return url.origin;
+  } catch {
+    return null;
+  }
+}
 export function checkOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  const allowed = process.env.APP_ORIGIN || "http://localhost:3000";
+  const origin = normalizedOrigin(request.headers.get("origin"));
+  const allowed = normalizedOrigin(
+    process.env.APP_ORIGIN ||
+      (process.env.NODE_ENV !== "production" ? "http://localhost:3000" : ""),
+  );
   const localDevelopment =
     process.env.NODE_ENV !== "production" &&
     ["http://localhost:3000", "http://127.0.0.1:3000"].includes(origin || "");
-  if (origin !== allowed && !localDevelopment)
-    throw new HttpError(403, "Invalid request origin");
+  if (localDevelopment) return;
+  if (!allowed)
+    throw new HttpError(
+      503,
+      "Configura APP_ORIGIN con la dirección pública del CRM, sin rutas ni parámetros. / Configure APP_ORIGIN with the CRM public origin.",
+    );
+  if (origin !== allowed)
+    throw new HttpError(
+      403,
+      "La dirección de esta página no coincide con APP_ORIGIN. Revisa esa variable en la aplicación web de Coolify. / Invalid request origin: check the web APP_ORIGIN configuration.",
+    );
 }
 export function jsonError(e: unknown) {
   if (e instanceof HttpError)

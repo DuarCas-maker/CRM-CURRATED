@@ -34,6 +34,10 @@ Las dos variables `NEXT_PUBLIC_*` quedan incorporadas al JavaScript del navegado
 
 Configurar las mismas URL, `APP_ORIGIN` y clave de cifrado en web y trabajador. Para la instalación existente, reutilizar **todos** los valores de Supabase y la clave de cifrado de `.env.local`; no generar otra clave al publicar.
 
+`APP_ORIGIN` debe corresponder al entorno donde se abre el CRM: `http://localhost:3000` para desarrollo local y `https://crm.finlabinc.com` para esta instalación de producción en Coolify. Sustituir el valor local al configurar **Production/Runtime** de la web y del trabajador. El valor es una URL, no una clave secreta; no debe incluir rutas, parámetros ni credenciales. Guardar y desplegar los recursos para aplicar cambios de variables. La comprobación normaliza espacios y la barra final; conserva la coincidencia de protocolo, host y puerto y rechaza orígenes externos.
+
+Si la verificación muestra «Invalid request origin», la web rechazó la acción antes de crear el trabajo y antes de consultar Bouncer: revisar primero `APP_ORIGIN` en la **web**. La clave `BOUNCER_API_KEY` debe estar disponible en Runtime tanto en web como en trabajador; su presencia no corrige una discrepancia de origen.
+
 ## Gmail por organización
 
 Guardar el siguiente JSON en una sola línea al configurarlo en Coolify, sustituyendo cada marcador. El topic debe pertenecer al mismo proyecto de Google Cloud que el cliente OAuth.
