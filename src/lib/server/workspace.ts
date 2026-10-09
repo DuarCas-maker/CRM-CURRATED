@@ -1,6 +1,7 @@
 import { requireUser, checkDb } from "./supabase";
 import type { Workspace } from "../domain";
 import { stages } from "../domain";
+import { filterLeadTab, parseLeadTab } from "../lead-tabs";
 import { z } from "zod";
 export async function loadWorkspace(
   params = new URLSearchParams(),
@@ -34,9 +35,10 @@ export async function loadWorkspace(
       .from("lead_workspace")
       .select("*", { count: "exact" })
       .order("created_at", { ascending: false });
-    if (params.get("lead_status") === "converted")
-      leadQuery = leadQuery.not("opportunity_id", "is", null);
-    else leadQuery = leadQuery.is("opportunity_id", null);
+    leadQuery = filterLeadTab(
+      leadQuery,
+      parseLeadTab(params.get("lead_status")),
+    );
     if (search)
       leadQuery = leadQuery.or(
         `company.ilike.%${search}%,contact.ilike.%${search}%,email.ilike.%${search}%`,

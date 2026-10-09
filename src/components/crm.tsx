@@ -55,6 +55,12 @@ import { OpportunityDetail } from "./opportunity-detail";
 import { ImportWizard } from "./import-wizard";
 import { demoAction } from "@/lib/demo-actions";
 import { Integrations } from "./integrations";
+import {
+  getLeadTab,
+  leadTabs,
+  leadTabVerifications,
+  type LeadTab,
+} from "@/lib/lead-tabs";
 type View =
   | "overview"
   | "pipeline"
@@ -69,6 +75,39 @@ export type Action = (
   kind: string,
   payload: Record<string, unknown>,
 ) => Promise<void>;
+const leadTabLabels: Record<LeadTab, [string, string]> = {
+  preparing: ["Bandeja de preparación", "Preparation inbox"],
+  converted: ["Convertidos a oportunidades", "Converted to opportunities"],
+  risk: ["Inválidos / en riesgo", "Invalid / at risk"],
+};
+const leadTabDescriptions: Record<LeadTab, [string, string]> = {
+  preparing: [
+    "Leads pendientes de validación. Los correos inválidos o inciertos están en la pestaña «Inválidos / en riesgo».",
+    "Leads awaiting validation. Invalid or uncertain emails are in the Invalid / at risk tab.",
+  ],
+  converted: [
+    "Leads que pasaron al flujo comercial después de validar su correo y tienen una oportunidad vinculada.",
+    "Leads that entered the sales pipeline after email validation and have a linked opportunity.",
+  ],
+  risk: [
+    "Los correos inválidos e inciertos están excluidos del flujo comercial. Los inciertos necesitan una verificación válida antes de pasar a oportunidades.",
+    "Invalid and uncertain emails are excluded from the sales pipeline. Uncertain emails need a valid verification before becoming opportunities.",
+  ],
+};
+const leadTabEmpty: Record<LeadTab, [string, string]> = {
+  preparing: [
+    "No hay leads en preparación con estos filtros",
+    "No leads in preparation match these filters",
+  ],
+  converted: [
+    "No hay leads convertidos con estos filtros",
+    "No converted leads match these filters",
+  ],
+  risk: [
+    "No hay leads inválidos o en riesgo con estos filtros",
+    "No invalid or at-risk leads match these filters",
+  ],
+};
 export default function CRM({ initial }: { initial: Workspace }) {
   const [data, setData] = useState(initial);
   const [locale, setLocale] = useState<Locale>(initial.preferences.locale);
@@ -78,7 +117,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [owner, setOwner] = useState("all");
   const [campaignFilter, setCampaignFilter] = useState("all");
   const [period, setPeriod] = useState("all");
-  const [leadStatus, setLeadStatus] = useState("preparing");
+  const [leadStatus, setLeadStatus] = useState<LeadTab>("preparing");
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [modal, setModal] = useState<string | null>(null);
@@ -192,9 +231,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
         .includes(query.toLowerCase()) &&
       (stage === "all" || l.verification === stage) &&
       (owner === "all" || l.seller_id === owner) &&
-      (leadStatus === "converted"
-        ? l.opportunity_id !== null
-        : l.opportunity_id === null) &&
+      getLeadTab(l) === leadStatus &&
       (period === "all" ||
         new Date(l.created_at).getTime() >=
           Date.now() - Number(period) * 86400000),
@@ -260,6 +297,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     (o) => !["funded", "lost", "paused"].includes(o.stage),
   );
   const isAdmin = ["superadmin", "seller_admin"].includes(profile.role);
+  const canVerifyLeads = isAdmin && leadStatus !== "converted";
   const closerAdmin = ["superadmin", "closer_admin"].includes(profile.role);
   const ownerStats =
     data.stats?.owners ||
@@ -580,7 +618,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
           {t(locale, "Todos los estados", "All stages")}
         </option>
         {view === "leads"
-          ? ["pending", "valid", "invalid", "uncertain"].map((s) => (
+          ? leadTabVerifications[leadStatus].map((s) => (
               <option key={s} value={s}>
                 {t(
                   locale,
@@ -1146,36 +1184,32 @@ export default function CRM({ initial }: { initial: Workspace }) {
               )}
               {view === "leads" && (
                 <>
-                  <div className="split-heading">
-                    <div className="tabs">
-                      <button
-                        className={leadStatus === "preparing" ? "active" : ""}
-                        onClick={() => {
-                          setLeadStatus("preparing");
-                          setStage("all");
-                        }}
-                      >
-                        {t(
-                          locale,
-                          "Bandeja de preparación",
-                          "Preparation inbox",
-                        )}
-                      </button>
-                      <button
-                        className={leadStatus === "converted" ? "active" : ""}
-                        onClick={() => {
-                          setLeadStatus("converted");
-                          setStage("all");
-                        }}
-                      >
-                        {t(
-                          locale,
-                          "Convertidos a oportunidades",
-                          "Converted to opportunities",
-                        )}
-                      </button>
+                  <div className="split-heading lead-heading">
+                    <div
+                      className="tabs lead-tabs"
+                      role="group"
+                      aria-label={t(
+                        locale,
+                        "Bandejas de leads",
+                        "Lead inboxes",
+                      )}
+                    >
+                      {leadTabs.map((tab) => (
+                        <button
+                          key={tab}
+                          className={leadStatus === tab ? "active" : ""}
+                          aria-pressed={leadStatus === tab}
+                          onClick={() => {
+                            setLeadStatus(tab);
+                            setStage("all");
+                            setPage(0);
+                          }}
+                        >
+                          {t(locale, ...leadTabLabels[tab])}
+                        </button>
+                      ))}
                     </div>
-                    {isAdmin && leadStatus === "preparing" && (
+                    {canVerifyLeads && (
                       <button
                         className="button"
                         onClick={() => setModal("verify")}
@@ -1197,14 +1231,10 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   </div>
                   <section className="panel">
                     <p className="muted">
-                      {t(
-                        locale,
-                        "Los leads permanecen aquí hasta que Bouncer confirme un correo válido. Los inválidos, inciertos y bloqueados no pasan al flujo comercial.",
-                        "Leads stay here until Bouncer confirms a valid email. Invalid, uncertain and suppressed leads do not enter the sales pipeline.",
-                      )}
+                      {t(locale, ...leadTabDescriptions[leadStatus])}
                     </p>
                     {filters}
-                    {isAdmin && leadStatus === "preparing" && (
+                    {canVerifyLeads && (
                       <div className="lead-selection-bar">
                         <div>
                           <strong aria-live="polite">
@@ -1237,7 +1267,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                       <table>
                         <thead>
                           <tr>
-                            {isAdmin && leadStatus === "preparing" && (
+                            {canVerifyLeads && (
                               <th className="lead-selection-cell">
                                 <input
                                   type="checkbox"
@@ -1287,7 +1317,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                         <tbody>
                           {filteredLeads.map((o) => (
                             <tr key={o.id}>
-                              {isAdmin && leadStatus === "preparing" && (
+                              {canVerifyLeads && (
                                 <td className="lead-selection-cell">
                                   <input
                                     type="checkbox"
@@ -1376,6 +1406,14 @@ export default function CRM({ initial }: { initial: Workspace }) {
                                     "Error técnico; revisar",
                                     "Technical error; review",
                                   )
+                                ) : o.verification === "invalid" ? (
+                                  t(
+                                    locale,
+                                    "Correo inválido; excluido",
+                                    "Invalid email; excluded",
+                                  )
+                                ) : o.verification === "uncertain" ? (
+                                  t(locale, "Requiere revisión", "Needs review")
                                 ) : (
                                   t(locale, "En preparación", "In preparation")
                                 )}
@@ -1387,17 +1425,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     </div>
                   </section>
                   {!filteredLeads.length && (
-                    <Empty
-                      title={t(
-                        locale,
-                        leadStatus === "converted"
-                          ? "Todavía no hay leads convertidos"
-                          : "No hay leads pendientes con estos filtros",
-                        leadStatus === "converted"
-                          ? "No converted leads yet"
-                          : "No pending leads match these filters",
-                      )}
-                    />
+                    <Empty title={t(locale, ...leadTabEmpty[leadStatus])} />
                   )}
                   <section className="panel spaced">
                     <div className="section-heading">

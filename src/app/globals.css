@@ -1036,6 +1036,14 @@ tr:last-child td {
   border-color: var(--green);
   color: var(--green);
 }
+.lead-heading {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.lead-tabs {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
 .verification {
   font-size: 11px;
   display: inline-flex;
