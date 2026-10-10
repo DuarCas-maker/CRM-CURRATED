@@ -1,9 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Workspace, Locale } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
 import type { MailSnapshot } from "@/lib/gmail-history";
 import { gmailRunErrorMessage } from "@/lib/gmail-errors";
+import {
+  historyRefreshMessage,
+  initialHistoryRun,
+  startHistoryPolling,
+} from "@/lib/gmail-history-refresh";
 import { Modal, t } from "./ui";
 
 export interface HistoryCandidate {
@@ -171,33 +176,54 @@ export function GmailHistory({
     submissions: [],
   });
   const [search, setSearch] = useState("");
+  const [refreshError, setRefreshError] = useState<unknown>(null);
+  const poll = useRef<ReturnType<
+    typeof startHistoryPolling<HistoryData>
+  > | null>(null);
+  const restoredProfile = useRef<string | null>(null);
+  const selectionKey = `gmail-history-run:${workspace.profile.id}`;
+  function selectRun(id: string) {
+    restoredProfile.current = workspace.profile.id;
+    try {
+      sessionStorage.setItem(selectionKey, id);
+    } catch {
+      /* Storage can be disabled. */
+    }
+    setRunId(id);
+    setPage(0);
+  }
   const [organizations, setOrganizations] = useState<
     { id: string; domain: string }[]
   >([]);
-  async function load() {
-    const r = await fetch(
-      `/api/gmail/history?${new URLSearchParams({ ...(runId ? { run: runId } : {}), page: String(page) })}`,
-    );
-    const body = await r.json();
-    if (!r.ok) throw new Error(body.error);
-    setData(body);
-  }
   useEffect(() => {
     if (workspace.demo) return;
-    let mounted = true;
-    const refresh = () =>
-      load().catch((e) => {
-        if (mounted) setError(e.message);
-      });
-    refresh();
-    const timer = setInterval(refresh, 10000);
+    const polling = startHistoryPolling<HistoryData>(
+      `/api/gmail/history?${new URLSearchParams({ ...(runId ? { run: runId } : {}), page: String(page) })}`,
+      {
+        data: (body) => {
+          setData(body);
+          setRefreshError(null);
+          if (restoredProfile.current !== workspace.profile.id) {
+            let saved: string | null = null;
+            try {
+              saved = sessionStorage.getItem(selectionKey);
+            } catch {
+              /* Storage can be disabled. */
+            }
+            selectRun(initialHistoryRun(body.runs, saved));
+          }
+        },
+        error: setRefreshError,
+      },
+    );
+    poll.current = polling;
     return () => {
-      mounted = false;
-      clearInterval(timer);
+      polling.stop();
+      if (poll.current === polling) poll.current = null;
     };
-    // Each change of run/page must replace the polling closure.
+    // Each change of run/page cancels the previous request and polling closure.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runId, page, workspace.demo]);
+  }, [runId, page, workspace.demo, workspace.profile.id]);
   useEffect(() => {
     if (workspace.demo) return;
     fetch("/api/gmail/config")
@@ -218,11 +244,11 @@ export function GmailHistory({
       });
       const body = await r.json();
       if (!r.ok) throw new Error(body.error);
-      if (body.id) {
-        setRunId(body.id);
-        setPage(0);
-      }
-      await load();
+      if (body.id && body.id !== runId) {
+        selectRun(body.id);
+      } else poll.current?.refresh();
+      // A successful mutation stays successful even if the following status read
+      // fails. Refresh only the GET; never repeat an import or account action.
       return true;
     } catch (e) {
       setError((e as Error).message);
@@ -283,6 +309,18 @@ export function GmailHistory({
       ) : (
         <>
           {error && <div className="error-banner">{error}</div>}
+          {!!refreshError && (
+            <div className="info-banner" role="status">
+              <span>{historyRefreshMessage(refreshError, locale)}</span>
+              <button
+                type="button"
+                className="button"
+                onClick={() => poll.current?.refresh()}
+              >
+                {t(locale, "Actualizar estado", "Refresh status")}
+              </button>
+            </div>
+          )}
           <form
             action="/api/gmail/connect"
             method="get"
@@ -415,8 +453,7 @@ export function GmailHistory({
             <select
               value={runId}
               onChange={(e) => {
-                setRunId(e.target.value);
-                setPage(0);
+                selectRun(e.target.value);
               }}
             >
               <option value="">

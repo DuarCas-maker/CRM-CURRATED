@@ -107,6 +107,10 @@ Un `GMAIL_HTTP_403` sin motivo no permite distinguir cuota de permisos. Ahora el
 
 Si el contador continúa aumentando, mantener el mismo análisis: no desconectar ni iniciar otro. Para instalar la corrección, desplegar web y trabajador por separado, desde el mismo commit. No hay migraciones ni variables nuevas; los mensajes y el cursor ya guardados se conservan. Si el análisis está pausado, resolver el motivo indicado y reanudarlo.
 
+`Failed to fetch` en la parte superior del panel es un fallo al consultar el estado desde el navegador, independiente del error de Gmail que figura dentro del análisis. La pantalla conserva los últimos datos, espera a que termine cada consulta antes de programar otra y reintenta automáticamente; «Actualizar estado» solo repite una consulta GET. El aviso desaparece cuando llega una respuesta válida. Una sesión vencida solicita volver a iniciar sesión en el CRM sin desconectar Gmail. La causa original de un fallo de red requiere los datos de esa petición del navegador/proxy; una comprobación pública de salud no valida el análisis autenticado.
+
+El panel recuerda el análisis elegido durante la sesión de la pestaña, por usuario del CRM. Si todavía no hay una selección guardada válida, elige un histórico activo. Si tras recargar falta el contador, seleccionar el histórico en «Análisis e importaciones»; eso no inicia otro análisis. La corrección de actualización y selección del panel se despliega únicamente en la web, sin modificar worker, variables ni migraciones.
+
 ## Escala, tiempo y presupuesto de IA
 
 Los trabajos procesan bloques acotados y hasta tres lecturas paralelas, con progreso persistido y reintentos por cuenta. Esto permite configurar 15–20 cuentas; **no se ha validado todavía esa carga con Google ni el VPS de 6 GB**. Medir cantidad de mensajes/adjuntos, duración, RAM del worker, latencia SQL y errores de cuota con una cuenta, luego dos y después más. No ejecutar el build de web y trabajador simultáneamente en ese VPS. Referencia: [cuotas Gmail](https://developers.google.com/workspace/gmail/api/reference/quota).
