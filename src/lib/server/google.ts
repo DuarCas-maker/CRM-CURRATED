@@ -2,6 +2,10 @@ import { OAuth2Client } from "google-auth-library";
 import { z } from "zod";
 import { decrypt } from "./crypto";
 import { serviceClient, checkDb, HttpError } from "./supabase";
+import { GmailError, gmailResponseError } from "../gmail-errors";
+import { GmailQuotaPacer, gmailRequestCost } from "../gmail-quota";
+export { GmailError } from "../gmail-errors";
+const quotaPacer = new GmailQuotaPacer();
 const organizationSchema = z.array(
   z.object({
     id: z.string(),
@@ -87,21 +91,13 @@ export async function gmailToken(accountId: string) {
   if (!access.token) throw new Error("GMAIL_AUTH");
   return access.token;
 }
-export class GmailError extends Error {
-  constructor(
-    public status: number,
-    public reason = "",
-    public retryAfter = 0,
-  ) {
-    super(`GMAIL_HTTP_${status}`);
-  }
-}
 export async function gmail<T>(
   accountId: string,
   path: string,
   init: RequestInit = {},
 ): Promise<T> {
   const access = await gmailToken(accountId);
+  await quotaPacer.wait(accountId, gmailRequestCost(path, init.method));
   const res = await fetch(
     `https://gmail.googleapis.com/gmail/v1/users/me/${path}`,
     {
@@ -114,23 +110,6 @@ export async function gmail<T>(
       signal: AbortSignal.timeout(30000),
     },
   );
-  if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    const code = error?.error?.errors?.[0]?.reason;
-    const reason = [
-      "rateLimitExceeded",
-      "userRateLimitExceeded",
-      "dailyLimitExceeded",
-      "authError",
-      "insufficientPermissions",
-    ].includes(code)
-      ? code
-      : "";
-    throw new GmailError(
-      res.status,
-      reason,
-      Math.max(0, Number(res.headers.get("retry-after")) || 0),
-    );
-  }
+  if (!res.ok) throw await gmailResponseError(res);
   return res.json() as Promise<T>;
 }

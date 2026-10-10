@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { Workspace, Locale } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
 import type { MailSnapshot } from "@/lib/gmail-history";
+import { gmailRunErrorMessage } from "@/lib/gmail-errors";
 import { Modal, t } from "./ui";
 
 export interface HistoryCandidate {
@@ -44,6 +45,7 @@ interface HistoryRun {
   skipped: number;
   imported: number;
   last_error: string | null;
+  retry_at: string | null;
   created_at: string;
   finished_at: string | null;
 }
@@ -454,7 +456,30 @@ export function GmailHistory({
                   )}
                 </p>
                 {run.last_error && (
-                  <p className="error-banner">{run.last_error}</p>
+                  <div
+                    className={
+                      ["analyzing", "importing"].includes(run.status) &&
+                      run.retry_at
+                        ? "info-banner"
+                        : "error-banner"
+                    }
+                  >
+                    <div>
+                      <p>{gmailRunErrorMessage(run.last_error, locale)}</p>
+                      <small>{run.last_error}</small>
+                      {["analyzing", "importing"].includes(run.status) &&
+                        run.retry_at && (
+                          <p>
+                            {t(
+                              locale,
+                              "Próximo reintento previsto",
+                              "Next retry scheduled",
+                            )}
+                            : {dateLabel(run.retry_at, locale, true)}
+                          </p>
+                        )}
+                    </div>
+                  </div>
                 )}
               </div>
               <div className="card-actions">

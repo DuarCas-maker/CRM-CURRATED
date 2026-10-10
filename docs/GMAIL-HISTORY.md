@@ -103,9 +103,15 @@ Usar mensajes de prueba controlados; no enviar a clientes reales durante la acep
 
 Ante `GMAIL_HTTP_401`, reautorizar la cuenta y reanudar el análisis; no reactivar envíos inciertos. Ante cuota/429, conservar el cursor y esperar el reintento persistido. `GMAIL_ASSOCIATION_REVIEW` requiere revisar empresa, proceso y evaluación del candidato antes de reanudar. Los archivos que exceden el límite quedan como referencia con error visible.
 
+Un `GMAIL_HTTP_403` sin motivo no permite distinguir cuota de permisos. Ahora el análisis conserva un código conocido de Google, por ejemplo `GMAIL_HTTP_403_userRateLimitExceeded`, y muestra su explicación junto con la fecha del reintento. El error desaparece cuando vuelve a persistirse progreso. Las cuotas mantienen el análisis activo y respetan `Retry-After` (segundos o fecha HTTP); una restricción de Workspace o de autorización pausa el análisis y requiere resolver el acceso. Los logs del worker incluyen el código y la espera, sin texto crudo de Google, correos ni tokens.
+
+Si el contador continúa aumentando, mantener el mismo análisis: no desconectar ni iniciar otro. Para instalar la corrección, desplegar web y trabajador por separado, desde el mismo commit. No hay migraciones ni variables nuevas; los mensajes y el cursor ya guardados se conservan. Si el análisis está pausado, resolver el motivo indicado y reanudarlo.
+
 ## Escala, tiempo y presupuesto de IA
 
 Los trabajos procesan bloques acotados y hasta tres lecturas paralelas, con progreso persistido y reintentos por cuenta. Esto permite configurar 15–20 cuentas; **no se ha validado todavía esa carga con Google ni el VPS de 6 GB**. Medir cantidad de mensajes/adjuntos, duración, RAM del worker, latencia SQL y errores de cuota con una cuenta, luego dos y después más. No ejecutar el build de web y trabajador simultáneamente en ese VPS. Referencia: [cuotas Gmail](https://developers.google.com/workspace/gmail/api/reference/quota).
+
+Para proyectos nuevos desde el 1 de mayo de 2026, Google documenta 6.000 unidades por usuario/proyecto/minuto y 20 unidades por lectura `messages.get`; la cuota efectiva del proyecto debe comprobarse en Google Cloud. El cliente distribuye las llamadas con un presupuesto conservador de 4.500 unidades por cuenta/minuto **por proceso**, incluyendo lecturas y adjuntos. Otros procesos o clientes de la misma cuenta siguen compartiendo límites de Google: el ajuste reduce ráfagas, pero no garantiza ausencia de cuotas ni un tiempo de finalización. Referencias: [cuotas y costes por método](https://developers.google.com/workspace/gmail/api/reference/quota) y [motivos de error y reintentos](https://developers.google.com/workspace/gmail/api/guides/handle-errors).
 
 No se ha instalado SDK de IA ni configurado llamadas pagadas. El coste actual de IA y de Bouncer causado por esta importación es cero; eso no sustituye los costes del VPS/Storage/Google que correspondan a la instalación. Antes de integrar IA, presentar presupuesto con volumen medido y proveedor elegido:
 

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { db, checked } from "./db";
 import { gmail, GmailError } from "../src/lib/server/google";
+import { isGmailQuotaError } from "../src/lib/gmail-errors";
 import { encrypt, decrypt, hash } from "../src/lib/server/crypto";
 import {
   snapshotMessage,
@@ -147,7 +148,7 @@ export async function archiveStep(runId: string) {
       const changed = checked(
         await client
           .from("gmail_runs")
-          .update(values)
+          .update({ last_error: null, retry_at: null, ...values })
           .eq("id", run.id)
           .eq("lease_token", run.lease_token)
           .select("id"),
@@ -355,25 +356,14 @@ export async function archiveStep(runId: string) {
       }
     }
   } catch (e) {
-    const code =
-      e instanceof GmailError ? `GMAIL_HTTP_${e.status}` : "GMAIL_SCAN_RETRY";
-    const quota =
-      e instanceof GmailError &&
-      (e.status === 429 ||
-        [
-          "rateLimitExceeded",
-          "userRateLimitExceeded",
-          "dailyLimitExceeded",
-        ].includes(e.reason));
+    const code = e instanceof GmailError ? e.code : "GMAIL_SCAN_RETRY";
+    const quota = isGmailQuotaError(e);
     const authorization =
       e instanceof GmailError &&
       (e.status === 401 || (e.status === 403 && !quota));
-    const seconds = Math.min(
-      3600,
-      Math.max(
-        e instanceof GmailError ? e.retryAfter : 0,
-        30 * 2 ** Math.min(run.errors, 7),
-      ),
+    const seconds = Math.max(
+      e instanceof GmailError ? e.retryAfter : 0,
+      Math.min(3600, 30 * 2 ** Math.min(run.errors, 7)),
     );
     checked(
       await client
@@ -398,7 +388,18 @@ export async function archiveStep(runId: string) {
           .update({ status: e.status === 401 ? "disconnected" : "restricted" })
           .eq("id", run.account_id),
       );
-    throw e;
+    if (e instanceof GmailError)
+      console.warn(
+        JSON.stringify({
+          kind: "gmail_archive",
+          run: run.id,
+          error: code,
+          retry_seconds: seconds,
+        }),
+      );
+    // The persisted run schedules quota retries. Retire this job so job retries
+    // cannot exhaust attempts and mark a recoverable quota wait as failed.
+    if (!quota) throw e;
   } finally {
     clearInterval(runHeartbeat);
     checked(
