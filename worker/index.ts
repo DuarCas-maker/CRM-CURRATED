@@ -18,6 +18,8 @@ import {
   copyGmailAttachment,
 } from "./gmail-archive";
 import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
+import { gmailSyncMode } from "../src/lib/gmail-sync";
+import { scheduleMailboxJobs } from "./gmail-schedule";
 import { setTimeout as delay } from "node:timers/promises";
 import { writeFile } from "node:fs/promises";
 let stopping = false;
@@ -113,40 +115,22 @@ async function schedule() {
           connected.map((a) => a.id),
         ),
     ) || [];
-  for (const account of credentials) {
+  await scheduleMailboxJobs(credentials, async (job) => {
     checked(
-      await client.from("jobs").upsert(
-        {
-          kind: "gmail_sync",
-          payload: { account_id: account.account_id },
-          dedupe_key: `reconcile:${account.account_id}:${bucket}`,
-        },
-        { onConflict: "dedupe_key", ignoreDuplicates: true },
-      ),
+      await client
+        .from("jobs")
+        .upsert(job, { onConflict: "dedupe_key", ignoreDuplicates: true }),
     );
-    if (
-      !account.watch_expires_at ||
-      new Date(account.watch_expires_at).getTime() < Date.now() + 86400000
-    )
-      checked(
-        await client.from("jobs").upsert(
-          {
-            kind: "gmail_watch",
-            payload: { account_id: account.account_id },
-            dedupe_key: `watch:${account.account_id}:${Math.floor(Date.now() / 3600000)}`,
-          },
-          { onConflict: "dedupe_key", ignoreDuplicates: true },
-        ),
-      );
-  }
+  });
   checked(await client.rpc("enqueue_overdue"));
   if (gmailHistoryEnabled()) await scheduleArchive();
   await reconcileUncertain();
 }
 let lastSchedule = 0;
 db(); // Fail fast on missing deployment configuration.
+const syncMode = gmailSyncMode(); // Reject configuration errors before processing jobs.
 console.log(
-  "Curated CRM worker starting. Logs exclude contact and application data.",
+  `Curated CRM worker starting. Gmail sync mode: ${syncMode}. Logs exclude contact and application data.`,
 );
 const processHeartbeat = setInterval(() => {
   writeFile(

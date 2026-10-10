@@ -2,6 +2,7 @@ import { db, checked, alertAdmins } from "./db";
 import { gmail, GmailError, organization } from "../src/lib/server/google";
 import { hash } from "../src/lib/server/crypto";
 import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
+import { gmailPushEnabled } from "../src/lib/gmail-sync";
 import { decrypt } from "../src/lib/server/crypto";
 import {
   excludedGmailMessage,
@@ -37,6 +38,8 @@ export async function syncMessage(accountId: string, messageId: string) {
   await ingestMessage(account, msg);
 }
 export async function renewWatch(accountId: string) {
+  // Old queued watch jobs are completed without calling Gmail after switching modes.
+  if (!gmailPushEnabled()) return;
   const account = checked(
     await db()
       .from("mail_accounts")

@@ -50,13 +50,15 @@ La sincronización detiene una secuencia de campaña al recibir una respuesta pe
 
 Para organizaciones distintas, usar una aplicación OAuth interna configurada por cada organización, o una aplicación externa cuya verificación y acceso hayan sido aprobados. El código comprueba el dominio Workspace (`hd`) contra la organización elegida. Una app interna de una organización no concede acceso a usuarios de otra.
 
-1. Crear o seleccionar el proyecto de Google Cloud de esa organización y habilitar Gmail API y Pub/Sub API.
+La instalación puede funcionar con OAuth y consultas periódicas sin Pub/Sub. Este modo evita la necesidad de conceder acceso al servicio externo de notificaciones de Gmail; no evita restricciones de autorización OAuth impuestas por Workspace.
+
+1. Crear o seleccionar el proyecto de Google Cloud de esa organización y habilitar Gmail API. Pub/Sub API solo es necesaria para el modo `pubsub`.
 2. Configurar Google Auth Platform: branding, audiencia interna cuando corresponda y datos de contacto.
 3. Registrar un cliente OAuth de tipo **Web application**. URI de redirección exacta: `https://crm.finlabinc.com/api/gmail/callback`.
 4. Solicitar `openid`, `email`, `https://www.googleapis.com/auth/gmail.readonly` y `https://www.googleapis.com/auth/gmail.send`. No solicitar Contacts ni contraseñas de Gmail.
-5. Crear un topic en **el mismo proyecto que el cliente OAuth**, por ejemplo `projects/PROJECT_ID/topics/gmail-events`. Dar `Pub/Sub Publisher` en ese topic a `gmail-api-push@system.gserviceaccount.com`.
-6. Crear una cuenta de servicio para autenticar la suscripción push y una suscripción al topic con destino `https://crm.finlabinc.com/api/gmail/push`. Usar esa cuenta como identidad del token OIDC y esa URL como audience. Configurar los permisos IAM de Pub/Sub para generar el token autenticado según las guías de Google.
-7. Registrar la organización en `GOOGLE_OAUTH_ORGANIZATIONS` de web y trabajador. Guardar los secretos directamente en Coolify. No pegarlos en chats, archivos versionados ni capturas.
+5. En Coolify, configurar `GMAIL_SYNC_MODE=polling` en **Production / Runtime** de la web y de `curated-worker`. Mantener `GMAIL_HISTORY_ENABLED=true` y `APP_ORIGIN=https://crm.finlabinc.com` en ambos.
+6. Registrar la organización en `GOOGLE_OAUTH_ORGANIZATIONS` de web y trabajador. Guardar los secretos directamente en Coolify. No pegarlos en chats, archivos versionados ni capturas. No activar Build para el JSON, el modo ni las credenciales de Google.
+7. Guardar y desplegar los dos recursos, de uno en uno en el VPS. Entrar al CRM con superadmin/MFA y seguir los pasos de análisis, revisión y confirmación anteriores. No repetir las migraciones 009–015 si ya están aplicadas.
 
 ```json
 [
@@ -64,15 +66,21 @@ Para organizaciones distintas, usar una aplicación OAuth interna configurada po
     "id": "curated",
     "domain": "curatedfinancial.com",
     "clientId": "CLIENT_ID.apps.googleusercontent.com",
-    "clientSecret": "REEMPLAZAR_EN_COOLIFY",
-    "pubsubTopic": "projects/PROJECT_ID/topics/gmail-events"
+    "clientSecret": "REEMPLAZAR_EN_COOLIFY"
   }
 ]
 ```
 
-En la web: `GOOGLE_PUBSUB_AUDIENCE=https://crm.finlabinc.com/api/gmail/push` y `GOOGLE_PUBSUB_SERVICE_ACCOUNT=CUENTA@PROJECT_ID.iam.gserviceaccount.com`. El worker usa el topic por organización. La implementación autoriza una identidad push común; para varios proyectos se necesita configurar correctamente IAM para utilizarla en sus suscripciones.
+En modo `polling` no se configura Pub/Sub: omitir `pubsubTopic` del JSON y no añadir `GOOGLE_PUBSUB_TOPIC`, `GOOGLE_PUBSUB_AUDIENCE` ni `GOOGLE_PUBSUB_SERVICE_ACCOUNT`. Si esas variables ya existen, el modo las ignora. El worker programa consultas aproximadamente cada minuto para las cuentas con importación confirmada y mantiene cursores, deduplicación, reintentos y revisión de mensajes nuevos. El intervalo real depende de la cola y de Gmail; no es una garantía de actualización inmediata.
 
-El worker renueva el watch próximo a expirar y realiza reconciliación periódica. El checkpoint de importación no se reemplaza por el devuelto al renovar watch. Un cursor expirado provoca una conciliación del año admitido, conservando los datos ya importados. Consulte [sincronización Gmail](https://developers.google.com/workspace/gmail/api/guides/sync), [notificaciones push](https://developers.google.com/workspace/gmail/api/guides/push) y [suscripciones push autenticadas](https://cloud.google.com/pubsub/docs/authenticate-push-subscriptions).
+Para habilitar Pub/Sub posteriormente:
+
+1. Crear el topic en **el mismo proyecto que el cliente OAuth**, por ejemplo `projects/PROJECT_ID/topics/gmail-events`. Dar `Pub/Sub Publisher` en ese topic a `gmail-api-push@system.gserviceaccount.com`; resolver la política de dominios con el administrador cuando corresponda.
+2. Crear una cuenta de servicio y una suscripción push autenticada al topic con destino `https://crm.finlabinc.com/api/gmail/push`, usando esa URL como audience. Mantener desactivada la eliminación de la envoltura del mensaje (payload unwrapping).
+3. Añadir `pubsubTopic` a la organización en el JSON de ambos recursos. En la web configurar `GOOGLE_PUBSUB_AUDIENCE=https://crm.finlabinc.com/api/gmail/push` y `GOOGLE_PUBSUB_SERVICE_ACCOUNT=CUENTA@PROJECT_ID.iam.gserviceaccount.com`.
+4. Cambiar `GMAIL_SYNC_MODE=pubsub` en ambos y desplegar. La identidad push común requiere permisos adecuados cuando se use en suscripciones de diferentes proyectos.
+
+El worker renueva el watch próximo a expirar solo en modo `pubsub`; en ambos modos mantiene reconciliación periódica. El checkpoint de importación no se reemplaza por el devuelto al renovar watch. Un cursor expirado provoca una conciliación del año admitido, conservando los datos ya importados. Consulte [sincronización Gmail](https://developers.google.com/workspace/gmail/api/guides/sync), [notificaciones push](https://developers.google.com/workspace/gmail/api/guides/push) y [suscripciones push autenticadas](https://cloud.google.com/pubsub/docs/authenticate-push-subscriptions).
 
 `gmail.readonly` es un scope restringido. El procedimiento de verificación y una posible evaluación de seguridad dependen de la audiencia, de las excepciones aplicables y del uso de datos en servidor. Validar el caso de cada organización con su administrador antes del piloto. Referencias: [scopes Gmail](https://developers.google.com/workspace/gmail/api/auth/scopes) y [verificación de scopes restringidos](https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification).
 

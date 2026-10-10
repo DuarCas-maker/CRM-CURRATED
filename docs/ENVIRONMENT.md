@@ -14,9 +14,10 @@ Copiar `.env.example` a `.env.local` solo para desarrollo. En Coolify, guardar l
 | `BOUNCER_API_KEY` | Autenticación de verificación de correos | `<clave de Bouncer>` | W + T | Opcional hasta conectar scrub; secreta |
 | `GMAIL_HISTORY_ENABLED` | Activa análisis/importación Gmail y su sincronización persistente | `false`; después de instalar 009–015, `true` | W + T | Solo Runtime, mismo valor en ambos; activar después de aplicar SQL |
 | `GOOGLE_OAUTH_ORGANIZATIONS` | Configuración OAuth interna por organización | Ver JSON más abajo; inicial `[]` | W + T | Requerida para Gmail; contiene secretos |
-| `GOOGLE_PUBSUB_TOPIC` | Topic alternativo cuando la organización no define `pubsubTopic` | `projects/my-google-project/topics/gmail-events` | T | Opcional si cada organización ya define su topic |
-| `GOOGLE_PUBSUB_AUDIENCE` | Audience que valida el token de la suscripción push de Gmail | `https://crm.example.com/api/gmail/push` | W | Requerida para Gmail push; debe coincidir con la suscripción |
-| `GOOGLE_PUBSUB_SERVICE_ACCOUNT` | Identidad autorizada para firmar notificaciones Pub/Sub | `gmail-push@my-google-project.iam.gserviceaccount.com` | W | Requerida para Gmail push |
+| `GMAIL_SYNC_MODE` | Elige consultas periódicas o notificaciones Pub/Sub | `polling` o `pubsub` | W + T | Solo Runtime; mismo valor en ambos. Ausente/vacía usa `pubsub` para conservar despliegues anteriores; valores distintos producen error |
+| `GOOGLE_PUBSUB_TOPIC` | Topic alternativo cuando la organización no define `pubsubTopic` | `projects/my-google-project/topics/gmail-events` | T | Solo en modo `pubsub`; opcional si cada organización ya define su topic; ignorada en `polling` |
+| `GOOGLE_PUBSUB_AUDIENCE` | Audience que valida el token de la suscripción push de Gmail | `https://crm.example.com/api/gmail/push` | W | Solo en modo `pubsub`; debe coincidir con la suscripción; ignorada en `polling` |
+| `GOOGLE_PUBSUB_SERVICE_ACCOUNT` | Identidad autorizada para firmar notificaciones Pub/Sub | `gmail-push@my-google-project.iam.gserviceaccount.com` | W | Solo en modo `pubsub`; ignorada en `polling` |
 | `VAPID_PUBLIC_KEY` | Clave pública de suscripciones web push | `<clave pública VAPID>` | W + T | Opcional; se sirve desde `/api/push`, no requiere build |
 | `VAPID_PRIVATE_KEY` | Firma de notificaciones web push | `<clave privada VAPID>` | T | Opcional; secreta; configurar junto a la pública y subject |
 | `VAPID_SUBJECT` | Contacto del operador del servicio push | `mailto:admin@example.com` | T | Requerida si se habilita push |
@@ -41,7 +42,7 @@ Si la verificación muestra «Invalid request origin», la web rechazó la acci�
 
 ## Gmail por organización
 
-Guardar el siguiente JSON en una sola línea al configurarlo en Coolify, sustituyendo cada marcador. El topic debe pertenecer al mismo proyecto de Google Cloud que el cliente OAuth.
+Para consultas periódicas, configurar `GMAIL_SYNC_MODE=polling` en **Production / Runtime de web y trabajador**. Guardar el siguiente JSON en una sola línea en `GOOGLE_OAUTH_ORGANIZATIONS` de ambos recursos, sustituyendo los marcadores directamente en Coolify. No habilitar Build para ninguna de estas variables.
 
 ```json
 [
@@ -49,13 +50,16 @@ Guardar el siguiente JSON en una sola línea al configurarlo en Coolify, sustitu
     "id": "curated",
     "domain": "example.com",
     "clientId": "CLIENT_ID.apps.googleusercontent.com",
-    "clientSecret": "REEMPLAZAR",
-    "pubsubTopic": "projects/my-google-project/topics/gmail-events"
+    "clientSecret": "REEMPLAZAR"
   }
 ]
 ```
 
-El callback autorizado es `${APP_ORIGIN}/api/gmail/callback`. Configurar además Pub/Sub con el audience y la identidad autorizada de la tabla. Esta configuración es independiente de conectar y asignar permisos a una cuenta Gmail dentro del CRM.
+El callback autorizado es `${APP_ORIGIN}/api/gmail/callback`. En esta instalación: `https://crm.finlabinc.com/api/gmail/callback`. El dominio del JSON debe coincidir con el dominio Workspace (`hd`) de la cuenta que se autoriza; no es el dominio público del CRM.
+
+En `polling`, no se necesitan topic, suscripción, cuenta de servicio ni variables `GOOGLE_PUBSUB_*`. El worker no crea ni renueva watches; los trabajos antiguos de watch que todavía pueda reclamar terminan sin consultar Gmail. El endpoint push responde 204 sin procesar notificaciones ni acceder a la base. OAuth, análisis y envío siguen funcionando. El ciclo de archivo histórico confirmado consulta cambios aproximadamente cada minuto mientras el worker esté disponible; la carga y los reintentos pueden retrasarlo. Las cuentas sin importación confirmada no se incorporan automáticamente al flujo.
+
+Para utilizar notificaciones en el futuro, configurar `GMAIL_SYNC_MODE=pubsub` en ambos recursos, añadir `pubsubTopic` a cada organización y configurar las variables push de la tabla. El topic debe pertenecer al mismo proyecto que el cliente OAuth. Configurar IAM y la suscripción autenticada antes de desplegar; la reconciliación periódica continúa activa también en este modo. Esta configuración es independiente de conectar y asignar permisos a una cuenta Gmail dentro del CRM.
 
 ## Variables automáticas y de pruebas
 

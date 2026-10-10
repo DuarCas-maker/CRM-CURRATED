@@ -2,6 +2,7 @@ import { OAuth2Client } from "google-auth-library";
 import { z } from "zod";
 import { readBounded } from "@/lib/server/body";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
+import { gmailPushEnabled } from "@/lib/gmail-sync";
 import {
   serviceClient,
   checkDb,
@@ -10,6 +11,8 @@ import {
 } from "@/lib/server/supabase";
 export async function POST(request: Request) {
   try {
+    // Acknowledge any old subscriptions without reading mail or creating jobs.
+    if (!gmailPushEnabled()) return new Response(null, { status: 204 });
     if (
       !process.env.GOOGLE_PUBSUB_AUDIENCE ||
       !process.env.GOOGLE_PUBSUB_SERVICE_ACCOUNT

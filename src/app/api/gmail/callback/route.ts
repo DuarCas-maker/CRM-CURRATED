@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { gmailPushEnabled } from "@/lib/gmail-sync";
 import {
   requireUser,
   serviceClient,
@@ -10,6 +11,7 @@ import { oauthClient, organization } from "@/lib/server/google";
 import { hash, encrypt } from "@/lib/server/crypto";
 export async function GET(request: Request) {
   try {
+    const pushEnabled = gmailPushEnabled();
     const { profile } = await requireUser();
     if (profile.role !== "superadmin")
       throw new HttpError(403, "Superadmin required");
@@ -89,13 +91,14 @@ export async function GET(request: Request) {
         can_send: true,
       }),
     );
-    checkDb(
-      await db.from("jobs").insert({
-        kind: "gmail_watch",
-        payload: { account_id: account.id },
-        dedupe_key: `watch:connect:${account.id}:${Date.now()}`,
-      }),
-    );
+    if (pushEnabled)
+      checkDb(
+        await db.from("jobs").insert({
+          kind: "gmail_watch",
+          payload: { account_id: account.id },
+          dedupe_key: `watch:connect:${account.id}:${Date.now()}`,
+        }),
+      );
     checkDb(
       await db.from("audit_log").insert({
         actor_id: profile.id,
