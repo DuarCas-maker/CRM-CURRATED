@@ -3,6 +3,7 @@ import type { Workspace } from "../domain";
 import { stages } from "../domain";
 import { filterLeadTab, parseLeadTab } from "../lead-tabs";
 import { z } from "zod";
+import { gmailHistoryEnabled } from "../gmail-feature";
 export async function loadWorkspace(
   params = new URLSearchParams(),
 ): Promise<Workspace> {
@@ -79,6 +80,17 @@ export async function loadWorkspace(
   const response = await query.range(page * 100, page * 100 + 99);
   const opportunities = preparing ? [] : checkDb(response) || [];
   const caseIds = opportunities.map((o) => o.id);
+  if (gmailHistoryEnabled() && caseIds.length) {
+    const metadata =
+      checkDb(
+        await db
+          .from("opportunities")
+          .select("id,primary_account_id,historical_approved_at")
+          .in("id", caseIds),
+      ) || [];
+    for (const o of opportunities)
+      Object.assign(o, metadata.find((m) => m.id === o.id) || {});
+  }
   const stats = checkDb(
     await db.rpc("workspace_stats", {
       search_text: search,
@@ -113,6 +125,8 @@ export async function loadWorkspace(
   ];
   if (profile.role === "superadmin")
     queries.push(["integration_jobs", "jobs"], ["outbox_status", "outbox"]);
+  if (gmailHistoryEnabled())
+    queries.push(["gmail_files", "gmail_saved_attachments"]);
   const related = new Set([
     "tasks",
     "activities",
@@ -121,6 +135,7 @@ export async function loadWorkspace(
     "submissions",
     "offers",
     "conversations",
+    "gmail_files",
   ]);
   const entries = await Promise.all(
     queries.map(async ([key, table]) => {
@@ -202,6 +217,7 @@ export async function loadWorkspace(
     preferences,
     notifications: preferences.internal ? data.notifications : [],
     demo: false,
+    gmail_history_enabled: gmailHistoryEnabled(),
     page,
     listTotal: (preparing ? leadResponse.count : response.count) || 0,
     hasMore:

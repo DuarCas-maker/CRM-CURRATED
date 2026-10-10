@@ -4,6 +4,7 @@ import type { Workspace, Locale } from "@/lib/domain";
 import { roleLabels, dateLabel } from "@/lib/domain";
 import type { Action } from "./crm";
 import { Modal, Field, SaveButton, t, Empty } from "./ui";
+import { GmailHistory } from "./gmail-history";
 export function Integrations({
   data,
   locale,
@@ -39,6 +40,7 @@ export function Integrations({
   }
   return (
     <>
+      <GmailHistory workspace={data} locale={locale} />
       <section className="panel settings-panel">
         <h2>
           {t(locale, "Administración de accesos", "Access administration")}

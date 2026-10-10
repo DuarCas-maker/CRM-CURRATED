@@ -1,5 +1,6 @@
 "use client";
 import { useState, type FormEvent } from "react";
+import { CaseMailHistory } from "./case-mail-history";
 import {
   ArrowLeft,
   Phone,
@@ -44,6 +45,7 @@ export function OpportunityDetail({
   act,
   busy,
   back,
+  refresh,
 }: {
   opportunity: Opportunity;
   data: Workspace;
@@ -52,6 +54,7 @@ export function OpportunityDetail({
   act: Action;
   busy: boolean;
   back: () => void;
+  refresh: () => Promise<void>;
 }) {
   const [tab, setTab] = useState("activity");
   const [modal, setModal] = useState<string | null>(null);
@@ -186,6 +189,7 @@ export function OpportunityDetail({
           <div className="case-tabs">
             {[
               ["activity", "Actividad", "Activity"],
+              ["mail_history", "Correo e histórico", "Email and history"],
               ["documents", "Documentos", "Documents"],
               ["analysis", "Análisis manual", "Manual review"],
               ...(isCloserRole(profile.role) && o.handed_off_at
@@ -207,6 +211,15 @@ export function OpportunityDetail({
               </button>
             ))}
           </div>
+          {tab === "mail_history" && (
+            <CaseMailHistory
+              caseId={o.id}
+              data={data}
+              locale={locale}
+              editable={editable}
+              onChanged={refresh}
+            />
+          )}
           {tab === "activity" && (
             <div className="tab-content">
               <div className="activity-toolbar">

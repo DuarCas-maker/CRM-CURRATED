@@ -37,3 +37,13 @@ Las pruebas SQL utilizan PGlite y esquemas simulados de Auth/Storage. No reempla
 3. Desplegar el trabajador usando `/Dockerfile.worker`, sin dominio ni healthcheck HTTP; conservar el healthcheck de la imagen.
 4. Comprobar logs de ambos recursos, login/MFA e importación pequeña que llegue a estado completado.
 5. Completar las integraciones y validaciones de aceptación antes de enviar campañas a clientes reales.
+
+## Primera etapa de Gmail histórico — 10 de octubre de 2026
+
+- Instalación congelada con Node 22.23.3 y pnpm 11.19.0 correcta; lockfile conservado. Typecheck y build de producción standalone correctos.
+- **25 pruebas correctas**, incluyendo la actualización atómica 009–015 desde 001–008, selección controlada, pausa/reanudación, deduplicación entre cuentas, excepción histórica sin Bouncer, traspasos, privacidad y conservación al deshacer. Se comprueba también que una respuesta antigua no cancela una campaña posterior y que los correos largos conservan su texto.
+- Las 15 migraciones y los 16 grupos de aceptación SQL pasaron en PGlite con Auth/Storage simulados. Las pruebas no acceden a Supabase de producción.
+- Servidor standalone local: `/api/health`, `/login` y `/demo` responden HTTP 200. Navegador: panel de importación y pestaña «Correo e histórico» visibles con datos ficticios. Esta prueba no valida OAuth ni un buzón real.
+- Revisión de los archivos modificados y nuevos sin secretos locales ni material de credenciales; `.env.local`, `.local`, `.next` y `node_modules` continúan excluidos. `git diff --check` correcto.
+- Docker no está instalado: quedan pendientes el build de las imágenes y sus healthchecks en Coolify. No se arrancó el worker contra datos reales ni se enviaron correos, verificaciones pagadas o llamadas de IA.
+- `GMAIL_HISTORY_ENABLED` permanece desactivada por defecto. Aplicar [la actualización y el piloto](GMAIL-HISTORY.md) antes de habilitarla en web y trabajador. El análisis semántico/OCR, la atribución de rebotes por dirección y el modelo de riesgo automático siguen pendientes; no se presentan como verificados.

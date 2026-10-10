@@ -1,6 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 import { z } from "zod";
 import { readBounded } from "@/lib/server/body";
+import { gmailHistoryEnabled } from "@/lib/gmail-feature";
 import {
   serviceClient,
   checkDb,
@@ -42,13 +43,13 @@ export async function POST(request: Request) {
         JSON.parse(Buffer.from(input.message.data, "base64").toString("utf8")),
       );
     const db = serviceClient();
-    const account = checkDb(
-      await db
-        .from("mail_accounts")
-        .select("id")
-        .eq("email", event.emailAddress.toLowerCase())
-        .maybeSingle(),
-    );
+    let query = db
+      .from("mail_accounts")
+      .select("id")
+      .eq("email", event.emailAddress.toLowerCase())
+      .eq("status", "connected");
+    if (gmailHistoryEnabled()) query = query.eq("sync_enabled", true);
+    const account = checkDb(await query.maybeSingle());
     if (account)
       checkDb(
         await db.from("jobs").upsert(

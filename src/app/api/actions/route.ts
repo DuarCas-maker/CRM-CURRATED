@@ -10,6 +10,7 @@ import {
 import { renderTemplate } from "@/lib/domain";
 import { readBounded } from "@/lib/server/body";
 import { mailAction } from "@/lib/server/mail-actions";
+import { gmailHistoryEnabled } from "@/lib/gmail-feature";
 const envelope = z.object({
   kind: z.string().max(50),
   payload: z.record(z.string(), z.unknown()),
@@ -29,7 +30,8 @@ export async function POST(request: Request) {
     if (
       ["associate_thread", "import_attachment", "request_documents"].includes(
         kind,
-      )
+      ) ||
+      (kind === "reply" && gmailHistoryEnabled())
     )
       return Response.json(
         await mailAction(kind, p, idempotency_key, db, profile),

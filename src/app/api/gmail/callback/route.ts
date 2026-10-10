@@ -40,6 +40,15 @@ export async function GET(request: Request) {
     const { tokens } = await client.getToken(code);
     if (!tokens.id_token || !tokens.refresh_token)
       throw new HttpError(400, "Google did not grant offline access");
+    const scopes = new Set((tokens.scope || "").split(/\s+/));
+    if (
+      !scopes.has("https://www.googleapis.com/auth/gmail.readonly") ||
+      !scopes.has("https://www.googleapis.com/auth/gmail.send")
+    )
+      throw new HttpError(
+        400,
+        "Authorize both Gmail reading and sending to connect this account",
+      );
     const verified = await client.verifyIdToken({
       idToken: tokens.id_token,
       audience: org.clientId,
@@ -95,14 +104,7 @@ export async function GET(request: Request) {
         action: "connected",
       }),
     );
-    // Queued jobs are safe to resume; uncertain sends always require reconciliation.
-    checkDb(
-      await db
-        .from("outbox")
-        .update({ status: "queued" })
-        .eq("account_id", account.id)
-        .eq("status", "paused"),
-    );
+    // Reauthorization never implicitly resumes historical campaigns or paused sends.
     (await cookies()).delete("gmail_oauth_state");
     return Response.redirect(`${process.env.APP_ORIGIN}/`);
   } catch (e) {

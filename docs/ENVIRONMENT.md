@@ -10,8 +10,9 @@ Copiar `.env.example` a `.env.local` solo para desarrollo. En Coolify, guardar l
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave pública `anon` para Auth y peticiones bajo RLS | `<clave anon de esta instancia>` | B + W | Obligatoria; activar Build y Runtime; nunca usar service role |
 | `SUPABASE_SERVICE_ROLE_KEY` | Acceso privilegiado del backend y trabajos persistentes | `<clave service_role de esta instancia>` | W + T | Obligatoria y secreta; solo Runtime |
 | `APP_ORIGIN` | Origen público del CRM para callbacks, enlaces y comprobación de origen | `https://crm.example.com` | W + T | Obligatoria en producción; sin `/` final ni `:3000` |
-| `INTEGRATION_ENCRYPTION_KEY` | Cifrado de credenciales y datos originales de aplicaciones | `<32 bytes aleatorios en base64>` | W + T | Obligatoria y secreta; conservar la clave existente |
+| `INTEGRATION_ENCRYPTION_KEY` | Cifrado de credenciales, aplicaciones, archivo Gmail y adjuntos históricos copiados | `<32 bytes aleatorios en base64>` | W + T | Obligatoria y secreta; conservar la clave existente |
 | `BOUNCER_API_KEY` | Autenticación de verificación de correos | `<clave de Bouncer>` | W + T | Opcional hasta conectar scrub; secreta |
+| `GMAIL_HISTORY_ENABLED` | Activa análisis/importación Gmail y su sincronización persistente | `false`; después de instalar 009–015, `true` | W + T | Solo Runtime, mismo valor en ambos; activar después de aplicar SQL |
 | `GOOGLE_OAUTH_ORGANIZATIONS` | Configuración OAuth interna por organización | Ver JSON más abajo; inicial `[]` | W + T | Requerida para Gmail; contiene secretos |
 | `GOOGLE_PUBSUB_TOPIC` | Topic alternativo cuando la organización no define `pubsubTopic` | `projects/my-google-project/topics/gmail-events` | T | Opcional si cada organización ya define su topic |
 | `GOOGLE_PUBSUB_AUDIENCE` | Audience que valida el token de la suscripción push de Gmail | `https://crm.example.com/api/gmail/push` | W | Requerida para Gmail push; debe coincidir con la suscripción |

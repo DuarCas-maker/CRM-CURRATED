@@ -1,0 +1,21 @@
+export const processStates = {
+  unclassified: ["Pendiente de clasificar", "Unclassified"],
+  new: ["Oportunidad nueva", "New opportunity"],
+  contacted: ["Contacto o campaña enviada", "Contact or campaign sent"],
+  waiting_customer: ["Espera de respuesta", "Awaiting reply"],
+  application_received: ["Aplicación recibida", "Application received"],
+  documents_received: ["Documentos recibidos", "Documents received"],
+  prepared: ["Expediente preparado", "Case prepared"],
+  submitted: ["Enviado a lenders", "Submitted to lenders"],
+  lender_evaluation: ["Evaluación del lender", "Lender evaluation"],
+  offers: ["Oferta recibida", "Offer received"],
+  lender_selected: ["Lender seleccionado", "Lender selected"],
+  requirements: ["Requisitos adicionales", "Additional requirements"],
+  contract_sent: ["Contrato enviado", "Contract sent"],
+  contract_signed: ["Contrato firmado", "Contract signed"],
+  final_approval: ["Aprobación final", "Final approval"],
+  disbursed: ["Desembolso", "Disbursed"],
+  client_withdrew: ["El cliente no continuó", "Customer withdrew"],
+  funding_declined: ["Sin financiación", "No financing"],
+} as const;
+export type ProcessState = keyof typeof processStates;

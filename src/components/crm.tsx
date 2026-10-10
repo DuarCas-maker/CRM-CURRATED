@@ -863,6 +863,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
               act={act}
               busy={busy}
               back={() => setSelected(null)}
+              refresh={refresh}
             />
           ) : (
             <>
@@ -1675,6 +1676,22 @@ export default function CRM({ initial }: { initial: Workspace }) {
                                   </small>
                                 </div>
                                 <p>{m.body}</p>
+                                {(data.gmail_files || [])
+                                  .filter(
+                                    (f) =>
+                                      f.archive_message_id ===
+                                      m.archive_message_id,
+                                  )
+                                  .map((f) => (
+                                    <a
+                                      className="button"
+                                      key={f.id}
+                                      href={`/api/gmail/files/${f.id}`}
+                                    >
+                                      {f.name} ·{" "}
+                                      {t(locale, "Descargar", "Download")}
+                                    </a>
+                                  ))}
                                 {(data.attachments || [])
                                   .filter((a) => a.message_id === m.id)
                                   .map((a) => (
@@ -1718,11 +1735,95 @@ export default function CRM({ initial }: { initial: Workspace }) {
                               await act("reply", {
                                 conversation_id: conversation,
                                 body: new FormData(form).get("body"),
+                                ...(new FormData(form).get("account_id")
+                                  ? {
+                                      account_id: new FormData(form).get(
+                                        "account_id",
+                                      ),
+                                    }
+                                  : {}),
+                                attachment_ids: new FormData(form).getAll(
+                                  "attachment_id",
+                                ),
+                                gmail_file_ids: new FormData(form).getAll(
+                                  "gmail_file_id",
+                                ),
                               });
                               form.reset();
                             } catch {}
                           }}
                         >
+                          {data.gmail_history_enabled && (
+                            <>
+                              <label>
+                                {t(locale, "Enviar desde", "Send from")}
+                                <select name="account_id">
+                                  <option value="">
+                                    {t(
+                                      locale,
+                                      "Cuenta principal del expediente o cuenta del hilo",
+                                      "Case primary account or thread account",
+                                    )}
+                                  </option>
+                                  {data.accounts
+                                    .filter((a) => a.status === "connected")
+                                    .map((a) => (
+                                      <option value={a.id} key={a.id}>
+                                        {a.email}
+                                      </option>
+                                    ))}
+                                </select>
+                              </label>
+                              <details>
+                                <summary>
+                                  {t(
+                                    locale,
+                                    "Adjuntar documentos aprobados",
+                                    "Attach approved documents",
+                                  )}
+                                </summary>
+                                {data.documents
+                                  .filter(
+                                    (d) =>
+                                      d.opportunity_id ===
+                                        data.conversations.find(
+                                          (c) => c.id === conversation,
+                                        )?.opportunity_id &&
+                                      d.status === "approved",
+                                  )
+                                  .map((d) => (
+                                    <label key={d.id}>
+                                      <input
+                                        type="checkbox"
+                                        name="attachment_id"
+                                        value={d.id}
+                                      />{" "}
+                                      {d.name}
+                                    </label>
+                                  ))}
+                                {(data.gmail_files || [])
+                                  .filter(
+                                    (f) =>
+                                      f.opportunity_id ===
+                                        data.conversations.find(
+                                          (c) => c.id === conversation,
+                                        )?.opportunity_id &&
+                                      f.status === "approved" &&
+                                      f.storage_path,
+                                  )
+                                  .map((f) => (
+                                    <label key={f.id}>
+                                      <input
+                                        type="checkbox"
+                                        name="gmail_file_id"
+                                        value={f.id}
+                                      />{" "}
+                                      {f.name}
+                                    </label>
+                                  ))}
+                              </details>
+                            </>
+                          )}
                           <textarea
                             name="body"
                             required
@@ -2076,19 +2177,20 @@ export default function CRM({ initial }: { initial: Workspace }) {
                         </span>
                       </div>
                     ))}
-                    {profile.role === "superadmin" && (
-                      <button
-                        className="button"
-                        onClick={() => setModal("google")}
-                      >
-                        <Plus size={16} />
-                        {t(
-                          locale,
-                          "Conectar Google Workspace",
-                          "Connect Google Workspace",
-                        )}
-                      </button>
-                    )}
+                    {profile.role === "superadmin" &&
+                      !data.gmail_history_enabled && (
+                        <button
+                          className="button"
+                          onClick={() => setModal("google")}
+                        >
+                          <Plus size={16} />
+                          {t(
+                            locale,
+                            "Conectar Google Workspace",
+                            "Connect Google Workspace",
+                          )}
+                        </button>
+                      )}
                   </section>
                   <section className="panel settings-panel">
                     <h2>

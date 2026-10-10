@@ -11,10 +11,13 @@ const organizationSchema = z.array(
     pubsubTopic: z.string().optional(),
   }),
 );
+export function configuredOrganizations() {
+  return organizationSchema.parse(
+    JSON.parse(process.env.GOOGLE_OAUTH_ORGANIZATIONS || "[]"),
+  );
+}
 export function organization(id: string) {
-  const org = organizationSchema
-    .parse(JSON.parse(process.env.GOOGLE_OAUTH_ORGANIZATIONS || "[]"))
-    .find((o) => o.id === id);
+  const org = configuredOrganizations().find((o) => o.id === id);
   if (!org) throw new HttpError(400, "Organization is not configured");
   return org;
 }
@@ -26,11 +29,19 @@ export function oauthClient(id: string) {
     `${process.env.APP_ORIGIN}/api/gmail/callback`,
   );
 }
+const tokenClients = new Map<
+  string,
+  { credential: string; client: OAuth2Client }
+>();
 export async function gmailToken(accountId: string) {
   const db = serviceClient();
   const account = checkDb(
     await db.from("mail_accounts").select("*").eq("id", accountId).single(),
   )!;
+  if (account.status !== "connected") {
+    tokenClients.delete(accountId);
+    throw new GmailError(401);
+  }
   const credentials = checkDb(
     await db
       .from("mail_credentials")
@@ -38,10 +49,16 @@ export async function gmailToken(accountId: string) {
       .eq("account_id", accountId)
       .single(),
   )!;
-  const client = oauthClient(account.organization);
-  client.setCredentials({
-    refresh_token: decrypt(credentials.encrypted_refresh_token),
-  });
+  let cached = tokenClients.get(accountId);
+  if (!cached || cached.credential !== credentials.encrypted_refresh_token) {
+    const client = oauthClient(account.organization);
+    client.setCredentials({
+      refresh_token: decrypt(credentials.encrypted_refresh_token),
+    });
+    cached = { credential: credentials.encrypted_refresh_token, client };
+    tokenClients.set(accountId, cached);
+  }
+  const client = cached.client;
   let access;
   try {
     access = await client.getAccessToken();
@@ -71,7 +88,11 @@ export async function gmailToken(accountId: string) {
   return access.token;
 }
 export class GmailError extends Error {
-  constructor(public status: number) {
+  constructor(
+    public status: number,
+    public reason = "",
+    public retryAfter = 0,
+  ) {
     super(`GMAIL_HTTP_${status}`);
   }
 }
@@ -93,6 +114,23 @@ export async function gmail<T>(
       signal: AbortSignal.timeout(30000),
     },
   );
-  if (!res.ok) throw new GmailError(res.status);
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    const code = error?.error?.errors?.[0]?.reason;
+    const reason = [
+      "rateLimitExceeded",
+      "userRateLimitExceeded",
+      "dailyLimitExceeded",
+      "authError",
+      "insufficientPermissions",
+    ].includes(code)
+      ? code
+      : "";
+    throw new GmailError(
+      res.status,
+      reason,
+      Math.max(0, Number(res.headers.get("retry-after")) || 0),
+    );
+  }
   return res.json() as Promise<T>;
 }

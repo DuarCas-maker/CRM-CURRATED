@@ -4,6 +4,8 @@ Aplicación interna en Next.js y TypeScript, con Supabase como fuente de verdad 
 
 **Estado: aplicación desplegada; integraciones y recorrido del piloto pendientes de validación.** La demostración usa datos ficticios y memoria temporal. La aplicación real exige Supabase, invitación y MFA; no cambia a datos ficticios si una integración falla. La corrección de preparación de leads requiere aplicar la migración 008 antes de actualizar el despliegue.
 
+La etapa de Gmail histórico añade análisis anual, importación selectiva, sincronización, archivos cifrados y línea del tiempo. **Requiere instalar 009–015 y activar `GMAIL_HISTORY_ENABLED=true` en web y trabajador.** El código puede desplegarse con esa bandera desactivada. Para la base existente, usar [la actualización SQL](supabase/install/gmail-history.sql) y seguir [la activación y los límites de esta etapa](docs/GMAIL-HISTORY.md). La extracción semántica y el modelo de riesgo aún requieren proveedor y presupuesto de IA.
+
 ## Probar la interfaz
 
 Requisitos: Node.js 22 (22.13 o posterior dentro de la rama 22) y pnpm 11.19.0. `.nvmrc` y `packageManager` fijan estas versiones; `pnpm-workspace.yaml` autoriza únicamente el script de instalación de esbuild.
@@ -19,7 +21,7 @@ Abrir [la demostración](http://localhost:3000/demo). Permite recorrer los cinco
 
 ## Conectar Supabase
 
-1. Crear un proyecto dedicado. Aplicar, en orden, los ocho archivos de `supabase/migrations/` sobre una base nueva. Incluyen tablas, funciones, políticas RLS, permisos y buckets privados. No ejecutar sobre una instalación ajena o una base con tablas homónimas.
+1. Crear un proyecto dedicado. Aplicar, en orden, los archivos de `supabase/migrations/` sobre una base nueva. Incluyen tablas, funciones, políticas RLS, permisos y buckets privados. No ejecutar sobre una instalación ajena o una base con tablas homónimas. Las instalaciones existentes 001–008 pueden aplicar `supabase/install/gmail-history.sql` para añadir 009–015.
 
    Para la instalación inicial de Daniel, `supabase/install/curated-initial.sql` reúne las migraciones 001–007 en una sola transacción y registra `daniel@curatedfinancial.com` como invitación pendiente de superadmin. Ejecutar el archivo completo en SQL Editor con el rol `postgres`, **en lugar de** ejecutar los siete archivos individuales. Rechaza un esquema `public` que ya tenga tablas. No crea el usuario en Auth ni envía correo; al usar este archivo, omitir el INSERT del paso 5 y continuar con la creación o invitación del usuario en Auth. El archivo es una copia de las migraciones al 6 de octubre de 2026, no una migración adicional.
 
@@ -51,7 +53,7 @@ En cada organización de Google Workspace:
 
 El worker renueva el watch antes de su vencimiento, reconcilia cada cinco minutos y recupera el historial expirado. Los mensajes enviados directamente desde Gmail también se incorporan. Los hilos ambiguos requieren asociación manual; los adjuntos requieren incorporación y revisión separadas. El permiso de cada mensaje se deriva de su fecha respecto al traspaso, aunque el hilo haya empezado en la fase seller.
 
-Un resultado incierto de envío se busca por su `Message-ID`. No se reenvía a ciegas. Una reconexión reactiva trabajos pausados; los envíos inciertos mantienen su estado hasta conciliación. Referencia de configuración: [Gmail push notifications](https://developers.google.com/workspace/gmail/api/guides/push).
+Un resultado incierto de envío se busca por su `Message-ID`. No se reenvía a ciegas. Una reconexión conserva el progreso, sin reactivar automáticamente envíos pausados. Los envíos inciertos mantienen su estado hasta conciliación. Con Gmail histórico activado, autorizar una cuenta no la incorpora al flujo: primero analizar y confirmar desde Configuración. Referencia de configuración: [Gmail push notifications](https://developers.google.com/workspace/gmail/api/guides/push).
 
 ## Importaciones y Bouncer
 

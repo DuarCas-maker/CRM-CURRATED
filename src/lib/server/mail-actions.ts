@@ -13,6 +13,158 @@ export async function mailAction(
   profile: Profile,
 ) {
   const service = serviceClient();
+  if (kind === "reply") {
+    const input = z
+      .object({
+        conversation_id: z.uuid(),
+        body: z.string().min(1).max(10000),
+        account_id: z.uuid().optional(),
+        attachment_ids: z.array(z.uuid()).max(10).default([]),
+        gmail_file_ids: z.array(z.uuid()).max(10).default([]),
+      })
+      .parse(p);
+    const co = checkDb(
+      await db
+        .from("conversations")
+        .select("*")
+        .eq("id", input.conversation_id)
+        .single(),
+    )!;
+    if (
+      !checkDb(
+        await db.rpc("can_area", { case_id: co.opportunity_id, area: co.area }),
+      ) ||
+      !checkDb(await db.rpc("can_edit_case", { case_id: co.opportunity_id }))
+    )
+      throw new HttpError(403, "Case is read-only");
+    const o = checkDb(
+      await db
+        .from("opportunities")
+        .select("contact_id,company_id,primary_account_id,handed_off_at")
+        .eq("id", co.opportunity_id)
+        .single(),
+    )!;
+    const account = input.account_id || o.primary_account_id || co.account_id;
+    if (!checkDb(await db.rpc("can_send", { account })))
+      throw new HttpError(403, "Sender permission required");
+    const contact = checkDb(
+      await db.from("contacts").select("email").eq("id", o.contact_id).single(),
+    )!;
+    let recipient = contact.email;
+    if (co.submission_id) {
+      const sub = checkDb(
+        await db
+          .from("submissions")
+          .select("lender_id")
+          .eq("id", co.submission_id)
+          .single(),
+      )!;
+      recipient = checkDb(
+        await db
+          .from("lenders")
+          .select("email")
+          .eq("id", sub.lender_id)
+          .single(),
+      )!.email;
+    } else {
+      const latest = checkDb(
+        await db
+          .from("messages")
+          .select("sender")
+          .eq("conversation_id", co.id)
+          .eq("direction", "inbound")
+          .eq("nature", "personal")
+          .order("sent_at", { ascending: false })
+          .limit(1),
+      );
+      const possible = latest?.[0]?.sender;
+      if (possible && possible !== recipient) {
+        const peer = checkDb(
+          await db
+            .from("contacts")
+            .select("id")
+            .eq("email", possible)
+            .maybeSingle(),
+        );
+        if (
+          peer &&
+          o.company_id &&
+          checkDb(
+            await db
+              .from("company_contacts")
+              .select("contact_id")
+              .eq("company_id", o.company_id)
+              .eq("contact_id", peer.id)
+              .in("relationship", ["primary", "contact", "broker"])
+              .maybeSingle(),
+          )
+        )
+          recipient = possible;
+      }
+    }
+    for (const id of input.attachment_ids)
+      checkDb(
+        await db
+          .from("documents")
+          .select("id")
+          .eq("id", id)
+          .eq("opportunity_id", co.opportunity_id)
+          .eq("status", "approved")
+          .single(),
+      );
+    for (const id of input.gmail_file_ids)
+      checkDb(
+        await db
+          .from("gmail_saved_attachments")
+          .select("id")
+          .eq("id", id)
+          .eq("opportunity_id", co.opportunity_id)
+          .eq("status", "approved")
+          .not("storage_path", "is", null)
+          .single(),
+      );
+    const message = {
+      account_id: account,
+      opportunity_id: co.opportunity_id,
+      submission_id: co.submission_id,
+      conversation_id: co.id,
+      to_email: recipient,
+      subject: co.subject,
+      body: input.body,
+      area: o.handed_off_at ? "closer" : co.area,
+      attachment_ids: input.attachment_ids,
+      gmail_file_ids: input.gmail_file_ids,
+      message_id_header: `<${requestKey}@crm.curated.local>`,
+      requested_by: profile.id,
+      request_key: requestKey,
+      gmail_thread_id: account === co.account_id ? co.gmail_thread_id : null,
+    };
+    const previous = checkDb(
+      await service
+        .from("outbox")
+        .select("*")
+        .eq("request_key", requestKey)
+        .maybeSingle(),
+    );
+    if (
+      previous &&
+      (previous.requested_by !== profile.id ||
+        previous.body !== message.body ||
+        previous.account_id !== account ||
+        previous.to_email !== recipient ||
+        JSON.stringify(previous.attachment_ids) !==
+          JSON.stringify(input.attachment_ids) ||
+        JSON.stringify(previous.gmail_file_ids) !==
+          JSON.stringify(input.gmail_file_ids))
+    )
+      throw new HttpError(409, "Request key reused with different input");
+    checkDb(
+      await service
+        .from("outbox")
+        .upsert(message, { onConflict: "request_key", ignoreDuplicates: true }),
+    );
+    return { ok: true };
+  }
   if (kind === "associate_thread") {
     if (profile.role !== "superadmin")
       throw new HttpError(403, "Superadmin required");

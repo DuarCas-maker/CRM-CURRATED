@@ -2752,3 +2752,16 @@ tr:last-child td {
     transition: none !important;
   }
 }
+/* Gmail archive and controlled import */
+.gmail-history-panel { grid-column: 1 / -1; }
+.gmail-history-panel label { display: grid; gap: 6px; margin: 12px 0; }
+.gmail-history-panel select, .gmail-connect-form input { max-width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--line, #d8e2e6); border-radius: 8px; background: white; }
+.gmail-account-card { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid #d8e2e6; }
+.gmail-account-card small, .gmail-history-panel td small { display: block; margin-top: 5px; }
+.gmail-connect-form { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; }
+.gmail-run-progress { margin: 16px 0; padding: 16px; border-radius: 10px; background: #f1f7f4; }
+.mail-evidence-body { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.6; }
+.gmail-history-panel .text-button { margin: 4px 8px 4px 0; }
+.case-mail-history label { display: grid; gap: 6px; margin: 12px 0; }
+.case-mail-history select { max-width: 100%; padding: 10px; border: 1px solid #d8e2e6; border-radius: 8px; }
+.case-mail-history details { margin: 14px 0; }

@@ -1,6 +1,12 @@
 import { db, checked, alertAdmins } from "./db";
 import { gmail, GmailError, organization } from "../src/lib/server/google";
 import { hash } from "../src/lib/server/crypto";
+import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
+import { decrypt } from "../src/lib/server/crypto";
+import {
+  excludedGmailMessage,
+  snapshotMessage,
+} from "../src/lib/gmail-history";
 import {
   buildMime,
   messageText,
@@ -109,7 +115,7 @@ export async function syncMailbox(accountId: string) {
       const response: { messages?: { id: string }[]; nextPageToken?: string } =
         await gmail<{ messages?: { id: string }[]; nextPageToken?: string }>(
           accountId,
-          `messages?${new URLSearchParams({ q: `after:${since}`, maxResults: "500", includeSpamTrash: "true", ...(page ? { pageToken: page } : {}) })}`,
+          `messages?${new URLSearchParams({ q: `after:${since} -in:spam -in:trash -in:drafts`, maxResults: "500", includeSpamTrash: "false", ...(page ? { pageToken: page } : {}) })}`,
         );
       for (const m of response.messages || []) ids.add(m.id);
       page = response.nextPageToken;
@@ -136,7 +142,9 @@ async function ingestMessage(
   account: { id: string; email: string },
   msg: GmailMessage,
 ) {
+  if (excludedGmailMessage(msg)) return;
   const client = db();
+  const nature = snapshotMessage(msg, account.email).nature;
   const h = (name: string) =>
     msg.payload.headers?.find(
       (h) => h.name.toLowerCase() === name.toLowerCase(),
@@ -199,20 +207,18 @@ async function ingestMessage(
         )!;
       else if (matches.length > 1) {
         checked(
-          await client
-            .from("mail_review")
-            .upsert(
-              {
-                account_id: account.id,
-                gmail_message_id: msg.id,
-                reason: "Ambiguous delivery report",
-                candidate_ids: matches.map((m) => m.opportunity_id),
-              },
-              {
-                onConflict: "account_id,gmail_message_id",
-                ignoreDuplicates: true,
-              },
-            ),
+          await client.from("mail_review").upsert(
+            {
+              account_id: account.id,
+              gmail_message_id: msg.id,
+              reason: "Ambiguous delivery report",
+              candidate_ids: matches.map((m) => m.opportunity_id),
+            },
+            {
+              onConflict: "account_id,gmail_message_id",
+              ignoreDuplicates: true,
+            },
+          ),
         );
         return;
       }
@@ -291,7 +297,7 @@ async function ingestMessage(
           },
         ),
       );
-      if (!outbound)
+      if (!outbound && nature === "personal")
         checked(
           await client.rpc("stop_contact_sequence", {
             contact: contact.id,
@@ -331,6 +337,7 @@ async function ingestMessage(
           sent_at: new Date(Number(msg.internalDate)).toISOString(),
           status: outbound ? "sent" : "received",
           internet_message_id: h("Message-ID"),
+          ...(gmailHistoryEnabled() ? { nature } : {}),
           references_header: h("References"),
         },
         {
@@ -367,14 +374,17 @@ async function ingestMessage(
       .single(),
   )!;
   if (!outbound) {
-    if (conversation.area === "seller") {
+    if (
+      conversation.area === "seller" &&
+      (nature === "personal" || nature === "permanent_bounce")
+    ) {
       checked(
         await client.rpc("stop_contact_sequence", {
           contact: opportunity.contact_id,
           why: bounce ? "bounced" : "replied",
         }),
       );
-      if (bounce)
+      if (nature === "permanent_bounce")
         checked(
           await client.rpc("suppress_contact", {
             contact: opportunity.contact_id,
@@ -466,6 +476,32 @@ export async function sendNext() {
     }
     if (files.reduce((s, f) => s + f.bytes.length, 0) > 18 * 1024 * 1024)
       throw new Error("ATTACHMENTS_TOO_LARGE");
+    for (const id of msg.gmail_file_ids || []) {
+      const file = checked(
+        await client
+          .from("gmail_saved_attachments")
+          .select("*")
+          .eq("id", id)
+          .eq("opportunity_id", msg.opportunity_id)
+          .eq("status", "approved")
+          .single(),
+      )!;
+      if (!file.storage_path) throw new Error("DOCUMENT_NOT_APPROVED");
+      const blob = checked(
+        await client.storage
+          .from("gmail-documents")
+          .download(file.storage_path),
+      )!;
+      const bytes = Buffer.from(decrypt(await blob.text()), "base64");
+      files.push({ name: file.name, mime: file.mime_type, bytes });
+      snapshot.push({
+        id: file.id,
+        storage_path: file.storage_path,
+        content_hash: file.content_hash || hash(bytes),
+      });
+      if (files.reduce((s, f) => s + f.bytes.length, 0) > 18 * 1024 * 1024)
+        throw new Error("ATTACHMENTS_TOO_LARGE");
+    }
     checked(
       await client
         .from("outbox")

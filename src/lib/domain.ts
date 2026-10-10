@@ -30,6 +30,8 @@ export interface Profile {
   active?: boolean;
 }
 export interface Opportunity {
+  primary_account_id?: string | null;
+  historical_approved_at?: string | null;
   id: string;
   contact_id: string;
   company: string;
@@ -197,6 +199,8 @@ export interface Conversation {
   updated_at: string;
 }
 export interface Message {
+  archive_message_id?: string | null;
+  nature?: string;
   id: string;
   conversation_id: string;
   direction: "inbound" | "outbound";
@@ -221,6 +225,15 @@ export interface Preferences {
   locale: Locale;
 }
 export interface Workspace {
+  gmail_history_enabled?: boolean;
+  gmail_files?: {
+    id: string;
+    opportunity_id: string;
+    archive_message_id: string;
+    name: string;
+    status: string;
+    storage_path: string | null;
+  }[];
   profile: Profile;
   profiles: Profile[];
   opportunities: Opportunity[];

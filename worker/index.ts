@@ -12,6 +12,12 @@ import {
 import { scheduleCampaigns } from "./campaigns";
 import { generatePdf } from "./pdf";
 import { deliverNotification } from "./notifications";
+import {
+  archiveStep,
+  scheduleArchive,
+  copyGmailAttachment,
+} from "./gmail-archive";
+import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
 import { setTimeout as delay } from "node:timers/promises";
 import { writeFile } from "node:fs/promises";
 let stopping = false;
@@ -50,10 +56,13 @@ async function importBatch(batchId: string) {
 async function schedule() {
   const client = db();
   const bucket = Math.floor(Date.now() / 300000);
-  const connected =
-    checked(
-      await client.from("mail_accounts").select("id").eq("status", "connected"),
-    ) || [];
+  let connectedQuery = client
+    .from("mail_accounts")
+    .select("id")
+    .eq("status", "connected");
+  if (gmailHistoryEnabled())
+    connectedQuery = connectedQuery.eq("sync_enabled", true);
+  const connected = checked(await connectedQuery) || [];
   const verifications =
     checked(
       await client
@@ -131,6 +140,7 @@ async function schedule() {
       );
   }
   checked(await client.rpc("enqueue_overdue"));
+  if (gmailHistoryEnabled()) await scheduleArchive();
   await reconcileUncertain();
 }
 let lastSchedule = 0;
@@ -138,6 +148,12 @@ db(); // Fail fast on missing deployment configuration.
 console.log(
   "Curated CRM worker starting. Logs exclude contact and application data.",
 );
+const processHeartbeat = setInterval(() => {
+  writeFile(
+    process.env.WORKER_HEARTBEAT_FILE || ".local-worker-heartbeat",
+    new Date().toISOString(),
+  ).catch(() => {});
+}, 15000);
 while (!stopping) {
   try {
     await writeFile(
@@ -185,7 +201,16 @@ while (!stopping) {
           await pollScrub(job.payload.batch_id);
           break;
         case "gmail_sync":
-          await syncMailbox(job.payload.account_id);
+          if (gmailHistoryEnabled()) await scheduleArchive();
+          else await syncMailbox(job.payload.account_id);
+          break;
+        case "gmail_archive":
+          if (!gmailHistoryEnabled()) throw new Error("GMAIL_HISTORY_DISABLED");
+          await archiveStep(job.payload.run_id);
+          break;
+        case "gmail_copy_attachment":
+          if (!gmailHistoryEnabled()) throw new Error("GMAIL_HISTORY_DISABLED");
+          await copyGmailAttachment(job.payload.file_id);
           break;
         case "gmail_message":
           await syncMessage(job.payload.account_id, job.payload.message_id);
@@ -222,6 +247,19 @@ while (!stopping) {
         }),
       );
       if (job.attempts >= 5) {
+        if (job.kind === "gmail_archive")
+          checked(
+            await client
+              .from("gmail_runs")
+              .update({
+                status: "failed",
+                last_error: "GMAIL_SCAN_RETRY_EXHAUSTED",
+                lease_token: null,
+                lease_until: null,
+              })
+              .eq("id", job.payload.run_id)
+              .in("status", ["analyzing", "importing"]),
+          );
         if (job.kind === "import")
           checked(
             await client
@@ -250,4 +288,5 @@ while (!stopping) {
     await delay(5000);
   }
 }
+clearInterval(processHeartbeat);
 console.log("Curated CRM worker stopped.");
