@@ -126,3 +126,7 @@ Por ejemplo, una hipótesis de 10.000 mensajes × 1.000 tokens de entrada supone
 ## Comprobaciones locales
 
 `pnpm install --frozen-lockfile --prod=false`, `pnpm typecheck`, `pnpm test`, `pnpm test:db`, `pnpm build`. Las pruebas SQL usan Postgres local en memoria con fixtures ficticios y no consultan Supabase real. Cubren excepción histórica, permisos, deduplicación entre cuentas, reintentos, checkpoints, procesos, traspaso, selección de lenders y conservación al deshacer. OAuth, Pub/Sub, envío/descarga reales y la capacidad del VPS requieren el piloto externo.
+
+## Correo nuevo (migración 016)
+
+La redacción de mensajes nuevos y el estado de envíos requieren `supabase/migrations/016_manual_email.sql`, adicional a la actualización 009–015. Aplicarla antes de desplegar esta versión en web y worker. El procedimiento y la prueba real están en [MAIL-PILOT.md](MAIL-PILOT.md). No modifica las credenciales ni activa llamadas de IA o Bouncer. Los envíos históricos manuales respetan su excepción de elegibilidad; las campañas siguen requiriendo direcciones verificadas.

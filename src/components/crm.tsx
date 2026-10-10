@@ -55,6 +55,7 @@ import { OpportunityDetail } from "./opportunity-detail";
 import { ImportWizard } from "./import-wizard";
 import { demoAction } from "@/lib/demo-actions";
 import { Integrations } from "./integrations";
+import { MailComposer, MailSendStatus } from "./mail-composer";
 import {
   getLeadTab,
   leadTabs,
@@ -121,6 +122,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [modal, setModal] = useState<string | null>(null);
+  const [composing, setComposing] = useState(false);
   const [extraSteps, setExtraSteps] = useState<number[]>([]);
   const [expandedHistory, setExpandedHistory] = useState(false);
   const editingLender = data.lenders.find((l) => modal === `lender:${l.id}`);
@@ -421,7 +423,13 @@ export default function CRM({ initial }: { initial: Workspace }) {
               "Cambio aplicado en la demostración",
               "Change applied in this demo",
             )
-          : t(locale, "Cambios guardados", "Changes saved"),
+          : ["compose_email", "reply"].includes(kind)
+            ? t(
+                locale,
+                "Correo en cola. Consulta el estado de envíos.",
+                "Email queued. Check sending status.",
+              )
+            : t(locale, "Cambios guardados", "Changes saved"),
       );
     } catch (e) {
       const message = e instanceof Error ? e.message : "Error";
@@ -894,6 +902,16 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   </p>
                 </div>
                 <div className="heading-actions">
+                  {data.gmail_history_enabled &&
+                    ["pipeline", "inbox"].includes(view) && (
+                      <button
+                        className="button primary"
+                        onClick={() => setComposing(true)}
+                      >
+                        <Mail size={16} />
+                        {t(locale, "Nuevo correo", "New email")}
+                      </button>
+                    )}
                   {["overview", "pipeline", "leads"].includes(view) && (
                     <>
                       {isAdmin && (
@@ -1582,6 +1600,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     />
                   )}
                 </section>
+              )}
+              {view === "inbox" && (
+                <MailSendStatus data={data} locale={locale} />
               )}
               {view === "inbox" && (
                 <section className="panel inbox">
@@ -2413,6 +2434,15 @@ export default function CRM({ initial }: { initial: Workspace }) {
           data={data}
           act={act}
           refresh={refresh}
+        />
+      )}
+      {composing && (
+        <MailComposer
+          data={data}
+          locale={locale}
+          act={act}
+          busy={busy}
+          close={() => setComposing(false)}
         />
       )}
       {modal && modal !== "import" && (

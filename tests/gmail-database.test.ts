@@ -24,7 +24,7 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
     for (const file of migrationFiles) {
       const migration = await readFile(`supabase/migrations/${file}`, "utf8");
       if (Number(file.slice(0, 3)) <= 8) await db.exec(migration);
-      else
+      else if (Number(file.slice(0, 3)) <= 15)
         assert.ok(
           upgrade.includes(
             migration.replace(/^\s*(begin|commit);\s*$/gim, "").trim(),
@@ -33,6 +33,8 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
         );
     }
     await db.exec(upgrade);
+    for (const file of migrationFiles.filter((f) => Number(f.slice(0, 3)) > 15))
+      await db.exec(await readFile(`supabase/migrations/${file}`, "utf8"));
     const admin = randomUUID(),
       seller = randomUUID(),
       other = randomUUID(),

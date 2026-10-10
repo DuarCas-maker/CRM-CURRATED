@@ -3,6 +3,7 @@ import { gmail, GmailError, organization } from "../src/lib/server/google";
 import { hash } from "../src/lib/server/crypto";
 import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
 import { gmailPushEnabled } from "../src/lib/gmail-sync";
+import { isGmailQuotaError } from "../src/lib/gmail-errors";
 import { decrypt } from "../src/lib/server/crypto";
 import {
   excludedGmailMessage,
@@ -438,6 +439,7 @@ export async function sendNext() {
     checked(await client.rpc("claim_outbox"))?.[0] ||
     checked(await client.rpc("claim_notification_outbox"))?.[0];
   if (!msg) return;
+  let acceptedByGmail = false;
   try {
     const account = checked(
       await client
@@ -554,6 +556,7 @@ export async function sendNext() {
         }),
       },
     );
+    acceptedByGmail = true;
     checked(
       await client.rpc("mark_sent", {
         outbox_id: msg.id,
@@ -562,10 +565,33 @@ export async function sendNext() {
       }),
     );
   } catch (e) {
+    // A quota rejection is a known failure, unlike a timeout or a failed DB
+    // update after acceptance. Preserve the request and honor Google's wait.
+    if (!acceptedByGmail && isGmailQuotaError(e)) {
+      const seconds = Math.max(
+        e.retryAfter,
+        Math.min(
+          3600,
+          60 * 2 ** Math.min(Math.max(0, (msg.send_attempts || 1) - 1), 6),
+        ),
+      );
+      checked(
+        await client.rpc("defer_gmail_send", {
+          message: msg.id,
+          seconds,
+          error_code: e.code,
+        }),
+      );
+      return;
+    }
     checked(
       await client
         .from("outbox")
-        .update({ status: "uncertain" })
+        .update({
+          status: "uncertain",
+          last_error:
+            e instanceof GmailError ? e.code : "SEND_RESULT_UNCERTAIN",
+        })
         .eq("id", msg.id)
         .neq("status", "sent"),
     );

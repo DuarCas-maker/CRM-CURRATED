@@ -13,6 +13,40 @@ export async function mailAction(
   profile: Profile,
 ) {
   const service = serviceClient();
+  if (kind === "compose_email") {
+    const input = z
+      .object({
+        opportunity_id: z.uuid(),
+        account_id: z.uuid(),
+        to_email: z
+          .email()
+          .max(254)
+          .transform((v) => v.toLowerCase()),
+        subject: z
+          .string()
+          .trim()
+          .min(1)
+          .max(200)
+          .refine((v) => !/[\r\n]/.test(v)),
+        body: z.string().trim().min(1).max(10000),
+        attachment_ids: z.array(z.uuid()).max(10).default([]),
+        gmail_file_ids: z.array(z.uuid()).max(10).default([]),
+      })
+      .parse(p);
+    const id = checkDb(
+      await db.rpc("queue_manual_email", {
+        case_id: input.opportunity_id,
+        account: input.account_id,
+        recipient: input.to_email,
+        subject_text: input.subject,
+        body_text: input.body,
+        files: input.attachment_ids,
+        gmail_files: input.gmail_file_ids,
+        request: requestKey,
+      }),
+    );
+    return { ok: true, id };
+  }
   if (kind === "reply") {
     const input = z
       .object({
@@ -50,7 +84,7 @@ export async function mailAction(
     const contact = checkDb(
       await db.from("contacts").select("email").eq("id", o.contact_id).single(),
     )!;
-    let recipient = contact.email;
+    let recipient = co.recipient_email || contact.email;
     if (co.submission_id) {
       const sub = checkDb(
         await db

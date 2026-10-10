@@ -1,6 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
+import { MailComposer, MailSendStatus } from "./mail-composer";
 import {
   ArrowLeft,
   Phone,
@@ -58,6 +59,7 @@ export function OpportunityDetail({
 }) {
   const [tab, setTab] = useState("activity");
   const [modal, setModal] = useState<string | null>(null);
+  const [composing, setComposing] = useState(false);
   const [error, setError] = useState("");
   const [secureLink, setSecureLink] = useState("");
   const name = (id: string | null) =>
@@ -158,7 +160,18 @@ export function OpportunityDetail({
             </span>
           </div>
         </div>
-        <StageBadge stage={o.stage} locale={locale} />
+        <div className="heading-actions">
+          {editable && data.gmail_history_enabled && (
+            <button
+              className="button primary"
+              onClick={() => setComposing(true)}
+            >
+              <Mail size={16} />
+              {t(locale, "Nuevo correo", "New email")}
+            </button>
+          )}
+          <StageBadge stage={o.stage} locale={locale} />
+        </div>
       </div>
       <div className="case-summary">
         <div>
@@ -212,13 +225,16 @@ export function OpportunityDetail({
             ))}
           </div>
           {tab === "mail_history" && (
-            <CaseMailHistory
-              caseId={o.id}
-              data={data}
-              locale={locale}
-              editable={editable}
-              onChanged={refresh}
-            />
+            <>
+              <MailSendStatus data={data} locale={locale} caseId={o.id} />
+              <CaseMailHistory
+                caseId={o.id}
+                data={data}
+                locale={locale}
+                editable={editable}
+                onChanged={refresh}
+              />
+            </>
           )}
           {tab === "activity" && (
             <div className="tab-content">
@@ -656,6 +672,16 @@ export function OpportunityDetail({
           </section>
         </aside>
       </div>
+      {composing && (
+        <MailComposer
+          data={data}
+          locale={locale}
+          act={act}
+          busy={busy}
+          close={() => setComposing(false)}
+          opportunity={o}
+        />
+      )}
       {modal && (
         <Modal
           title={t(

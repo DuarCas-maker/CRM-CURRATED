@@ -82,3 +82,13 @@ Las pruebas SQL utilizan PGlite y esquemas simulados de Auth/Storage. No reempla
 - **43 pruebas correctas**, con seis regresiones nuevas para recuperación de conexión, consultas lentas, cancelación y respuestas tardías, timeout, sesión vencida/proxy y selección inicial. Typecheck y compilación standalone correctos.
 - En Chromium, con el componente real y transportes locales ficticios: un corte de conexión conserva el contador, recuperar la conexión y «Actualizar estado» quita el aviso y actualiza el contador; seleccionar otro histórico y recargar conserva ese histórico y su contador. No se autorizaron cuentas ni se llamó a Gmail/Supabase reales.
 - Corrección del panel solo en web, sin migraciones ni nuevas variables. El worker y sus trabajos persistentes no se modifican.
+
+## Correo nuevo y recuperación de envíos — 10 de octubre de 2026
+
+- Formulario Nuevo correo desde Oportunidades, Conversaciones y el expediente. Permite elegir remitente autorizado, destinatario, asunto y documentos aprobados del caso. La selección global usa los expedientes cargados en la página; el expediente tiene acceso directo.
+- Cola transaccional con MFA, permisos de edición y remitente, elegibilidad por validación o aprobación histórica, adjuntos del mismo caso e idempotencia. Conserva el destinatario explícito en el hilo para responder sin cambiarlo al contacto principal.
+- Corrección de la puerta de envío: los históricos aprobados pueden enviar manualmente; las campañas conservan la exigencia de validación. No se ejecuta Bouncer como consecuencia de redactar un correo.
+- Estados visibles por expediente y fase, sin exponer la cola completa a vendedores ni negociaciones de closer. Cuotas 403/429 rechazadas explícitamente vuelven a la cola con espera persistente por cuenta y Retry-After. Timeouts y fallos posteriores a aceptación siguen inciertos y no repiten el POST.
+- 45 pruebas, TypeScript y build de producción correctos. PGlite comprueba permisos, reintentos, recuperación, idempotencia y excepción histórica. Transporte Gmail simulado comprueba rechazo por cuota, política real, timeout y fallo de base de datos tras aceptación.
+- Navegador con componentes reales y datos ficticios: selección de caso/remitente, redacción, envío simulado y estado En cola con próximo intento visibles. No se enviaron correos reales ni verificaciones pagadas.
+- **Activación pendiente:** aplicar solo `016_manual_email.sql` sobre 001–015 antes de desplegar esta versión en web y worker. No hay variables nuevas. La prueba real de entrega y respuestas sigue pendiente; seguir `MAIL-PILOT.md`. La sincronización de respuestas de la cuenta histórica requiere importación confirmada y completada.

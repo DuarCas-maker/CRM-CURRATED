@@ -166,6 +166,26 @@ export async function loadWorkspace(
     }),
   );
   const data = Object.fromEntries(entries) as unknown as Workspace;
+  if (gmailHistoryEnabled()) {
+    const permissions =
+      checkDb(
+        await db
+          .from("mail_permissions")
+          .select("account_id")
+          .eq("user_id", profile.id)
+          .eq("can_send", true),
+      ) || [];
+    data.sender_account_ids = data.accounts
+      .filter(
+        (a) =>
+          a.status === "connected" &&
+          (profile.role === "superadmin" ||
+            permissions.some((p) => p.account_id === a.id)),
+      )
+      .map((a) => a.id);
+    data.mail_sends =
+      checkDb(await db.rpc("mail_send_status", { cases: caseIds })) || [];
+  }
   const conversations = data.conversations as Workspace["conversations"];
   const messages =
     checkDb(

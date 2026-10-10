@@ -225,6 +225,18 @@ export interface Preferences {
   locale: Locale;
 }
 export interface Workspace {
+  sender_account_ids?: string[];
+  mail_sends?: {
+    id: string;
+    status: string;
+    account_id: string;
+    opportunity_id: string;
+    to_email: string;
+    subject: string;
+    available_at: string;
+    last_error: string | null;
+    created_at: string;
+  }[];
   gmail_history_enabled?: boolean;
   gmail_files?: {
     id: string;
