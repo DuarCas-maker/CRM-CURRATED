@@ -48,6 +48,14 @@ Las pruebas SQL utilizan PGlite y esquemas simulados de Auth/Storage. No reempla
 - Docker no está instalado: quedan pendientes el build de las imágenes y sus healthchecks en Coolify. No se arrancó el worker contra datos reales ni se enviaron correos, verificaciones pagadas o llamadas de IA.
 - `GMAIL_HISTORY_ENABLED` permanece desactivada por defecto. Aplicar [la actualización y el piloto](GMAIL-HISTORY.md) antes de habilitarla en web y trabajador. El análisis semántico/OCR, la atribución de rebotes por dirección y el modelo de riesgo automático siguen pendientes; no se presentan como verificados.
 
+## Redirección de autorización Google — 10 de octubre de 2026
+
+- Se confirmó en la web pública que la política contenía `form-action 'self'`. Una reproducción local en Chromium con el mismo formulario y la misma política mantiene la página quieta y registra `Bloqueado: form-action` al seguir la redirección hacia Google.
+- Se añadió exclusivamente `https://accounts.google.com` como destino permitido de formularios y se explicitó `type="submit"` en ambos botones de autorización. Las validaciones de sesión, MFA, rol, estado OAuth y organización permanecen en las rutas existentes.
+- Con la política corregida, la misma reproducción llega al dominio de autorización de Google. Se usó un Client ID ficticio, por lo que Google muestra `invalid_client`, como se esperaba; no se autorizaron cuentas ni se usaron secretos reales. Una redirección hacia otro origen de prueba permanece bloqueada.
+- **33 pruebas correctas**, incluida la regresión de CSP; typecheck y compilación standalone correctos. La prueba HTTP del standalone comprueba el encabezado compilado y que `/api/gmail/connect` sigue devolviendo 401 sin sesión.
+- Desplegar la web y recargar el navegador. Esta corrección no necesita una migración ni cambios del trabajador. Queda pendiente completar OAuth con la primera cuenta real en producción.
+
 ## Gmail sin Pub/Sub — 10 de octubre de 2026
 
 - `GMAIL_SYNC_MODE=polling` en Runtime de web y trabajador desactiva la creación y renovación de watches. Los trabajos antiguos reclamados se completan sin llamadas a Gmail; las consultas periódicas y el archivo persistente continúan. La configuración ausente conserva el modo `pubsub`; una configuración inválida se rechaza antes de procesar trabajos.

@@ -86,6 +86,8 @@ El worker renueva el watch próximo a expirar solo en modo `pubsub`; en ambos mo
 
 ## Piloto y recuperación
 
+Si «Autorizar con Google» no cambia la página en Chrome, revisar el error `form-action` en la consola. La política de la web debe permitir `form-action 'self' https://accounts.google.com` para la redirección del formulario OAuth; no requiere habilitar popups. El ajuste está en `next.config.ts` y requiere compilar y desplegar **la web**. Después recargar la página antes de reintentar. Los errores mostrados ya dentro de Google corresponden a la configuración OAuth y deben revisarse por separado.
+
 Usar mensajes de prueba controlados; no enviar a clientes reales durante la aceptación. Probar:
 
 1. Analizar una cuenta; confirmar que no aparecen oportunidades ni consumos Bouncer antes de aprobar.

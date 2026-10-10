@@ -3081,7 +3081,11 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 required
               />
               <div className="modal-footer">
-                <button className="button primary" disabled={data.demo}>
+                <button
+                  type="submit"
+                  className="button primary"
+                  disabled={data.demo}
+                >
                   {t(locale, "Continuar con Google", "Continue with Google")}
                 </button>
               </div>

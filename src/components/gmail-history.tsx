@@ -304,7 +304,11 @@ export function GmailHistory({
                 ))}
               </select>
             </label>
-            <button className="button" disabled={!organizations.length}>
+            <button
+              type="submit"
+              className="button"
+              disabled={!organizations.length}
+            >
               {t(locale, "Autorizar con Google", "Authorize with Google")}
             </button>
           </form>
