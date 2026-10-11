@@ -54,6 +54,12 @@ const command = z.discriminatedUnion("operation", [
   }),
   z.object({ operation: z.literal("copy_file"), file_id: z.uuid() }),
   z.object({
+    operation: z.literal("team_response"),
+    wait_id: z.uuid(),
+    archive_message_id: z.uuid(),
+    note: z.string().trim().min(1).max(10000),
+  }),
+  z.object({
     operation: z.literal("review_file"),
     file_id: z.uuid(),
     status: z.enum(["incorporated", "reviewed", "approved"]),
@@ -158,7 +164,35 @@ export async function POST(
         JSON.parse((await readBounded(request, 30000)).toString("utf8")),
       ),
       service = serviceClient();
-    if (input.operation === "create_process") {
+    if (input.operation === "team_response") {
+      const wait = checkDb(
+        await db
+          .from("mail_waits")
+          .select("id,area")
+          .eq("id", input.wait_id)
+          .eq("opportunity_id", id)
+          .single(),
+      )!;
+      if (!checkDb(await db.rpc("can_area", { case_id: id, area: wait.area })))
+        throw new HttpError(403, "Area access required");
+      checkDb(
+        await db
+          .from("case_events")
+          .select("id")
+          .eq("opportunity_id", id)
+          .eq("archive_message_id", input.archive_message_id)
+          .limit(1)
+          .single(),
+      );
+      checkDb(
+        await service.rpc("gmail_confirm_team_response", {
+          wait: wait.id,
+          evidence: input.archive_message_id,
+          actor: profile.id,
+          note: input.note,
+        }),
+      );
+    } else if (input.operation === "create_process") {
       checkDb(
         await service.rpc("gmail_new_process", {
           case_id: id,
@@ -200,19 +234,17 @@ export async function POST(
           .eq("id", sub.id),
       );
       checkDb(
-        await service
-          .from("case_events")
-          .insert({
-            opportunity_id: id,
-            process_id: input.process_id,
-            submission_id: sub.id,
-            area: "closer",
-            kind: "submission_association",
-            body: "Evaluación relacionada manualmente con este proceso",
-            evidence_type: "manual",
-            occurred_at: new Date().toISOString(),
-            actor_id: profile.id,
-          }),
+        await service.from("case_events").insert({
+          opportunity_id: id,
+          process_id: input.process_id,
+          submission_id: sub.id,
+          area: "closer",
+          kind: "submission_association",
+          body: "Evaluación relacionada manualmente con este proceso",
+          evidence_type: "manual",
+          occurred_at: new Date().toISOString(),
+          actor_id: profile.id,
+        }),
       );
     } else if (input.operation === "transfer") {
       checkDb(

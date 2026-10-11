@@ -35,9 +35,8 @@ export async function GET(request: Request) {
       )!;
       const service = serviceClient();
       const clean = (
-        params.get("search") ||
-        candidate.company_name ||
-        candidate.name
+        params.get("search") ??
+        (candidate.company_name || candidate.name)
       )
         .replace(/[%,().\\]/g, " ")
         .slice(0, 100);
@@ -62,6 +61,19 @@ export async function GET(request: Request) {
       ];
       return Response.json(
         {
+          threads:
+            candidate.participant_kind === "team"
+              ? checkDb(
+                  await db.rpc("gmail_team_threads", {
+                    candidate: candidate.id,
+                    cursor_offset:
+                      Math.max(
+                        0,
+                        Math.floor(Number(params.get("thread_page")) || 0),
+                      ) * 50,
+                  }),
+                )
+              : [],
           cases,
           companies: checkDb(
             await service
@@ -100,6 +112,9 @@ export async function GET(request: Request) {
     const accounts = checkDb(
       await db.from("mail_accounts").select("*").order("email"),
     );
+    const team_members =
+      checkDb(await db.from("gmail_team_members").select("*").order("email")) ||
+      [];
     const batches = await Promise.all([
       db
         .from("gmail_runs")
@@ -125,7 +140,7 @@ export async function GET(request: Request) {
     ];
     if (!runId)
       return Response.json(
-        { accounts, runs },
+        { accounts, runs, team_members },
         { headers: { "Cache-Control": "no-store" } },
       );
     if (!z.uuid().safeParse(runId).success)
@@ -145,6 +160,7 @@ export async function GET(request: Request) {
       {
         accounts,
         runs,
+        team_members,
         candidates: checkDb(result),
         total: result.count,
         page,

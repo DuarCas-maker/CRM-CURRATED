@@ -11,6 +11,12 @@ import {
 } from "@/lib/gmail-history-refresh";
 import { Modal, t } from "./ui";
 import { GmailAnalysisProgress } from "./gmail-analysis-progress";
+import { teamLabel, type TeamIdentity } from "@/lib/gmail-team";
+import {
+  GmailTeamDirectory,
+  GmailTeamForm,
+  GmailTeamThreads,
+} from "./gmail-team";
 
 export interface HistoryCandidate {
   imported_at: string | null;
@@ -20,7 +26,8 @@ export interface HistoryCandidate {
   company_name: string;
   phone: string;
   classification: "unknown" | "active" | "inactive";
-  participant_kind: "unknown" | "client" | "lender" | "broker" | "other";
+  participant_kind:
+    "unknown" | "client" | "lender" | "broker" | "other" | "team";
   selected: boolean;
   copied_only: boolean;
   message_count: number;
@@ -57,6 +64,7 @@ interface HistoryRun {
   finished_at: string | null;
 }
 interface HistoryData {
+  team_members?: TeamIdentity[];
   accounts: {
     id: string;
     email: string;
@@ -139,6 +147,7 @@ export function MailEvidence({
           {message.participants.map((p, i) => (
             <p key={i}>
               <strong>{p.role}:</strong> {p.name} {p.email}
+              {p.team && <small> · {teamLabel(p.team, locale)}</small>}
             </p>
           ))}
           <pre className="mail-evidence-body">{message.body}</pre>
@@ -649,6 +658,7 @@ export function GmailHistory({
                             checked={c.selected}
                             disabled={
                               busy ||
+                              c.participant_kind === "team" ||
                               !!c.imported_at ||
                               !["review", "failed"].includes(run.status)
                             }
@@ -666,12 +676,18 @@ export function GmailHistory({
                           <strong>{c.name || c.email}</strong>
                           <small>{c.email}</small>
                           <small>
-                            {c.company_name ||
-                              t(
-                                locale,
-                                "Empresa pendiente de confirmar",
-                                "Confirm company",
-                              )}
+                            {c.participant_kind === "team"
+                              ? t(
+                                  locale,
+                                  "Asociación por conversación",
+                                  "Associate each conversation",
+                                )
+                              : c.company_name ||
+                                t(
+                                  locale,
+                                  "Empresa pendiente de confirmar",
+                                  "Confirm company",
+                                )}
                           </small>
                         </td>
                         <td>
@@ -695,7 +711,18 @@ export function GmailHistory({
                           </button>
                         </td>
                         <td>
-                          {c.participant_kind} · {c.classification}
+                          {c.participant_kind === "team"
+                            ? data.team_members?.find(
+                                (m) => m.email === c.email,
+                              )
+                              ? teamLabel(
+                                  data.team_members.find(
+                                    (m) => m.email === c.email,
+                                  )!,
+                                  locale,
+                                )
+                              : t(locale, "Equipo", "Team")
+                            : `${c.participant_kind} · ${c.classification}`}
                           <small>
                             {c.copied_only
                               ? t(locale, "Solo en copia", "Copied only")
@@ -708,13 +735,15 @@ export function GmailHistory({
                         </td>
                         <td>
                           <small>
-                            {c.existing_contact_id
-                              ? t(
-                                  locale,
-                                  "Contacto existente; no se sobrescribirán sus datos",
-                                  "Existing contact; current data stays unchanged",
-                                )
-                              : t(locale, "Contacto nuevo", "New contact")}
+                            {c.participant_kind === "team"
+                              ? t(locale, "Miembro del equipo", "Team member")
+                              : c.existing_contact_id
+                                ? t(
+                                    locale,
+                                    "Contacto existente; no se sobrescribirán sus datos",
+                                    "Existing contact; current data stays unchanged",
+                                  )
+                                : t(locale, "Contacto nuevo", "New contact")}
                           </small>
                           {c.last_error && (
                             <small className="error-banner">
@@ -725,8 +754,15 @@ export function GmailHistory({
                             className="button"
                             disabled={
                               busy ||
-                              !!c.imported_at ||
-                              !["review", "failed"].includes(run.status)
+                              (c.participant_kind !== "team" &&
+                                !!c.imported_at) ||
+                              ![
+                                "review",
+                                "failed",
+                                ...(c.participant_kind === "team"
+                                  ? ["completed"]
+                                  : []),
+                              ].includes(run.status)
                             }
                             onClick={() => {
                               setEditing(c);
@@ -765,6 +801,14 @@ export function GmailHistory({
           )}
         </>
       )}
+      {!workspace.demo && (
+        <GmailTeamDirectory
+          members={data.team_members || []}
+          workspace={workspace}
+          locale={locale}
+          onSaved={() => poll.current?.refresh()}
+        />
+      )}
       {editing && (
         <Modal
           title={t(
@@ -783,259 +827,306 @@ export function GmailHistory({
             )}
           </p>
           {error && <div className="error-banner">{error}</div>}
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              if (await action(selectPayload(editing, true))) setEditing(null);
-            }}
-          >
-            <label>
-              {t(locale, "Nombre", "Name")}
-              <input
-                value={editing.name}
-                onChange={(e) =>
-                  setEditing({ ...editing, name: e.target.value })
-                }
-              />
-            </label>
-            <label>
-              {t(locale, "Empresa confirmada", "Confirmed company")}
-              <input
-                value={editing.company_name}
-                onChange={(e) =>
-                  setEditing({ ...editing, company_name: e.target.value })
-                }
-              />
-            </label>
-            <label>
-              {t(locale, "Teléfono", "Phone")}
-              <input
-                value={editing.phone}
-                onChange={(e) =>
-                  setEditing({ ...editing, phone: e.target.value })
-                }
-              />
-            </label>
-            <label>
-              {t(locale, "Participante", "Participant")}
-              <select
-                value={editing.participant_kind}
-                onChange={(e) =>
-                  setEditing({
-                    ...editing,
-                    participant_kind: e.target
-                      .value as HistoryCandidate["participant_kind"],
-                  })
-                }
-              >
-                <option value="unknown">
-                  {t(locale, "Pendiente", "Pending")}
-                </option>
-                <option value="client">
+          <label>
+            {t(locale, "Participante", "Participant")}
+            <select
+              value={editing.participant_kind}
+              disabled={
+                !!data.team_members?.some((m) => m.email === editing.email)
+              }
+              onChange={(e) =>
+                setEditing({
+                  ...editing,
+                  participant_kind: e.target
+                    .value as HistoryCandidate["participant_kind"],
+                })
+              }
+            >
+              <option value="unknown">
+                {t(locale, "Pendiente", "Pending")}
+              </option>
+              <option value="client">
+                {t(
+                  locale,
+                  "Cliente / prospecto histórico",
+                  "Historical customer / prospect",
+                )}
+              </option>
+              <option value="lender">Lender</option>
+              <option value="broker">Broker</option>
+              <option value="other">{t(locale, "Otro", "Other")}</option>
+              <option value="team">
+                {t(locale, "Miembro del equipo", "Team member")}
+              </option>
+            </select>
+          </label>
+          {editing.participant_kind === "team" ? (
+            <>
+              {editing.imported_at && (
+                <p className="info-banner">
                   {t(
                     locale,
-                    "Cliente / prospecto histórico",
-                    "Historical customer / prospect",
+                    "Este participante ya tenía una incorporación anterior. Sus registros se conservan; revisa cualquier expediente creado antes de clasificarlo como equipo.",
+                    "This participant was previously imported. Existing records are preserved; review cases created before classifying it as team.",
                   )}
-                </option>
-                <option value="lender">Lender</option>
-                <option value="broker">Broker</option>
-                <option value="other">{t(locale, "Otro", "Other")}</option>
-              </select>
-            </label>
-            <label>
-              {t(locale, "Actividad del expediente", "Case activity")}
-              <select
-                value={editing.classification}
-                onChange={(e) =>
-                  setEditing({
-                    ...editing,
-                    classification: e.target
-                      .value as HistoryCandidate["classification"],
-                  })
-                }
-              >
-                <option value="unknown">
-                  {t(locale, "Pendiente de clasificar", "Unclassified")}
-                </option>
-                <option value="active">{t(locale, "Activo", "Active")}</option>
-                <option value="inactive">
-                  {t(locale, "Inactivo", "Inactive")}
-                </option>
-              </select>
-            </label>
-            <div className="gmail-connect-form">
-              <input
-                aria-label={t(locale, "Buscar expediente", "Search cases")}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                </p>
+              )}
+              <GmailTeamForm
+                key={editing.email}
+                email={editing.email}
+                name={editing.name}
+                member={data.team_members?.find(
+                  (m) => m.email === editing.email,
+                )}
+                workspace={workspace}
+                locale={locale}
+                onSaved={() => {
+                  poll.current?.refresh();
+                  setEditing({ ...editing, participant_kind: "team" });
+                }}
               />
-              <button
-                type="button"
-                className="button"
-                onClick={() => findMatches(editing, search)}
-              >
-                {t(locale, "Buscar coincidencias", "Find matches")}
-              </button>
-            </div>
-            <label>
-              {t(locale, "Expediente existente", "Existing case")}
-              <select
-                value={editing.selected_opportunity_id || ""}
-                onChange={(e) =>
-                  setEditing({
-                    ...editing,
-                    selected_opportunity_id: e.target.value || null,
-                    selected_process_id: null,
-                    submission_id: null,
-                  })
-                }
-              >
-                <option value="">
-                  {t(
-                    locale,
-                    "Crear expediente principal o usar el de la empresa elegida",
-                    "Create principal case or use selected company's case",
-                  )}
-                </option>
-                {matches.cases.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.company} · {c.stage} · {c.id.slice(0, 8)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {!editing.selected_opportunity_id && (
+              {data.team_members?.some((m) => m.email === editing.email) && (
+                <GmailTeamThreads
+                  candidateId={editing.id}
+                  runId={runId}
+                  workspace={workspace}
+                  locale={locale}
+                  openSource={setSource}
+                />
+              )}
+            </>
+          ) : (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (await action(selectPayload(editing, true)))
+                  setEditing(null);
+              }}
+            >
               <label>
-                {t(locale, "Empresa existente", "Existing company")}
+                {t(locale, "Nombre", "Name")}
+                <input
+                  value={editing.name}
+                  onChange={(e) =>
+                    setEditing({ ...editing, name: e.target.value })
+                  }
+                />
+              </label>
+              <label>
+                {t(locale, "Empresa confirmada", "Confirmed company")}
+                <input
+                  value={editing.company_name}
+                  onChange={(e) =>
+                    setEditing({ ...editing, company_name: e.target.value })
+                  }
+                />
+              </label>
+              <label>
+                {t(locale, "Teléfono", "Phone")}
+                <input
+                  value={editing.phone}
+                  onChange={(e) =>
+                    setEditing({ ...editing, phone: e.target.value })
+                  }
+                />
+              </label>
+              <label>
+                {t(locale, "Actividad del expediente", "Case activity")}
                 <select
-                  value={editing.selected_company_id || ""}
+                  value={editing.classification}
                   onChange={(e) =>
                     setEditing({
                       ...editing,
-                      selected_company_id: e.target.value || null,
+                      classification: e.target
+                        .value as HistoryCandidate["classification"],
+                    })
+                  }
+                >
+                  <option value="unknown">
+                    {t(locale, "Pendiente de clasificar", "Unclassified")}
+                  </option>
+                  <option value="active">
+                    {t(locale, "Activo", "Active")}
+                  </option>
+                  <option value="inactive">
+                    {t(locale, "Inactivo", "Inactive")}
+                  </option>
+                </select>
+              </label>
+              <div className="gmail-connect-form">
+                <input
+                  aria-label={t(locale, "Buscar expediente", "Search cases")}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="button"
+                  onClick={() => findMatches(editing, search)}
+                >
+                  {t(locale, "Buscar coincidencias", "Find matches")}
+                </button>
+              </div>
+              <label>
+                {t(locale, "Expediente existente", "Existing case")}
+                <select
+                  value={editing.selected_opportunity_id || ""}
+                  onChange={(e) =>
+                    setEditing({
+                      ...editing,
+                      selected_opportunity_id: e.target.value || null,
+                      selected_process_id: null,
+                      submission_id: null,
                     })
                   }
                 >
                   <option value="">
                     {t(
                       locale,
-                      "Empresa del contacto existente o crear una nueva",
-                      "Contact's existing company or create a new one",
+                      "Crear expediente principal o usar el de la empresa elegida",
+                      "Create principal case or use selected company's case",
                     )}
                   </option>
-                  {matches.companies.map((c) => (
+                  {matches.cases.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.name}
+                      {c.company} · {c.stage} · {c.id.slice(0, 8)}
                     </option>
                   ))}
                 </select>
               </label>
-            )}
-            <label>
-              {t(locale, "Proceso de financiación", "Financing process")}
-              <select
-                value={editing.selected_process_id || ""}
-                onChange={(e) =>
-                  setEditing({
-                    ...editing,
-                    selected_process_id: e.target.value || null,
-                  })
-                }
-              >
-                <option value="">
-                  {t(
-                    locale,
-                    "Historial pendiente de separar en procesos",
-                    "History awaiting process classification",
-                  )}
-                </option>
-                {matches.processes
-                  .filter(
-                    (p) => p.opportunity_id === editing.selected_opportunity_id,
-                  )
-                  .map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.sequence_number} · {p.label}
+              {!editing.selected_opportunity_id && (
+                <label>
+                  {t(locale, "Empresa existente", "Existing company")}
+                  <select
+                    value={editing.selected_company_id || ""}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        selected_company_id: e.target.value || null,
+                      })
+                    }
+                  >
+                    <option value="">
+                      {t(
+                        locale,
+                        "Empresa del contacto existente o crear una nueva",
+                        "Contact's existing company or create a new one",
+                      )}
                     </option>
-                  ))}
-              </select>
-            </label>
-            {editing.participant_kind === "lender" && (
+                    {matches.companies.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
               <label>
-                Lender submission
+                {t(locale, "Proceso de financiación", "Financing process")}
                 <select
-                  required
-                  value={editing.submission_id || ""}
+                  value={editing.selected_process_id || ""}
                   onChange={(e) =>
                     setEditing({
                       ...editing,
-                      submission_id: e.target.value || null,
+                      selected_process_id: e.target.value || null,
                     })
                   }
                 >
                   <option value="">
                     {t(
                       locale,
-                      "Elegir evaluación del lender",
-                      "Select lender evaluation",
+                      "Historial pendiente de separar en procesos",
+                      "History awaiting process classification",
                     )}
                   </option>
-                  {matches.submissions
+                  {matches.processes
                     .filter(
-                      (s) =>
-                        s.opportunity_id === editing.selected_opportunity_id,
+                      (p) =>
+                        p.opportunity_id === editing.selected_opportunity_id,
                     )
-                    .map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {workspace.lenders.find((l) => l.id === s.lender_id)
-                          ?.name || s.lender_id}
+                    .map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.sequence_number} · {p.label}
                       </option>
                     ))}
                 </select>
               </label>
-            )}
-            <details>
-              <summary>
-                {t(
-                  locale,
-                  "Correos que respaldan este candidato",
-                  "Candidate evidence emails",
-                )}
-              </summary>
-              {editing.evidence_ids.slice(0, evidenceLimit).map((id, i) => (
-                <button
-                  key={id}
-                  type="button"
-                  className="text-button"
-                  onClick={() => setSource(id)}
-                >
-                  {t(locale, "Correo", "Email")} {i + 1}
-                </button>
-              ))}
-              {editing.evidence_ids.length > evidenceLimit && (
-                <button
-                  type="button"
-                  className="text-button"
-                  onClick={() => setEvidenceLimit(evidenceLimit + 20)}
-                >
-                  {t(locale, "Ver más correos", "Show more emails")}
-                </button>
+              {editing.participant_kind === "lender" && (
+                <label>
+                  Lender submission
+                  <select
+                    required
+                    value={editing.submission_id || ""}
+                    onChange={(e) =>
+                      setEditing({
+                        ...editing,
+                        submission_id: e.target.value || null,
+                      })
+                    }
+                  >
+                    <option value="">
+                      {t(
+                        locale,
+                        "Elegir evaluación del lender",
+                        "Select lender evaluation",
+                      )}
+                    </option>
+                    {matches.submissions
+                      .filter(
+                        (s) =>
+                          s.opportunity_id === editing.selected_opportunity_id,
+                      )
+                      .map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {workspace.lenders.find((l) => l.id === s.lender_id)
+                            ?.name || s.lender_id}
+                        </option>
+                      ))}
+                  </select>
+                </label>
               )}
-            </details>
-            <div className="modal-footer">
-              <button
-                className="button primary"
-                disabled={
-                  busy ||
-                  editing.classification === "unknown" ||
-                  editing.participant_kind === "unknown"
-                }
-              >
-                {t(locale, "Guardar y seleccionar", "Save and select")}
-              </button>
-            </div>
-          </form>
+              <details>
+                <summary>
+                  {t(
+                    locale,
+                    "Correos que respaldan este candidato",
+                    "Candidate evidence emails",
+                  )}
+                </summary>
+                {editing.evidence_ids.slice(0, evidenceLimit).map((id, i) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className="text-button"
+                    onClick={() => setSource(id)}
+                  >
+                    {t(locale, "Correo", "Email")} {i + 1}
+                  </button>
+                ))}
+                {editing.evidence_ids.length > evidenceLimit && (
+                  <button
+                    type="button"
+                    className="text-button"
+                    onClick={() => setEvidenceLimit(evidenceLimit + 20)}
+                  >
+                    {t(locale, "Ver más correos", "Show more emails")}
+                  </button>
+                )}
+              </details>
+              <div className="modal-footer">
+                <button
+                  className="button primary"
+                  disabled={
+                    busy ||
+                    editing.classification === "unknown" ||
+                    editing.participant_kind === "unknown"
+                  }
+                >
+                  {t(locale, "Guardar y seleccionar", "Save and select")}
+                </button>
+              </div>
+            </form>
+          )}
         </Modal>
       )}
       {source && (

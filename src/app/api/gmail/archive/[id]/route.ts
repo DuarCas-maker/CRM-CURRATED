@@ -8,6 +8,7 @@ import {
 import { decrypt } from "@/lib/server/crypto";
 import type { MailSnapshot } from "@/lib/gmail-history";
 import { z } from "zod";
+import { teamLabels } from "@/lib/server/gmail-team";
 
 export async function GET(
   _request: Request,
@@ -39,9 +40,14 @@ export async function GET(
     const snapshot = JSON.parse(
       decrypt(archive.encrypted_payload),
     ) as MailSnapshot;
+    const teams = await teamLabels(snapshot.participants.map((p) => p.email));
     return Response.json(
       {
         ...snapshot,
+        participants: snapshot.participants.map((p) => ({
+          ...p,
+          team: teams.get(p.email.toLowerCase()),
+        })),
         attachments: snapshot.attachments.map(
           ({ data: _data, ...file }) => file,
         ),

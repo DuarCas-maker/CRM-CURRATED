@@ -16,6 +16,7 @@ import {
   archiveStep,
   scheduleArchive,
   copyGmailAttachment,
+  linkTeamThread,
 } from "./gmail-archive";
 import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
 import { gmailSyncMode } from "../src/lib/gmail-sync";
@@ -191,6 +192,14 @@ while (!stopping) {
         case "gmail_archive":
           if (!gmailHistoryEnabled()) throw new Error("GMAIL_HISTORY_DISABLED");
           await archiveStep(job.payload.run_id);
+          break;
+        case "gmail_team_thread":
+          if (gmailHistoryEnabled())
+            await linkTeamThread(
+              job.payload.evidence_id,
+              job.payload.offset,
+              job.payload.copy_since,
+            );
           break;
         case "gmail_copy_attachment":
           if (!gmailHistoryEnabled()) throw new Error("GMAIL_HISTORY_DISABLED");

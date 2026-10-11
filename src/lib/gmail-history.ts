@@ -8,6 +8,7 @@ export type GmailMessage = {
   payload: GmailPart;
 };
 export type MailParticipant = {
+  team?: import("./gmail-team").TeamLabel;
   email: string;
   name: string;
   role: "from" | "to" | "cc" | "bcc";

@@ -4,6 +4,7 @@ import { stages } from "../domain";
 import { filterLeadTab, parseLeadTab } from "../lead-tabs";
 import { z } from "zod";
 import { gmailHistoryEnabled } from "../gmail-feature";
+import { teamLabels } from "./gmail-team";
 export async function loadWorkspace(
   params = new URLSearchParams(),
 ): Promise<Workspace> {
@@ -210,6 +211,11 @@ export async function loadWorkspace(
         )
         .limit(1000),
     ) || [];
+  if (gmailHistoryEnabled()) {
+    const labels = await teamLabels(messages.map((m) => m.sender));
+    for (const message of messages)
+      message.sender_team = labels.get(message.sender.toLowerCase());
+  }
   if (["superadmin", "closer_admin", "closer"].includes(profile.role)) {
     for (const o of opportunities) {
       if (!o.handed_off_at) continue;

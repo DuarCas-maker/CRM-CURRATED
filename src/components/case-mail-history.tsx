@@ -281,6 +281,70 @@ export function CaseMailHistory({
             >
               {t(locale, "Copiar borrador", "Copy draft")}
             </button>
+            {editable && canLenders && w.waiting_for === "lender" && (
+              <details>
+                <summary>
+                  {t(
+                    locale,
+                    "Confirmar respuesta del lender transmitida por el equipo",
+                    "Confirm lender response relayed by team",
+                  )}
+                </summary>
+                <p>
+                  {t(
+                    locale,
+                    "Solo confirma si el correo del equipo comunica realmente la respuesta del lender. Esto resuelve esta espera y su tarea; no aprueba financiación ni cambia el estado comercial.",
+                    "Confirm only if the team email actually relays the lender's response. This resolves this wait and its task; it does not approve financing or change commercial state.",
+                  )}
+                </p>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const f = new FormData(e.currentTarget);
+                    action({
+                      operation: "team_response",
+                      wait_id: w.id,
+                      archive_message_id: f.get("evidence"),
+                      note: f.get("note"),
+                    });
+                  }}
+                >
+                  <label>
+                    {t(locale, "Correo de respaldo", "Evidence email")}
+                    <select required name="evidence">
+                      <option value="">
+                        {t(
+                          locale,
+                          "Elegir correo y revisar su contenido",
+                          "Choose email and review its contents",
+                        )}
+                      </option>
+                      {evidence.map((e) => (
+                        <option key={e.id} value={e.archive_message_id!}>
+                          {dateLabel(e.occurred_at, locale, true)} ·{" "}
+                          {e.body.slice(0, 100)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    {t(
+                      locale,
+                      "Respuesta del lender que transmite el equipo",
+                      "Lender response relayed by team",
+                    )}
+                    <textarea required name="note" maxLength={10000} />
+                  </label>
+                  <button className="button" disabled={busy}>
+                    {t(
+                      locale,
+                      "Confirmar y resolver esta espera",
+                      "Confirm and resolve this wait",
+                    )}
+                  </button>
+                </form>
+              </details>
+            )}
           </details>
         ))}
       </section>

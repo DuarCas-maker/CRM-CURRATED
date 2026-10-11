@@ -18,6 +18,15 @@ export const historyActionSchema = z.discriminatedUnion("operation", [
   z.object({ operation: z.literal("owner"), account_id: uuid, owner_id: uuid }),
   z.object({ operation: z.literal("disconnect"), account_id: uuid }),
   z.object({
+    operation: z.literal("team_thread"),
+    run_id: uuid,
+    candidate_id: uuid,
+    evidence_id: uuid,
+    opportunity_id: uuid,
+    process_id: uuid,
+    submission_id: uuid.nullable(),
+  }),
+  z.object({
     operation: z.literal("select"),
     run_id: uuid,
     candidate_id: uuid,
@@ -87,14 +96,12 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
     );
     // Tokens are removed; the archive and copied files are never deleted.
     checkDb(
-      await db
-        .from("audit_log")
-        .insert({
-          actor_id: actor.id,
-          entity_type: "mail_account",
-          entity_id: input.account_id,
-          action: "disconnected",
-        }),
+      await db.from("audit_log").insert({
+        actor_id: actor.id,
+        entity_type: "mail_account",
+        entity_id: input.account_id,
+        action: "disconnected",
+      }),
     );
     return { ok: true };
   }
@@ -139,19 +146,38 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
         .single(),
     )!;
     checkDb(
-      await db
-        .from("jobs")
-        .insert({
-          kind: "gmail_archive",
-          payload: { run_id: run.id },
-          dedupe_key: `gmail-archive:${run.id}:start`,
-        }),
+      await db.from("jobs").insert({
+        kind: "gmail_archive",
+        payload: { run_id: run.id },
+        dedupe_key: `gmail-archive:${run.id}:start`,
+      }),
     );
     return { id: run.id };
   }
   const run = checkDb(
     await db.from("gmail_runs").select("*").eq("id", input.run_id).single(),
   )!;
+  if (input.operation === "team_thread") {
+    checkDb(
+      await db
+        .from("gmail_candidates")
+        .select("id")
+        .eq("id", input.candidate_id)
+        .eq("run_id", run.id)
+        .single(),
+    );
+    checkDb(
+      await db.rpc("gmail_associate_team_thread", {
+        candidate: input.candidate_id,
+        evidence: input.evidence_id,
+        case_id: input.opportunity_id,
+        process: input.process_id,
+        submission: input.submission_id,
+        actor: actor.id,
+      }),
+    );
+    return { ok: true };
+  }
   if (input.operation === "undo")
     return checkDb(
       await db.rpc("gmail_undo_import", { run: run.id, actor: actor.id }),
@@ -193,13 +219,11 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
         .eq("status", run.status),
     );
     checkDb(
-      await db
-        .from("jobs")
-        .insert({
-          kind: "gmail_archive",
-          payload: { run_id: run.id },
-          dedupe_key: `gmail-archive:${run.id}:${randomUUID()}`,
-        }),
+      await db.from("jobs").insert({
+        kind: "gmail_archive",
+        payload: { run_id: run.id },
+        dedupe_key: `gmail-archive:${run.id}:${randomUUID()}`,
+      }),
     );
     return { ok: true };
   }
@@ -220,7 +244,7 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
     const candidate = checkDb(
       await db
         .from("gmail_candidates")
-        .select("imported_at")
+        .select("imported_at,email,participant_kind")
         .eq("id", candidate_id)
         .eq("run_id", run_id)
         .single(),
@@ -229,6 +253,18 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
       throw new HttpError(
         409,
         "This participant has already been imported; review the case timeline instead",
+      );
+    const team = checkDb(
+      await db
+        .from("gmail_team_members")
+        .select("email")
+        .eq("email", candidate.email)
+        .maybeSingle(),
+    );
+    if (team || candidate.participant_kind === "team")
+      throw new HttpError(
+        409,
+        "Equipo: asocia cada conversación por separado. / Team: associate each conversation separately.",
       );
     if (
       values.selected &&
@@ -287,13 +323,11 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
       .eq("status", "review"),
   );
   checkDb(
-    await db
-      .from("jobs")
-      .insert({
-        kind: "gmail_archive",
-        payload: { run_id: run.id },
-        dedupe_key: `gmail-archive:${run.id}:confirm`,
-      }),
+    await db.from("jobs").insert({
+      kind: "gmail_archive",
+      payload: { run_id: run.id },
+      dedupe_key: `gmail-archive:${run.id}:confirm`,
+    }),
   );
   return { ok: true };
 }

@@ -2766,6 +2766,7 @@ tr:last-child td {
 .gmail-analysis-counts dd { margin: 8px 0 0; font-size: 22px; font-weight: 600; overflow-wrap: anywhere; }
 .gmail-analysis-bar { display: grid; gap: 8px; }
 .gmail-analysis-bar progress { width: 100%; height: 12px; accent-color: var(--green); }
+.gmail-team-directory { margin: 20px 0; padding: 16px; border: 1px solid var(--line); border-radius: 8px; }
 .mail-evidence-body { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.6; }
 .gmail-history-panel .text-button { margin: 4px 8px 4px 0; }
 .case-mail-history label { display: grid; gap: 6px; margin: 12px 0; }

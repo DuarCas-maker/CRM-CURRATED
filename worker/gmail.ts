@@ -156,6 +156,16 @@ async function ingestMessage(
   const from = emailAddress(h("From"));
   const outbound = msg.labelIds?.includes("SENT") || from === account.email;
   const peer = outbound ? emailAddress(h("To")) : from;
+  const team = gmailHistoryEnabled()
+    ? checked(
+        await client
+          .from("gmail_team_members")
+          .select("email")
+          .in("email", [...new Set([from, peer])]),
+      ) || []
+    : [];
+  const teamSender = team.some((t) => t.email === from);
+  const teamPeer = team.some((t) => t.email === peer);
   const body = messageText(msg.payload).slice(0, 100000);
   let conversation = checked(
     await client
@@ -229,6 +239,9 @@ async function ingestMessage(
     }
   }
   if (!conversation) {
+    // Team addresses are never customer matching keys. The historical/continuous
+    // archive retains their mail for individual thread association.
+    if (teamPeer) return;
     // Exact outgoing Message-ID can recover a send that completed before acknowledgement.
     const pending = checked(
       await client
@@ -380,6 +393,7 @@ async function ingestMessage(
   if (!outbound) {
     if (
       conversation.area === "seller" &&
+      !teamSender &&
       (nature === "personal" || nature === "permanent_bounce")
     ) {
       checked(
@@ -412,7 +426,7 @@ async function ingestMessage(
         await client
           .from("conversations")
           .update({
-            needs_attention: true,
+            ...(teamSender ? {} : { needs_attention: true }),
             updated_at: new Date(Number(msg.internalDate)).toISOString(),
           })
           .eq("id", conversation.id),
@@ -427,7 +441,9 @@ async function ingestMessage(
               ? opportunity.closer_id
               : opportunity.seller_id,
           event: `reply:${account.id}:${msg.id}`,
-          title_text: "New reply received",
+          title_text: teamSender
+            ? "New team message received"
+            : "New reply received",
         }),
       );
     }

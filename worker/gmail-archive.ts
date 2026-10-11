@@ -565,6 +565,37 @@ export async function linkAndCopy(archive: Archive, copySince: string) {
     await copyGmailAttachment(file.id);
   }
 }
+export async function linkTeamThread(
+  evidenceId: string,
+  offset: number,
+  copySince: string,
+) {
+  const client = db();
+  const page =
+    checked(
+      await client.rpc("gmail_team_thread_page", {
+        evidence: evidenceId,
+        cursor_offset: offset,
+      }),
+    ) || [];
+  for (const archive of page) await linkAndCopy(archive, copySince);
+  if (page.length === 10)
+    checked(
+      await client.from("jobs").upsert(
+        {
+          kind: "gmail_team_thread",
+          payload: {
+            evidence_id: evidenceId,
+            offset: offset + page.length,
+            copy_since: copySince,
+          },
+          dedupe_key: `gmail-team-thread:${evidenceId}:${offset + page.length}`,
+        },
+        { onConflict: "dedupe_key", ignoreDuplicates: true },
+      ),
+    );
+  else checked(await client.rpc("gmail_followups"));
+}
 export async function copyGmailAttachment(fileId: string) {
   const client = db();
   const file = checked(

@@ -1,5 +1,7 @@
 import { requireUser, checkDb, jsonError } from "@/lib/server/supabase";
 import { z } from "zod";
+import { teamLabels } from "@/lib/server/gmail-team";
+import { gmailHistoryEnabled } from "@/lib/gmail-feature";
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -27,6 +29,11 @@ export async function GET(
       );
     }
     const messages = checkDb(await query) || [];
+    if (gmailHistoryEnabled()) {
+      const labels = await teamLabels(messages.map((m) => m.sender));
+      for (const message of messages)
+        message.sender_team = labels.get(message.sender.toLowerCase());
+    }
     const attachments = messages.length
       ? checkDb(
           await db

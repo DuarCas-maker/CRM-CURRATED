@@ -199,6 +199,7 @@ export interface Conversation {
   updated_at: string;
 }
 export interface Message {
+  sender_team?: import("./gmail-team").TeamLabel;
   archive_message_id?: string | null;
   nature?: string;
   id: string;

@@ -53,6 +53,7 @@ import {
 } from "./ui";
 import { OpportunityDetail } from "./opportunity-detail";
 import { ImportWizard } from "./import-wizard";
+import { teamLabel } from "@/lib/gmail-team";
 import { demoAction } from "@/lib/demo-actions";
 import { Integrations } from "./integrations";
 import { MailComposer, MailSendStatus } from "./mail-composer";
@@ -1692,6 +1693,11 @@ export default function CRM({ initial }: { initial: Workspace }) {
                               >
                                 <div>
                                   <strong>{m.sender}</strong>
+                                  {m.sender_team && (
+                                    <small>
+                                      {teamLabel(m.sender_team, locale)}
+                                    </small>
+                                  )}
                                   <small>
                                     {dateLabel(m.sent_at, locale, true)}
                                   </small>
