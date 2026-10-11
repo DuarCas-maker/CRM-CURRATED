@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { randomUUID } from "node:crypto";
 import { processStates } from "@/lib/financing-history";
 import {
   requireUser,
@@ -269,6 +268,20 @@ export async function POST(
       )!;
       if (input.operation === "copy_file") {
         checkDb(
+          await db.rpc("gmail_select_attachments", {
+            run: null,
+            case_id: id,
+            choices: [
+              {
+                archive_message_id: file.archive_message_id,
+                part_id: file.part_id,
+                included: true,
+              },
+            ],
+            mark_reviewed: false,
+          }),
+        );
+        checkDb(
           await service.from("case_events").insert({
             opportunity_id: id,
             process_id: file.process_id,
@@ -279,13 +292,6 @@ export async function POST(
             evidence_type: "manual",
             occurred_at: new Date().toISOString(),
             actor_id: profile.id,
-          }),
-        );
-        checkDb(
-          await service.from("jobs").insert({
-            kind: "gmail_copy_attachment",
-            payload: { file_id: file.id },
-            dedupe_key: `gmail-file:${file.id}:${randomUUID()}`,
           }),
         );
       } else {

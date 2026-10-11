@@ -8,7 +8,6 @@ import {
   excludedGmailMessage,
   historicalQuery,
   twoMonthsBefore,
-  shouldCopyGmailFile,
   type GmailMessage,
   type MailSnapshot,
 } from "../src/lib/gmail-history";
@@ -528,7 +527,7 @@ async function importStep(run: Run) {
   checked(await client.rpc("gmail_followups"));
 }
 
-export async function linkAndCopy(archive: Archive, copySince: string) {
+export async function linkAndCopy(archive: Archive, _copySince: string) {
   const client = db();
   const snapshot = JSON.parse(
     decrypt(archive.encrypted_payload),
@@ -548,20 +547,7 @@ export async function linkAndCopy(archive: Archive, copySince: string) {
         .eq("archive_message_id", archive.id),
     ) || [];
   for (const file of files) {
-    const o = checked(
-      await client
-        .from("opportunities")
-        .select("stage,archived_at")
-        .eq("id", file.opportunity_id)
-        .single(),
-    )!;
-    const active =
-      !o.archived_at && !["funded", "lost", "paused"].includes(o.stage);
-    if (
-      file.storage_path ||
-      !shouldCopyGmailFile(snapshot.sent_at, copySince, active, file.name)
-    )
-      continue;
+    if (file.storage_path) continue;
     await copyGmailAttachment(file.id);
   }
 }
@@ -606,6 +592,15 @@ export async function copyGmailAttachment(fileId: string) {
       .single(),
   )!;
   if (file.storage_path) return;
+  const choice = checked(
+    await client
+      .from("gmail_attachment_choices")
+      .select("decision")
+      .eq("archive_message_id", file.archive_message_id)
+      .eq("part_id", file.part_id)
+      .maybeSingle(),
+  );
+  if (choice?.decision !== "included") return;
   if (file.size > 20 * 1024 * 1024) {
     checked(
       await client

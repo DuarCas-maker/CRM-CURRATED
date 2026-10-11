@@ -308,26 +308,7 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
   if (!selected.count)
     throw new HttpError(400, "Select at least one reviewed candidate");
   checkDb(
-    await db
-      .from("gmail_runs")
-      .update({
-        status: "importing",
-        phase: "import",
-        offset_index: 0,
-        approved_at: new Date().toISOString(),
-        approved_by: actor.id,
-        lease_token: null,
-        lease_until: null,
-      })
-      .eq("id", run.id)
-      .eq("status", "review"),
-  );
-  checkDb(
-    await db.from("jobs").insert({
-      kind: "gmail_archive",
-      payload: { run_id: run.id },
-      dedupe_key: `gmail-archive:${run.id}:confirm`,
-    }),
+    await db.rpc("gmail_confirm_import", { run: run.id, actor: actor.id }),
   );
   return { ok: true };
 }

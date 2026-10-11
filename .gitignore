@@ -12,6 +12,7 @@ next-env.d.ts
 coverage/
 test-results/
 .local/
+public/pdfjs/
 .local-worker-heartbeat
 *.log
 .DS_Store

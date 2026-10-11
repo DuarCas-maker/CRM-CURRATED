@@ -11,6 +11,7 @@ import {
 } from "@/lib/gmail-history-refresh";
 import { Modal, t } from "./ui";
 import { GmailAnalysisProgress } from "./gmail-analysis-progress";
+import { GmailAttachments } from "./gmail-attachments";
 import { teamLabel, type TeamIdentity } from "@/lib/gmail-team";
 import {
   GmailTeamDirectory,
@@ -177,6 +178,11 @@ export function GmailHistory({
   const [editing, setEditing] = useState<HistoryCandidate | null>(null),
     [source, setSource] = useState<string | null>(null);
   const [evidenceLimit, setEvidenceLimit] = useState(20);
+  const [attachmentScope, setAttachmentScope] = useState<{
+    runId: string;
+    candidateId?: string;
+    confirmImport?: boolean;
+  } | null>(null);
   useEffect(() => {
     setEvidenceLimit(20);
   }, [editing?.id]);
@@ -543,18 +549,9 @@ export function GmailHistory({
                   <button
                     className="button primary"
                     disabled={busy || !stats?.selected}
-                    onClick={() => {
-                      if (
-                        confirm(
-                          t(
-                            locale,
-                            "¿Incorporar únicamente los candidatos seleccionados? Los demás quedarán fuera del flujo comercial.",
-                            "Import only selected candidates? Others stay outside the commercial workflow.",
-                          ),
-                        )
-                      )
-                        action({ operation: "confirm", run_id: run.id });
-                    }}
+                    onClick={() =>
+                      setAttachmentScope({ runId: run.id, confirmImport: true })
+                    }
                   >
                     {t(locale, "Confirmar importación", "Confirm import")} (
                     {stats?.selected || 0})
@@ -606,13 +603,22 @@ export function GmailHistory({
                     {stats.last_at && dateLabel(stats.last_at, locale)} ·{" "}
                     {stats.documents}{" "}
                     {t(locale, "adjuntos encontrados", "attachments found")} ·{" "}
-                    {stats.documents_to_copy}{" "}
                     {t(
                       locale,
-                      "recientes que se copiarían si se importan sus expedientes",
-                      "recent files to copy if their cases are imported",
+                      "se copiarán únicamente los adjuntos seleccionados",
+                      "only selected attachments will be copied",
                     )}
                   </p>
+                  <button
+                    className="button"
+                    onClick={() => setAttachmentScope({ runId: run.id })}
+                  >
+                    {t(
+                      locale,
+                      "Revisar adjuntos de la importación",
+                      "Review import attachments",
+                    )}
+                  </button>
                   <details>
                     <summary>
                       {t(
@@ -708,6 +714,21 @@ export function GmailHistory({
                             onClick={() => setSource(c.evidence_ids[0])}
                           >
                             {t(locale, "Abrir correo", "Open email")}
+                          </button>
+                          <button
+                            className="text-button"
+                            onClick={() =>
+                              setAttachmentScope({
+                                runId: run.id,
+                                candidateId: c.id,
+                              })
+                            }
+                          >
+                            {t(
+                              locale,
+                              "Revisar adjuntos",
+                              "Review attachments",
+                            )}
                           </button>
                         </td>
                         <td>
@@ -1128,6 +1149,26 @@ export function GmailHistory({
             </form>
           )}
         </Modal>
+      )}
+      {attachmentScope && (
+        <GmailAttachments
+          {...attachmentScope}
+          locale={locale}
+          editable={
+            data.runs.find((r) => r.id === attachmentScope.runId)?.status ===
+            "review"
+          }
+          close={() => setAttachmentScope(null)}
+          openSource={setSource}
+          saved={async () => {
+            if (attachmentScope.confirmImport)
+              await action({
+                operation: "confirm",
+                run_id: attachmentScope.runId,
+              });
+            else poll.current?.refresh();
+          }}
+        />
       )}
       {source && (
         <MailEvidence

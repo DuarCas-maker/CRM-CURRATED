@@ -2830,3 +2830,19 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--charcoal); }
   .stage-summary { gap: 6px; }
   .stage-summary button { padding: 7px 5px; }
 }
+
+/* Explicit Gmail attachment selection */
+.modal.wide:has(.gmail-attachments-table) { width: 1100px; }
+.gmail-attachments-table { table-layout: fixed; min-width: 640px; white-space: normal; }
+.gmail-attachments-table th, .gmail-attachments-table td { padding: 12px; vertical-align: top; overflow-wrap: anywhere; }
+.gmail-attachments-table th:first-child { width: 7%; }
+.gmail-attachments-table th:nth-child(2) { width: 34%; }
+.gmail-attachments-table th:nth-child(3) { width: 35%; }
+.gmail-attachments-table th:last-child { width: 24%; }
+.gmail-attachments-table small { display: block; margin-top: 6px; color: var(--muted); }
+.gmail-attachments-table td:last-child button { display: block; margin-bottom: 8px; }
+.gmail-attachment-formats { display: flex; flex-wrap: wrap; gap: 12px; border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin: 16px 0; }
+.gmail-attachment-formats label { display: flex; align-items: center; gap: 6px; margin: 0; }
+.gmail-pdf-canvas { max-height: 65vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.gmail-pdf-canvas canvas { display: block; width: 100%; height: auto; }
+.gmail-attachment-image { display: block; max-width: 100%; max-height: 65vh; object-fit: contain; margin: auto; }

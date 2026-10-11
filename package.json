@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --hostname 127.0.0.1",
-    "build": "next build",
+    "dev": "node scripts/prepare-pdf-viewer.mjs && next dev --hostname 127.0.0.1",
+    "build": "node scripts/prepare-pdf-viewer.mjs && next build",
     "start": "next start",
     "worker": "tsx --env-file=.env.local worker/index.ts",
     "worker:production": "tsx worker/index.ts",
@@ -23,6 +23,7 @@
     "next": "16.3.8",
     "papaparse": "5.7.0",
     "pdf-lib": "1.17.1",
+    "pdfjs-dist": "6.4.299",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "tsx": "4.23.15",

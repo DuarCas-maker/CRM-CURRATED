@@ -37,6 +37,7 @@ export type MailSnapshot = {
     name: string;
     mime_type: string;
     size: number;
+    inline?: boolean;
   }[];
 };
 
@@ -169,6 +170,9 @@ export function snapshotMessage(
         name: part.filename,
         mime_type: part.mimeType || "application/octet-stream",
         size: part.body.size || 0,
+        inline:
+          /^inline\b/i.test(mailHeader(part, "Content-Disposition")) ||
+          !!mailHeader(part, "Content-ID"),
       });
     part.parts?.forEach((child, i) => collect(child, `${path}.${i}`));
   }

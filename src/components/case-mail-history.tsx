@@ -4,6 +4,7 @@ import type { Locale, Workspace } from "@/lib/domain";
 import { dateLabel, isCloserRole } from "@/lib/domain";
 import { processStates, type ProcessState } from "@/lib/financing-history";
 import { MailEvidence } from "./gmail-history";
+import { GmailAttachments } from "./gmail-attachments";
 import { Modal, t } from "./ui";
 type Process = {
   id: string;
@@ -84,6 +85,7 @@ export function CaseMailHistory({
     [busy, setBusy] = useState(false),
     [state, setState] = useState<ProcessState>("unclassified");
   const [threadSource, setThreadSource] = useState("");
+  const [attachmentModal, setAttachmentModal] = useState(false);
   const [page, setPage] = useState(0),
     [drafts, setDrafts] = useState<Record<string, string>>({});
   async function load() {
@@ -352,6 +354,13 @@ export function CaseMailHistory({
         <h3>
           {t(locale, "Documentos y referencias", "Documents and references")}
         </h3>
+        <button className="button" onClick={() => setAttachmentModal(true)}>
+          {t(
+            locale,
+            "Seleccionar adjuntos pendientes",
+            "Select pending attachments",
+          )}
+        </button>
         {files.map((f) => (
           <div className="document-row" key={f.id}>
             <div>
@@ -371,9 +380,7 @@ export function CaseMailHistory({
                 <button
                   className="button"
                   disabled={busy}
-                  onClick={() =>
-                    action({ operation: "copy_file", file_id: f.id })
-                  }
+                  onClick={() => setAttachmentModal(true)}
                 >
                   {t(locale, "Copiar al expediente", "Copy to case")}
                 </button>
@@ -833,6 +840,19 @@ export function CaseMailHistory({
             </>
           )}
         </Modal>
+      )}
+      {attachmentModal && (
+        <GmailAttachments
+          caseId={caseId}
+          locale={locale}
+          editable={editable}
+          close={() => setAttachmentModal(false)}
+          openSource={setSource}
+          saved={async () => {
+            await load();
+            await onChanged();
+          }}
+        />
       )}
       {source && (
         <MailEvidence
