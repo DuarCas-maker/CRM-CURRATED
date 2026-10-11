@@ -355,16 +355,18 @@ export async function archiveStep(runId: string) {
           await update({ phase: "list", pending_ids: [], offset_index: 0 });
       }
     }
+    // This counter drives backoff: reset only after the entire step succeeds.
+    // Partial progress before a rejected read must retain the failure streak.
+    if (run.errors) await update({ errors: 0 });
   } catch (e) {
     const code = e instanceof GmailError ? e.code : "GMAIL_SCAN_RETRY";
     const quota = isGmailQuotaError(e);
     const authorization =
       e instanceof GmailError &&
       (e.status === 401 || (e.status === 403 && !quota));
-    const seconds = Math.max(
-      e instanceof GmailError ? e.retryAfter : 0,
-      Math.min(3600, 30 * 2 ** Math.min(run.errors, 7)),
-    );
+    const providerSeconds = e instanceof GmailError ? e.retryAfter : 0;
+    const backoffSeconds = Math.min(3600, 30 * 2 ** Math.min(run.errors, 7));
+    const seconds = Math.max(providerSeconds, backoffSeconds);
     checked(
       await client
         .from("gmail_runs")
@@ -395,6 +397,11 @@ export async function archiveStep(runId: string) {
           run: run.id,
           error: code,
           retry_seconds: seconds,
+          provider_retry_seconds: providerSeconds,
+          retry_source: providerSeconds >= backoffSeconds ? "google" : "crm",
+          failure_streak: run.errors + 1,
+          operation: e.operation || "unknown",
+          units_per_minute: e.unitsPerMinute,
         }),
       );
     // The persisted run schedules quota retries. Retire this job so job retries

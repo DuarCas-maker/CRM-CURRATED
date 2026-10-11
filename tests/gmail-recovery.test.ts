@@ -8,7 +8,11 @@ import {
   isGmailQuotaError,
   gmailRunErrorMessage,
 } from "../src/lib/gmail-errors";
-import { GmailQuotaPacer, gmailRequestCost } from "../src/lib/gmail-quota";
+import {
+  GmailQuotaPacer,
+  gmailRequestCost,
+  gmailRequestOperation,
+} from "../src/lib/gmail-quota";
 import { encrypt } from "../src/lib/server/crypto";
 import { archiveStep } from "../worker/gmail-archive";
 
@@ -111,6 +115,41 @@ test("Gmail reads are paced below the new per-user quota, including parallel req
   assert.throws(() => pacer.reserve("account-a", 0));
 });
 
+test("quota rejections lower only the affected account's request rate and diagnostics omit message IDs", () => {
+  const pacer = new GmailQuotaPacer();
+  assert.equal(pacer.throttle("limited"), 2250);
+  assert.equal(pacer.reserve("limited", 20, 0), 0);
+  assert.equal(pacer.reserve("limited", 20, 0), 534);
+  assert.equal(pacer.budget("other"), 4500);
+  assert.equal(pacer.reserve("other", 20, 0), 0);
+  assert.equal(pacer.reserve("other", 20, 0), 267);
+  for (let i = 0; i < 10; i++) pacer.throttle("limited");
+  assert.equal(pacer.budget("limited"), 600);
+  const starts = Array.from({ length: 100 }, () =>
+    pacer.reserve("limited", 20, 60000),
+  );
+  for (const start of starts)
+    assert.ok(
+      starts.filter((at) => at >= start && at < start + 60000).length * 20 <=
+        600,
+    );
+  const lowBudget = new GmailQuotaPacer(100);
+  assert.equal(lowBudget.throttle("limited"), 100);
+  assert.equal(
+    gmailRequestOperation("messages/private-id?format=full"),
+    "messages.get",
+  );
+  assert.equal(
+    gmailRequestOperation("messages/private-id/attachments/private-part"),
+    "messages.attachments.get",
+  );
+  assert.equal(
+    gmailRequestOperation("messages?q=private@example.com"),
+    "messages.list",
+  );
+  assert.equal(gmailRequestOperation("messages/send", "POST"), "messages.send");
+});
+
 test("archive quota recovery retains its cursor and messages, clears stale errors, and still pauses real policy failures", async (t) => {
   const environment = {
     NEXT_PUBLIC_SUPABASE_URL: "https://supabase.example.test",
@@ -147,7 +186,7 @@ test("archive quota recovery retains its cursor and messages, clears stale error
       pending_ids: ["m1", "m2", "m3"],
       offset_index: 0,
       exhausted: false,
-      errors: 0,
+      errors: 8,
       scanned: 301,
       skipped: 0,
       last_error: null as string | null,
@@ -160,6 +199,7 @@ test("archive quota recovery retains its cursor and messages, clears stale error
       reads: string[] = [],
       logs: string[] = [];
     let failure: "quota" | "none" | "policy" = "quota";
+    let providerWait = "7200";
     // google-auth-library uses its own HTTP transport rather than global fetch.
     // Avoid real token refresh requests while exercising the Gmail/DB workflow.
     t.mock.method(OAuth2Client.prototype, "getAccessToken", async () => ({
@@ -191,7 +231,7 @@ test("archive quota recovery retains its cursor and messages, clears stale error
                   ],
                 },
               },
-              { status: 403, headers: { "Retry-After": "7200" } },
+              { status: 403, headers: { "Retry-After": providerWait } },
             );
           return Response.json({
             id,
@@ -276,6 +316,17 @@ test("archive quota recovery retains its cursor and messages, clears stale error
     assert.equal(run.lease_token, null);
     assert.equal(queued.length, 0);
     assert.ok(!logs.join(" ").includes("private"));
+    assert.equal(
+      run.errors,
+      9,
+      "Partial progress must not reset the failure streak",
+    );
+    const diagnostic = JSON.parse(logs.at(-1)!);
+    assert.equal(diagnostic.operation, "messages.get");
+    assert.equal(diagnostic.provider_retry_seconds, 7200);
+    assert.equal(diagnostic.retry_source, "google");
+    assert.equal(diagnostic.failure_streak, 9);
+    assert.ok(diagnostic.units_per_minute < 4500);
     const attempted = reads.length;
     await archiveStep(run.id);
     assert.equal(
@@ -287,6 +338,8 @@ test("archive quota recovery retains its cursor and messages, clears stale error
     // Simulate the elapsed wait. Resume from the persisted offset, with no reset
     // of the existing archive and no duplicate read of the saved first message.
     run.retry_at = null;
+    // Legacy runs may already have reached the one-hour backoff. A fully
+    // successful read step must end that streak without resetting the archive.
     failure = "none";
     await archiveStep(run.id);
     assert.equal(run.scanned, 304);
@@ -294,8 +347,28 @@ test("archive quota recovery retains its cursor and messages, clears stale error
     assert.equal(reads.filter((id) => id === "m1").length, 1);
     assert.equal(run.last_error, null);
     assert.equal(run.retry_at, null);
+    assert.equal(run.errors, 0);
     assert.equal(run.phase, "list");
     assert.equal(queued.length, 1);
+
+    // A new transient failure after recovery starts at 30 seconds. Consecutive
+    // failures increase the wait, rather than inheriting old recovered errors.
+    Object.assign(run, { phase: "read", pending_ids: ["m2"], offset_index: 0 });
+    providerWait = "0";
+    failure = "quota";
+    await archiveStep(run.id);
+    assert.equal(run.errors, 1);
+    let retryLog = JSON.parse(logs.at(-1)!);
+    assert.equal(retryLog.retry_seconds, 30);
+    assert.equal(retryLog.retry_source, "crm");
+    assert.equal(run.offset_index, 0);
+    run.retry_at = null;
+    await archiveStep(run.id);
+    retryLog = JSON.parse(logs.at(-1)!);
+    assert.equal(retryLog.retry_seconds, 60);
+    assert.equal(run.errors, 2);
+    assert.equal(run.scanned, 304);
+    run.retry_at = null;
 
     // A policy denial must not be treated as temporary quota or silently resumed.
     Object.assign(run, {

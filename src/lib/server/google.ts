@@ -2,8 +2,16 @@ import { OAuth2Client } from "google-auth-library";
 import { z } from "zod";
 import { decrypt } from "./crypto";
 import { serviceClient, checkDb, HttpError } from "./supabase";
-import { GmailError, gmailResponseError } from "../gmail-errors";
-import { GmailQuotaPacer, gmailRequestCost } from "../gmail-quota";
+import {
+  GmailError,
+  gmailResponseError,
+  isGmailQuotaError,
+} from "../gmail-errors";
+import {
+  GmailQuotaPacer,
+  gmailRequestCost,
+  gmailRequestOperation,
+} from "../gmail-quota";
 export { GmailError } from "../gmail-errors";
 const quotaPacer = new GmailQuotaPacer();
 const organizationSchema = z.array(
@@ -110,6 +118,12 @@ export async function gmail<T>(
       signal: AbortSignal.timeout(30000),
     },
   );
-  if (!res.ok) throw await gmailResponseError(res);
+  if (!res.ok) {
+    const error = await gmailResponseError(res);
+    error.operation = gmailRequestOperation(path, init.method);
+    if (isGmailQuotaError(error))
+      error.unitsPerMinute = quotaPacer.throttle(accountId);
+    throw error;
+  }
   return res.json() as Promise<T>;
 }

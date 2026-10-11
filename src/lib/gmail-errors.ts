@@ -17,6 +17,8 @@ const reasons = new Set([
 
 export class GmailError extends Error {
   public reason: string;
+  public operation?: string;
+  public unitsPerMinute?: number;
   constructor(
     public status: number,
     reason = "",
