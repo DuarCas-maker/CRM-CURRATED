@@ -10,6 +10,7 @@ import {
   startHistoryPolling,
 } from "@/lib/gmail-history-refresh";
 import { Modal, t } from "./ui";
+import { GmailAnalysisProgress } from "./gmail-analysis-progress";
 
 export interface HistoryCandidate {
   imported_at: string | null;
@@ -44,6 +45,7 @@ interface HistoryRun {
   account_id: string;
   purpose: string;
   status: string;
+  resume_status?: string | null;
   phase: string;
   scanned: number;
   estimated_messages: number;
@@ -477,21 +479,7 @@ export function GmailHistory({
           {run && (
             <>
               <div className="gmail-run-progress" aria-live="polite">
-                <strong>{run.status}</strong> · {run.scanned}{" "}
-                {t(locale, "mensajes guardados", "messages saved")} ·{" "}
-                {run.imported}{" "}
-                {t(
-                  locale,
-                  "participantes incorporados",
-                  "participants imported",
-                )}
-                <p>
-                  {t(
-                    locale,
-                    "La cantidad inicial de Gmail es estimada. El tiempo depende del volumen, los adjuntos y los límites de Google.",
-                    "Gmail's initial count is an estimate. Duration depends on volume, attachments and Google's limits.",
-                  )}
-                </p>
+                <GmailAnalysisProgress run={run} locale={locale} />
                 {run.last_error && (
                   <div
                     className={
