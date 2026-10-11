@@ -34,6 +34,7 @@ type Run = {
 type Archive = { id: string; encrypted_payload: string };
 
 export async function scheduleArchive() {
+  checked(await db().rpc("gmail_activate_pending_imports"));
   const client = db();
   const accounts =
     checked(
@@ -445,6 +446,7 @@ async function importStep(run: Run) {
         .select("*")
         .eq("run_id", run.id)
         .eq("selected", true)
+        .not("import_requested_at", "is", null)
         .is("imported_at", null)
         .order("id")
         .limit(5),
@@ -481,7 +483,18 @@ async function importStep(run: Run) {
     }
   }
   // Always revisit linked messages; a crash between association and copying must be recoverable.
-  if (candidates.length) return;
+  if (candidates.length) {
+    // Newly linked threads may sort before the existing cursor. Revisit the archive
+    // after every approved group; linking and copying are themselves idempotent.
+    checked(
+      await client
+        .from("gmail_runs")
+        .update({ offset_index: 0 })
+        .eq("id", run.id)
+        .eq("lease_token", run.lease_token),
+    );
+    return;
+  }
   {
     // DB cursor avoids PostgREST's default 1,000-row response limit and bounds each job.
     const page =
@@ -501,17 +514,15 @@ async function importStep(run: Run) {
     );
     if (page.length === 10) return;
   }
-  checked(
-    await client
-      .from("gmail_runs")
-      .update({
-        status: "completed",
-        finished_at: new Date().toISOString(),
-        last_error: null,
-      })
-      .eq("id", run.id)
-      .eq("lease_token", run.lease_token),
-  );
+  if (
+    !checked(
+      await client.rpc("gmail_finish_incremental_import", {
+        run: run.id,
+        lease: run.lease_token,
+      }),
+    )
+  )
+    return;
   checked(
     await client.rpc("gmail_archive_checkpoint", {
       account: run.account_id,

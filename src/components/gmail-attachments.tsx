@@ -174,6 +174,7 @@ export function GmailAttachments({
           case_id: caseId || null,
           choices: Object.values(changes),
           mark_reviewed: !!runId && !candidateId,
+          ...(candidateId ? { candidate_id: candidateId } : {}),
         }),
       });
       const body = await r.json();
@@ -220,11 +221,17 @@ export function GmailAttachments({
       </p>
       {confirmImport && (
         <p>
-          {t(
-            locale,
-            "Al continuar se incorporarán los participantes que elegiste y los adjuntos seleccionados asociados a sus expedientes. Puedes continuar sin copiar adjuntos.",
-            "Continuing incorporates your chosen participants and selected attachments associated with their cases. You can continue without copying attachments.",
-          )}
+          {candidateId
+            ? t(
+                locale,
+                "Se incorporará únicamente este registro y sus adjuntos seleccionados. Los demás participantes seguirán pendientes. Puedes continuar sin copiar adjuntos.",
+                "Only this record and its selected attachments will be incorporated. Other participants remain pending. You can continue without copying attachments.",
+              )
+            : t(
+                locale,
+                "Al continuar se incorporarán los participantes que elegiste y los adjuntos seleccionados asociados a sus expedientes. Puedes continuar sin copiar adjuntos.",
+                "Continuing incorporates your chosen participants and selected attachments associated with their cases. You can continue without copying attachments.",
+              )}
         </p>
       )}
       {data && (

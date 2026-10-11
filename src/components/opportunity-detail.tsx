@@ -2,6 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
 import { MailComposer, MailSendStatus } from "./mail-composer";
+import { MailBody } from "./mail-bubble";
 import {
   ArrowLeft,
   Phone,
@@ -277,7 +278,11 @@ export function OpportunityDetail({
                         <small>
                           {a.type} · {a.area}
                         </small>
-                        <p>{a.body}</p>
+                        {a.type === "email" ? (
+                          <MailBody body={a.body} locale={locale} />
+                        ) : (
+                          <p>{a.body}</p>
+                        )}
                       </div>
                     </article>
                   ))}

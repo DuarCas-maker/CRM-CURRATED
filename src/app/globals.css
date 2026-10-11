@@ -144,6 +144,7 @@ strong {
   flex-direction: column;
   z-index: 30;
   border-right: 1px solid var(--bronze);
+  overflow-y: auto;
 }
 .brand {
   display: flex;
@@ -190,6 +191,7 @@ strong {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  flex-shrink: 0;
 }
 .sidebar nav button,
 .settings-link {
@@ -2846,3 +2848,97 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--charcoal); }
 .gmail-pdf-canvas { max-height: 65vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
 .gmail-pdf-canvas canvas { display: block; width: 100%; height: auto; }
 .gmail-attachment-image { display: block; max-width: 100%; max-height: 65vh; object-fit: contain; margin: auto; }
+
+/* Desktop layouts fit the viewport at the browser's normal 100% zoom. */
+.main-shell,
+.content,
+.conversation-content,
+.settings-grid > *,
+.gmail-history-panel {
+  min-width: 0;
+}
+.mail-inbox {
+  min-height: 560px;
+}
+.mail-inbox .conversation-list {
+  padding: 14px;
+}
+.mail-inbox .conversation-list label {
+  display: block;
+  margin-bottom: 14px;
+}
+.mail-inbox .conversation-list select {
+  width: 100%;
+  min-width: 0;
+}
+.mail-inbox .conversation-list button {
+  width: 100%;
+  white-space: normal;
+}
+.mail-inbox .messages {
+  max-height: 60vh;
+  min-height: 260px;
+  overflow-y: auto;
+}
+.source-chat {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+.message > div.mail-readable {
+  display: block;
+}
+.mail-readable p,
+.mail-readable pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.mail-readable details {
+  margin-top: 12px;
+  font-size: 12px;
+}
+.message > div:first-child {
+  flex-wrap: wrap;
+}
+.message strong,
+.message small {
+  overflow-wrap: anywhere;
+}
+.mail-inbox .reply-form label {
+  display: block;
+  margin-bottom: 12px;
+}
+.mail-inbox .reply-form input:not([type="checkbox"]),
+.mail-inbox .reply-form select {
+  width: 100%;
+}
+.card-actions,
+.gmail-connect-form {
+  flex-wrap: wrap;
+}
+.gmail-history-panel select,
+.gmail-history-panel input {
+  max-width: 100%;
+}
+@media (min-width: 901px) and (max-height: 850px) {
+  .sidebar {
+    padding-top: 18px;
+  }
+  .brand {
+    margin-bottom: 22px;
+  }
+  .sidebar nav {
+    gap: 2px;
+  }
+  .sidebar nav button {
+    min-height: 38px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .workspace-note {
+    display: none;
+  }
+  .sidebar-user {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+}

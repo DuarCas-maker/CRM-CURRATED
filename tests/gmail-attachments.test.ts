@@ -203,10 +203,8 @@ test("attachment selection is empty by default, filtered, persistent, permission
       1,
     );
     await asUser(admin);
-    await assert.rejects(
-      select([{ ...pdf, included: false }]),
-      /Finish analysis/,
-    );
+    await select([{ ...pdf, included: false }]);
+    await select([pdf], true); // Review can continue while an approved record imports.
     await db.exec("reset role");
     await db.query(
       "insert into contacts(id,email,verification) values($1,'client@example.com','valid')",

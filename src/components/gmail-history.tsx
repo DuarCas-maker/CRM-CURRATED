@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Workspace, Locale } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
-import type { MailSnapshot } from "@/lib/gmail-history";
+import { MailThreadEvidence as MailEvidence } from "./mail-evidence";
 import { gmailRunErrorMessage } from "@/lib/gmail-errors";
 import {
   historyRefreshMessage,
@@ -20,6 +20,8 @@ import {
 } from "./gmail-team";
 
 export interface HistoryCandidate {
+  result_opportunity_id?: string | null;
+  import_requested_at?: string | null;
   imported_at: string | null;
   id: string;
   email: string;
@@ -109,66 +111,16 @@ interface Matches {
     process_id: string | null;
   }[];
 }
-export function MailEvidence({
-  id,
-  locale,
-  close,
-}: {
-  id: string;
-  locale: Locale;
-  close: () => void;
-}) {
-  const [message, setMessage] = useState<MailSnapshot | null>(null),
-    [error, setError] = useState("");
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(`/api/gmail/archive/${id}`, { signal: controller.signal })
-      .then(async (r) => {
-        const body = await r.json();
-        if (!r.ok) throw new Error(body.error);
-        setMessage(body);
-      })
-      .catch((e) => {
-        if (e.name !== "AbortError") setError(e.message);
-      });
-    return () => controller.abort();
-  }, [id]);
-  return (
-    <Modal
-      title={message?.subject || t(locale, "Correo de origen", "Source email")}
-      close={close}
-    >
-      {error && <div className="error-banner">{error}</div>}
-      {message && (
-        <>
-          <p>
-            {dateLabel(message.sent_at, locale, true)} · {message.nature} ·{" "}
-            {message.direction}
-          </p>
-          {message.participants.map((p, i) => (
-            <p key={i}>
-              <strong>{p.role}:</strong> {p.name} {p.email}
-              {p.team && <small> · {teamLabel(p.team, locale)}</small>}
-            </p>
-          ))}
-          <pre className="mail-evidence-body">{message.body}</pre>
-          {message.attachments.map((a) => (
-            <p key={a.part_id}>
-              {a.name} · {Math.round(a.size / 1024)} KB
-            </p>
-          ))}
-        </>
-      )}
-    </Modal>
-  );
-}
+export { MailEvidence };
 
 export function GmailHistory({
   workspace,
   locale,
+  openCase,
 }: {
   workspace: Workspace;
   locale: Locale;
+  openCase?: (id: string) => void;
 }) {
   const [data, setData] = useState<HistoryData>({ accounts: [], runs: [] });
   const [runId, setRunId] = useState(""),
@@ -182,6 +134,7 @@ export function GmailHistory({
     runId: string;
     candidateId?: string;
     confirmImport?: boolean;
+    confirmCandidateId?: string;
   } | null>(null);
   useEffect(() => {
     setEvidenceLimit(20);
@@ -250,7 +203,7 @@ export function GmailHistory({
   }, [workspace.demo]);
   const run = data.runs.find((r) => r.id === runId),
     stats = data.stats;
-  async function action(input: Record<string, unknown>) {
+  async function action(input: Record<string, unknown>, propagate = false) {
     setBusy(true);
     setError("");
     try {
@@ -269,6 +222,7 @@ export function GmailHistory({
       return true;
     } catch (e) {
       setError((e as Error).message);
+      if (propagate) throw e;
       return false;
     } finally {
       setBusy(false);
@@ -545,7 +499,7 @@ export function GmailHistory({
                     {t(locale, "Reanudar", "Resume")}
                   </button>
                 )}
-                {run.status === "review" && (
+                {["review", "completed", "importing"].includes(run.status) && (
                   <button
                     className="button primary"
                     disabled={busy || !stats?.selected}
@@ -666,7 +620,13 @@ export function GmailHistory({
                               busy ||
                               c.participant_kind === "team" ||
                               !!c.imported_at ||
-                              !["review", "failed"].includes(run.status)
+                              !!c.import_requested_at ||
+                              ![
+                                "review",
+                                "completed",
+                                "importing",
+                                "failed",
+                              ].includes(run.status)
                             }
                             onChange={() => {
                               if (c.selected) action(selectPayload(c, false));
@@ -776,9 +736,11 @@ export function GmailHistory({
                             disabled={
                               busy ||
                               (c.participant_kind !== "team" &&
-                                !!c.imported_at) ||
+                                (!!c.imported_at || !!c.import_requested_at)) ||
                               ![
                                 "review",
+                                "completed",
+                                "importing",
                                 "failed",
                                 ...(c.participant_kind === "team"
                                   ? ["completed"]
@@ -793,6 +755,59 @@ export function GmailHistory({
                           >
                             {t(locale, "Revisar", "Review")}
                           </button>
+                          {c.participant_kind !== "team" &&
+                            (c.imported_at ? (
+                              <>
+                                <small>
+                                  {t(locale, "Incorporado", "Imported")}
+                                </small>
+                                {c.result_opportunity_id && openCase && (
+                                  <button
+                                    className="text-button"
+                                    onClick={() =>
+                                      openCase(c.result_opportunity_id!)
+                                    }
+                                  >
+                                    {t(locale, "Ver expediente", "View case")}
+                                  </button>
+                                )}
+                              </>
+                            ) : c.import_requested_at ? (
+                              <small role="status">
+                                {t(
+                                  locale,
+                                  "Incorporación en curso",
+                                  "Import in progress",
+                                )}
+                              </small>
+                            ) : (
+                              <button
+                                className="button primary"
+                                disabled={
+                                  busy ||
+                                  !c.selected ||
+                                  ![
+                                    "review",
+                                    "completed",
+                                    "importing",
+                                  ].includes(run.status)
+                                }
+                                onClick={() =>
+                                  setAttachmentScope({
+                                    runId: run.id,
+                                    candidateId: c.id,
+                                    confirmCandidateId: c.id,
+                                    confirmImport: true,
+                                  })
+                                }
+                              >
+                                {t(
+                                  locale,
+                                  "Importar este registro",
+                                  "Import this record",
+                                )}
+                              </button>
+                            ))}
                         </td>
                       </tr>
                     ))}
@@ -908,6 +923,10 @@ export function GmailHistory({
               />
               {data.team_members?.some((m) => m.email === editing.email) && (
                 <GmailTeamThreads
+                  openCase={(id) => {
+                    setEditing(null);
+                    openCase?.(id);
+                  }}
                   candidateId={editing.id}
                   runId={runId}
                   workspace={workspace}
@@ -1154,18 +1173,29 @@ export function GmailHistory({
         <GmailAttachments
           {...attachmentScope}
           locale={locale}
-          editable={
-            data.runs.find((r) => r.id === attachmentScope.runId)?.status ===
-            "review"
-          }
+          editable={["review", "completed", "importing"].includes(
+            data.runs.find((r) => r.id === attachmentScope.runId)?.status || "",
+          )}
           close={() => setAttachmentScope(null)}
           openSource={setSource}
           saved={async () => {
-            if (attachmentScope.confirmImport)
-              await action({
-                operation: "confirm",
-                run_id: attachmentScope.runId,
-              });
+            if (attachmentScope.confirmCandidateId)
+              await action(
+                {
+                  operation: "confirm_candidate",
+                  run_id: attachmentScope.runId,
+                  candidate_id: attachmentScope.confirmCandidateId,
+                },
+                true,
+              );
+            else if (attachmentScope.confirmImport)
+              await action(
+                {
+                  operation: "confirm",
+                  run_id: attachmentScope.runId,
+                },
+                true,
+              );
             else poll.current?.refresh();
           }}
         />

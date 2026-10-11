@@ -532,14 +532,15 @@ export async function sendNext() {
     let replyTo: string | undefined;
     let references: string | undefined;
     if (msg.conversation_id) {
+      let replyQuery = client
+        .from("messages")
+        .select("internet_message_id,references_header")
+        .eq("conversation_id", msg.conversation_id);
+      if (msg.reply_message_id)
+        replyQuery = replyQuery.eq("id", msg.reply_message_id);
       const latest =
         checked(
-          await client
-            .from("messages")
-            .select("internet_message_id,references_header")
-            .eq("conversation_id", msg.conversation_id)
-            .order("sent_at", { ascending: false })
-            .limit(1),
+          await replyQuery.order("sent_at", { ascending: false }).limit(1),
         ) || [];
       replyTo = latest[0]?.internet_message_id;
       references = [latest[0]?.references_header, replyTo]
@@ -552,6 +553,7 @@ export async function sendNext() {
     const raw = buildMime({
       from: account.email,
       to: msg.to_email,
+      cc: msg.cc_emails || [],
       subject: msg.subject,
       body: msg.body,
       messageId: msg.message_id_header,

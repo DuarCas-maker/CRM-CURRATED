@@ -13,6 +13,59 @@ export async function mailAction(
   profile: Profile,
 ) {
   const service = serviceClient();
+  if (kind === "lender_contact") {
+    const input = z
+      .object({ lender_id: z.uuid(), email: z.email().max(254) })
+      .parse(p);
+    checkDb(
+      await db.rpc("register_lender_contact", {
+        lender: input.lender_id,
+        address: input.email,
+      }),
+    );
+    return { ok: true };
+  }
+  if (kind === "compose_lenders") {
+    const input = z
+      .object({
+        opportunity_id: z.uuid(),
+        account_id: z.uuid(),
+        process_id: z.uuid(),
+        targets: z
+          .array(
+            z.object({
+              lender_id: z.uuid(),
+              submission_id: z.uuid().optional(),
+              email: z.email().max(254),
+            }),
+          )
+          .min(1)
+          .max(20),
+        subject: z
+          .string()
+          .trim()
+          .min(1)
+          .max(200)
+          .refine((v) => !/[\r\n]/.test(v)),
+        body: z.string().trim().min(1).max(10000),
+        attachment_ids: z.array(z.uuid()).max(10).default([]),
+        gmail_file_ids: z.array(z.uuid()).max(10).default([]),
+      })
+      .parse(p);
+    return checkDb(
+      await db.rpc("queue_lender_emails", {
+        case_id: input.opportunity_id,
+        account: input.account_id,
+        process: input.process_id,
+        targets: input.targets,
+        subject_text: input.subject,
+        body_text: input.body,
+        files: input.attachment_ids,
+        gmail_files: input.gmail_file_ids,
+        request: requestKey,
+      }),
+    );
+  }
   if (kind === "compose_email") {
     const input = z
       .object({
@@ -51,6 +104,10 @@ export async function mailAction(
     const input = z
       .object({
         conversation_id: z.uuid(),
+        reply_message_id: z.uuid().optional(),
+        to_email: z.email().max(254).optional(),
+        cc_emails: z.array(z.email().max(254)).max(20).default([]),
+        lender_id: z.uuid().optional(),
         body: z.string().min(1).max(10000),
         account_id: z.uuid().optional(),
         attachment_ids: z.array(z.uuid()).max(10).default([]),
@@ -136,6 +193,130 @@ export async function mailAction(
           recipient = possible;
       }
     }
+    let replyMessage: {
+      id: string;
+      sender: string;
+      participants: { email: string; role: string }[];
+    } | null = null;
+    if (input.reply_message_id)
+      replyMessage = checkDb(
+        await db
+          .from("messages")
+          .select("id,sender,participants")
+          .eq("id", input.reply_message_id)
+          .eq("conversation_id", co.id)
+          .single(),
+      );
+    let submissionId = co.submission_id;
+    if (input.to_email || input.cc_emails.length || input.lender_id) {
+      const team =
+        checkDb(await service.from("gmail_team_members").select("email")) || [];
+      const accounts =
+        checkDb(await service.from("mail_accounts").select("email")) || [];
+      const allowed = new Set(
+        [...team, ...accounts].map((t) => t.email.toLowerCase()),
+      );
+      if (input.lender_id) {
+        if (
+          !checkDb(
+            await db.rpc("can_area", {
+              case_id: co.opportunity_id,
+              area: "closer",
+            }),
+          )
+        )
+          throw new HttpError(403, "Closer access required");
+        const route = checkDb(
+          await db
+            .from("conversation_lenders")
+            .select("lender_id")
+            .eq("conversation_id", co.id)
+            .eq("lender_id", input.lender_id)
+            .maybeSingle(),
+        );
+        if (!route)
+          throw new HttpError(400, "Confirm this thread's lender association");
+        const peers =
+          checkDb(
+            await db
+              .from("lender_contacts")
+              .select("email")
+              .eq("lender_id", input.lender_id),
+          ) || [];
+        peers.forEach((p) => allowed.add(p.email));
+        const subs =
+          checkDb(
+            await db
+              .from("submissions")
+              .select("id,process_id")
+              .eq("opportunity_id", co.opportunity_id)
+              .eq("lender_id", input.lender_id),
+          ) || [];
+        const matching = subs.filter((s) => s.process_id === co.process_id);
+        if (matching.length !== 1)
+          throw new HttpError(
+            409,
+            "Selecciona una evaluación del lender para este proceso antes de responder.",
+          );
+        submissionId = matching[0].id;
+      } else if (co.submission_id) {
+        const sub = checkDb(
+          await db
+            .from("submissions")
+            .select("lender_id")
+            .eq("id", co.submission_id)
+            .single(),
+        )!;
+        (
+          checkDb(
+            await db
+              .from("lender_contacts")
+              .select("email")
+              .eq("lender_id", sub.lender_id),
+          ) || []
+        ).forEach((p) => allowed.add(p.email));
+      } else {
+        allowed.add(contact.email);
+        if (o.company_id) {
+          const links =
+            checkDb(
+              await db
+                .from("company_contacts")
+                .select("contact_id")
+                .eq("company_id", o.company_id)
+                .in("relationship", ["primary", "contact", "broker"]),
+            ) || [];
+          if (links.length)
+            (
+              checkDb(
+                await db
+                  .from("contacts")
+                  .select("email")
+                  .in(
+                    "id",
+                    links.map((l) => l.contact_id),
+                  ),
+              ) || []
+            ).forEach((p) => allowed.add(p.email));
+        }
+      }
+      recipient = (
+        input.to_email ||
+        replyMessage?.sender ||
+        recipient
+      ).toLowerCase();
+      if (
+        !allowed.has(recipient) ||
+        input.cc_emails.some((e) => !allowed.has(e.toLowerCase()))
+      )
+        throw new HttpError(
+          400,
+          "Confirma los destinatarios: no se permite añadir otro lender o cliente a esta respuesta.",
+        );
+    }
+    const cc = [...new Set(input.cc_emails.map((e) => e.toLowerCase()))].filter(
+      (e) => e !== recipient,
+    );
     for (const id of input.attachment_ids)
       checkDb(
         await db
@@ -160,9 +341,12 @@ export async function mailAction(
     const message = {
       account_id: account,
       opportunity_id: co.opportunity_id,
-      submission_id: co.submission_id,
+      submission_id: submissionId,
       conversation_id: co.id,
       to_email: recipient,
+      cc_emails: cc,
+      reply_message_id: replyMessage?.id || null,
+      process_id: co.process_id,
       subject: co.subject,
       body: input.body,
       area: o.handed_off_at ? "closer" : co.area,
@@ -180,23 +364,42 @@ export async function mailAction(
         .eq("request_key", requestKey)
         .maybeSingle(),
     );
-    if (
-      previous &&
-      (previous.requested_by !== profile.id ||
-        previous.body !== message.body ||
-        previous.account_id !== account ||
-        previous.to_email !== recipient ||
-        JSON.stringify(previous.attachment_ids) !==
-          JSON.stringify(input.attachment_ids) ||
-        JSON.stringify(previous.gmail_file_ids) !==
-          JSON.stringify(input.gmail_file_ids))
-    )
+    const identity = {
+      requested_by: profile.id,
+      opportunity_id: co.opportunity_id,
+      conversation_id: co.id,
+      subject: co.subject,
+      body: message.body,
+      account_id: account,
+      to_email: recipient,
+      submission_id: submissionId,
+      process_id: co.process_id || null,
+      reply_message_id: replyMessage?.id || null,
+      cc_emails: cc,
+      attachment_ids: input.attachment_ids,
+      gmail_file_ids: input.gmail_file_ids,
+    };
+    const same = (stored: Record<string, unknown>) =>
+      Object.entries(identity).every(
+        ([key, value]) =>
+          JSON.stringify(stored[key] ?? null) === JSON.stringify(value ?? null),
+      );
+    if (previous && !same(previous))
       throw new HttpError(409, "Request key reused with different input");
     checkDb(
       await service
         .from("outbox")
         .upsert(message, { onConflict: "request_key", ignoreDuplicates: true }),
     );
+    const accepted = checkDb(
+      await service
+        .from("outbox")
+        .select("*")
+        .eq("request_key", requestKey)
+        .single(),
+    )!;
+    if (!same(accepted))
+      throw new HttpError(409, "Request key reused with different input");
     return { ok: true };
   }
   if (kind === "associate_thread") {

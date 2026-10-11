@@ -168,6 +168,8 @@ export async function loadWorkspace(
   );
   const data = Object.fromEntries(entries) as unknown as Workspace;
   if (gmailHistoryEnabled()) {
+    data.lender_contacts =
+      checkDb(await db.from("lender_contacts").select("email,lender_id")) || [];
     const permissions =
       checkDb(
         await db

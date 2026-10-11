@@ -18,6 +18,18 @@ export const historyActionSchema = z.discriminatedUnion("operation", [
   z.object({ operation: z.literal("owner"), account_id: uuid, owner_id: uuid }),
   z.object({ operation: z.literal("disconnect"), account_id: uuid }),
   z.object({
+    operation: z.literal("confirm_candidate"),
+    run_id: uuid,
+    candidate_id: uuid,
+  }),
+  z.object({
+    operation: z.literal("prepare_team_thread"),
+    run_id: uuid,
+    candidate_id: uuid,
+    client_candidate_id: uuid,
+    evidence_id: uuid,
+  }),
+  z.object({
     operation: z.literal("team_thread"),
     run_id: uuid,
     candidate_id: uuid,
@@ -157,6 +169,35 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
   const run = checkDb(
     await db.from("gmail_runs").select("*").eq("id", input.run_id).single(),
   )!;
+  if (input.operation === "confirm_candidate") {
+    checkDb(
+      await db.rpc("gmail_confirm_candidates", {
+        run: run.id,
+        actor: actor.id,
+        only_candidate: input.candidate_id,
+      }),
+    );
+    return { ok: true };
+  }
+  if (input.operation === "prepare_team_thread") {
+    checkDb(
+      await db
+        .from("gmail_candidates")
+        .select("id")
+        .eq("id", input.candidate_id)
+        .eq("run_id", run.id)
+        .single(),
+    );
+    checkDb(
+      await db.rpc("gmail_prepare_association", {
+        team_candidate: input.candidate_id,
+        client_candidate: input.client_candidate_id,
+        evidence: input.evidence_id,
+        actor: actor.id,
+      }),
+    );
+    return { ok: true };
+  }
   if (input.operation === "team_thread") {
     checkDb(
       await db
@@ -228,7 +269,7 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
     return { ok: true };
   }
   if (
-    run.status !== "review" &&
+    !["review", "completed", "importing"].includes(run.status) &&
     !(
       input.operation === "select" &&
       run.status === "failed" &&
@@ -244,12 +285,12 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
     const candidate = checkDb(
       await db
         .from("gmail_candidates")
-        .select("imported_at,email,participant_kind")
+        .select("imported_at,import_requested_at,email,participant_kind")
         .eq("id", candidate_id)
         .eq("run_id", run_id)
         .single(),
     )!;
-    if (candidate.imported_at)
+    if (candidate.imported_at || candidate.import_requested_at)
       throw new HttpError(
         409,
         "This participant has already been imported; review the case timeline instead",

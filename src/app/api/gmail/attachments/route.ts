@@ -23,6 +23,7 @@ const selection = scope.and(
       )
       .max(500),
     mark_reviewed: z.boolean(),
+    candidate_id: z.uuid().optional(),
   }),
 );
 async function user() {
@@ -79,6 +80,16 @@ export async function POST(request: Request) {
         mark_reviewed: s.mark_reviewed,
       }),
     );
+    if (s.candidate_id) {
+      if (!s.run_id)
+        throw new HttpError(400, "Candidate import scope required");
+      checkDb(
+        await db.rpc("gmail_review_candidate_attachments", {
+          candidate: s.candidate_id,
+          run: s.run_id,
+        }),
+      );
+    }
     return Response.json({ ok: true });
   } catch (e) {
     if (e instanceof z.ZodError)

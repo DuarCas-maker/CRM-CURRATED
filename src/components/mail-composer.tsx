@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, type FormEvent } from "react";
+import { useState, useRef, useEffect, type FormEvent } from "react";
 import type { Locale, Opportunity, Workspace } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
 import type { Action } from "./crm";
@@ -43,6 +43,34 @@ export function MailComposer({
   );
   const [recipient, setRecipient] = useState(selected?.email || "");
   const [error, setError] = useState("");
+  const [mode, setMode] = useState("client");
+  const [processes, setProcesses] = useState<{ id: string; label: string }[]>(
+    [],
+  );
+  const [processId, setProcessId] = useState("");
+  const [lenderTargets, setLenderTargets] = useState<Record<string, string>>(
+    {},
+  );
+  useEffect(() => {
+    if (!caseId || data.demo) return;
+    const controller = new AbortController();
+    setProcesses([]);
+    setProcessId("");
+    setLenderTargets({});
+    fetch(`/api/conversations/channels?case=${caseId}`, {
+      signal: controller.signal,
+    })
+      .then(async (r) => {
+        const p = await r.json();
+        if (!r.ok) throw Error(p.error);
+        setProcesses(p.processes);
+        setProcessId(p.processes[0]?.id || "");
+      })
+      .catch((e) => {
+        if (!controller.signal.aborted) setError(e.message);
+      });
+    return () => controller.abort();
+  }, [caseId, data.demo]);
   const submitting = useRef(false);
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,10 +79,25 @@ export function MailComposer({
     setError("");
     const form = new FormData(e.currentTarget);
     try {
-      await act("compose_email", {
+      const targets = Object.entries(lenderTargets).map(
+        ([lender_id, email]) => {
+          const id = form.get(`submission:${lender_id}`);
+          return { lender_id, email, ...(id ? { submission_id: id } : {}) };
+        },
+      );
+      if (mode === "lenders" && (!processId || !targets.length))
+        throw Error(
+          t(
+            locale,
+            "Selecciona el proceso y al menos un lender.",
+            "Select a process and at least one lender.",
+          ),
+        );
+      await act(mode === "lenders" ? "compose_lenders" : "compose_email", {
         opportunity_id: caseId,
         account_id: accountId,
         to_email: recipient.trim(),
+        ...(mode === "lenders" ? { process_id: processId, targets } : {}),
         subject: form.get("subject"),
         body: form.get("body"),
         attachment_ids: form.getAll("attachment_id"),
@@ -148,17 +191,137 @@ export function MailComposer({
             )}
           </p>
         )}
-        <label className="field">
-          <span>{t(locale, "Para", "To")} *</span>
-          <input
-            type="email"
-            required
-            maxLength={254}
-            value={recipient}
-            disabled={busy}
-            onChange={(e) => setRecipient(e.target.value)}
-          />
-        </label>
+        {["superadmin", "closer_admin", "closer"].includes(
+          data.profile.role,
+        ) && (
+          <label className="field">
+            {t(locale, "Tipo de envío", "Send type")}
+            <select value={mode} onChange={(e) => setMode(e.target.value)}>
+              <option value="client">
+                {t(locale, "Correo a un contacto", "Email to one contact")}
+              </option>
+              <option value="lenders">
+                {t(
+                  locale,
+                  "Solicitud a varios lenders · correos individuales",
+                  "Request to multiple lenders · individual emails",
+                )}
+              </option>
+            </select>
+          </label>
+        )}
+        {mode === "lenders" ? (
+          <>
+            <label className="field">
+              {t(locale, "Proceso de financiación", "Financing process")}
+              <select
+                required
+                value={processId}
+                onChange={(e) => {
+                  setProcessId(e.target.value);
+                  setLenderTargets({});
+                }}
+              >
+                <option value="">
+                  {t(locale, "Seleccionar proceso", "Select process")}
+                </option>
+                {processes.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p>
+              {t(
+                locale,
+                "Selecciona lenders. Cada uno recibirá un correo independiente; no verá a los otros destinatarios.",
+                "Select lenders. Each receives an individual email and cannot see the other recipients.",
+              )}
+            </p>
+            {data.lenders.map((l) => (
+              <div className="document-row" key={l.id}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={l.id in lenderTargets}
+                    onChange={(e) =>
+                      setLenderTargets((old) => {
+                        const next = { ...old };
+                        if (e.target.checked) next[l.id] = l.email;
+                        else delete next[l.id];
+                        return next;
+                      })
+                    }
+                  />
+                  {l.name}
+                </label>
+                {l.id in lenderTargets && (
+                  <>
+                    <select
+                      aria-label={`${l.name} · ${t(locale, "Destinatario", "Recipient")}`}
+                      value={lenderTargets[l.id]}
+                      onChange={(e) =>
+                        setLenderTargets((old) => ({
+                          ...old,
+                          [l.id]: e.target.value,
+                        }))
+                      }
+                    >
+                      {(data.lender_contacts || [])
+                        .filter((c) => c.lender_id === l.id)
+                        .map((c) => (
+                          <option value={c.email} key={c.email}>
+                            {c.email}
+                          </option>
+                        ))}
+                    </select>
+                    <select
+                      name={`submission:${l.id}`}
+                      aria-label={t(
+                        locale,
+                        "Evaluación del lender",
+                        "Lender evaluation",
+                      )}
+                    >
+                      <option value="">
+                        {t(
+                          locale,
+                          "Usar evaluación del proceso o crear borrador",
+                          "Use process evaluation or create draft",
+                        )}
+                      </option>
+                      {data.submissions
+                        .filter(
+                          (s) =>
+                            s.opportunity_id === caseId &&
+                            s.lender_id === l.id &&
+                            (!s.process_id || s.process_id === processId),
+                        )
+                        .map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.status} · {s.id.slice(0, 8)}
+                          </option>
+                        ))}
+                    </select>
+                  </>
+                )}
+              </div>
+            ))}
+          </>
+        ) : (
+          <label className="field">
+            <span>{t(locale, "Para", "To")} *</span>
+            <input
+              type="email"
+              required
+              maxLength={254}
+              value={recipient}
+              disabled={busy}
+              onChange={(e) => setRecipient(e.target.value)}
+            />
+          </label>
+        )}
         <label className="field">
           <span>{t(locale, "Asunto", "Subject")} *</span>
           <input name="subject" required maxLength={200} disabled={busy} />

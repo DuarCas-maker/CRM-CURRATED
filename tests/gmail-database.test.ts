@@ -152,7 +152,7 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
       true,
     );
     await db.query(
-      "update gmail_candidates set selected=true,participant_kind='client',classification='active',company_name='Customer LLC' where id=$1",
+      "update gmail_candidates set import_requested_at=now(),selected=true,participant_kind='client',classification='active',company_name='Customer LLC' where id=$1",
       [candidate.id],
     );
     await db.query(
@@ -599,7 +599,7 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
     ).rows[0];
     assert.equal(untouchedCandidate.attachment_count, 1);
     await db.query(
-      "update gmail_candidates set selected=true,classification='active',participant_kind='client',company_name='Untouched LLC' where id=$1",
+      "update gmail_candidates set import_requested_at=now(),selected=true,classification='active',participant_kind='client',company_name='Untouched LLC' where id=$1",
       [untouchedCandidate.id],
     );
     await db.query(
@@ -700,7 +700,7 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
       )
     ).rows[0].id;
     await db.query(
-      "update gmail_candidates set selected=true,participant_kind='client',classification='active',phone='99999',selected_opportunity_id=$2,selected_process_id=$3 where id=$1",
+      "update gmail_candidates set import_requested_at=now(),selected=true,participant_kind='client',classification='active',phone='99999',selected_opportunity_id=$2,selected_process_id=$3 where id=$1",
       [reimportCandidate, caseId, process],
     );
     await db.query(

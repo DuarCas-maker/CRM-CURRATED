@@ -59,22 +59,171 @@ export async function GET(request: Request) {
       const cases = [
         ...new Map([...exact, ...matches].map((c) => [c.id, c])).values(),
       ];
+      if (clean) {
+        const byContact =
+          checkDb(
+            await service
+              .from("contacts")
+              .select("id,company_id")
+              .or(`email.ilike.%${clean}%,name.ilike.%${clean}%`)
+              .limit(30),
+          ) || [];
+        if (byContact.length) {
+          const byCase =
+            checkDb(
+              await service
+                .from("opportunities")
+                .select("id,company,contact_id,company_id,stage")
+                .or(
+                  `contact_id.in.(${byContact.map((c) => c.id).join(",")})${
+                    byContact.some((c) => c.company_id)
+                      ? `,company_id.in.(${byContact
+                          .filter((c) => c.company_id)
+                          .map((c) => c.company_id)
+                          .join(",")})`
+                      : ""
+                  }`,
+                )
+                .limit(30),
+            ) || [];
+          for (const c of byCase)
+            if (!cases.some((x) => x.id === c.id)) cases.push(c);
+        }
+      }
+      const evidenceId = params.get("evidence");
+      if (evidenceId) {
+        z.uuid().parse(evidenceId);
+        if (!candidate.evidence_ids.includes(evidenceId))
+          throw new HttpError(403, "Choose this participant's evidence");
+        const archive = checkDb(
+          await service
+            .from("gmail_archive_messages")
+            .select("participants,subject")
+            .eq("id", evidenceId)
+            .single(),
+        )!;
+        const emails = (archive.participants as { email: string }[]).map(
+          (p) => p.email,
+        );
+        const contacts = emails.length
+          ? checkDb(
+              await service
+                .from("contacts")
+                .select("id,company_id")
+                .in("email", emails),
+            ) || []
+          : [];
+        if (contacts.length) {
+          const related =
+            checkDb(
+              await service
+                .from("opportunities")
+                .select("id,company,contact_id,company_id,stage")
+                .or(
+                  `contact_id.in.(${contacts.map((c) => c.id).join(",")})${
+                    contacts.some((c) => c.company_id)
+                      ? `,company_id.in.(${contacts
+                          .filter((c) => c.company_id)
+                          .map((c) => c.company_id)
+                          .join(",")})`
+                      : ""
+                  }`,
+                )
+                .limit(30),
+            ) || [];
+          for (const c of related)
+            if (!cases.some((x) => x.id === c.id)) cases.push(c);
+        }
+      }
+      const threads =
+        candidate.participant_kind === "team"
+          ? checkDb(
+              await db.rpc("gmail_team_threads", {
+                candidate: candidate.id,
+                cursor_offset:
+                  Math.max(
+                    0,
+                    Math.floor(Number(params.get("thread_page")) || 0),
+                  ) * 50,
+              }),
+            ) || []
+          : [];
+      const associatedIds = threads
+        .map((th: { opportunity_id: string | null }) => th.opportunity_id)
+        .filter(Boolean);
+      if (associatedIds.length) {
+        const related =
+          checkDb(
+            await service
+              .from("opportunities")
+              .select("id,company,contact_id,company_id,stage")
+              .in("id", associatedIds),
+          ) || [];
+        for (const c of related)
+          if (!cases.some((x) => x.id === c.id)) cases.push(c);
+      }
+      const clientContacts = cases.length
+        ? checkDb(
+            await service
+              .from("contacts")
+              .select("id,email,name")
+              .in(
+                "id",
+                cases.map((c) => c.contact_id),
+              ),
+          ) || []
+        : [];
+      const cleanQuery = clean || "";
+      const pending =
+        checkDb(
+          await service
+            .from("gmail_candidates")
+            .select("id,email,name,company_name,run_id")
+            .is("imported_at", null)
+            .in("participant_kind", ["client", "unknown"])
+            .or(
+              `company_name.ilike.%${cleanQuery}%,name.ilike.%${cleanQuery}%,email.ilike.%${cleanQuery}%`,
+            )
+            .limit(30),
+        ) || [];
+      const intents =
+        checkDb(
+          await db
+            .from("gmail_pending_associations")
+            .select("*")
+            .eq("team_candidate_id", candidate.id),
+        ) || [];
+      const intentClients = intents.length
+        ? checkDb(
+            await service
+              .from("gmail_candidates")
+              .select("id,email,company_name,name")
+              .in(
+                "id",
+                intents.map((p) => p.client_candidate_id),
+              ),
+          ) || []
+        : [];
       return Response.json(
         {
-          threads:
-            candidate.participant_kind === "team"
-              ? checkDb(
-                  await db.rpc("gmail_team_threads", {
-                    candidate: candidate.id,
-                    cursor_offset:
-                      Math.max(
-                        0,
-                        Math.floor(Number(params.get("thread_page")) || 0),
-                      ) * 50,
-                  }),
-                )
-              : [],
-          cases,
+          threads,
+          pending_candidates: pending,
+          pending_associations: intents.map((p) => ({
+            ...p,
+            company_name:
+              intentClients.find((c) => c.id === p.client_candidate_id)
+                ?.company_name ||
+              intentClients.find((c) => c.id === p.client_candidate_id)?.name,
+            email: intentClients.find((c) => c.id === p.client_candidate_id)
+              ?.email,
+          })),
+          cases: cases.map((c) => ({
+            ...c,
+            email:
+              clientContacts.find((ct) => ct.id === c.contact_id)?.email || "",
+            contact:
+              clientContacts.find((ct) => ct.id === c.contact_id)?.name || "",
+          })),
           companies: checkDb(
             await service
               .from("companies")

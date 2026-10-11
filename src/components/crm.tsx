@@ -57,6 +57,8 @@ import { teamLabel } from "@/lib/gmail-team";
 import { demoAction } from "@/lib/demo-actions";
 import { Integrations } from "./integrations";
 import { MailComposer, MailSendStatus } from "./mail-composer";
+import { MailInbox } from "./mail-inbox";
+import { LenderContacts } from "./lender-contacts";
 import {
   getLeadTab,
   leadTabs,
@@ -424,7 +426,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
               "Cambio aplicado en la demostración",
               "Change applied in this demo",
             )
-          : ["compose_email", "reply"].includes(kind)
+          : ["compose_email", "compose_lenders", "reply"].includes(kind)
             ? t(
                 locale,
                 "Correo en cola. Consulta el estado de envíos.",
@@ -499,6 +501,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     },
     { id: "lenders", es: "Lenders", en: "Lenders", icon: Landmark },
     { id: "reports", es: "Indicadores", en: "Reports", icon: BarChart3 },
+    { id: "settings", es: "Configuración", en: "Settings", icon: Settings },
   ];
   const titles: Record<View, [string, string]> = {
     overview: [
@@ -724,13 +727,6 @@ export default function CRM({ initial }: { initial: Workspace }) {
               )}
             </p>
           </div>
-          <button
-            className={`settings-link ${view === "settings" ? "active" : ""}`}
-            onClick={() => navigate("settings")}
-          >
-            <Settings size={19} />
-            {t(locale, "Configuración", "Settings")}
-          </button>
           <div className="sidebar-user">
             <Avatar name={profile.name} />
             <div>
@@ -1605,7 +1601,17 @@ export default function CRM({ initial }: { initial: Workspace }) {
               {view === "inbox" && (
                 <MailSendStatus data={data} locale={locale} />
               )}
-              {view === "inbox" && (
+              {view === "inbox" && data.gmail_history_enabled && !data.demo && (
+                <MailInbox
+                  data={data}
+                  locale={locale}
+                  act={act}
+                  busy={busy}
+                  openCase={setSelected}
+                />
+              )}
+              {view === "inbox" &&
+                (!data.gmail_history_enabled || data.demo) && (
                 <section className="panel inbox">
                   <aside className="conversation-list">
                     <h2>{t(locale, "Bandeja compartida", "Shared inbox")}</h2>
@@ -1893,7 +1899,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     )}
                   </div>
                 </section>
-              )}
+                )}
               {view === "campaigns" && (
                 <div className="campaign-grid">
                   {data.campaigns.map((c) => (
@@ -1987,6 +1993,16 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   )}
                 </div>
               )}
+              {view === "lenders" &&
+                data.gmail_history_enabled &&
+                !data.demo && (
+                  <LenderContacts
+                    data={data}
+                    locale={locale}
+                    act={act}
+                    busy={busy}
+                  />
+                )}
               {view === "lenders" && (
                 <div className="lender-grid">
                   {data.lenders.map((l) => (
@@ -2177,6 +2193,10 @@ export default function CRM({ initial }: { initial: Workspace }) {
                       locale={locale}
                       act={act}
                       busy={busy}
+                      openCase={(id) => {
+                        setSelected(id);
+                        setView("pipeline");
+                      }}
                     />
                   )}
                   <section className="panel settings-panel">

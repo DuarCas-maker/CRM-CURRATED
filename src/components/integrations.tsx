@@ -10,11 +10,13 @@ export function Integrations({
   locale,
   act,
   busy,
+  openCase,
 }: {
   data: Workspace;
   locale: Locale;
   act: Action;
   busy: boolean;
+  openCase?: (id: string) => void;
 }) {
   const [modal, setModal] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -40,7 +42,7 @@ export function Integrations({
   }
   return (
     <>
-      <GmailHistory workspace={data} locale={locale} />
+      <GmailHistory workspace={data} locale={locale} openCase={openCase} />
       <section className="panel settings-panel">
         <h2>
           {t(locale, "Administración de accesos", "Access administration")}

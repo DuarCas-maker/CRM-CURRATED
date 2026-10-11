@@ -127,6 +127,7 @@ export interface Lender {
   notes: string;
 }
 export interface Submission {
+  process_id?: string | null;
   id: string;
   opportunity_id: string;
   lender_id: string;
@@ -189,6 +190,8 @@ export interface ImportBatch {
   created_at: string;
 }
 export interface Conversation {
+  process_id?: string | null;
+  recipient_email?: string | null;
   id: string;
   opportunity_id: string;
   submission_id: string | null;
@@ -199,6 +202,8 @@ export interface Conversation {
   updated_at: string;
 }
 export interface Message {
+  participants?: import("./mail-display").MailPeer[];
+  internet_message_id?: string;
   sender_team?: import("./gmail-team").TeamLabel;
   archive_message_id?: string | null;
   nature?: string;
@@ -226,6 +231,7 @@ export interface Preferences {
   locale: Locale;
 }
 export interface Workspace {
+  lender_contacts?: { email: string; lender_id: string }[];
   sender_account_ids?: string[];
   mail_sends?: {
     id: string;

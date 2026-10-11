@@ -206,7 +206,21 @@ type Thread = {
 };
 type Matches = {
   threads: Thread[];
-  cases: { id: string; company: string }[];
+  cases: { id: string; company: string; email?: string; contact?: string }[];
+  pending_candidates?: {
+    id: string;
+    email: string;
+    name: string;
+    company_name: string;
+  }[];
+  pending_associations?: {
+    evidence_id: string;
+    client_candidate_id: string;
+    applied_at: string | null;
+    last_error: string | null;
+    company_name?: string;
+    email?: string;
+  }[];
   processes: { id: string; opportunity_id: string; label: string }[];
   submissions: {
     id: string;
@@ -221,12 +235,14 @@ export function GmailTeamThreads({
   locale,
   workspace,
   openSource,
+  openCase,
 }: {
   candidateId: string;
   runId: string;
   locale: Locale;
   workspace: Workspace;
   openSource: (id: string) => void;
+  openCase?: (id: string) => void;
 }) {
   const [result, setResult] = useState<Matches>({
     threads: [],
@@ -239,12 +255,13 @@ export function GmailTeamThreads({
   const [target, setTarget] = useState<Thread | null>(null);
   const [caseId, setCaseId] = useState("");
   const [processId, setProcessId] = useState("");
+  const [submissionId, setSubmissionId] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState("");
-  async function load(query = search) {
+  async function load(query = search, evidence = target?.evidence_id) {
     const r = await fetch(
-      `/api/gmail/history?${new URLSearchParams({ candidate: candidateId, search: query, thread_page: String(page) })}`,
+      `/api/gmail/history?${new URLSearchParams({ candidate: candidateId, search: query, thread_page: String(page), ...(evidence ? { evidence } : {}) })}`,
     );
     const body = await r.json();
     if (!r.ok) throw new Error(body.error);
@@ -260,15 +277,18 @@ export function GmailTeamThreads({
     setSuccess("");
     const f = new FormData(e.currentTarget);
     try {
+      const pending = caseId.startsWith("pending:");
       const r = await fetch("/api/gmail/history", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          operation: "team_thread",
+          operation: pending ? "prepare_team_thread" : "team_thread",
           run_id: runId,
           candidate_id: candidateId,
           evidence_id: target!.evidence_id,
-          opportunity_id: caseId,
+          ...(pending
+            ? { client_candidate_id: caseId.slice(8) }
+            : { opportunity_id: caseId }),
           process_id: processId,
           submission_id: f.get("submission") || null,
         }),
@@ -277,11 +297,17 @@ export function GmailTeamThreads({
       if (!r.ok) throw new Error(body.error);
       setTarget(null);
       setSuccess(
-        t(
-          locale,
-          "Conversación asociada. Sus mensajes y documentos se incorporarán en segundo plano.",
-          "Conversation associated. Its messages and documents will be incorporated in the background.",
-        ),
+        pending
+          ? t(
+              locale,
+              "Asociación preparada. Se aplicará cuando confirmes la importación del cliente.",
+              "Association prepared. It applies when you confirm the customer import.",
+            )
+          : t(
+              locale,
+              "Asociación confirmada. Sus mensajes y los adjuntos seleccionados se incorporarán en segundo plano.",
+              "Association confirmed. Its messages and selected attachments will be incorporated in the background.",
+            ),
       );
       await load();
     } catch (e) {
@@ -319,6 +345,25 @@ export function GmailTeamThreads({
                     ?.company || th.opportunity_id)
                 : t(locale, "Pendiente de asociación", "Awaiting association")}
             </small>
+            {th.opportunity_id && (
+              <small>
+                {result.cases.find((c) => c.id === th.opportunity_id)?.email} ·{" "}
+                {result.processes.find((p) => p.id === th.process_id)?.label}
+                {th.submission_id &&
+                  ` · ${workspace.lenders.find((l) => l.id === result.submissions.find((s) => s.id === th.submission_id)?.lender_id)?.name || "Lender"}`}
+                {" · "}
+                {t(locale, "Asociación confirmada", "Association confirmed")}
+              </small>
+            )}
+            {!th.opportunity_id &&
+              result.pending_associations
+                ?.filter((p) => p.evidence_id === th.evidence_id)
+                .map((p) => (
+                  <small key={p.evidence_id}>
+                    {p.last_error ||
+                      `${t(locale, "Preparada para", "Prepared for")} ${p.company_name || p.email || p.client_candidate_id} · ${t(locale, "pendiente de importar el cliente", "awaiting customer import")}`}
+                  </small>
+                ))}
           </div>
           <div className="card-actions">
             <button
@@ -334,9 +379,26 @@ export function GmailTeamThreads({
                   setTarget(th);
                   setCaseId("");
                   setProcessId("");
+                  setSubmissionId("");
+                  setError("");
+                  setSuccess("");
+                  const query = th.subject
+                    .replace(/^(?:(?:re|fwd?):\s*)+/gi, "")
+                    .replace(/^funding application\s*[-:]\s*/i, "")
+                    .trim();
+                  setSearch(query);
+                  load(query, th.evidence_id).catch((e) => setError(e.message));
                 }}
               >
                 {t(locale, "Asociar conversación", "Associate conversation")}
+              </button>
+            )}
+            {th.opportunity_id && openCase && (
+              <button
+                className="text-button"
+                onClick={() => openCase(th.opportunity_id!)}
+              >
+                {t(locale, "Ver expediente asociado", "View associated case")}
               </button>
             )}
           </div>
@@ -360,100 +422,204 @@ export function GmailTeamThreads({
         </button>
       </div>
       {target && (
-        <form onSubmit={associate}>
-          <h4>{target.subject}</h4>
-          <div className="gmail-connect-form">
-            <input
-              aria-label={t(
+        <Modal
+          wide
+          title={t(
+            locale,
+            "Asociar conversación con un cliente",
+            "Associate conversation with a customer",
+          )}
+          close={() => {
+            if (!busy) setTarget(null);
+          }}
+        >
+          <form onSubmit={associate}>
+            <h4>{target.subject}</h4>
+            <p>
+              {t(
                 locale,
-                "Buscar cliente de la conversación",
-                "Search conversation customer",
+                "Elige el destino de este hilo. El asunto y los correos son pistas; la asociación requiere tu confirmación.",
+                "Choose this thread's destination. Subject and emails are evidence; association requires your confirmation.",
               )}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button
-              className="button"
-              type="button"
-              onClick={() => load().catch((e) => setError(e.message))}
-            >
-              {t(locale, "Buscar expediente", "Search cases")}
-            </button>
-          </div>
-          <label>
-            {t(locale, "Expediente confirmado", "Confirmed case")}
-            <select
-              required
-              value={caseId}
-              onChange={(e) => {
-                setCaseId(e.target.value);
-                setProcessId("");
-              }}
-            >
-              <option value="">
-                {t(locale, "Seleccionar expediente", "Select case")}
-              </option>
-              {result.cases.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.company} · {c.id.slice(0, 8)}
+            </p>
+            {error && (
+              <div className="error-banner" role="alert">
+                {error}
+              </div>
+            )}
+            <div className="gmail-connect-form">
+              <input
+                aria-label={t(
+                  locale,
+                  "Buscar cliente de la conversación",
+                  "Search conversation customer",
+                )}
+                value={search}
+                placeholder={t(
+                  locale,
+                  "Empresa, nombre o correo del cliente",
+                  "Customer company, name or email",
+                )}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <button
+                className="button"
+                type="button"
+                onClick={() => load().catch((e) => setError(e.message))}
+              >
+                {t(locale, "Buscar expediente", "Search cases")}
+              </button>
+            </div>
+            <label>
+              {t(locale, "Expediente confirmado", "Confirmed case")}
+              <select
+                required
+                value={caseId}
+                onChange={(e) => {
+                  setCaseId(e.target.value);
+                  setProcessId("");
+                  setSubmissionId("");
+                }}
+              >
+                <option value="">
+                  {t(locale, "Seleccionar expediente", "Select case")}
                 </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            {t(locale, "Proceso confirmado", "Confirmed process")}
-            <select
-              required
-              value={processId}
-              onChange={(e) => setProcessId(e.target.value)}
-            >
-              <option value="">
-                {t(locale, "Seleccionar proceso", "Select process")}
-              </option>
-              {result.processes
-                .filter((p) => p.opportunity_id === caseId)
-                .map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.label}
+                {result.cases.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.company} · {c.contact} · {c.email}
                   </option>
                 ))}
-            </select>
-          </label>
-          <label>
-            {t(
-              locale,
-              "Evaluación del lender (si corresponde)",
-              "Lender evaluation (if applicable)",
+                {!!result.pending_candidates?.length && (
+                  <optgroup
+                    label={t(
+                      locale,
+                      "Clientes pendientes de importar",
+                      "Customers awaiting import",
+                    )}
+                  >
+                    {result.pending_candidates.map((c) => (
+                      <option value={`pending:${c.id}`} key={c.id}>
+                        {c.company_name || c.name} · {c.email}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </select>
+            </label>
+            {!caseId.startsWith("pending:") && (
+              <label>
+                {t(locale, "Proceso confirmado", "Confirmed process")}
+                <select
+                  required
+                  value={processId}
+                  onChange={(e) => {
+                    setProcessId(e.target.value);
+                    setSubmissionId("");
+                  }}
+                >
+                  <option value="">
+                    {t(locale, "Seleccionar proceso", "Select process")}
+                  </option>
+                  {result.processes
+                    .filter((p) => p.opportunity_id === caseId)
+                    .map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.label}
+                      </option>
+                    ))}
+                </select>
+              </label>
             )}
-            <select name="submission" key={`${caseId}:${processId}`}>
-              <option value="">
+            {!caseId.startsWith("pending:") && (
+              <label>
                 {t(
                   locale,
-                  "Conversación comercial sin evaluación de lender",
-                  "Commercial conversation without lender evaluation",
+                  "Evaluación del lender (si corresponde)",
+                  "Lender evaluation (if applicable)",
                 )}
-              </option>
-              {result.submissions
-                .filter(
-                  (s) =>
-                    s.opportunity_id === caseId && s.process_id === processId,
-                )
-                .map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {workspace.lenders.find((l) => l.id === s.lender_id)
-                      ?.name || s.id}
+                <select
+                  name="submission"
+                  value={submissionId}
+                  onChange={(e) => setSubmissionId(e.target.value)}
+                >
+                  <option value="">
+                    {t(
+                      locale,
+                      "Conversación comercial sin evaluación de lender",
+                      "Commercial conversation without lender evaluation",
+                    )}
                   </option>
-                ))}
-            </select>
-          </label>
-          <button className="button primary" disabled={busy}>
-            {t(
-              locale,
-              "Confirmar asociación de este hilo",
-              "Confirm this thread's association",
+                  {result.submissions
+                    .filter(
+                      (s) =>
+                        s.opportunity_id === caseId &&
+                        s.process_id === processId,
+                    )
+                    .map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {workspace.lenders.find((l) => l.id === s.lender_id)
+                          ?.name || s.id}
+                      </option>
+                    ))}
+                </select>
+              </label>
             )}
-          </button>
-        </form>
+            {caseId && (
+              <div className="info-banner">
+                <strong>
+                  {caseId.startsWith("pending:")
+                    ? result.pending_candidates?.find(
+                        (c) => c.id === caseId.slice(8),
+                      )?.company_name
+                    : result.cases.find((c) => c.id === caseId)?.company}
+                </strong>
+                <p>
+                  {caseId.startsWith("pending:")
+                    ? result.pending_candidates?.find(
+                        (c) => c.id === caseId.slice(8),
+                      )?.email
+                    : result.cases.find((c) => c.id === caseId)?.email}
+                </p>
+                <p>
+                  {caseId.startsWith("pending:")
+                    ? t(
+                        locale,
+                        "Asociación pendiente hasta confirmar la incorporación del cliente. No crea un expediente ahora.",
+                        "Association remains pending until customer import is confirmed. No case is created now.",
+                      )
+                    : result.processes.find((p) => p.id === processId)?.label ||
+                      t(locale, "Selecciona el proceso", "Select the process")}
+                </p>
+                {submissionId && (
+                  <p>
+                    {
+                      workspace.lenders.find(
+                        (l) =>
+                          l.id ===
+                          result.submissions.find((s) => s.id === submissionId)
+                            ?.lender_id,
+                      )?.name
+                    }
+                  </p>
+                )}
+              </div>
+            )}
+            <button
+              className="button primary"
+              disabled={
+                busy ||
+                !caseId ||
+                (!caseId.startsWith("pending:") && !processId)
+              }
+            >
+              {t(
+                locale,
+                "Confirmar asociación de este hilo",
+                "Confirm this thread's association",
+              )}
+            </button>
+          </form>
+        </Modal>
       )}
     </section>
   );

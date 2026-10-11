@@ -31,7 +31,10 @@ export async function POST(request: Request) {
       ["associate_thread", "import_attachment", "request_documents"].includes(
         kind,
       ) ||
-      (["reply", "compose_email"].includes(kind) && gmailHistoryEnabled())
+      (["reply", "compose_email", "compose_lenders", "lender_contact"].includes(
+        kind,
+      ) &&
+        gmailHistoryEnabled())
     )
       return Response.json(
         await mailAction(kind, p, idempotency_key, db, profile),

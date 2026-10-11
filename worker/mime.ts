@@ -15,6 +15,7 @@ const base64 = (bytes: Buffer) =>
 export function buildMime(input: {
   from: string;
   to: string;
+  cc?: string[];
   subject: string;
   body: string;
   messageId: string;
@@ -32,6 +33,7 @@ export function buildMime(input: {
     `Date: ${new Date().toUTCString()}`,
     "MIME-Version: 1.0",
   ];
+  if (input.cc?.length) headers.push(`Cc: ${input.cc.map(header).join(", ")}`);
   if (input.inReplyTo) headers.push(`In-Reply-To: ${header(input.inReplyTo)}`);
   if (input.references) headers.push(`References: ${header(input.references)}`);
   if (input.unsubscribe)
@@ -62,8 +64,20 @@ export type GmailPart = {
   parts?: GmailPart[];
 };
 export function messageText(part: GmailPart): string {
+  if (part.filename) return ""; // Attachments have their own evidence and selection flow.
   if (part.mimeType === "text/plain" && part.body?.data)
     return Buffer.from(part.body.data, "base64url").toString("utf8");
+  if (part.mimeType === "multipart/alternative") {
+    const plain = (part.parts || []).find(
+      (p) => p.mimeType === "text/plain" && p.body?.data && !p.filename,
+    );
+    if (plain) return messageText(plain);
+    for (const child of part.parts || []) {
+      const text = messageText(child);
+      if (text) return text;
+    }
+    return "";
+  }
   const plain = (part.parts || []).map(messageText).filter(Boolean).join("\n");
   if (plain) return plain;
   if (part.mimeType === "text/html" && part.body?.data)
@@ -71,11 +85,14 @@ export function messageText(part: GmailPart): string {
       .toString("utf8")
       .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "")
       .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, "")
+      .replace(/<br\s*\/?>|<\/(?:p|div|li|h[1-6]|tr)>/gi, "\n")
       .replace(/<[^>]*>/g, " ")
       .replace(/&nbsp;/g, " ")
       .replace(/&amp;/g, "&")
       .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">");
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/(?:&#39;|&apos;)/g, "'");
   return "";
 }
 export function attachments(part: GmailPart): GmailPart[] {
