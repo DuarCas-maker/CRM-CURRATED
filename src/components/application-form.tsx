@@ -328,7 +328,7 @@ export function ApplicationForm({
         style={{
           textAlign: "center",
           fontSize: 11,
-          color: "#829a8e",
+          color: "var(--muted)",
           marginTop: 25,
         }}
       >

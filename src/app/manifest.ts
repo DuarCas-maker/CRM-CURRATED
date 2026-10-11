@@ -6,8 +6,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Your financing workspace",
     start_url: "/",
     display: "standalone",
-    background_color: "#f6f8fa",
-    theme_color: "#102b30",
+    background_color: "#F5F1EA",
+    theme_color: "#0B0B0B",
     icons: [
       {
         src: "/icon-192.png",

@@ -86,7 +86,7 @@ export default function Login({
       </section>
       <section className="auth-content">
         <div className="auth-card">
-          <ShieldCheck size={30} color="#578873" />
+          <ShieldCheck size={30} color="var(--accent)" />
           <h2 style={{ marginTop: 20 }}>
             {factor ? "Verifica tu identidad" : "Bienvenido a Curated"}
           </h2>
