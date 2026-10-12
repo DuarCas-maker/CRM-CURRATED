@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
+import { Reply, ReplyAll, Forward, ExternalLink } from "lucide-react";
 import type {
   Conversation,
   Message,
@@ -16,6 +17,11 @@ import { forwardedBody, type MailDraft } from "@/lib/mail-manager";
 import { MailBody } from "./mail-bubble";
 import { messageChannels, suggestedReply } from "@/lib/mail-display";
 import { teamLabel } from "@/lib/gmail-team";
+import {
+  mailChatMessages,
+  mailSendLabels,
+  type MailReplySend,
+} from "@/lib/mail-chat";
 type Channels = {
   conversations: Conversation[];
   processes: { id: string; label: string; sequence_number: number }[];
@@ -33,6 +39,7 @@ type Channels = {
   submissions?: { id: string; lender_id: string; process_id: string | null }[];
 };
 type Page = {
+  sends?: MailReplySend[];
   messages: Message[];
   attachments: NonNullable<Workspace["attachments"]>;
   hasMore: boolean;
@@ -73,6 +80,7 @@ export function MailInbox({
   );
   const [metadata, setMetadata] = useState<Channels>(empty);
   const [process, setProcess] = useState("all");
+  const [selectedThread, setSelectedThread] = useState("all");
   const [channel, setChannel] = useState("all");
   const [pages, setPages] = useState<Record<string, Page>>({});
   const [error, setError] = useState("");
@@ -84,6 +92,7 @@ export function MailInbox({
   const [originalThread, setOriginalThread] = useState<string | null>(null);
   const [to, setTo] = useState("");
   const [cc, setCc] = useState("");
+  const [queuedReplies, setQueuedReplies] = useState<MailReplySend[]>([]);
   const generation = useRef(0);
   const pageGeneration = useRef(0);
   const loadedSource = useRef("");
@@ -97,11 +106,15 @@ export function MailInbox({
     setReply(null);
     setEditing(null);
     setOriginalThread(null);
-  }, [caseId, process, channel]);
+  }, [caseId, process, channel, selectedThread]);
+  useEffect(() => {
+    setSelectedThread("all");
+    setQueuedReplies([]);
+  }, [caseId]);
   useEffect(() => {
     setPages({});
     loadedSource.current = "";
-  }, [caseId, process, search]);
+  }, [caseId, process, search, selectedThread]);
   useEffect(() => {
     const timer = setInterval(() => {
       if (!document.hidden) setRevision((r) => r + 1);
@@ -141,7 +154,9 @@ export function MailInbox({
     return () => controller.abort();
   }, [caseId, revision]);
   const threads = metadata.conversations.filter(
-    (c) => process === "all" || (c.process_id || "") === process,
+    (c) =>
+      (process === "all" || (c.process_id || "") === process) &&
+      (selectedThread === "all" || c.id === selectedThread),
   );
   useEffect(() => {
     if (metadata.conversations.some((c) => c.opportunity_id !== caseId)) return;
@@ -165,7 +180,7 @@ export function MailInbox({
           }),
         );
         if (!controller.signal.aborted) {
-          const key = `${caseId}:${process}:${search}`;
+          const key = `${caseId}:${process}:${search}:${selectedThread}`;
           const preserve = loadedSource.current === key;
           setPages((old) =>
             Object.fromEntries(
@@ -220,12 +235,12 @@ export function MailInbox({
       }
     })();
     return () => controller.abort();
-  }, [metadata, process, search, caseId]);
+  }, [metadata, process, search, caseId, selectedThread]);
   const all = Object.values(pages)
     .flatMap((p) => p.messages)
     .filter((m) => threads.some((c) => c.id === m.conversation_id));
   const seen = new Set<string>();
-  const messages = all
+  const receivedMessages = all
     .sort(
       (a, b) => a.sent_at.localeCompare(b.sent_at) || a.id.localeCompare(b.id),
     )
@@ -235,6 +250,33 @@ export function MailInbox({
       seen.add(key);
       return true;
     });
+  const sends = [
+    ...new Map(
+      [
+        ...queuedReplies,
+        ...Object.values(pages).flatMap((p) => p.sends || []),
+      ].map((s) => [s.id, s]),
+    ).values(),
+  ];
+  const messages = mailChatMessages(receivedMessages, sends, data.accounts)
+    .filter((m) => threads.some((c) => c.id === m.conversation_id))
+    .filter(
+      (m) =>
+        !search.trim() ||
+        `${m.sender} ${m.body}`
+          .toLowerCase()
+          .includes(search.trim().toLowerCase()),
+    );
+  const awaitingSend = sends.some((s) =>
+    ["queued", "sending"].includes(s.status),
+  );
+  useEffect(() => {
+    if (!awaitingSend) return;
+    const timer = setInterval(() => {
+      if (!document.hidden) setRevision((r) => r + 1);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [awaitingSend]);
   const channelOf = (m: Message) => {
     const co = metadata.conversations.find((c) => c.id === m.conversation_id);
     const sub = metadata.submissions?.find((s) => s.id === co?.submission_id);
@@ -255,6 +297,9 @@ export function MailInbox({
   const visible = messages.filter(
     (m) => channel === "all" || channelOf(m).includes(channel),
   );
+  const latestReplyTarget =
+    visible.filter((m) => !m.queued_send && m.direction === "inbound").at(-1) ||
+    visible.filter((m) => !m.queued_send).at(-1);
   const lenderId = channel.startsWith("lender:") ? channel.slice(7) : undefined;
   const options = [
     { id: "all", name: t(locale, "Todos los correos", "All emails") },
@@ -275,6 +320,7 @@ export function MailInbox({
     },
   ];
   function chooseReply(m: Message, all = false) {
+    setEditing(null);
     setReply(m);
     const peers = lenderId
       ? metadata.lender_contacts
@@ -306,6 +352,63 @@ export function MailInbox({
     );
     setCc(all ? suggested.cc.join(", ") : "");
   }
+  const replyThread = metadata.conversations.find(
+    (c) => c.id === reply?.conversation_id,
+  );
+  const replyEditor = reply && (
+    <MailEditor
+      key={reply.id}
+      inline
+      replyContext={{ sender: reply.sender, body: reply.body }}
+      data={data}
+      locale={locale}
+      act={act}
+      busy={busy}
+      close={() => {
+        setReply(null);
+        setRevision((r) => r + 1);
+      }}
+      onQueued={(mail, id) => {
+        if (!id) return;
+        setQueuedReplies((old) => [
+          ...old,
+          {
+            id,
+            conversation_id: reply.conversation_id,
+            reply_message_id: reply.id,
+            account_id: mail.account_id!,
+            to_email: mail.to_email!,
+            cc_emails: mail.cc_emails || [],
+            body: mail.body!,
+            subject: mail.subject!,
+            status: "queued",
+            message_id_header: "",
+            created_at: new Date().toISOString(),
+          },
+        ]);
+      }}
+      opportunity={data.opportunities.find((o) => o.id === caseId)}
+      start={{
+        mode: "reply",
+        opportunity_id: caseId,
+        conversation_id: reply.conversation_id,
+        reply_message_id: reply.id,
+        account_id: replyThread?.account_id,
+        process_id: replyThread?.process_id,
+        submission_id:
+          metadata.submissions?.find(
+            (s) =>
+              s.lender_id === lenderId &&
+              s.process_id === replyThread?.process_id,
+          )?.id ||
+          replyThread?.submission_id ||
+          undefined,
+        subject: replyThread?.subject,
+        to_email: to,
+        cc_emails: cc.split(/[,;]+/).filter(Boolean),
+      }}
+    />
+  );
   async function older() {
     const current = pageGeneration.current;
     setLoading(true);
@@ -376,7 +479,10 @@ export function MailInbox({
             {t(locale, "Proceso de financiación", "Financing process")}
             <select
               value={process}
-              onChange={(e) => setProcess(e.target.value)}
+              onChange={(e) => {
+                setProcess(e.target.value);
+                setSelectedThread("all");
+              }}
             >
               <option value="all">
                 {t(locale, "Todos los procesos", "All processes")}
@@ -389,6 +495,27 @@ export function MailInbox({
                   {p.sequence_number} · {p.label}
                 </option>
               ))}
+            </select>
+          </label>
+          <label className="field">
+            {t(locale, "Hilo de conversación", "Conversation thread")}
+            <select
+              value={selectedThread}
+              onChange={(e) => setSelectedThread(e.target.value)}
+            >
+              <option value="all">
+                {t(locale, "Todos los hilos", "All threads")}
+              </option>
+              {metadata.conversations
+                .filter(
+                  (c) => process === "all" || (c.process_id || "") === process,
+                )
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.subject} ·{" "}
+                    {data.accounts.find((a) => a.id === c.account_id)?.email}
+                  </option>
+                ))}
             </select>
           </label>
           {options.map((o) => (
@@ -423,7 +550,12 @@ export function MailInbox({
             </p>
           )}
           <div className="conversation-header">
-            <h2>{options.find((o) => o.id === channel)?.name}</h2>
+            <h2>
+              {selectedThread === "all"
+                ? options.find((o) => o.id === channel)?.name
+                : metadata.conversations.find((c) => c.id === selectedThread)
+                    ?.subject}
+            </h2>
             {!opportunity && (
               <button className="text-button" onClick={() => openCase(caseId)}>
                 {t(locale, "Ver expediente", "View case")}
@@ -463,99 +595,144 @@ export function MailInbox({
               </button>
             )}
             {visible.map((m) => (
-              <article
-                className={`message ${m.direction === "outbound" || m.sender_team || metadata.team_emails.includes(m.sender) ? "outbound" : "inbound"}`}
-                key={m.id}
-              >
-                <div>
-                  <strong>{m.sender}</strong>
-                  {m.sender_team && (
-                    <small>{teamLabel(m.sender_team, locale)}</small>
+              <Fragment key={m.id}>
+                <article
+                  className={`message ${m.direction === "outbound" || m.sender_team || metadata.team_emails.includes(m.sender) ? "outbound" : "inbound"}`}
+                  key={m.id}
+                >
+                  <div>
+                    <strong>{m.sender}</strong>
+                    {m.sender_team && (
+                      <small>{teamLabel(m.sender_team, locale)}</small>
+                    )}
+                    <small>{dateLabel(m.sent_at, locale, true)}</small>
+                    {m.direction === "outbound" && (
+                      <span
+                        className={`badge mail-send-state ${m.status}`}
+                        role="status"
+                      >
+                        {t(
+                          locale,
+                          ...(mailSendLabels[m.status] || [m.status, m.status]),
+                        )}
+                      </span>
+                    )}
+                  </div>
+                  <small>
+                    {metadata.conversations.find(
+                      (c) => c.id === m.conversation_id,
+                    )?.subject || m.queued_send?.subject}
+                  </small>
+                  <MailBody body={m.body} locale={locale} />
+                  <p className="mail-visible-recipients">
+                    {(m.participants || [])
+                      .filter((p) => p.role === "to" || p.role === "cc")
+                      .map((p, i) => (
+                        <span key={`${p.email}:${i}`}>
+                          <b>
+                            {p.role === "cc" ? "CC" : t(locale, "Para", "To")}:
+                          </b>{" "}
+                          {p.email}
+                        </span>
+                      ))}
+                  </p>
+                  <details>
+                    <summary>
+                      {t(locale, "Destinatarios", "Recipients")}
+                    </summary>
+                    {(m.participants || []).map((p, i) => (
+                      <p key={i}>
+                        {p.role}: {p.email}
+                      </p>
+                    ))}
+                  </details>
+                  {Object.values(pages)
+                    .flatMap((p) => p.files || [])
+                    .filter((f) => f.message_id === m.id)
+                    .map((f) => (
+                      <a className="button" key={f.id} href={f.href}>
+                        {f.name} · {t(locale, "Descargar", "Download")}{" "}
+                        {f.last_error &&
+                          ` · ${t(locale, "Copia pendiente de revisión", "Copy requires review")}`}
+                      </a>
+                    ))}
+                  {!m.queued_send && (
+                    <div className="mail-message-actions">
+                      {
+                        <button
+                          type="button"
+                          className="button"
+                          onClick={() => chooseReply(m)}
+                        >
+                          <Reply size={16} />
+                          {t(locale, "Responder", "Reply")}
+                        </button>
+                      }
+                      {
+                        <button
+                          type="button"
+                          className="button"
+                          onClick={() => chooseReply(m, true)}
+                        >
+                          <ReplyAll size={16} />
+                          {t(locale, "Responder a todos", "Reply all")}
+                        </button>
+                      }
+                      <button
+                        type="button"
+                        className="button"
+                        onClick={() => {
+                          setReply(null);
+                          const c = metadata.conversations.find(
+                            (c) => c.id === m.conversation_id,
+                          );
+                          setEditing({
+                            mode: "forward",
+                            forward_message_id: m.id,
+                            forward_file_ids: [
+                              ...new Set(
+                                Object.values(pages)
+                                  .flatMap((p) => p.files || [])
+                                  .filter((f) => f.message_id === m.id)
+                                  .map((f) => f.id),
+                              ),
+                            ],
+                            opportunity_id: caseId,
+                            account_id: c?.account_id,
+                            process_id: c?.process_id,
+                            subject: ("Fwd: " + (c?.subject || "")).slice(
+                              0,
+                              200,
+                            ),
+                            to_email: "",
+                            body: forwardedBody(
+                              m.sender,
+                              dateLabel(m.sent_at, locale, true),
+                              c?.subject || "",
+                              m.body,
+                            ),
+                          });
+                        }}
+                      >
+                        <Forward size={16} />
+                        {t(locale, "Reenviar", "Forward")}
+                      </button>
+                      <button
+                        className="text-button"
+                        onClick={() => setOriginalThread(m.conversation_id)}
+                      >
+                        <ExternalLink size={14} />
+                        {t(
+                          locale,
+                          "Abrir hilo original",
+                          "Open original thread",
+                        )}
+                      </button>
+                    </div>
                   )}
-                  <small>{dateLabel(m.sent_at, locale, true)}</small>
-                </div>
-                <small>
-                  {
-                    metadata.conversations.find(
-                      (c) => c.id === m.conversation_id,
-                    )?.subject
-                  }
-                </small>
-                <MailBody body={m.body} locale={locale} />
-                <details>
-                  <summary>{t(locale, "Destinatarios", "Recipients")}</summary>
-                  {(m.participants || []).map((p, i) => (
-                    <p key={i}>
-                      {p.role}: {p.email}
-                    </p>
-                  ))}
-                </details>
-                {Object.values(pages)
-                  .flatMap((p) => p.files || [])
-                  .filter((f) => f.message_id === m.id)
-                  .map((f) => (
-                    <a className="button" key={f.id} href={f.href}>
-                      {f.name} · {t(locale, "Descargar", "Download")}{" "}
-                      {f.last_error &&
-                        ` · ${t(locale, "Copia pendiente de revisión", "Copy requires review")}`}
-                    </a>
-                  ))}
-                {
-                  <button
-                    className="text-button"
-                    onClick={() => chooseReply(m)}
-                  >
-                    {t(locale, "Responder", "Reply")}
-                  </button>
-                }
-                {
-                  <button
-                    className="text-button"
-                    onClick={() => chooseReply(m, true)}
-                  >
-                    {t(locale, "Responder a todos", "Reply all")}
-                  </button>
-                }
-                <button
-                  className="text-button"
-                  onClick={() => {
-                    const c = metadata.conversations.find(
-                      (c) => c.id === m.conversation_id,
-                    );
-                    setEditing({
-                      mode: "forward",
-                      forward_message_id: m.id,
-                      forward_file_ids: [
-                        ...new Set(
-                          Object.values(pages)
-                            .flatMap((p) => p.files || [])
-                            .filter((f) => f.message_id === m.id)
-                            .map((f) => f.id),
-                        ),
-                      ],
-                      opportunity_id: caseId,
-                      account_id: c?.account_id,
-                      process_id: c?.process_id,
-                      subject: ("Fwd: " + (c?.subject || "")).slice(0, 200),
-                      to_email: "",
-                      body: forwardedBody(
-                        m.sender,
-                        dateLabel(m.sent_at, locale, true),
-                        c?.subject || "",
-                        m.body,
-                      ),
-                    });
-                  }}
-                >
-                  {t(locale, "Reenviar", "Forward")}
-                </button>
-                <button
-                  className="text-button"
-                  onClick={() => setOriginalThread(m.conversation_id)}
-                >
-                  {t(locale, "Abrir hilo original", "Open original thread")}
-                </button>
-              </article>
+                </article>
+                {reply?.id === m.id && replyEditor}
+              </Fragment>
             ))}
             {!loading && !visible.length && (
               <Empty
@@ -567,48 +744,38 @@ export function MailInbox({
               />
             )}
           </div>
-          {reply && (
-            <MailEditor
-              data={data}
-              locale={locale}
-              act={act}
-              busy={busy}
-              close={() => {
-                setReply(null);
-                setRevision((r) => r + 1);
-              }}
-              opportunity={data.opportunities.find((o) => o.id === caseId)}
-              start={{
-                mode: "reply",
-                opportunity_id: caseId,
-                conversation_id: reply.conversation_id,
-                reply_message_id: reply.id,
-                account_id: metadata.conversations.find(
-                  (c) => c.id === reply.conversation_id,
-                )?.account_id,
-                process_id: metadata.conversations.find(
-                  (c) => c.id === reply.conversation_id,
-                )?.process_id,
-                submission_id:
-                  metadata.submissions?.find(
-                    (s) =>
-                      s.lender_id === lenderId &&
-                      s.process_id ===
-                        metadata.conversations.find(
-                          (c) => c.id === reply.conversation_id,
-                        )?.process_id,
-                  )?.id ||
-                  metadata.conversations.find(
-                    (c) => c.id === reply.conversation_id,
-                  )?.submission_id ||
-                  undefined,
-                subject: metadata.conversations.find(
-                  (c) => c.id === reply.conversation_id,
-                )?.subject,
-                to_email: to,
-                cc_emails: cc.split(/[,;]+/).filter(Boolean),
-              }}
-            />
+          {!reply && latestReplyTarget && (
+            <div className="mail-reply-bar">
+              <div>
+                <strong>
+                  {t(locale, "Continuar conversación", "Continue conversation")}
+                </strong>
+                <small>
+                  {latestReplyTarget.sender} ·{" "}
+                  {
+                    metadata.conversations.find(
+                      (c) => c.id === latestReplyTarget.conversation_id,
+                    )?.subject
+                  }
+                </small>
+              </div>
+              <button
+                className="button primary"
+                type="button"
+                onClick={() => chooseReply(latestReplyTarget)}
+              >
+                <Reply size={16} />
+                {t(locale, "Responder", "Reply")}
+              </button>
+              <button
+                className="button"
+                type="button"
+                onClick={() => chooseReply(latestReplyTarget, true)}
+              >
+                <ReplyAll size={16} />
+                {t(locale, "Responder a todos", "Reply all")}
+              </button>
+            </div>
           )}
         </div>
       </section>

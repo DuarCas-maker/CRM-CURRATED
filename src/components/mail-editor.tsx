@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Locale, Opportunity, Workspace } from "@/lib/domain";
 import { canSeeOpportunity } from "@/lib/domain";
 import {
@@ -18,6 +18,9 @@ export function MailEditor({
   close,
   opportunity,
   start = {},
+  inline = false,
+  replyContext,
+  onQueued,
 }: {
   data: Workspace;
   locale: Locale;
@@ -26,6 +29,9 @@ export function MailEditor({
   close: () => void;
   opportunity?: Opportunity;
   start?: MailDraft;
+  inline?: boolean;
+  replyContext?: { sender: string; body: string };
+  onQueued?: (mail: MailDraft, id?: string) => void;
 }) {
   const choices = data.opportunities.filter((o) =>
     canSeeOpportunity(data.profile, o),
@@ -51,6 +57,10 @@ export function MailEditor({
   const [mode, setMode] = useState(start.mode || "compose");
   const [to, setTo] = useState(start.to_email ?? selected?.email ?? "");
   const [cc, setCc] = useState((start.cc_emails || []).join(", "));
+  const suggestedCc = (start.cc_emails || []).join(", ");
+  useEffect(() => {
+    if (mode === "reply") setCc(suggestedCc);
+  }, [suggestedCc, mode]);
   const [bcc, setBcc] = useState((start.bcc_emails || []).join(", "));
   const [subject, setSubject] = useState(start.subject || "");
   const [body, setBody] = useState(start.body || "");
@@ -107,6 +117,14 @@ export function MailEditor({
   const draftId = useRef(start.id || start.draft_id || crypto.randomUUID());
   const locked = busy || working;
   const submitting = useRef(false);
+  const messageInput = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    if (!inline) return;
+    messageInput.current
+      ?.closest(".inline-mail-editor")
+      ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    messageInput.current?.focus({ preventScroll: true });
+  }, [inline]);
   useEffect(() => {
     if (!caseId || data.demo) return;
     const controller = new AbortController();
@@ -256,7 +274,8 @@ export function MailEditor({
     set: (fn: (old: string[]) => string[]) => void,
   ) => set((old) => (checked ? [...old, id] : old.filter((x) => x !== id)));
   return (
-    <Modal
+    <MailEditorFrame
+      inline={inline}
       title={t(
         locale,
         mode === "reply"
@@ -274,6 +293,18 @@ export function MailEditor({
         if (!locked) close();
       }}
     >
+      {inline && (
+        <div className="mail-reply-context">
+          <strong>
+            {t(locale, "Respuesta en el hilo", "Reply in thread")}: {subject}
+          </strong>
+          {replyContext && (
+            <p>
+              {replyContext.sender}: {replyContext.body.slice(0, 180)}
+            </p>
+          )}
+        </div>
+      )}
       {error && (
         <div className="error-banner" role="alert">
           {error}
@@ -290,7 +321,8 @@ export function MailEditor({
             const p = payload();
             if (mode === "lenders")
               p.to_email = Object.values(targets)[0] || "";
-            await act("mail_send", p);
+            const result = await act("mail_send", p);
+            onQueued?.(p, typeof result === "string" ? result : undefined);
             close();
           } catch (e) {
             setError((e as Error).message);
@@ -299,7 +331,7 @@ export function MailEditor({
           }
         }}
       >
-        <label className="field">
+        <label className="field mail-editor-case">
           {t(locale, "Expediente", "Case")}
           <select
             required
@@ -326,7 +358,7 @@ export function MailEditor({
             ))}
           </select>
         </label>
-        <label className="field">
+        <label className="field mail-editor-sender">
           {t(locale, "Enviar desde", "Send from")}
           <select
             required
@@ -382,7 +414,7 @@ export function MailEditor({
             </select>
           </label>
         )}
-        <label className="field">
+        <label className="field mail-editor-process">
           {t(locale, "Proceso de financiación", "Financing process")}
           <select
             disabled={locked || mode === "reply"}
@@ -408,7 +440,7 @@ export function MailEditor({
           </select>
         </label>
         {["reply", "forward"].includes(mode) && (
-          <label className="field">
+          <label className="field mail-editor-evaluation">
             {t(
               locale,
               "Solicitud al lender, si corresponde",
@@ -518,7 +550,7 @@ export function MailEditor({
           </>
         ) : (
           <>
-            <label className="field">
+            <label className="field mail-editor-recipient">
               {t(locale, "Para", "To")}
               <input
                 type="email"
@@ -528,104 +560,120 @@ export function MailEditor({
                 onChange={(e) => setTo(e.target.value)}
               />
             </label>
-            <label className="field">
-              CC
-              <input
-                disabled={locked}
-                value={cc}
-                onChange={(e) => setCc(e.target.value)}
-                placeholder={t(
+            <details className="mail-editor-copies" open={!inline}>
+              <summary>
+                {t(
                   locale,
-                  "Correos separados por comas",
-                  "Comma-separated emails",
+                  "CC, CCO y registro de contacto",
+                  "CC, BCC and contact registration",
                 )}
-              />
-            </label>
-            <label className="field">
-              {t(locale, "CCO · copia oculta", "BCC · hidden copy")}
-              <input
-                disabled={locked}
-                value={bcc}
-                onChange={(e) => setBcc(e.target.value)}
-              />
-            </label>
-            <label className="field">
-              {t(
-                locale,
-                "Nombre del contacto, opcional",
-                "Contact name, optional",
-              )}
-              <input
-                maxLength={150}
-                disabled={locked}
-                value={contactName}
-                onChange={(e) => setContactName(e.target.value)}
-              />
-            </label>
-            <label className="field">
-              {t(locale, "Guardar destinatario como", "Register recipient as")}
-              <select
-                disabled={locked}
-                value={contactLender}
-                onChange={(e) => setContactLender(e.target.value)}
-              >
-                <option value="">
-                  {t(locale, "Contacto del cliente", "Customer contact")}
-                </option>
-                {data.lenders.map((l) => (
-                  <option value={l.id} key={l.id}>
-                    {l.name}
+                {!!cc && ` · ${mailCopies(cc).length} CC`}
+                {!!bcc &&
+                  ` · ${mailCopies(bcc).length} ${t(locale, "CCO", "BCC")}`}
+              </summary>
+              <label className="field">
+                CC
+                <input
+                  disabled={locked}
+                  value={cc}
+                  onChange={(e) => setCc(e.target.value)}
+                  placeholder={t(
+                    locale,
+                    "Correos separados por comas",
+                    "Comma-separated emails",
+                  )}
+                />
+              </label>
+              <label className="field">
+                {t(locale, "CCO · copia oculta", "BCC · hidden copy")}
+                <input
+                  disabled={locked}
+                  value={bcc}
+                  onChange={(e) => setBcc(e.target.value)}
+                />
+              </label>
+              <label className="field">
+                {t(
+                  locale,
+                  "Nombre del contacto, opcional",
+                  "Contact name, optional",
+                )}
+                <input
+                  maxLength={150}
+                  disabled={locked}
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                />
+              </label>
+              <label className="field">
+                {t(
+                  locale,
+                  "Guardar destinatario como",
+                  "Register recipient as",
+                )}
+                <select
+                  disabled={locked}
+                  value={contactLender}
+                  onChange={(e) => setContactLender(e.target.value)}
+                >
+                  <option value="">
+                    {t(locale, "Contacto del cliente", "Customer contact")}
                   </option>
-                ))}
-              </select>
-            </label>
-            <button
-              className="text-button"
-              type="button"
-              disabled={locked || !to}
-              onClick={async () => {
-                setWorking(true);
-                setError("");
-                try {
-                  const r = await fetch("/api/mail", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      action: "contact",
-                      request_id: crypto.randomUUID(),
-                      payload: {
-                        opportunity_id: caseId,
-                        email: to.trim(),
-                        name: contactName.trim() || to.trim(),
-                        lender_id: contactLender || null,
-                      },
-                    }),
-                  });
-                  const p = await r.json();
-                  if (!r.ok) throw Error(p.error);
-                  setNotice(
-                    t(
-                      locale,
-                      "Destinatario registrado.",
-                      "Recipient registered.",
-                    ),
-                  );
-                } catch (e) {
-                  setError((e as Error).message);
-                } finally {
-                  setWorking(false);
-                }
-              }}
-            >
-              {t(locale, "Registrar destinatario", "Register recipient")}
-            </button>
+                  {data.lenders.map((l) => (
+                    <option value={l.id} key={l.id}>
+                      {l.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                className="text-button"
+                type="button"
+                disabled={locked || !to}
+                onClick={async () => {
+                  setWorking(true);
+                  setError("");
+                  try {
+                    const r = await fetch("/api/mail", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        action: "contact",
+                        request_id: crypto.randomUUID(),
+                        payload: {
+                          opportunity_id: caseId,
+                          email: to.trim(),
+                          name: contactName.trim() || to.trim(),
+                          lender_id: contactLender || null,
+                        },
+                      }),
+                    });
+                    const p = await r.json();
+                    if (!r.ok) throw Error(p.error);
+                    setNotice(
+                      t(
+                        locale,
+                        "Destinatario registrado.",
+                        "Recipient registered.",
+                      ),
+                    );
+                  } catch (e) {
+                    setError((e as Error).message);
+                  } finally {
+                    setWorking(false);
+                  }
+                }}
+              >
+                {t(locale, "Registrar destinatario", "Register recipient")}
+              </button>
+            </details>
           </>
         )}
-        <label className="field">
+        <label className="field mail-editor-subject">
           {t(locale, "Asunto", "Subject")}
           <input
             required
-            maxLength={200}
+            maxLength={mode === "reply" ? 2000 : 200}
             disabled={locked || mode === "reply"}
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
@@ -634,9 +682,15 @@ export function MailEditor({
         <label className="field">
           {t(locale, "Mensaje", "Message")}
           <textarea
+            ref={messageInput}
             required
             maxLength={10000}
-            rows={7}
+            rows={inline ? 4 : 7}
+            placeholder={
+              inline
+                ? t(locale, "Escribe tu respuesta…", "Write your reply…")
+                : undefined
+            }
             disabled={locked}
             value={body}
             onChange={(e) => setBody(e.target.value)}
@@ -783,7 +837,17 @@ export function MailEditor({
             />
           </details>
         )}
-        <div className="modal-footer">
+        <div className="modal-footer mail-editor-footer">
+          {inline && (
+            <button
+              className="button"
+              type="button"
+              disabled={locked}
+              onClick={close}
+            >
+              {t(locale, "Cancelar", "Cancel")}
+            </button>
+          )}
           <button
             type="button"
             className="button"
@@ -796,10 +860,39 @@ export function MailEditor({
             locale={locale}
             busy={locked}
             disabled={!accountId || !caseId || data.demo || !signature}
-            label={t(locale, "Enviar correo", "Send email")}
+            label={
+              mode === "reply"
+                ? t(locale, "Enviar respuesta", "Send reply")
+                : t(locale, "Enviar correo", "Send email")
+            }
           />
         </div>
       </form>
-    </Modal>
+    </MailEditorFrame>
+  );
+}
+
+function MailEditorFrame({
+  inline,
+  title,
+  close,
+  children,
+}: {
+  inline: boolean;
+  title: string;
+  close: () => void;
+  children: ReactNode;
+}) {
+  if (!inline)
+    return (
+      <Modal title={title} close={close}>
+        {children}
+      </Modal>
+    );
+  return (
+    <section className="inline-mail-editor" aria-label={title}>
+      <h3>{title}</h3>
+      {children}
+    </section>
   );
 }

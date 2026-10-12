@@ -78,7 +78,7 @@ type View =
 export type Action = (
   kind: string,
   payload: Record<string, unknown>,
-) => Promise<void>;
+) => Promise<unknown>;
 const leadTabLabels: Record<LeadTab, [string, string]> = {
   preparing: ["Bandeja de preparación", "Preparation inbox"],
   converted: ["Convertidos a oportunidades", "Converted to opportunities"],
@@ -380,6 +380,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     }
   }
   const act: Action = async (kind, payload) => {
+    let result: unknown;
     setBusy(true);
     setError("");
     try {
@@ -409,6 +410,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
         });
         const body = await res.json();
         if (!res.ok) throw new Error(body.error || "Request failed");
+        result = body.result;
         await refresh();
         requestKeys.current.delete(fingerprint);
       }
@@ -420,7 +422,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
               "Cambio aplicado en la demostración",
               "Change applied in this demo",
             )
-          : ["compose_email", "compose_lenders", "reply"].includes(kind)
+          : ["compose_email", "compose_lenders", "reply", "mail_send"].includes(kind)
             ? t(
                 locale,
                 "Correo en cola. Consulta el estado de envíos.",
@@ -428,6 +430,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
               )
             : t(locale, "Cambios guardados", "Changes saved"),
       );
+      return result;
     } catch (e) {
       const message = e instanceof Error ? e.message : "Error";
       setError(message);

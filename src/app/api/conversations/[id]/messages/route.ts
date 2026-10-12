@@ -1,4 +1,9 @@
-import { requireUser, checkDb, jsonError } from "@/lib/server/supabase";
+import {
+  requireUser,
+  checkDb,
+  jsonError,
+  serviceClient,
+} from "@/lib/server/supabase";
 import { z } from "zod";
 import { teamLabels } from "@/lib/server/gmail-team";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
@@ -10,7 +15,13 @@ export async function GET(
   try {
     const { db } = await requireUser();
     const id = z.uuid().parse((await params).id);
-    checkDb(await db.from("conversations").select("id").eq("id", id).single());
+    const conversation = checkDb(
+      await db
+        .from("conversations")
+        .select("id,opportunity_id")
+        .eq("id", id)
+        .single(),
+    )!;
     const paramsUrl = new URL(request.url).searchParams;
     let query = db
       .from("messages")
@@ -52,12 +63,30 @@ export async function GET(
             ),
         ) || []
       : [];
-    return Response.json({
-      messages: messages.reverse(),
-      attachments,
-      files: gmailHistoryEnabled() ? await messageFiles(db, messages) : [],
-      hasMore: messages.length === 100,
-    });
+    return Response.json(
+      {
+        messages: messages.reverse(),
+        attachments,
+        files: gmailHistoryEnabled() ? await messageFiles(db, messages) : [],
+        // The user's RLS-protected conversation lookup above authorizes this exact case/thread.
+        sends: gmailHistoryEnabled()
+          ? checkDb(
+              await serviceClient()
+                .from("outbox")
+                .select(
+                  "id,conversation_id,reply_message_id,account_id,to_email,cc_emails,body,subject,status,message_id_header,gmail_message_id,created_at,sent_at,last_error",
+                )
+                .eq("opportunity_id", conversation.opportunity_id)
+                .eq("conversation_id", id)
+                .not("reply_message_id", "is", null)
+                .order("created_at", { ascending: false })
+                .limit(100),
+            ) || []
+          : [],
+        hasMore: messages.length === 100,
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   } catch (e) {
     return jsonError(e);
   }

@@ -202,6 +202,7 @@ export interface Conversation {
   updated_at: string;
 }
 export interface Message {
+  gmail_message_id?: string;
   participants?: import("./mail-display").MailPeer[];
   internet_message_id?: string;
   sender_team?: import("./gmail-team").TeamLabel;
