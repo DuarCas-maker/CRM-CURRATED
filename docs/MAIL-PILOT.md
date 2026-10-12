@@ -1,5 +1,7 @@
 # Primera prueba de correo Gmail
 
+Este piloto corresponde a la migración 016. La versión con recepción independiente, firmas, archivos locales y borradores requiere 021; seguir [el piloto actualizado](MAIL-MANAGER.md#prueba-de-aceptación-con-buzones-de-prueba).
+
 ## Activar esta etapa
 
 1. Hacer respaldo de Supabase y ejecutar **solo** `supabase/migrations/016_manual_email.sql` en SQL Editor, como `postgres`. Las migraciones 009–015 ya instaladas no se repiten. No usar el instalador completo.

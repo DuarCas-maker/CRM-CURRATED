@@ -42,6 +42,8 @@ Las políticas exigen un JWT `aal2` y un perfil activo. Las mutaciones internas 
 
 ## Gmail por organización
 
+**Gestor de correo por expediente (migración 021):** la recepción nueva funciona independientemente de la importación histórica, con consultas aproximadamente cada minuto y botón de actualización. Incluye firma de Gmail, adjuntos desde el computador, respuestas, reenvíos y borradores. La activación y el piloto de esta versión están en [MAIL-MANAGER.md](docs/MAIL-MANAGER.md). Las instrucciones históricas siguientes describen también versiones anteriores.
+
 En cada organización de Google Workspace:
 
 1. Configurar un proyecto de Google Cloud, Gmail API y una aplicación OAuth interna. Registrar `${APP_ORIGIN}/api/gmail/callback` como URI autorizada.
@@ -51,7 +53,7 @@ En cada organización de Google Workspace:
 5. Solo en modo `pubsub`, crear una suscripción push a `${APP_ORIGIN}/api/gmail/push`, autenticada con `GOOGLE_PUBSUB_SERVICE_ACCOUNT` y el audience de `GOOGLE_PUBSUB_AUDIENCE`. Mantener el mensaje envuelto. Varias suscripciones pueden usar el mismo endpoint y la identidad push autorizada.
 6. Guardar y desplegar ambos recursos; conectar la cuenta y otorgar sus permisos desde Configuración. Empezar con una cuenta y seguir [el análisis, la revisión y la confirmación](docs/GMAIL-HISTORY.md). No repetir migraciones ya instaladas.
 
-El worker consulta los cambios del archivo histórico confirmado aproximadamente cada minuto; la cola y los reintentos pueden retrasarlo. Con la bandera histórica desactivada, la reconciliación antigua usa bloques de cinco minutos. En modo `pubsub` también renueva el watch; en `polling` omite las renovaciones y los trabajos antiguos de watch. Ambos modos recuperan el historial expirado e incorporan los enviados directamente desde Gmail. Los hilos ambiguos requieren asociación manual; los adjuntos requieren incorporación y revisión separadas. El permiso de cada mensaje se deriva de su fecha respecto al traspaso, aunque el hilo haya empezado en la fase seller.
+En versiones anteriores a 021, el worker consulta los cambios del archivo histórico confirmado aproximadamente cada minuto; la cola y los reintentos pueden retrasarlo. Con la bandera histórica desactivada, la reconciliación antigua usa bloques de cinco minutos. En modo `pubsub` también renueva el watch; en `polling` omite las renovaciones y los trabajos antiguos de watch. Ambos modos recuperan el historial expirado e incorporan los enviados directamente desde Gmail. Los hilos ambiguos requieren asociación manual; los adjuntos requieren incorporación y revisión separadas. El permiso de cada mensaje se deriva de su fecha respecto al traspaso, aunque el hilo haya empezado en la fase seller.
 
 Un resultado incierto de envío se busca por su `Message-ID`. No se reenvía a ciegas. Una reconexión conserva el progreso, sin reactivar automáticamente envíos pausados. Los envíos inciertos mantienen su estado hasta conciliación. Con Gmail histórico activado, autorizar una cuenta no la incorpora al flujo: primero analizar y confirmar desde Configuración. Referencia de configuración: [Gmail push notifications](https://developers.google.com/workspace/gmail/api/guides/push).
 
@@ -158,13 +160,13 @@ Consultar [el estado de aceptación y las pruebas del piloto](docs/ACCEPTANCE.md
 
 ## Estructura
 
-| Ruta | Contenido |
-|---|---|
-| `src/app` | Pantallas, formulario público y endpoints de servidor |
-| `src/components` | Interfaz adaptable, ficha, importación y administración |
-| `src/lib/server` | Acceso, cifrado, importación, archivos y OAuth |
-| `supabase/migrations` | Modelo de datos, RLS, comandos y colas persistentes |
-| `worker` | Importaciones, scrub, Gmail, campañas, PDF y notificaciones |
-| `tests` | Pruebas de dominio, SQL y carga local |
+| Ruta                  | Contenido                                                   |
+| --------------------- | ----------------------------------------------------------- |
+| `src/app`             | Pantallas, formulario público y endpoints de servidor       |
+| `src/components`      | Interfaz adaptable, ficha, importación y administración     |
+| `src/lib/server`      | Acceso, cifrado, importación, archivos y OAuth              |
+| `supabase/migrations` | Modelo de datos, RLS, comandos y colas persistentes         |
+| `worker`              | Importaciones, scrub, Gmail, campañas, PDF y notificaciones |
+| `tests`               | Pruebas de dominio, SQL y carga local                       |
 
 No incluye la evolución de IA, análisis automático de extractos, ranking, audio, enriquecimiento ni fidelización automática.

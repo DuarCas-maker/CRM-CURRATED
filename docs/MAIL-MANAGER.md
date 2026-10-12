@@ -1,0 +1,53 @@
+# Gestor de correo por expediente
+
+Requerimiento acordado el 11 de octubre de 2026: un expediente del cliente con varios procesos de financiación; conversaciones separadas para cliente, equipo y cada lender, conservando los hilos originales.
+
+## Comportamiento
+
+- La recepción de correo nuevo es independiente del análisis y de la importación histórica. `mail_accounts.live_enabled` controla el flujo nuevo; `sync_enabled` conserva su significado para el histórico. Conectar/reconectar habilita la recepción y encola una primera lectura.
+- El trabajador programa una consulta aproximadamente cada minuto. Pub/Sub, cuando está configurado, también solicita una lectura. El botón **Actualizar correo** encola esa misma sincronización, informa que está solicitada y muestra el estado y la última lectura completada. La cola, los reintentos y las cuotas pueden retrasarla.
+- Al actualizar un expediente, también se vuelven a leer sus hilos ya vinculados. Esto permite recuperar la respuesta de una prueba anterior al inicio de la recepción sin exigir una importación anual.
+- Un hilo que ya pertenece a un expediente conserva su asociación al recibir respuestas. Todo hilo personal nuevo, incluso de un contacto conocido, necesita selección manual del expediente y proceso. La revisión de un hilo de lender exige una evaluación del lender. No se crean leads, oportunidades ni verificaciones por recibir correo.
+- Si el remitente nuevo solo aparece en la recepción reciente, se puede crear su lead manualmente en preparación sin importar antes el histórico. La verificación y conversión conservan su flujo normal. Las direcciones ya detectadas en el histórico mantienen su revisión de duplicados.
+- El primer arranque de recepción consulta el día anterior a su activación, para recuperar la prueba reciente. Después utiliza un cursor independiente en `mail_credentials`; un cursor expirado recupera desde la última lectura con un día de solapamiento. El histórico anterior se incorpora mediante su flujo existente.
+- Las respuestas usan por defecto la cuenta del hilo. El usuario puede elegir otra cuenta conectada para la que tenga permiso de envío. Se conservan las referencias de respuesta, el expediente y el proceso. Al cambiar de cuenta, no se reutiliza un identificador de hilo de otro buzón; el identificador devuelto por Gmail se registra para esa cuenta.
+- Cliente, equipo y lenders tienen canales dentro del expediente. Los empleados registrados de un lender aparecen bajo ese lender. Se puede abrir el hilo original y buscar por texto o remitente en los mensajes del expediente. Los totales de enviados, recibidos, hilos y lenders contactados se calculan sobre los registros accesibles completos.
+- Enviar a varios lenders genera correos independientes dentro de una transacción. No comparte sus destinatarios. Si existen varias evaluaciones del lender para el proceso, debe seleccionarse una.
+- Se permite responder, responder a todos, reenviar y editar Para, CC y CCO. Responder a todos excluye las copias ocultas y las cuentas propias; los destinatarios visibles se revisan antes de enviar. Los destinatarios nuevos pueden registrarse expresamente como contactos del cliente o del lender. Las direcciones internas se administran en Configuración.
+- La firma HTML se obtiene de la configuración de la cuenta remitente en Gmail. Se conserva en el envío y se incluye como contenido HTML, con una alternativa de texto plano. `gmail.readonly` permite leerla; no se requiere cambiar los scopes OAuth existentes para esta función. La vista previa aísla el HTML y no carga imágenes externas; el correo enviado conserva las referencias de imágenes y enlaces de Gmail.
+- Se pueden seleccionar documentos aprobados del expediente y adjuntos guardados del correo, o cargar archivos desde el computador. La carga de correo acepta cualquier formato, se cifra y queda en un bucket privado; no aprueba documentación del checklist.
+- Los adjuntos recibidos de hilos asociados se copian automáticamente mediante trabajos independientes. Su estado es recibido, pendiente de revisión. Un fallo de copia no bloquea el mensaje; el archivo y su error permanecen visibles. Los archivos recibidos mayores de 20 MB conservan su referencia, pero no se copian ni descargan por esta vía.
+- El envío admite hasta 20 adjuntos y 18 MB de archivos en total, dejando espacio para la codificación MIME. El trabajador vuelve a comprobar el tamaño antes de llamar a Gmail. Los adjuntos enviados conservan ruta y hash de la versión enviada. Los reenvíos pueden incluir esas mismas versiones originales.
+- Los borradores se guardan explícitamente en el CRM y son privados de su autor. Pueden continuarse desde el expediente y se eliminan después de poner el envío en cola. No se sincronizan con la carpeta Borradores de Gmail.
+- El seller y closer asignados pueden consultar y responder el correo del expediente, con permisos de remitente separados por cuenta. Esto no concede edición de análisis financiero, ofertas ni estados comerciales fuera de sus permisos actuales.
+- La actualización manual incluye las cuentas que ya tienen hilos del expediente accesible, aunque el usuario no pueda enviar desde ellas. Los hilos todavía sin expediente los revisan el responsable del buzón y el superadmin; un permiso de envío no da acceso a todo el correo sin asociar de otro buzón.
+- Las respuestas nuevas generan avisos internos para los responsables asignados. Se conservan recordatorios después de cinco días calendario de espera. Los recordatorios no envían respuestas automáticamente. Ofertas y decisiones se registran manualmente; esta etapa no incorpora interpretación por IA.
+- Una nueva solicitud de financiación de un cliente con expediente se registra con **Añadir proceso**. No se permite crear otro expediente desde el comando de creación para el mismo correo. Las duplicaciones anteriores se conservan para conciliación explícita.
+
+## Activación
+
+1. Confirmar qué migraciones están instaladas en Supabase. Esta versión requiere **001–021** en orden. Si 020 ya está instalada, aplicar únicamente `supabase/migrations/021_mail_manager.sql`, después de un respaldo. No repetir instaladores ni migraciones existentes.
+2. Desplegar web y trabajador desde la misma versión. Mantener `GMAIL_HISTORY_ENABLED=true` en ambos: esta bandera habilita el esquema e infraestructura Gmail existentes. Mantener el modo de sincronización configurado, por ejemplo `GMAIL_SYNC_MODE=polling`.
+3. Verificar que el trabajador esté activo, la cuenta esté conectada y los usuarios tengan permiso de envío para las cuentas que usarán. La recepción no exige finalizar ni aprobar una importación histórica.
+4. No cambiar claves de cifrado, tokens ni credenciales para activar esta actualización.
+
+### Si SQL Editor informa `unterminated dollar-quoted string`
+
+El error reportado en `gmail_followups()` el 12 de octubre de 2026 se reprodujo exactamente ejecutando un fragmento que termina en `if o.id is null or o.stage='paused' then continue;end if;`. El archivo completo contiene el resto de la función, su cierre `end $$;` y el `commit;` final; pasó nuevamente la instalación y las pruebas de aceptación locales.
+
+En la sesión del intento fallido, ejecutar `ROLLBACK;` por separado para cerrar cualquier transacción pendiente. Abrir una consulta nueva y pegar **todo** `supabase/migrations/021_mail_manager.sql`, desde `begin;` hasta el último `commit;`. Ejecutar el contenido completo, evitando seleccionar solo una parte de una función. No añadir simplemente `$$;` al fragmento: faltaría el resto de la migración. Si aparecen errores de objetos existentes, comprobar qué quedó instalado antes de repetir; esta migración no está diseñada para aplicarse dos veces.
+
+## Prueba de aceptación con buzones de prueba
+
+1. Enviar un correo desde Daniel vinculado a una oportunidad. Responder desde el buzón de prueba; debe aparecer una sola vez dentro del mismo hilo y expediente, aunque el histórico siga pendiente.
+2. Pulsar **Actualizar correo** y comprobar la transición de trabajo y la fecha de última sincronización. Recargar y repetir la lectura: no deben duplicarse mensajes ni avisos.
+3. Responder desde la cuenta de Daniel y después desde una cuenta autorizada distinta, como Valentina. Comprobar en ambos buzones los destinatarios, la continuidad de referencias y la relación con el mismo expediente/proceso en el CRM.
+4. Enviar un hilo nuevo desde un contacto conocido: debe quedar por asociar. Seleccionar expediente y proceso, y verificar que se incorporen todos sus mensajes. Probar también una cuenta sin acceso: no debe poder leer ni asociar ese hilo.
+5. Enviar a dos lenders: cada uno debe recibir un correo separado y ver únicamente sus destinatarios. Registrar otro empleado de un lender y comprobar que su respuesta aparezca en el mismo canal.
+6. Enviar un PDF y un Excel ficticios desde el computador, comprobar la firma y abrir ambos adjuntos en el destinatario. Recibir adjuntos, comprobar copia automática sin aprobación, y reenviarlos. Descargar la versión enviada después de actualizar un documento: debe conservar sus bytes originales.
+7. Probar CC, CCO, responder a todos, búsqueda y borradores tras recargar. Verificar que CCO no se añada a responder a todos.
+8. Comprobar acceso compartido del seller y closer asignados después del traspaso, y rechazo de un usuario ajeno o sin permiso de remitente. Verificar aviso por respuesta y tarea de seguimiento sin envío automático.
+
+Validación local completada: 66 pruebas automatizadas; instalación de las 21 migraciones y pruebas de aceptación de base de datos; comprobación de tipos TypeScript; compilación de producción; y pruebas HTTP del servidor standalone, incluyendo rechazo de acceso sin sesión a las nuevas rutas de correo.
+
+Las pruebas automatizadas usan PGlite y servicios simulados. La recepción, entrega, firma y agrupación reales deben verificarse después de desplegar. El diagnóstico local de esta sesión no consiguió leer el estado remoto de Supabase; no confirma qué migraciones ni configuración tiene producción. Esta entrega no aplicó migraciones remotas ni desplegó la web o el trabajador.

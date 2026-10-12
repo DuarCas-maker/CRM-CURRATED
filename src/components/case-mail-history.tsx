@@ -99,7 +99,14 @@ export function CaseMailHistory({
   }
   useEffect(() => {
     load().catch((e) => setError(e.message));
-  }, [caseId, data.demo, processId, page]);
+  }, [
+    caseId,
+    data.demo,
+    processId,
+    page,
+    data.messages.length,
+    data.tasks.length,
+  ]);
   async function action(input: Record<string, unknown>) {
     setBusy(true);
     setError("");

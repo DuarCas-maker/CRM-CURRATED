@@ -36,64 +36,8 @@ type Archive = { id: string; encrypted_payload: string };
 export async function scheduleArchive() {
   checked(await db().rpc("gmail_activate_pending_imports"));
   const client = db();
-  const accounts =
-    checked(
-      await client
-        .from("mail_accounts")
-        .select("*")
-        .eq("status", "connected")
-        .eq("sync_enabled", true),
-    ) || [];
-  for (const account of accounts) {
-    const running =
-      checked(
-        await client
-          .from("gmail_runs")
-          .select("id")
-          .eq("account_id", account.id)
-          .in("status", ["analyzing", "importing", "paused"])
-          .limit(1),
-      ) || [];
-    if (running.length) continue;
-    const sync = checked(
-      await client
-        .from("gmail_sync_state")
-        .select("*")
-        .eq("account_id", account.id)
-        .maybeSingle(),
-    );
-    if (
-      sync?.last_synced_at &&
-      Date.now() - new Date(sync.last_synced_at).getTime() < 60000
-    )
-      continue;
-    const now = new Date().toISOString();
-    const run = await client
-      .from("gmail_runs")
-      .insert({
-        account_id: account.id,
-        purpose: "continuous",
-        from_at:
-          sync?.last_synced_at ||
-          new Date(Date.now() - 365 * 86400000).toISOString(),
-        until_at: now,
-        copy_since: twoMonthsBefore(now),
-        start_history_id: sync?.history_id,
-        created_by: account.owner_id,
-      })
-      .select("id")
-      .single();
-    // A competing scheduler can create the single active account scan first.
-    if (run.error) continue;
-    checked(
-      await client
-        .from("gmail_sync_state")
-        .upsert(
-          { account_id: account.id, active_run_id: run.data.id },
-          { onConflict: "account_id" },
-        ),
-    );
-  }
+  // Historical scans/imports keep their own jobs and cursor. Live synchronization
+  // runs independently, including while a historical run is paused or awaiting review.
   const active =
     checked(
       await client
@@ -550,6 +494,13 @@ export async function linkAndCopy(archive: Archive, _copySince: string) {
     }),
   );
   if (!linked) return;
+  if (snapshot.references_header)
+    checked(
+      await client
+        .from("messages")
+        .update({ references_header: snapshot.references_header })
+        .eq("id", linked),
+    );
   const files =
     checked(
       await client
@@ -611,7 +562,7 @@ export async function copyGmailAttachment(fileId: string) {
       .eq("part_id", file.part_id)
       .maybeSingle(),
   );
-  if (choice?.decision !== "included") return;
+  if (!file.auto_saved && choice?.decision !== "included") return;
   if (file.size > 20 * 1024 * 1024) {
     checked(
       await client

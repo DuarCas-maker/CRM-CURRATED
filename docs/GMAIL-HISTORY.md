@@ -1,5 +1,7 @@
 # Gmail histórico: implementación y activación
 
+Desde la migración **021**, la recepción de correo nuevo es independiente de aprobar el histórico. Para esta versión, seguir [MAIL-MANAGER.md](MAIL-MANAGER.md); este documento conserva el recorrido y los límites de la importación histórica.
+
 ## Lo encontrado y lo implementado
 
 El proyecto ya tenía OAuth con estado de un solo uso, MFA, refresh tokens cifrados, Gmail send/read, Pub/Sub, permisos de remitentes, una cola persistente, Storage privado y validación Bouncer. Su sincronización inicial buscaba aproximadamente desde la conexión de la cuenta, descartaba contactos desconocidos y no ofrecía análisis anual ni confirmación comercial. La actualización aprovecha esas piezas y añade las migraciones 009–015.

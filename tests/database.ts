@@ -617,7 +617,7 @@ assert.equal((await db.query("select * from storage.objects")).rows.length, 1);
 console.log(
   "PASS shared sender does not grant cases, identities, private files or aggregate metrics",
 );
-// A historical client thread can continue into negotiation without exposing new messages.
+// Case mail stays shared with the assigned team after handoff; financial writes remain restricted.
 await db.exec("reset role");
 const privateThread = randomUUID(),
   oldMessage = randomUUID(),
@@ -644,7 +644,7 @@ for (const user of [users.seller, users.seller_admin]) {
   assert.equal(
     (await db.query("select * from messages where id=$1", [privateMessage]))
       .rows.length,
-    0,
+    1,
   );
   assert.equal(
     (
@@ -652,7 +652,7 @@ for (const user of [users.seller, users.seller_admin]) {
         privateMessage,
       ])
     ).rows.length,
-    0,
+    1,
   );
 }
 await asUser(users.closer);
@@ -665,7 +665,7 @@ assert.equal(
   2,
 );
 console.log(
-  "PASS messages and attachments are private after handoff inside an existing Gmail thread",
+  "PASS assigned sellers and closers share messages and attachments after handoff",
 );
 await db.exec("reset role");
 const uncertainId = randomUUID();
@@ -879,20 +879,35 @@ await assert.rejects(
   /Verify the lead/,
 );
 await asUser(users.seller_admin);
-const renewal = await command("create_opportunity", {
-  ...input,
-  email: "outcome2@example.com",
-  seller_id: users.seller_admin,
-});
-assert.ok(renewal.id);
+await assert.rejects(
+  command("create_opportunity", {
+    ...input,
+    email: "outcome2@example.com",
+    seller_id: users.seller_admin,
+  }),
+  /Añadir proceso/,
+);
+const renewalCase = (
+  await db.query<{ id: string }>(
+    "select id from opportunities where contact_id=$1",
+    [outcomeContacts[2]],
+  )
+).rows[0].id;
 await db.exec("reset role");
+const renewal = (
+  await db.query<{ id: string }>(
+    "select gmail_new_process($1,'New financing request','active',now(),$2,$3) id",
+    [renewalCase, randomUUID(), users.seller_admin],
+  )
+).rows[0].id;
+assert.ok(renewal);
 assert.equal(
   (
     await db.query("select * from opportunities where contact_id=$1", [
       outcomeContacts[2],
     ])
   ).rows.length,
-  2,
+  1,
 );
 assert.equal(
   (await db.query("select * from contacts where id=$1", [outcomeContacts[2]]))
@@ -900,7 +915,7 @@ assert.equal(
   1,
 );
 console.log(
-  "PASS invalid, uncertain and blocked leads stay in preparation; verified customers can have new requests",
+  "PASS invalid, uncertain and blocked leads stay in preparation; new financing requests reuse the customer's case",
 );
 if (process.env.CRM_LOAD_ROWS === "50000") {
   await db.exec("reset role");

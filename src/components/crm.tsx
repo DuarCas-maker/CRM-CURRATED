@@ -288,14 +288,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const overdue = tasks.filter(
     (task) => task.status === "open" && new Date(task.due_at) < new Date(),
   );
-  const conversations = data.conversations.filter(
-    (c) =>
-      visibleIds.has(c.opportunity_id) &&
-      canSeeArea(
-        profile,
-        visible.find((o) => o.id === c.opportunity_id)!,
-        c.area,
-      ),
+  const conversations = data.conversations.filter((c) =>
+    visibleIds.has(c.opportunity_id),
   );
   const unread = conversations.filter((c) => c.needs_attention).length;
   const open = filtered.filter(

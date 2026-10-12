@@ -339,11 +339,15 @@ export function GmailHistory({
                 <small>
                   {a.status} ·{" "}
                   {a.sync_enabled
-                    ? t(locale, "Sincronización habilitada", "Sync enabled")
+                    ? t(
+                        locale,
+                        "Histórico: importación confirmada",
+                        "History: import confirmed",
+                      )
                     : t(
                         locale,
-                        "Pendiente de importación confirmada",
-                        "Awaiting confirmed import",
+                        "Histórico: pendiente de importación",
+                        "History: awaiting import",
                       )}
                 </small>
               </div>

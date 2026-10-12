@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       .select("id")
       .eq("email", event.emailAddress.toLowerCase())
       .eq("status", "connected");
-    if (gmailHistoryEnabled()) query = query.eq("sync_enabled", true);
+    if (gmailHistoryEnabled()) query = query.eq("live_enabled", true);
     const account = checkDb(await query.maybeSingle());
     if (account)
       checkDb(

@@ -24,6 +24,7 @@ export type MailSnapshot = {
   gmail_message_id: string;
   gmail_thread_id: string;
   internet_message_id: string;
+  references_header?: string;
   subject: string;
   sent_at: string;
   direction: "inbound" | "outbound";
@@ -41,11 +42,37 @@ export type MailSnapshot = {
   }[];
 };
 
+export function decodeMailHeader(value: string) {
+  return value
+    .replace(/\?=[ \t\r\n]+(?==\?)/g, "?=")
+    .replace(
+      /=\?([^?]+)\?([bq])\?([^?]*)\?=/gi,
+      (original, charset: string, encoding: string, text: string) => {
+        try {
+          const bytes =
+            encoding.toLowerCase() === "b"
+              ? Buffer.from(text, "base64")
+              : Buffer.from(
+                  text
+                    .replace(/_/g, " ")
+                    .replace(/=([0-9a-f]{2})/gi, (_part: string, hex: string) =>
+                      String.fromCharCode(parseInt(hex, 16)),
+                    ),
+                  "latin1",
+                );
+          return new TextDecoder(charset, { fatal: true }).decode(bytes);
+        } catch {
+          return original;
+        }
+      },
+    );
+}
 export function mailHeader(payload: GmailPart, name: string) {
-  return (
+  const value = (
     payload.headers?.find((h) => h.name.toLowerCase() === name.toLowerCase())
       ?.value || ""
-  );
+  ).replace(/\r?\n[ \t]+/g, " ");
+  return name.toLowerCase() === "subject" ? decodeMailHeader(value) : value;
 }
 
 // Split at commas outside quoted display names/angle brackets, not at every comma.
@@ -72,7 +99,9 @@ export function parseAddresses(
     const email = (enclosed?.[1] || piece).trim().toLowerCase();
     if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)) return [];
     const name = enclosed
-      ? piece.slice(0, enclosed.index).trim().replace(/^"|"$/g, "")
+      ? decodeMailHeader(
+          piece.slice(0, enclosed.index).trim().replace(/^"|"$/g, ""),
+        )
       : "";
     return [{ email, name, role }];
   });
@@ -181,6 +210,7 @@ export function snapshotMessage(
     gmail_message_id: msg.id,
     gmail_thread_id: msg.threadId,
     internet_message_id: h("Message-ID"),
+    references_header: h("References"),
     subject: h("Subject"),
     sent_at: new Date(Number(msg.internalDate)).toISOString(),
     direction: outbound ? "outbound" : "inbound",

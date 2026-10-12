@@ -5,7 +5,21 @@ function header(value: string) {
   return value;
 }
 function encoded(value: string) {
-  return `=?UTF-8?B?${Buffer.from(header(value)).toString("base64")}?=`;
+  const words: string[] = [];
+  let chunk = "",
+    bytes = 0;
+  for (const char of header(value)) {
+    const size = Buffer.byteLength(char);
+    if (bytes + size > 45) {
+      words.push(`=?UTF-8?B?${Buffer.from(chunk).toString("base64")}?=`);
+      chunk = "";
+      bytes = 0;
+    }
+    chunk += char;
+    bytes += size;
+  }
+  if (chunk) words.push(`=?UTF-8?B?${Buffer.from(chunk).toString("base64")}?=`);
+  return words.join("\r\n ");
 }
 const base64 = (bytes: Buffer) =>
   bytes
@@ -16,6 +30,9 @@ export function buildMime(input: {
   from: string;
   to: string;
   cc?: string[];
+  bcc?: string[];
+  senderName?: string;
+  signatureHtml?: string;
   subject: string;
   body: string;
   messageId: string;
@@ -26,7 +43,7 @@ export function buildMime(input: {
 }) {
   const boundary = `curated_${randomUUID()}`;
   const headers = [
-    `From: ${header(input.from)}`,
+    `From: ${input.senderName ? encoded(input.senderName) + " " : ""}${input.senderName ? "<" : ""}${header(input.from)}${input.senderName ? ">" : ""}`,
     `To: ${header(input.to)}`,
     `Subject: ${encoded(input.subject)}`,
     `Message-ID: ${header(input.messageId)}`,
@@ -34,6 +51,8 @@ export function buildMime(input: {
     "MIME-Version: 1.0",
   ];
   if (input.cc?.length) headers.push(`Cc: ${input.cc.map(header).join(", ")}`);
+  if (input.bcc?.length)
+    headers.push(`Bcc: ${input.bcc.map(header).join(", ")}`);
   if (input.inReplyTo) headers.push(`In-Reply-To: ${header(input.inReplyTo)}`);
   if (input.references) headers.push(`References: ${header(input.references)}`);
   if (input.unsubscribe)
@@ -42,12 +61,30 @@ export function buildMime(input: {
       `List-Unsubscribe-Post: List-Unsubscribe=One-Click`,
     );
   headers.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
+  const signatureText = input.signatureHtml
+    ?.replace(/<(?:br|\/p|\/div)\b[^>]*>/gi, "\n")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .trim();
+  const plain = input.body + (signatureText ? "\n\n" + signatureText : "");
+  const alternative = `alternative_${randomUUID()}`;
+  const escapedBody = input.body
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\r?\n/g, "<br>");
+  const textPart = `Content-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${base64(Buffer.from(plain))}`;
   const parts = [
-    `--${boundary}\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${base64(Buffer.from(input.body))}`,
+    input.signatureHtml
+      ? `--${boundary}\r\nContent-Type: multipart/alternative; boundary="${alternative}"\r\n\r\n--${alternative}\r\n${textPart}\r\n--${alternative}\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${base64(Buffer.from(`<div>${escapedBody}</div><br><div>${input.signatureHtml}</div>`))}\r\n--${alternative}--`
+      : `--${boundary}\r\n${textPart}`,
   ];
   for (const attachment of input.attachments || [])
     parts.push(
-      `--${boundary}\r\nContent-Type: ${header(attachment.mime)}\r\nContent-Disposition: attachment; filename="${header(attachment.name).replace(/["\\]/g, "_")}"\r\nContent-Transfer-Encoding: base64\r\n\r\n${base64(attachment.bytes)}`,
+      `--${boundary}\r\nContent-Type: ${header(attachment.mime)}\r\nContent-Disposition: attachment; filename="${header(attachment.name).replace(/[^\x20-\x7e]|["\\]/g, "_")}"; filename*=UTF-8''${encodeURIComponent(attachment.name).replace(/'/g, "%27")}\r\nContent-Transfer-Encoding: base64\r\n\r\n${base64(attachment.bytes)}`,
     );
   return Buffer.from(
     headers.join("\r\n") +

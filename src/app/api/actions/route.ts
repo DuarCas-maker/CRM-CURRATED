@@ -11,6 +11,7 @@ import { renderTemplate } from "@/lib/domain";
 import { readBounded } from "@/lib/server/body";
 import { mailAction } from "@/lib/server/mail-actions";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
+import { sendManagedMail } from "@/lib/server/mail-manager";
 const envelope = z.object({
   kind: z.string().max(50),
   payload: z.record(z.string(), z.unknown()),
@@ -27,6 +28,13 @@ export async function POST(request: Request) {
     );
     if (!parsed.success) throw new HttpError(400, "Invalid request");
     const { kind, payload: p, idempotency_key } = parsed.data;
+    if (kind === "mail_send") {
+      if (!gmailHistoryEnabled())
+        throw new HttpError(503, "Enable Gmail integration first");
+      return Response.json(
+        await sendManagedMail(db, profile, p, idempotency_key),
+      );
+    }
     if (
       ["associate_thread", "import_attachment", "request_documents"].includes(
         kind,

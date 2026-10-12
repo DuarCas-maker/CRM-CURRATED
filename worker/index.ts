@@ -8,6 +8,7 @@ import {
   renewWatch,
   sendNext,
   reconcileUncertain,
+  syncLiveThread,
 } from "./gmail";
 import { scheduleCampaigns } from "./campaigns";
 import { generatePdf } from "./pdf";
@@ -64,7 +65,7 @@ async function schedule() {
     .select("id")
     .eq("status", "connected");
   if (gmailHistoryEnabled())
-    connectedQuery = connectedQuery.eq("sync_enabled", true);
+    connectedQuery = connectedQuery.eq("live_enabled", true);
   const connected = checked(await connectedQuery) || [];
   const verifications =
     checked(
@@ -117,6 +118,19 @@ async function schedule() {
         ),
     ) || [];
   await scheduleMailboxJobs(credentials, async (job) => {
+    if (job.kind === "gmail_sync") {
+      const pending =
+        checked(
+          await client
+            .from("jobs")
+            .select("id")
+            .eq("kind", "gmail_sync")
+            .contains("payload", { account_id: job.payload.account_id })
+            .in("status", ["queued", "running"])
+            .limit(1),
+        ) || [];
+      if (pending.length) return;
+    }
     checked(
       await client
         .from("jobs")
@@ -186,8 +200,10 @@ while (!stopping) {
           await pollScrub(job.payload.batch_id);
           break;
         case "gmail_sync":
-          if (gmailHistoryEnabled()) await scheduleArchive();
-          else await syncMailbox(job.payload.account_id);
+          await syncMailbox(job.payload.account_id);
+          break;
+        case "gmail_live_thread":
+          await syncLiveThread(job.payload.account_id, job.payload.thread_id);
           break;
         case "gmail_archive":
           if (!gmailHistoryEnabled()) throw new Error("GMAIL_HISTORY_DISABLED");

@@ -20,7 +20,7 @@ export async function scheduleMailboxJobs(
     await enqueue({
       kind: "gmail_sync",
       payload: { account_id: account.account_id },
-      dedupe_key: `reconcile:${account.account_id}:${Math.floor(now / 300000)}`,
+      dedupe_key: `reconcile:${account.account_id}:${Math.floor(now / 60000)}`,
     });
     if (
       pushEnabled &&

@@ -2,6 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
 import { MailComposer, MailSendStatus } from "./mail-composer";
+import { MailInbox } from "./mail-inbox";
 import { MailBody } from "./mail-bubble";
 import {
   ArrowLeft,
@@ -26,6 +27,7 @@ import {
   stageLabels,
   handoffErrors,
   canSeeArea,
+  canSeeOpportunity,
   isCloserRole,
 } from "@/lib/domain";
 import type { Action } from "./crm";
@@ -80,10 +82,7 @@ export function OpportunityDetail({
     const conversation = data.conversations.find(
       (c) => c.id === message.conversation_id && c.opportunity_id === o.id,
     );
-    if (
-      conversation &&
-      canSeeArea(profile, o, message.area || conversation.area)
-    )
+    if (conversation && canSeeOpportunity(profile, o))
       activities.push({
         id: `email:${message.id}`,
         opportunity_id: o.id,
@@ -162,7 +161,7 @@ export function OpportunityDetail({
           </div>
         </div>
         <div className="heading-actions">
-          {editable && data.gmail_history_enabled && (
+          {canSeeOpportunity(profile, o) && data.gmail_history_enabled && (
             <button
               className="button primary"
               onClick={() => setComposing(true)}
@@ -228,6 +227,16 @@ export function OpportunityDetail({
           {tab === "mail_history" && (
             <>
               <MailSendStatus data={data} locale={locale} caseId={o.id} />
+              {data.gmail_history_enabled && !data.demo && (
+                <MailInbox
+                  data={data}
+                  locale={locale}
+                  act={act}
+                  busy={busy}
+                  openCase={() => {}}
+                  opportunity={o}
+                />
+              )}
               <CaseMailHistory
                 caseId={o.id}
                 data={data}

@@ -427,7 +427,7 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
       /evidence required/,
     );
 
-    // A new Gmail thread for this exact contact is linked, but cannot undo a manual transfer.
+    // Known contacts still need manual association for a new thread; ownership stays intact.
     await db.query("update mail_accounts set sync_enabled=true where id=$1", [
       account,
     ]);
@@ -459,6 +459,25 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
       )
     ).rows[0].id;
     await db.query("select gmail_associate_continuous($1)", [nextArchive]);
+    assert.equal(
+      (
+        await db.query(
+          "select * from gmail_thread_links where gmail_thread_id='thread2'",
+        )
+      ).rows.length,
+      0,
+    );
+    const review = (
+      await db.query<{ id: string }>(
+        "select id from mail_review where gmail_message_id='m2'",
+      )
+    ).rows[0].id;
+    await asUser(admin);
+    await db.query("select associate_live_mail($1,$2,null,null)", [
+      review,
+      caseId,
+    ]);
+    await db.exec("reset role");
     await db.query("select gmail_link_message($1,$2)", [
       nextArchive,
       JSON.stringify({ body: "New thread" }),
@@ -514,6 +533,17 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
       )
     ).rows[0].id;
     await db.query("select gmail_associate_continuous($1)", [duplicate]);
+    const duplicateReview = (
+      await db.query<{ id: string }>(
+        "select id from mail_review where gmail_message_id='copy-m2'",
+      )
+    ).rows[0].id;
+    await asUser(admin);
+    await db.query("select associate_live_mail($1,$2,null,null)", [
+      duplicateReview,
+      caseId,
+    ]);
+    await db.exec("reset role");
     await db.query("select gmail_link_message($1,$2)", [
       duplicate,
       JSON.stringify({ body: "New thread" }),

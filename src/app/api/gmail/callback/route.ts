@@ -69,6 +69,7 @@ export async function GET(request: Request) {
             email: claims.email.toLowerCase(),
             organization: org.id,
             status: "connected",
+            live_enabled: true,
           },
           { onConflict: "email" },
         )
@@ -99,6 +100,18 @@ export async function GET(request: Request) {
           dedupe_key: `watch:connect:${account.id}:${Date.now()}`,
         }),
       );
+    checkDb(
+      await db
+        .from("jobs")
+        .upsert(
+          {
+            kind: "gmail_sync",
+            payload: { account_id: account.id },
+            dedupe_key: `sync:connect:${account.id}:${Date.now()}`,
+          },
+          { onConflict: "dedupe_key", ignoreDuplicates: true },
+        ),
+    );
     checkDb(
       await db.from("audit_log").insert({
         actor_id: profile.id,

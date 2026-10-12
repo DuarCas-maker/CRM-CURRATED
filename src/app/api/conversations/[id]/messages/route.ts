@@ -2,6 +2,7 @@ import { requireUser, checkDb, jsonError } from "@/lib/server/supabase";
 import { z } from "zod";
 import { teamLabels } from "@/lib/server/gmail-team";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
+import { messageFiles } from "@/lib/server/mail-manager";
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -18,6 +19,12 @@ export async function GET(
       .order("sent_at", { ascending: false })
       .order("id", { ascending: false })
       .limit(100);
+    const search = (paramsUrl.get("q") || "")
+      .replace(/[%,().\\]/g, " ")
+      .slice(0, 150)
+      .trim();
+    if (search)
+      query = query.or(`body.ilike.%${search}%,sender.ilike.%${search}%`);
     if (paramsUrl.get("before")) {
       const before = z
         .string()
@@ -48,6 +55,7 @@ export async function GET(
     return Response.json({
       messages: messages.reverse(),
       attachments,
+      files: gmailHistoryEnabled() ? await messageFiles(db, messages) : [],
       hasMore: messages.length === 100,
     });
   } catch (e) {

@@ -33,6 +33,13 @@ export async function GET(request: Request) {
           .eq("opportunity_id", id)
           .order("sequence_number", { ascending: false }),
       ) || [];
+    const submissions =
+      checkDb(
+        await serviceClient()
+          .from("submissions")
+          .select("id,lender_id,process_id,status")
+          .eq("opportunity_id", id),
+      ) || [];
     const routes = conversations.length
       ? checkDb(
           await db
@@ -103,6 +110,8 @@ export async function GET(request: Request) {
       {
         conversations,
         processes,
+        submissions,
+        stats: checkDb(await db.rpc("mail_case_stats", { case_id: id })),
         routes,
         lenders,
         lender_contacts: contacts,

@@ -445,7 +445,7 @@ test("team history associates separate cases, preserves ownership and requires e
       0,
     );
     assert.equal((await db.query("select * from outbox")).rows.length, 0);
-    // Registering a participant does not make private lender conversations visible.
+    // The assigned seller now shares case mail; this does not grant team administration.
     await db.query("select set_config('request.jwt.claims',$1,false)", [
       JSON.stringify({ sub: seller, aal: "aal2" }),
     ]);
@@ -456,7 +456,7 @@ test("team history associates separate cases, preserves ownership and requires e
           "select * from conversations where submission_id is not null",
         )
       ).rows.length,
-      0,
+      1,
     );
     assert.equal(
       (await db.query("select * from gmail_team_members")).rows.length,
@@ -554,6 +554,22 @@ test("live Gmail team mail preserves campaigns and waits, and an unassociated te
         });
       if (table === "gmail_team_members")
         return Response.json([{ email: "valentina@example.com" }]);
+      if (table === "gmail_archive_messages")
+        return Response.json({ id: randomUUID() });
+      if (
+        table === "gmail_associate_continuous" ||
+        table === "gmail_process_live_reply" ||
+        table === "gmail_track_live_wait"
+      )
+        return Response.json(null);
+      if (table === "gmail_link_message") {
+        if (!associated) return Response.json(null);
+        stored++;
+        return Response.json(randomUUID());
+      }
+      if (table === "gmail_saved_attachments") return Response.json([]);
+      if (table === "gmail_thread_links")
+        return Response.json({ opportunity_id: conversation.opportunity_id });
       if (table === "conversations") {
         if (request.method === "PATCH") {
           updates.push(body);
@@ -562,8 +578,8 @@ test("live Gmail team mail preserves campaigns and waits, and an unassociated te
         return Response.json(associated ? conversation : null);
       }
       if (table === "messages") {
-        stored++;
-        return Response.json({ id: randomUUID() });
+        updates.push(body);
+        return new Response(null, { status: 204 });
       }
       if (table === "opportunities")
         return Response.json({
