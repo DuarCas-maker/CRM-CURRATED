@@ -1,10 +1,18 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
+import { RefreshCw, ChevronDown } from "lucide-react";
 import type { Workspace, Locale } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
 import type { MailDraft } from "@/lib/mail-manager";
 import { Modal, t } from "./ui";
-type State = {
+export type MailboxState = {
+  review_page?: number;
   pending_total?: number;
   accounts: {
     id: string;
@@ -14,6 +22,8 @@ type State = {
     job?: { status: string; last_error: string | null };
   }[];
   pending: {
+    id?: string;
+    gmail_thread_id?: string;
     review_id: string;
     subject: string;
     account_id: string;
@@ -28,14 +38,28 @@ export function MailboxStatus({
   caseId,
   onChanged,
   onDraft,
+  compact = false,
+  onState,
+  reviewToOpen,
+  pendingPage,
+  onPendingPageChange,
+  onPendingSelect,
+  onReviewClosed,
 }: {
   data: Workspace;
   locale: Locale;
   caseId?: string;
   onChanged: () => void;
   onDraft: (draft: MailDraft) => void;
+  compact?: boolean;
+  onState?: (state: MailboxState) => void;
+  reviewToOpen?: string | null;
+  pendingPage?: number;
+  onPendingPageChange?: Dispatch<SetStateAction<number>>;
+  onPendingSelect?: () => void;
+  onReviewClosed?: () => void;
 }) {
-  const [state, setState] = useState<State>({
+  const [state, setState] = useState<MailboxState>({
     accounts: [],
     pending: [],
     drafts: [],
@@ -44,7 +68,9 @@ export function MailboxStatus({
     [readError, setReadError] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false);
-  const [review, setReview] = useState<State["pending"][number] | null>(null);
+  const [review, setReview] = useState<MailboxState["pending"][number] | null>(
+    null,
+  );
   const [target, setTarget] = useState(""),
     [process, setProcess] = useState(""),
     [submission, setSubmission] = useState("");
@@ -54,7 +80,23 @@ export function MailboxStatus({
   }>({ processes: [], submissions: [] });
   const [body, setBody] = useState("");
   const [revision, setRevision] = useState(0);
-  const [reviewPage, setReviewPage] = useState(0);
+  const [localReviewPage, setLocalReviewPage] = useState(0);
+  const reviewPage = pendingPage ?? localReviewPage;
+  const setReviewPage = onPendingPageChange || setLocalReviewPage;
+  const stateListener = useRef(onState);
+  stateListener.current = onState;
+  useEffect(() => {
+    stateListener.current?.({ ...state, review_page: reviewPage });
+  }, [state, reviewPage]);
+  useEffect(() => {
+    const item = state.pending.find((p) => p.review_id === reviewToOpen);
+    if (item) {
+      setReview(item);
+      setTarget("");
+      setCaseQuery("");
+      setError("");
+    }
+  }, [reviewToOpen]);
   const lastRead = useRef("");
   const changed = useRef(onChanged);
   changed.current = onChanged;
@@ -106,7 +148,7 @@ export function MailboxStatus({
           setReadError("");
           const signature = p.accounts
             .map(
-              (a: State["accounts"][number]) =>
+              (a: MailboxState["accounts"][number]) =>
                 `${a.id}:${a.last_synced_at || ""}`,
             )
             .sort()
@@ -184,156 +226,246 @@ export function MailboxStatus({
     failed: ["Error de sincronización", "Sync error"],
     paused: ["Sincronización pausada", "Sync paused"],
   };
+  async function refreshMail() {
+    setBusy(true);
+    setError("");
+    try {
+      await action("sync", {
+        ...(caseId ? { opportunity_id: caseId } : {}),
+        account_ids: state.accounts
+          .filter((a) => a.status === "connected")
+          .map((a) => a.id),
+      });
+      setNotice(
+        t(
+          locale,
+          "Sincronización solicitada. Los correos aparecerán cuando el trabajador complete la lectura.",
+          "Synchronization requested. Emails appear when the worker completes the read.",
+        ),
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  const lastSync = state.accounts
+    .map((a) => a.last_synced_at)
+    .filter((at): at is string => !!at)
+    .sort((a, b) => Date.parse(b) - Date.parse(a))[0];
   return (
-    <section className="panel settings-panel">
-      <div className="conversation-header">
-        <h2>{t(locale, "Recepción de correo", "Mail reception")}</h2>
-        <button
-          className="button"
-          disabled={
-            busy || !state.accounts.some((a) => a.status === "connected")
-          }
-          onClick={async () => {
-            setBusy(true);
-            setError("");
-            try {
-              await action("sync", {
-                ...(caseId?{opportunity_id:caseId}:{}),
-                account_ids: state.accounts
-                  .filter((a) => a.status === "connected")
-                  .map((a) => a.id),
-              });
-              setNotice(
-                t(
-                  locale,
-                  "Sincronización solicitada. Los correos aparecerán cuando el trabajador complete la lectura.",
-                  "Synchronization requested. Emails appear when the worker completes the read.",
-                ),
-              );
-            } catch (e) {
-              setError((e as Error).message);
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          {t(locale, "Actualizar correo", "Refresh mail")}
-        </button>
-      </div>
-      {error && (
-        <div className="error-banner" role="alert">
-          {error}
-        </div>
-      )}
-      {readError && (
-        <div className="error-banner" role="alert">
-          {readError}
-        </div>
-      )}
-      {notice && <p role="status">{notice}</p>}
-      {state.accounts.map((a) => (
-        <div className="account-row" key={a.id}>
-          <div>
-            <strong>{a.email}</strong>
-            <small>
-              {t(locale, "Última sincronización", "Last synchronized")}:{" "}
-              {a.last_synced_at
-                ? dateLabel(a.last_synced_at, locale, true)
+    <section className={compact ? "cw-sync" : "panel settings-panel"}>
+      {compact && (
+        <div className="cw-sync-line">
+          <span
+            className={`cw-sync-dot ${readError || state.accounts.some((a) => a.job?.status === "failed" || a.status !== "connected") ? "warning" : ""}`}
+          />
+          <strong>{t(locale, "Gmail", "Gmail")}</strong>
+          <span>
+            {state.accounts.length
+              ? `${state.accounts.length} ${t(locale, "cuenta(s)", "account(s)")}`
+              : t(locale, "Sin cuentas disponibles", "No available accounts")}
+          </span>
+          <small>
+            {state.accounts.some((a) =>
+              ["queued", "running"].includes(a.job?.status || ""),
+            )
+              ? t(locale, "Lectura en curso", "Read in progress")
+              : lastSync
+                ? `${t(locale, "Última lectura", "Last read")}: ${dateLabel(lastSync, locale, true)}`
                 : t(
                     locale,
-                    "Pendiente de primera lectura",
-                    "Awaiting first read",
+                    "Sin primera lectura registrada",
+                    "No initial read recorded",
                   )}
-            </small>
-          </div>
-          <span className="badge">
-            {a.status !== "connected"
-              ? t(locale, "Reconectar cuenta", "Reconnect account")
-              : a.job
-                ? t(
-                    locale,
-                    ...(labels[a.job.status] || [a.job.status, a.job.status]),
-                  )
-                : t(locale, "Esperando trabajador", "Waiting for worker")}
-          </span>
-        </div>
-      ))}
-      <p className="muted">
-        {t(
-          locale,
-          "La recepción se consulta aproximadamente cada minuto y funciona mientras se revisa el histórico.",
-          "Reception is checked approximately every minute and runs during historical review.",
-        )}
-      </p>
-      <details>
-        <summary>
-          {t(locale, "Hilos nuevos por asociar", "New threads to associate")} ·{" "}
-          {state.pending_total ?? state.pending.length}
-        </summary>
-        {state.pending.map((p) => (
-          <div className="document-row" key={p.review_id}>
-            <div>
-              <strong>
-                {p.subject || t(locale, "Sin asunto", "No subject")}
-              </strong>
-              <small>
-                {p.participants.find((a) => a.role === "from")?.email} ·{" "}
-                {dateLabel(p.sent_at, locale, true)}
-              </small>
-            </div>
-            <button
-              className="button"
-              onClick={() => {
-                setReview(p);
-                setTarget("");
-                setCaseQuery("");
-                setError("");
-              }}
-            >
-              {t(locale, "Asociar al expediente", "Associate with a case")}
-            </button>
-          </div>
-        ))}
-        <div className="card-actions">
-          <button
-            className="button"
-            disabled={reviewPage === 0 || busy}
-            onClick={() => setReviewPage((p) => p - 1)}
-          >
-            {t(locale, "Anterior", "Previous")}
+          </small>
+          <button className="cw-link" type="button" onClick={onPendingSelect}>
+            {t(locale, "Sin asociar", "Unassociated")} ·{" "}
+            {state.pending_total ?? state.pending.length}
           </button>
+          <button
+            className="cw-link"
+            type="button"
+            disabled={
+              busy || !state.accounts.some((a) => a.status === "connected")
+            }
+            onClick={() => void refreshMail()}
+          >
+            <RefreshCw size={13} />
+            {t(locale, "Actualizar", "Refresh")}
+          </button>
+        </div>
+      )}
+      {compact && (error || readError) && (
+        <p className="cw-inline-error" role="alert">
+          {error || readError}
+        </p>
+      )}
+      {compact && notice && (
+        <span className="cw-sync-notice" role="status" title={notice}>
+          {t(locale, "Lectura solicitada", "Read requested")}
+        </span>
+      )}
+      <details
+        className={compact ? "cw-mailbox-details" : "mailbox-full-details"}
+        open={!compact}
+      >
+        {compact && (
+          <summary>
+            <ChevronDown size={13} />
+            {t(locale, "Cuentas y borradores", "Accounts and drafts")}
+          </summary>
+        )}
+        <div className="conversation-header">
+          <h2>{t(locale, "Recepción de correo", "Mail reception")}</h2>
           <button
             className="button"
             disabled={
-              (reviewPage + 1) * 50 >= (state.pending_total || 0) || busy
+              busy || !state.accounts.some((a) => a.status === "connected")
             }
-            onClick={() => setReviewPage((p) => p + 1)}
+            onClick={async () => {
+              setBusy(true);
+              setError("");
+              try {
+                await action("sync", {
+                  ...(caseId ? { opportunity_id: caseId } : {}),
+                  account_ids: state.accounts
+                    .filter((a) => a.status === "connected")
+                    .map((a) => a.id),
+                });
+                setNotice(
+                  t(
+                    locale,
+                    "Sincronización solicitada. Los correos aparecerán cuando el trabajador complete la lectura.",
+                    "Synchronization requested. Emails appear when the worker completes the read.",
+                  ),
+                );
+              } catch (e) {
+                setError((e as Error).message);
+              } finally {
+                setBusy(false);
+              }
+            }}
           >
-            {t(locale, "Siguiente", "Next")}
+            {compact && <RefreshCw size={13} />}
+            {t(locale, "Actualizar correo", "Refresh mail")}
           </button>
         </div>
-      </details>
-      <details>
-        <summary>
-          {t(locale, "Mis borradores del expediente", "My case drafts")} ·{" "}
-          {state.drafts.length}
-        </summary>
-        {state.drafts.map((d) => (
-          <div className="document-row" key={d.id}>
+        {error && (
+          <div className="error-banner" role="alert">
+            {error}
+          </div>
+        )}
+        {readError && (
+          <div className="error-banner" role="alert">
+            {readError}
+          </div>
+        )}
+        {notice && <p role="status">{notice}</p>}
+        {state.accounts.map((a) => (
+          <div className="account-row" key={a.id}>
             <div>
-              <strong>
-                {d.payload.subject || t(locale, "Sin asunto", "No subject")}
-              </strong>
-              <small>{dateLabel(d.updated_at, locale, true)}</small>
+              <strong>{a.email}</strong>
+              <small>
+                {t(locale, "Última sincronización", "Last synchronized")}:{" "}
+                {a.last_synced_at
+                  ? dateLabel(a.last_synced_at, locale, true)
+                  : t(
+                      locale,
+                      "Pendiente de primera lectura",
+                      "Awaiting first read",
+                    )}
+              </small>
             </div>
-            <button
-              className="button"
-              onClick={() => onDraft({ ...d.payload, id: d.id })}
-            >
-              {t(locale, "Continuar borrador", "Continue draft")}
-            </button>
+            <span className="badge">
+              {a.status !== "connected"
+                ? t(locale, "Reconectar cuenta", "Reconnect account")
+                : a.job
+                  ? t(
+                      locale,
+                      ...(labels[a.job.status] || [a.job.status, a.job.status]),
+                    )
+                  : t(locale, "Esperando trabajador", "Waiting for worker")}
+            </span>
           </div>
         ))}
+        <p className="muted">
+          {t(
+            locale,
+            "La recepción se consulta aproximadamente cada minuto y funciona mientras se revisa el histórico.",
+            "Reception is checked approximately every minute and runs during historical review.",
+          )}
+        </p>
+        <details>
+          <summary>
+            {t(locale, "Hilos nuevos por asociar", "New threads to associate")}{" "}
+            · {state.pending_total ?? state.pending.length}
+          </summary>
+          {state.pending.map((p) => (
+            <div className="document-row" key={p.review_id}>
+              <div>
+                <strong>
+                  {p.subject || t(locale, "Sin asunto", "No subject")}
+                </strong>
+                <small>
+                  {p.participants.find((a) => a.role === "from")?.email} ·{" "}
+                  {dateLabel(p.sent_at, locale, true)}
+                </small>
+              </div>
+              <button
+                className="button"
+                onClick={() => {
+                  setReview(p);
+                  setTarget("");
+                  setCaseQuery("");
+                  setError("");
+                }}
+              >
+                {t(locale, "Asociar al expediente", "Associate with a case")}
+              </button>
+            </div>
+          ))}
+          <div className="card-actions">
+            <button
+              className="button"
+              disabled={reviewPage === 0 || busy}
+              onClick={() => setReviewPage((p) => p - 1)}
+            >
+              {t(locale, "Anterior", "Previous")}
+            </button>
+            <button
+              className="button"
+              disabled={
+                (reviewPage + 1) * 50 >= (state.pending_total || 0) || busy
+              }
+              onClick={() => setReviewPage((p) => p + 1)}
+            >
+              {t(locale, "Siguiente", "Next")}
+            </button>
+          </div>
+        </details>
+        <details>
+          <summary>
+            {t(locale, "Mis borradores del expediente", "My case drafts")} ·{" "}
+            {state.drafts.length}
+          </summary>
+          {state.drafts.map((d) => (
+            <div className="document-row" key={d.id}>
+              <div>
+                <strong>
+                  {d.payload.subject || t(locale, "Sin asunto", "No subject")}
+                </strong>
+                <small>{dateLabel(d.updated_at, locale, true)}</small>
+              </div>
+              <button
+                className="button"
+                onClick={() => onDraft({ ...d.payload, id: d.id })}
+              >
+                {t(locale, "Continuar borrador", "Continue draft")}
+              </button>
+            </div>
+          ))}
+        </details>
       </details>
       {review && (
         <Modal
@@ -343,7 +475,10 @@ export function MailboxStatus({
             "Associate received thread",
           )}
           close={() => {
-            if (!busy) setReview(null);
+            if (!busy) {
+              setReview(null);
+              onReviewClosed?.();
+            }
           }}
         >
           <p>
@@ -367,6 +502,7 @@ export function MailboxStatus({
                   submission_id: submission || null,
                 });
                 setReview(null);
+                onReviewClosed?.();
                 setNotice(
                   t(
                     locale,

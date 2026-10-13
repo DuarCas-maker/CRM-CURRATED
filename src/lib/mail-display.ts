@@ -7,6 +7,14 @@ export function readableMail(body: string) {
     const next = lines.slice(i, i + 5).join(" ");
     if (
       /^>/.test(line) ||
+      (/^_{5,}$/.test(line) &&
+        /(?:^|\n)(?:From|De):/i.test(lines.slice(i + 1, i + 8).join("\n")) &&
+        /(?:^|\n)(?:Sent|Enviado|Date|Fecha):/i.test(
+          lines.slice(i + 1, i + 8).join("\n"),
+        ) &&
+        /(?:^|\n)(?:Subject|Asunto):/i.test(
+          lines.slice(i + 1, i + 8).join("\n"),
+        )) ||
       /^-{3,}\s*(Original Message|Forwarded message|Mensaje original)/i.test(
         line,
       ) ||

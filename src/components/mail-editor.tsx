@@ -21,6 +21,9 @@ export function MailEditor({
   inline = false,
   replyContext,
   onQueued,
+  compact = false,
+  focusToken = 0,
+  onAccountChange,
 }: {
   data: Workspace;
   locale: Locale;
@@ -32,6 +35,9 @@ export function MailEditor({
   inline?: boolean;
   replyContext?: { sender: string; body: string };
   onQueued?: (mail: MailDraft, id?: string) => void;
+  compact?: boolean;
+  focusToken?: number;
+  onAccountChange?: (id: string) => void;
 }) {
   const choices = data.opportunities.filter((o) =>
     canSeeOpportunity(data.profile, o),
@@ -40,21 +46,29 @@ export function MailEditor({
     opportunity?.id || start.opportunity_id || choices[0]?.id || "",
   );
   const accounts = data.accounts.filter(
-    (a) => a.status === "connected" && data.sender_account_ids?.includes(a.id),
+    (a) =>
+      (a.status === "connected" || (data.demo && a.status === "demo")) &&
+      data.sender_account_ids?.includes(a.id),
   );
   const selected = choices.find((o) => o.id === caseId) || opportunity;
   const [accountId, setAccountId] = useState(
     start.mode === "reply"
-      ? defaultReplyAccount(
-          start.account_id || "",
-          accounts.map((a) => a.id),
-        )
+      ? !data.gmail_history_enabled
+        ? accounts.find((a) => a.id === start.account_id)?.id || ""
+        : defaultReplyAccount(
+            start.account_id || "",
+            accounts.map((a) => a.id),
+          )
       : start.account_id ||
           accounts.find((a) => a.id === selected?.primary_account_id)?.id ||
           accounts[0]?.id ||
           "",
   );
   const [mode, setMode] = useState(start.mode || "compose");
+  const legacyReply = mode === "reply" && !data.gmail_history_enabled;
+  useEffect(() => {
+    onAccountChange?.(accountId);
+  }, [accountId, onAccountChange]);
   const [to, setTo] = useState(start.to_email ?? selected?.email ?? "");
   const [cc, setCc] = useState((start.cc_emails || []).join(", "));
   const suggestedCc = (start.cc_emails || []).join(", ");
@@ -119,12 +133,13 @@ export function MailEditor({
   const submitting = useRef(false);
   const messageInput = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
-    if (!inline) return;
-    messageInput.current
-      ?.closest(".inline-mail-editor")
-      ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (!inline || (compact && !focusToken)) return;
+    if (!compact)
+      messageInput.current
+        ?.closest(".inline-mail-editor")
+        ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     messageInput.current?.focus({ preventScroll: true });
-  }, [inline]);
+  }, [inline, compact, focusToken]);
   useEffect(() => {
     if (!caseId || data.demo) return;
     const controller = new AbortController();
@@ -145,7 +160,7 @@ export function MailEditor({
   useEffect(() => {
     setSignature(null);
     setError("");
-    if (!accountId || data.demo) return;
+    if (!accountId || data.demo || !data.gmail_history_enabled) return;
     const controller = new AbortController();
     fetch(`/api/mail?signature=${accountId}`, { signal: controller.signal })
       .then(async (r) => {
@@ -157,7 +172,7 @@ export function MailEditor({
         if (!controller.signal.aborted) setError(e.message);
       });
     return () => controller.abort();
-  }, [accountId, data.demo, signatureRevision]);
+  }, [accountId, data.demo, data.gmail_history_enabled, signatureRevision]);
   const payload = () => ({
     opportunity_id: caseId,
     account_id: accountId,
@@ -276,6 +291,7 @@ export function MailEditor({
   return (
     <MailEditorFrame
       inline={inline}
+      compact={compact}
       title={t(
         locale,
         mode === "reply"
@@ -318,11 +334,23 @@ export function MailEditor({
           submitting.current = true;
           setError("");
           try {
+            if ((!data.gmail_history_enabled || data.demo) && mode !== "reply")
+              throw new Error(
+                t(
+                  locale,
+                  "El gestor avanzado de correo no está habilitado.",
+                  "The advanced mail manager is not enabled.",
+                ),
+              );
             const p = payload();
             if (mode === "lenders")
               p.to_email = Object.values(targets)[0] || "";
-            const result = await act("mail_send", p);
-            onQueued?.(p, typeof result === "string" ? result : undefined);
+            const result = await act(
+              data.gmail_history_enabled && !data.demo ? "mail_send" : "reply",
+              p,
+            );
+            if (data.gmail_history_enabled && !data.demo)
+              onQueued?.(p, typeof result === "string" ? result : undefined);
             close();
           } catch (e) {
             setError((e as Error).message);
@@ -331,361 +359,374 @@ export function MailEditor({
           }
         }}
       >
-        <label className="field mail-editor-case">
-          {t(locale, "Expediente", "Case")}
-          <select
-            required
-            disabled={
-              !!opportunity || ["reply", "forward"].includes(mode) || locked
-            }
-            value={caseId}
-            onChange={(e) => {
-              setCaseId(e.target.value);
-              setProcess("");
-              setTargets({});
-              setTargetEvaluations({});
-              setUploads([]);
-              setDocuments([]);
-              setGmailFiles([]);
-              setTo(choices.find((o) => o.id === e.target.value)?.email || "");
-              draftId.current = crypto.randomUUID();
-            }}
+        {!legacyReply && (
+          <EditorOptions
+            compact={compact}
+            title={`${t(locale, "Destinatarios y cuenta", "Recipients and account")} · ${to || "—"}`}
           >
-            {choices.map((o) => (
-              <option value={o.id} key={o.id}>
-                {o.company} · {o.contact}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field mail-editor-sender">
-          {t(locale, "Enviar desde", "Send from")}
-          <select
-            required
-            disabled={locked}
-            value={accountId}
-            onChange={(e) => setAccountId(e.target.value)}
-          >
-            <option value="">
-              {t(
-                locale,
-                "Selecciona una cuenta autorizada",
-                "Select an authorized account",
-              )}
-            </option>
-            {accounts.map((a) => (
-              <option value={a.id} key={a.id}>
-                {a.email}
-              </option>
-            ))}
-          </select>
-        </label>
-        {mode === "reply" && start.account_id !== accountId && (
-          <p className="muted">
-            {t(
-              locale,
-              "Estás cambiando la cuenta remitente. Conservaremos la relación de respuesta y el expediente; Gmail puede mostrar otro hilo en esta cuenta.",
-              "You are switching the sender. We preserve reply references and the case; Gmail may show a different thread in this mailbox.",
-            )}
-          </p>
-        )}
-        {!["reply", "forward"].includes(mode) && (
-          <label className="field">
-            {t(locale, "Tipo de envío", "Send type")}
-            <select
-              disabled={locked}
-              value={mode}
-              onChange={(e) => {
-                setMode(e.target.value as typeof mode);
-                setCc("");
-                setBcc("");
-              }}
-            >
-              <option value="compose">
-                {t(locale, "Correo a un contacto", "Email to a contact")}
-              </option>
-              <option value="lenders">
-                {t(
-                  locale,
-                  "Correos individuales a lenders",
-                  "Individual lender emails",
-                )}
-              </option>
-            </select>
-          </label>
-        )}
-        <label className="field mail-editor-process">
-          {t(locale, "Proceso de financiación", "Financing process")}
-          <select
-            disabled={locked || mode === "reply"}
-            value={process}
-            required={mode === "lenders"}
-            onChange={(e) => {
-              setProcess(e.target.value);
-              setTargetEvaluations({});
-            }}
-          >
-            <option value="">
-              {t(
-                locale,
-                "Pendiente de asignar a proceso",
-                "Awaiting process assignment",
-              )}
-            </option>
-            {processes.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        {["reply", "forward"].includes(mode) && (
-          <label className="field mail-editor-evaluation">
-            {t(
-              locale,
-              "Solicitud al lender, si corresponde",
-              "Lender evaluation, if applicable",
-            )}
-            <select
-              disabled={locked}
-              value={submission}
-              onChange={(e) => setSubmission(e.target.value)}
-            >
-              <option value="">
-                {t(locale, "Cliente o equipo", "Customer or team")}
-              </option>
-              {evaluations
-                .filter((s) => s.process_id === process)
-                .map((s) => (
-                  <option value={s.id} key={s.id}>
-                    {data.lenders.find((l) => l.id === s.lender_id)?.name ||
-                      s.lender_id}{" "}
-                    · {s.id.slice(0, 8)}
+            <label className="field mail-editor-case">
+              {t(locale, "Expediente", "Case")}
+              <select
+                required
+                disabled={
+                  !!opportunity || ["reply", "forward"].includes(mode) || locked
+                }
+                value={caseId}
+                onChange={(e) => {
+                  setCaseId(e.target.value);
+                  setProcess("");
+                  setTargets({});
+                  setTargetEvaluations({});
+                  setUploads([]);
+                  setDocuments([]);
+                  setGmailFiles([]);
+                  setTo(
+                    choices.find((o) => o.id === e.target.value)?.email || "",
+                  );
+                  draftId.current = crypto.randomUUID();
+                }}
+              >
+                {choices.map((o) => (
+                  <option value={o.id} key={o.id}>
+                    {o.company} · {o.contact}
                   </option>
                 ))}
-            </select>
-          </label>
-        )}
-        {mode === "lenders" ? (
-          <>
-            <p>
-              {t(
-                locale,
-                "Cada lender recibirá un correo independiente.",
-                "Each lender receives a separate email.",
-              )}
-            </p>
-            {data.lenders.map((l) => (
-              <div className="document-row" key={l.id}>
-                <label>
-                  <input
-                    type="checkbox"
-                    disabled={locked}
-                    checked={l.id in targets}
-                    onChange={(e) =>
-                      setTargets((old) => {
-                        const next = { ...old };
-                        if (e.target.checked) next[l.id] = l.email;
-                        else delete next[l.id];
-                        return next;
-                      })
-                    }
-                  />
-                  {l.name}
-                </label>
-                {l.id in targets && (
-                  <select
-                    aria-label={l.name}
-                    disabled={locked}
-                    value={targets[l.id]}
-                    onChange={(e) =>
-                      setTargets((old) => ({ ...old, [l.id]: e.target.value }))
-                    }
-                  >
-                    {(data.lender_contacts || [])
-                      .filter((c) => c.lender_id === l.id)
-                      .map((c) => (
-                        <option value={c.email} key={c.email}>
-                          {c.email}
-                        </option>
-                      ))}
-                  </select>
-                )}
-                {l.id in targets && (
-                  <select
-                    disabled={locked}
-                    aria-label={t(
-                      locale,
-                      "Evaluación del lender",
-                      "Lender evaluation",
-                    )}
-                    value={targetEvaluations[l.id] || ""}
-                    onChange={(e) =>
-                      setTargetEvaluations((old) => ({
-                        ...old,
-                        [l.id]: e.target.value,
-                      }))
-                    }
-                  >
-                    <option value="">
-                      {t(
-                        locale,
-                        "Usar evaluación única o crear borrador",
-                        "Use single evaluation or create draft",
-                      )}
-                    </option>
-                    {evaluations
-                      .filter(
-                        (s) => s.lender_id === l.id && s.process_id === process,
-                      )
-                      .map((s) => (
-                        <option value={s.id} key={s.id}>
-                          {s.id.slice(0, 8)}
-                        </option>
-                      ))}
-                  </select>
-                )}
-              </div>
-            ))}
-          </>
-        ) : (
-          <>
-            <label className="field mail-editor-recipient">
-              {t(locale, "Para", "To")}
-              <input
-                type="email"
+              </select>
+            </label>
+            <label className="field mail-editor-sender">
+              {t(locale, "Enviar desde", "Send from")}
+              <select
                 required
                 disabled={locked}
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-              />
-            </label>
-            <details className="mail-editor-copies" open={!inline}>
-              <summary>
-                {t(
-                  locale,
-                  "CC, CCO y registro de contacto",
-                  "CC, BCC and contact registration",
-                )}
-                {!!cc && ` · ${mailCopies(cc).length} CC`}
-                {!!bcc &&
-                  ` · ${mailCopies(bcc).length} ${t(locale, "CCO", "BCC")}`}
-              </summary>
-              <label className="field">
-                CC
-                <input
-                  disabled={locked}
-                  value={cc}
-                  onChange={(e) => setCc(e.target.value)}
-                  placeholder={t(
+                value={accountId}
+                onChange={(e) => setAccountId(e.target.value)}
+              >
+                <option value="">
+                  {t(
                     locale,
-                    "Correos separados por comas",
-                    "Comma-separated emails",
+                    "Selecciona una cuenta autorizada",
+                    "Select an authorized account",
                   )}
-                />
-              </label>
-              <label className="field">
-                {t(locale, "CCO · copia oculta", "BCC · hidden copy")}
-                <input
-                  disabled={locked}
-                  value={bcc}
-                  onChange={(e) => setBcc(e.target.value)}
-                />
-              </label>
-              <label className="field">
+                </option>
+                {accounts.map((a) => (
+                  <option value={a.id} key={a.id}>
+                    {a.email}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {mode === "reply" && start.account_id !== accountId && (
+              <p className="muted">
                 {t(
                   locale,
-                  "Nombre del contacto, opcional",
-                  "Contact name, optional",
+                  "Estás cambiando la cuenta remitente. Conservaremos la relación de respuesta y el expediente; Gmail puede mostrar otro hilo en esta cuenta.",
+                  "You are switching the sender. We preserve reply references and the case; Gmail may show a different thread in this mailbox.",
                 )}
-                <input
-                  maxLength={150}
-                  disabled={locked}
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                />
-              </label>
+              </p>
+            )}
+            {!["reply", "forward"].includes(mode) && (
               <label className="field">
+                {t(locale, "Tipo de envío", "Send type")}
+                <select
+                  disabled={locked}
+                  value={mode}
+                  onChange={(e) => {
+                    setMode(e.target.value as typeof mode);
+                    setCc("");
+                    setBcc("");
+                  }}
+                >
+                  <option value="compose">
+                    {t(locale, "Correo a un contacto", "Email to a contact")}
+                  </option>
+                  <option value="lenders">
+                    {t(
+                      locale,
+                      "Correos individuales a lenders",
+                      "Individual lender emails",
+                    )}
+                  </option>
+                </select>
+              </label>
+            )}
+            <label className="field mail-editor-process">
+              {t(locale, "Proceso de financiación", "Financing process")}
+              <select
+                disabled={locked || mode === "reply"}
+                value={process}
+                required={mode === "lenders"}
+                onChange={(e) => {
+                  setProcess(e.target.value);
+                  setTargetEvaluations({});
+                }}
+              >
+                <option value="">
+                  {t(
+                    locale,
+                    "Pendiente de asignar a proceso",
+                    "Awaiting process assignment",
+                  )}
+                </option>
+                {processes.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {["reply", "forward"].includes(mode) && (
+              <label className="field mail-editor-evaluation">
                 {t(
                   locale,
-                  "Guardar destinatario como",
-                  "Register recipient as",
+                  "Solicitud al lender, si corresponde",
+                  "Lender evaluation, if applicable",
                 )}
                 <select
                   disabled={locked}
-                  value={contactLender}
-                  onChange={(e) => setContactLender(e.target.value)}
+                  value={submission}
+                  onChange={(e) => setSubmission(e.target.value)}
                 >
                   <option value="">
-                    {t(locale, "Contacto del cliente", "Customer contact")}
+                    {t(locale, "Cliente o equipo", "Customer or team")}
                   </option>
-                  {data.lenders.map((l) => (
-                    <option value={l.id} key={l.id}>
-                      {l.name}
-                    </option>
-                  ))}
+                  {evaluations
+                    .filter((s) => s.process_id === process)
+                    .map((s) => (
+                      <option value={s.id} key={s.id}>
+                        {data.lenders.find((l) => l.id === s.lender_id)?.name ||
+                          s.lender_id}{" "}
+                        · {s.id.slice(0, 8)}
+                      </option>
+                    ))}
                 </select>
               </label>
-              <button
-                className="text-button"
-                type="button"
-                disabled={locked || !to}
-                onClick={async () => {
-                  setWorking(true);
-                  setError("");
-                  try {
-                    const r = await fetch("/api/mail", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        action: "contact",
-                        request_id: crypto.randomUUID(),
-                        payload: {
-                          opportunity_id: caseId,
-                          email: to.trim(),
-                          name: contactName.trim() || to.trim(),
-                          lender_id: contactLender || null,
-                        },
-                      }),
-                    });
-                    const p = await r.json();
-                    if (!r.ok) throw Error(p.error);
-                    setNotice(
-                      t(
+            )}
+            {mode === "lenders" ? (
+              <>
+                <p>
+                  {t(
+                    locale,
+                    "Cada lender recibirá un correo independiente.",
+                    "Each lender receives a separate email.",
+                  )}
+                </p>
+                {data.lenders.map((l) => (
+                  <div className="document-row" key={l.id}>
+                    <label>
+                      <input
+                        type="checkbox"
+                        disabled={locked}
+                        checked={l.id in targets}
+                        onChange={(e) =>
+                          setTargets((old) => {
+                            const next = { ...old };
+                            if (e.target.checked) next[l.id] = l.email;
+                            else delete next[l.id];
+                            return next;
+                          })
+                        }
+                      />
+                      {l.name}
+                    </label>
+                    {l.id in targets && (
+                      <select
+                        aria-label={l.name}
+                        disabled={locked}
+                        value={targets[l.id]}
+                        onChange={(e) =>
+                          setTargets((old) => ({
+                            ...old,
+                            [l.id]: e.target.value,
+                          }))
+                        }
+                      >
+                        {(data.lender_contacts || [])
+                          .filter((c) => c.lender_id === l.id)
+                          .map((c) => (
+                            <option value={c.email} key={c.email}>
+                              {c.email}
+                            </option>
+                          ))}
+                      </select>
+                    )}
+                    {l.id in targets && (
+                      <select
+                        disabled={locked}
+                        aria-label={t(
+                          locale,
+                          "Evaluación del lender",
+                          "Lender evaluation",
+                        )}
+                        value={targetEvaluations[l.id] || ""}
+                        onChange={(e) =>
+                          setTargetEvaluations((old) => ({
+                            ...old,
+                            [l.id]: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">
+                          {t(
+                            locale,
+                            "Usar evaluación única o crear borrador",
+                            "Use single evaluation or create draft",
+                          )}
+                        </option>
+                        {evaluations
+                          .filter(
+                            (s) =>
+                              s.lender_id === l.id && s.process_id === process,
+                          )
+                          .map((s) => (
+                            <option value={s.id} key={s.id}>
+                              {s.id.slice(0, 8)}
+                            </option>
+                          ))}
+                      </select>
+                    )}
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <label className="field mail-editor-recipient">
+                  {t(locale, "Para", "To")}
+                  <input
+                    type="email"
+                    required
+                    disabled={locked}
+                    value={to}
+                    onChange={(e) => setTo(e.target.value)}
+                  />
+                </label>
+                <details className="mail-editor-copies" open={!inline}>
+                  <summary>
+                    {t(
+                      locale,
+                      "CC, CCO y registro de contacto",
+                      "CC, BCC and contact registration",
+                    )}
+                    {!!cc && ` · ${mailCopies(cc).length} CC`}
+                    {!!bcc &&
+                      ` · ${mailCopies(bcc).length} ${t(locale, "CCO", "BCC")}`}
+                  </summary>
+                  <label className="field">
+                    CC
+                    <input
+                      disabled={locked}
+                      value={cc}
+                      onChange={(e) => setCc(e.target.value)}
+                      placeholder={t(
                         locale,
-                        "Destinatario registrado.",
-                        "Recipient registered.",
-                      ),
-                    );
-                  } catch (e) {
-                    setError((e as Error).message);
-                  } finally {
-                    setWorking(false);
-                  }
-                }}
-              >
-                {t(locale, "Registrar destinatario", "Register recipient")}
-              </button>
-            </details>
-          </>
+                        "Correos separados por comas",
+                        "Comma-separated emails",
+                      )}
+                    />
+                  </label>
+                  <label className="field">
+                    {t(locale, "CCO · copia oculta", "BCC · hidden copy")}
+                    <input
+                      disabled={locked}
+                      value={bcc}
+                      onChange={(e) => setBcc(e.target.value)}
+                    />
+                  </label>
+                  <label className="field">
+                    {t(
+                      locale,
+                      "Nombre del contacto, opcional",
+                      "Contact name, optional",
+                    )}
+                    <input
+                      maxLength={150}
+                      disabled={locked}
+                      value={contactName}
+                      onChange={(e) => setContactName(e.target.value)}
+                    />
+                  </label>
+                  <label className="field">
+                    {t(
+                      locale,
+                      "Guardar destinatario como",
+                      "Register recipient as",
+                    )}
+                    <select
+                      disabled={locked}
+                      value={contactLender}
+                      onChange={(e) => setContactLender(e.target.value)}
+                    >
+                      <option value="">
+                        {t(locale, "Contacto del cliente", "Customer contact")}
+                      </option>
+                      {data.lenders.map((l) => (
+                        <option value={l.id} key={l.id}>
+                          {l.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    className="text-button"
+                    type="button"
+                    disabled={locked || !to}
+                    onClick={async () => {
+                      setWorking(true);
+                      setError("");
+                      try {
+                        const r = await fetch("/api/mail", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            action: "contact",
+                            request_id: crypto.randomUUID(),
+                            payload: {
+                              opportunity_id: caseId,
+                              email: to.trim(),
+                              name: contactName.trim() || to.trim(),
+                              lender_id: contactLender || null,
+                            },
+                          }),
+                        });
+                        const p = await r.json();
+                        if (!r.ok) throw Error(p.error);
+                        setNotice(
+                          t(
+                            locale,
+                            "Destinatario registrado.",
+                            "Recipient registered.",
+                          ),
+                        );
+                      } catch (e) {
+                        setError((e as Error).message);
+                      } finally {
+                        setWorking(false);
+                      }
+                    }}
+                  >
+                    {t(locale, "Registrar destinatario", "Register recipient")}
+                  </button>
+                </details>
+              </>
+            )}
+            <label className="field mail-editor-subject">
+              {t(locale, "Asunto", "Subject")}
+              <input
+                required
+                maxLength={mode === "reply" ? 2000 : 200}
+                disabled={locked || mode === "reply"}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+              />
+            </label>
+          </EditorOptions>
         )}
-        <label className="field mail-editor-subject">
-          {t(locale, "Asunto", "Subject")}
-          <input
-            required
-            maxLength={mode === "reply" ? 2000 : 200}
-            disabled={locked || mode === "reply"}
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-          />
-        </label>
-        <label className="field">
-          {t(locale, "Mensaje", "Message")}
+        <label className="field mail-editor-body">
+          <span>{t(locale, "Mensaje", "Message")}</span>
           <textarea
             ref={messageInput}
             required
             maxLength={10000}
-            rows={inline ? 4 : 7}
+            rows={compact ? 2 : inline ? 4 : 7}
             placeholder={
               inline
                 ? t(locale, "Escribe tu respuesta…", "Write your reply…")
@@ -696,146 +737,173 @@ export function MailEditor({
             onChange={(e) => setBody(e.target.value)}
           />
         </label>
-        <details>
-          <summary>
-            {t(locale, "Documentos del expediente", "Case documents")}
-          </summary>
-          {data.documents
-            .filter(
-              (d) =>
-                d.opportunity_id === caseId &&
-                d.status === "approved" &&
-                d.storage_path,
-            )
-            .map((d) => (
-              <label className="document-row" key={d.id}>
-                <input
-                  type="checkbox"
+        {!legacyReply && (
+          <EditorOptions
+            compact={compact}
+            title={t(locale, "Adjuntos y firma", "Attachments and signature")}
+          >
+            <details>
+              <summary>
+                {t(locale, "Documentos del expediente", "Case documents")}
+              </summary>
+              {data.documents
+                .filter(
+                  (d) =>
+                    d.opportunity_id === caseId &&
+                    d.status === "approved" &&
+                    d.storage_path,
+                )
+                .map((d) => (
+                  <label className="document-row" key={d.id}>
+                    <input
+                      type="checkbox"
+                      disabled={locked}
+                      checked={documents.includes(d.id)}
+                      onChange={(e) =>
+                        toggle(d.id, e.target.checked, setDocuments)
+                      }
+                    />
+                    {d.name}
+                  </label>
+                ))}
+              {(data.gmail_files || [])
+                .filter(
+                  (f) =>
+                    f.opportunity_id === caseId &&
+                    f.storage_path &&
+                    (data.gmail_history_enabled
+                      ? ["received", "approved", "reviewed", "incorporated"]
+                      : ["approved"]
+                    ).includes(f.status),
+                )
+                .map((f) => (
+                  <label className="document-row" key={f.id}>
+                    <input
+                      type="checkbox"
+                      disabled={locked}
+                      checked={gmailFiles.includes(f.id)}
+                      onChange={(e) =>
+                        toggle(f.id, e.target.checked, setGmailFiles)
+                      }
+                    />
+                    {f.name}
+                  </label>
+                ))}
+            </details>
+            {!!forwardFiles.length && (
+              <p>
+                {t(
+                  locale,
+                  "Adjuntos del mensaje original",
+                  "Original message attachments",
+                )}
+                : {forwardFiles.length}{" "}
+                <button
+                  type="button"
+                  className="text-button"
                   disabled={locked}
-                  checked={documents.includes(d.id)}
-                  onChange={(e) => toggle(d.id, e.target.checked, setDocuments)}
-                />
-                {d.name}
-              </label>
-            ))}
-          {(data.gmail_files || [])
-            .filter(
-              (f) =>
-                f.opportunity_id === caseId &&
-                f.storage_path &&
-                ["received", "approved", "reviewed", "incorporated"].includes(
-                  f.status,
-                ),
-            )
-            .map((f) => (
-              <label className="document-row" key={f.id}>
-                <input
-                  type="checkbox"
-                  disabled={locked}
-                  checked={gmailFiles.includes(f.id)}
-                  onChange={(e) =>
-                    toggle(f.id, e.target.checked, setGmailFiles)
-                  }
-                />
-                {f.name}
-              </label>
-            ))}
-        </details>
-        {!!forwardFiles.length && (
-          <p>
-            {t(
-              locale,
-              "Adjuntos del mensaje original",
-              "Original message attachments",
+                  onClick={() => setForwardFiles([])}
+                >
+                  {t(
+                    locale,
+                    "Reenviar sin los adjuntos originales",
+                    "Forward without original attachments",
+                  )}
+                </button>
+              </p>
             )}
-            : {forwardFiles.length}{" "}
-            <button
-              type="button"
-              className="text-button"
-              disabled={locked}
-              onClick={() => setForwardFiles([])}
-            >
+            <label className="field">
               {t(
                 locale,
-                "Reenviar sin los adjuntos originales",
-                "Forward without original attachments",
+                "Adjuntar desde el computador · máximo 18 MB en total",
+                "Attach from computer · maximum 18 MB total",
               )}
-            </button>
-          </p>
+              <input
+                type="file"
+                multiple
+                disabled={
+                  locked || !caseId || !data.gmail_history_enabled || data.demo
+                }
+                onChange={(e) => {
+                  void upload(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            {uploads.map((f) => (
+              <div className="document-row" key={f.id}>
+                <a href={`/api/mail/uploads/${f.id}`}>{f.name}</a>
+                <button
+                  type="button"
+                  disabled={locked}
+                  className="text-button"
+                  onClick={() =>
+                    setUploads((old) => old.filter((x) => x.id !== f.id))
+                  }
+                >
+                  {t(locale, "Quitar", "Remove")}
+                </button>
+              </div>
+            ))}
+            <p className="muted">
+              {data.demo
+                ? t(
+                    locale,
+                    "Demostración sin conexión a Gmail.",
+                    "Demo without a Gmail connection.",
+                  )
+                : signature
+                  ? signature.html
+                    ? t(
+                        locale,
+                        "Se añadirá la firma de esta cuenta de Gmail, con su formato y enlaces.",
+                        "This Gmail account's formatted signature and links will be added.",
+                      )
+                    : t(
+                        locale,
+                        "Esta cuenta no tiene una firma configurada en Gmail.",
+                        "This account has no Gmail signature configured.",
+                      )
+                  : t(
+                      locale,
+                      "Consultando la firma de Gmail…",
+                      "Loading Gmail signature…",
+                    )}
+            </p>
+            {!signature && accountId && !data.demo && (
+              <button
+                className="text-button"
+                type="button"
+                disabled={locked}
+                onClick={() => setSignatureRevision((n) => n + 1)}
+              >
+                {t(locale, "Volver a consultar la firma", "Reload signature")}
+              </button>
+            )}
+            {signature?.html && (
+              <details>
+                <summary>
+                  {t(locale, "Vista previa de la firma", "Signature preview")}
+                </summary>
+                <iframe
+                  title={t(locale, "Firma de Gmail", "Gmail signature")}
+                  sandbox=""
+                  referrerPolicy="no-referrer"
+                  srcDoc={`<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">${signature.html}`}
+                  style={{ width: "100%", border: 0 }}
+                />
+              </details>
+            )}
+          </EditorOptions>
         )}
-        <label className="field">
-          {t(
-            locale,
-            "Adjuntar desde el computador · máximo 18 MB en total",
-            "Attach from computer · maximum 18 MB total",
-          )}
-          <input
-            type="file"
-            multiple
-            disabled={locked || !caseId}
-            onChange={(e) => {
-              void upload(e.target.files);
-              e.target.value = "";
-            }}
-          />
-        </label>
-        {uploads.map((f) => (
-          <div className="document-row" key={f.id}>
-            <a href={`/api/mail/uploads/${f.id}`}>{f.name}</a>
-            <button
-              type="button"
-              disabled={locked}
-              className="text-button"
-              onClick={() =>
-                setUploads((old) => old.filter((x) => x.id !== f.id))
-              }
-            >
-              {t(locale, "Quitar", "Remove")}
-            </button>
-          </div>
-        ))}
-        <p className="muted">
-          {signature
-            ? signature.html
-              ? t(
-                  locale,
-                  "Se añadirá la firma de esta cuenta de Gmail, con su formato y enlaces.",
-                  "This Gmail account's formatted signature and links will be added.",
-                )
-              : t(
-                  locale,
-                  "Esta cuenta no tiene una firma configurada en Gmail.",
-                  "This account has no Gmail signature configured.",
-                )
-            : t(
-                locale,
-                "Consultando la firma de Gmail…",
-                "Loading Gmail signature…",
-              )}
-        </p>
-        {!signature && accountId && (
-          <button
-            className="text-button"
-            type="button"
-            disabled={locked}
-            onClick={() => setSignatureRevision((n) => n + 1)}
-          >
-            {t(locale, "Volver a consultar la firma", "Reload signature")}
-          </button>
-        )}
-        {signature?.html && (
-          <details>
-            <summary>
-              {t(locale, "Vista previa de la firma", "Signature preview")}
-            </summary>
-            <iframe
-              title={t(locale, "Firma de Gmail", "Gmail signature")}
-              sandbox=""
-              referrerPolicy="no-referrer"
-              srcDoc={`<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">${signature.html}`}
-              style={{ width: "100%", border: 0 }}
-            />
-          </details>
+        {legacyReply && (
+          <small className="muted">
+            {t(
+              locale,
+              "Respuesta básica desde la cuenta original del hilo. Las opciones avanzadas requieren la integración de Gmail habilitada.",
+              "Basic reply from the original thread account. Advanced options require the Gmail integration to be enabled.",
+            )}
+          </small>
         )}
         <div className="modal-footer mail-editor-footer">
           {inline && (
@@ -859,7 +927,11 @@ export function MailEditor({
           <SaveButton
             locale={locale}
             busy={locked}
-            disabled={!accountId || !caseId || data.demo || !signature}
+            disabled={
+              !accountId ||
+              !caseId ||
+              (!data.demo && data.gmail_history_enabled && !signature)
+            }
             label={
               mode === "reply"
                 ? t(locale, "Enviar respuesta", "Send reply")
@@ -874,11 +946,13 @@ export function MailEditor({
 
 function MailEditorFrame({
   inline,
+  compact,
   title,
   close,
   children,
 }: {
   inline: boolean;
+  compact: boolean;
   title: string;
   close: () => void;
   children: ReactNode;
@@ -890,9 +964,30 @@ function MailEditorFrame({
       </Modal>
     );
   return (
-    <section className="inline-mail-editor" aria-label={title}>
+    <section
+      className={`inline-mail-editor ${compact ? "compact-mail-editor" : ""}`}
+      aria-label={title}
+    >
       <h3>{title}</h3>
       {children}
     </section>
+  );
+}
+
+function EditorOptions({
+  compact,
+  title,
+  children,
+}: {
+  compact: boolean;
+  title: string;
+  children: ReactNode;
+}) {
+  if (!compact) return <>{children}</>;
+  return (
+    <details className="cw-reply-options">
+      <summary>{title}</summary>
+      <div>{children}</div>
+    </details>
   );
 }

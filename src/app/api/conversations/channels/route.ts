@@ -6,10 +6,13 @@ import {
   jsonError,
 } from "@/lib/server/supabase";
 import { teamLabels } from "@/lib/server/gmail-team";
+import { conversationSummary } from "@/lib/server/conversation-summary";
+import type { MailChannels } from "@/lib/conversation-threads";
 export async function GET(request: Request) {
   try {
-    const id = z.uuid().parse(new URL(request.url).searchParams.get("case"));
-    const { db } = await requireUser();
+    const params = new URL(request.url).searchParams;
+    const id = z.uuid().parse(params.get("case"));
+    const { db, profile } = await requireUser();
     const opportunity = checkDb(
       await db
         .from("opportunities")
@@ -51,7 +54,12 @@ export async function GET(request: Request) {
             ),
         ) || []
       : [];
-    const lenderIds = [...new Set(routes.map((r) => r.lender_id))];
+    const lenderIds = [
+      ...new Set([
+        ...routes.map((r) => r.lender_id),
+        ...submissions.map((s) => s.lender_id),
+      ]),
+    ];
     const lenders = lenderIds.length
       ? checkDb(
           await db.from("lenders").select("id,name,email").in("id", lenderIds),
@@ -66,27 +74,7 @@ export async function GET(request: Request) {
         ) || []
       : [];
     const accounts =
-      checkDb(await db.from("mail_accounts").select("email")) || [];
-    // Return only team addresses actually present in the user's accessible messages.
-    const latest = conversations.length
-      ? checkDb(
-          await db
-            .from("messages")
-            .select("sender,participants")
-            .in(
-              "conversation_id",
-              conversations.map((c) => c.id),
-            )
-            .order("sent_at", { ascending: false })
-            .limit(1000),
-        ) || []
-      : [];
-    const teams = await teamLabels(
-      latest.flatMap((m) => [
-        m.sender,
-        ...(m.participants || []).map((p: { email: string }) => p.email),
-      ]),
-    );
+      checkDb(await db.from("mail_accounts").select("id,email,status")) || [];
     const links = opportunity.company_id
       ? checkDb(
           await db
@@ -106,8 +94,88 @@ export async function GET(request: Request) {
             ...links.map((l) => l.contact_id),
           ]),
       ) || [];
+    const channels: MailChannels = {
+      conversations,
+      processes,
+      submissions,
+      routes,
+      lenders,
+      lender_contacts: contacts,
+      team_emails: [...new Set(accounts.map((a) => a.email))],
+      client_emails: clients.map((c) => c.email.toLowerCase()),
+    };
+    const { summaries, headers, teamEmails } = await conversationSummary(
+      db,
+      id,
+      channels,
+      params.get("q") || "",
+    );
+    const [caseRow, required, approved, followup] = await Promise.all([
+      db.from("opportunity_workspace").select("*").eq("id", id).single(),
+      db
+        .from("documents")
+        .select("id", { count: "exact", head: true })
+        .eq("opportunity_id", id)
+        .eq("required", true),
+      db
+        .from("documents")
+        .select("id", { count: "exact", head: true })
+        .eq("opportunity_id", id)
+        .eq("required", true)
+        .eq("status", "approved"),
+      db
+        .from("tasks")
+        .select("title,due_at")
+        .eq("opportunity_id", id)
+        .eq("status", "open")
+        .order("due_at")
+        .limit(1),
+    ]);
+    checkDb(required);
+    checkDb(approved);
+    const caseData = checkDb(caseRow)!;
+    const task = (checkDb(followup) || [])[0];
+    const customerMessages = headers
+      .filter(
+        (m) =>
+          m.direction === "inbound" &&
+          channels.client_emails.includes(m.sender.toLowerCase()),
+      )
+      .sort((a, b) => Date.parse(b.sent_at) - Date.parse(a.sent_at));
+    const permissions =
+      checkDb(
+        await db
+          .from("mail_permissions")
+          .select("account_id")
+          .eq("user_id", profile.id)
+          .eq("can_send", true),
+      ) || [];
     return Response.json(
       {
+        thread_summaries: summaries,
+        sender_account_ids: accounts
+          .filter(
+            (a) =>
+              a.status === "connected" &&
+              (profile.role === "superadmin" ||
+                permissions.some((p) => p.account_id === a.id)),
+          )
+          .map((a) => a.id),
+        context: {
+          opportunity: caseData,
+          client_emails: channels.client_emails,
+          last_client_message_at: customerMessages[0]?.sent_at || null,
+          documents: {
+            required: required.count || 0,
+            approved: approved.count || 0,
+            ready: !!required.count && required.count === approved.count,
+          },
+          followup: task
+            ? { title: task.title, at: task.due_at }
+            : caseData.next_action
+              ? { title: caseData.next_action, at: caseData.next_action_at }
+              : null,
+        },
         conversations,
         processes,
         submissions,
@@ -115,9 +183,7 @@ export async function GET(request: Request) {
         routes,
         lenders,
         lender_contacts: contacts,
-        team_emails: [
-          ...new Set([...accounts.map((a) => a.email), ...teams.keys()]),
-        ],
+        team_emails: teamEmails,
         client_emails: clients.map((c) => c.email),
       },
       { headers: { "Cache-Control": "no-store" } },

@@ -56,10 +56,8 @@ import { ImportWizard } from "./import-wizard";
 import { teamLabel } from "@/lib/gmail-team";
 import { demoAction } from "@/lib/demo-actions";
 import { Integrations } from "./integrations";
-import { MailComposer, MailSendStatus } from "./mail-composer";
+import { MailComposer } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
-import { MailOrder } from "./mail-order";
-import { orderMailMessages, type MailDateOrder } from "@/lib/mail-chat";
 import { LenderContacts } from "./lender-contacts";
 import {
   getLeadTab,
@@ -129,7 +127,6 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [modal, setModal] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
   const [extraSteps, setExtraSteps] = useState<number[]>([]);
-  const [expandedHistory, setExpandedHistory] = useState(false);
   const editingLender = data.lenders.find((l) => modal === `lender:${l.id}`);
   useEffect(() => {
     if (modal === "campaign") setExtraSteps([]);
@@ -139,17 +136,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [error, setError] = useState("");
   const [mobile, setMobile] = useState(false);
   const [notifications, setNotifications] = useState(false);
-  const [conversation, setConversation] = useState<string | null>(
-    initial.conversations[0]?.id || null,
-  );
   const [role, setRole] = useState<Role>(initial.profile.role);
-  useEffect(() => setExpandedHistory(false), [view, conversation]);
-  const [conversationOrder, setConversationOrder] =
-    useState<MailDateOrder>("newest");
-  const conversationHistory = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (conversationHistory.current) conversationHistory.current.scrollTop = 0;
-  }, [conversation, conversationOrder]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const requestKeys = useRef(new Map<string, string>());
@@ -191,7 +178,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     setPage(0);
   }, [query, stage, owner, campaignFilter, period, view, leadStatus]);
   useEffect(() => {
-    if (initial.demo || expandedHistory) return;
+    if (initial.demo) return;
     const controller = new AbortController();
     const timer = setInterval(async () => {
       if (document.hidden) return;
@@ -209,7 +196,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
       clearInterval(timer);
       controller.abort();
     };
-  }, [requestParams, initial.demo, expandedHistory]);
+  }, [requestParams, initial.demo]);
   const profile = data.demo
     ? {
         ...data.profile,
@@ -338,54 +325,6 @@ export default function CRM({ initial }: { initial: Workspace }) {
     const body = await res.json();
     if (!res.ok) throw new Error(body.error);
     setData(body);
-  }
-  async function olderMessages() {
-    if (!conversation || data.demo) return;
-    setExpandedHistory(true);
-    setBusy(true);
-    try {
-      const earliest = data.messages
-        .filter((m) => m.conversation_id === conversation)
-        .sort(
-          (a, b) =>
-            a.sent_at.localeCompare(b.sent_at) || a.id.localeCompare(b.id),
-        )[0];
-      const cursor = earliest
-        ? `?${new URLSearchParams({ before: earliest.sent_at, cursor: earliest.id })}`
-        : "";
-      const response = await fetch(
-        `/api/conversations/${conversation}/messages${cursor}`,
-      );
-      const body = await response.json();
-      if (!response.ok) throw new Error(body.error);
-      setData((previous) => ({
-        ...previous,
-        messages: [
-          ...new Map(
-            [...body.messages, ...previous.messages].map((m) => [m.id, m]),
-          ).values(),
-        ],
-        attachments: [
-          ...new Map(
-            [...(body.attachments || []), ...(previous.attachments || [])].map(
-              (a) => [a.id, a],
-            ),
-          ).values(),
-        ],
-      }));
-      if (!body.hasMore)
-        setToast(
-          t(
-            locale,
-            "Has llegado al inicio del historial.",
-            "You have reached the start of the history.",
-          ),
-        );
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
   }
   const act: Action = async (kind, payload) => {
     let result: unknown;
@@ -526,6 +465,73 @@ export default function CRM({ initial }: { initial: Workspace }) {
     settings: ["Un espacio a tu medida.", "Your workspace, your way."],
   };
   const activeOpportunity = visible.find((o) => o.id === selected);
+  function cacheMailCase(
+    scope?: Workspace,
+    extra?: {
+      attachment: NonNullable<Workspace["attachments"]>[number];
+      message: Workspace["messages"][number];
+      conversation: Workspace["conversations"][number];
+    },
+  ) {
+    setData((previous) => {
+      const result = { ...previous };
+      const keys = [
+        "opportunities",
+        "documents",
+        "analyses",
+        "activities",
+        "tasks",
+        "submissions",
+        "offers",
+        "conversations",
+        "messages",
+        "attachments",
+      ] as const;
+      for (const key of keys) {
+        const rows = [...(previous[key] || []), ...(scope?.[key] || [])];
+        (result as unknown as Record<string, unknown>)[key] = [
+          ...new Map(rows.map((row) => [row.id, row])).values(),
+        ];
+      }
+      if (extra) {
+        result.attachments = [
+          ...new Map(
+            [...(result.attachments || []), extra.attachment].map((a) => [
+              a.id,
+              a,
+            ]),
+          ).values(),
+        ];
+        result.messages = [
+          ...new Map(
+            [...result.messages, extra.message].map((m) => [m.id, m]),
+          ).values(),
+        ];
+        result.conversations = [
+          ...new Map(
+            [...result.conversations, extra.conversation].map((c) => [c.id, c]),
+          ).values(),
+        ];
+      }
+      return result;
+    });
+  }
+  async function openMailCase(id: string, scope?: Workspace) {
+    try {
+      if (!scope && !data.demo) {
+        const response = await fetch(
+          `/api/workspace?${new URLSearchParams({ case: id })}`,
+        );
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.error);
+        scope = body;
+      }
+      cacheMailCase(scope);
+      setSelected(id);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
   const table = (items: Opportunity[]) => (
     <div className="table-scroll">
       <table className="opportunity-table">
@@ -753,7 +759,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
           </div>
         </div>
       </aside>
-      <div className="main-shell">
+      <div className={`main-shell ${view === "inbox" && !activeOpportunity ? "conversations-shell" : ""}`}>
         <header className="topbar">
           <div className="breadcrumb">
             <button
@@ -850,7 +856,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
             </select>
           </div>
         )}
-        <main className="content">
+        <main className={`content ${view === "inbox" && !activeOpportunity ? "conversations-content" : ""}`}>
           {error && (
             <div className="error-banner" role="alert">
               <AlertCircle size={18} />
@@ -877,7 +883,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
             />
           ) : (
             <>
-              <div className="page-heading">
+              {view !== "inbox" && <div className="page-heading">
                 <div>
                   <div className="eyebrow">
                     {view === "overview"
@@ -971,6 +977,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   )}
                 </div>
               </div>
+              }
               {["overview", "reports"].includes(view) && (
                 <div className="metrics">
                   <Metric
@@ -1604,322 +1611,18 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 </section>
               )}
               {view === "inbox" && (
-                <MailSendStatus data={data} locale={locale} />
-              )}
-              {view === "inbox" && data.gmail_history_enabled && !data.demo && (
                 <MailInbox
-                  data={data}
+                  data={{ ...data, profile }}
                   locale={locale}
                   act={act}
                   busy={busy}
-                  openCase={setSelected}
+                  openCase={openMailCase}
+                  onAttachment={(attachment, message, conversation, scope) => {
+                    cacheMailCase(scope, { attachment, message, conversation });
+                    setModal(`attachment:${attachment.id}`);
+                  }}
                 />
               )}
-              {view === "inbox" &&
-                (!data.gmail_history_enabled || data.demo) && (
-                <section className="panel inbox">
-                  <aside className="conversation-list">
-                    <h2>{t(locale, "Bandeja compartida", "Shared inbox")}</h2>
-                    {conversations.map((c) => (
-                      <button
-                        key={c.id}
-                        className={conversation === c.id ? "active" : ""}
-                        onClick={() => setConversation(c.id)}
-                      >
-                        <div>
-                          <strong>
-                            {
-                              visible.find((o) => o.id === c.opportunity_id)
-                                ?.company
-                            }
-                          </strong>
-                          {c.needs_attention && (
-                            <span className="unread-mark" />
-                          )}
-                        </div>
-                        <span>{c.subject}</span>
-                        <small>{dateLabel(c.updated_at, locale, true)}</small>
-                      </button>
-                    ))}
-                  </aside>
-                  <div className="conversation-content">
-                    {conversations.find((c) => c.id === conversation) ? (
-                      <>
-                        <div className="conversation-header">
-                          <h2>
-                            {
-                              conversations.find((c) => c.id === conversation)
-                                ?.subject
-                            }
-                          </h2>
-                          <button
-                            className="text-button"
-                            onClick={() =>
-                              setSelected(
-                                conversations.find(
-                                  (c) => c.id === conversation,
-                                )!.opportunity_id,
-                              )
-                            }
-                          >
-                            {t(locale, "Ver expediente", "View case")}
-                            <ChevronRight size={14} />
-                          </button>
-                        </div>
-                        <div className="conversation-controls">
-                          <MailOrder
-                            locale={locale}
-                            value={conversationOrder}
-                            onChange={setConversationOrder}
-                          />
-                        </div>
-                        <div
-                          className="messages"
-                          ref={conversationHistory}
-                          tabIndex={0}
-                          role="region"
-                          aria-label={t(locale, "Historial de la conversación", "Conversation history")}
-                        >
-                          {expandedHistory && (
-                            <button
-                              className="text-button"
-                              onClick={() => {
-                                setExpandedHistory(false);
-                                refresh().catch((e) => setError(e.message));
-                              }}
-                            >
-                              {t(
-                                locale,
-                                "Volver a mensajes recientes y actualizar",
-                                "Return to recent messages and refresh",
-                              )}
-                            </button>
-                          )}
-                          {!data.demo && (
-                            <button
-                              className="text-button"
-                              disabled={busy}
-                              onClick={olderMessages}
-                            >
-                              {t(
-                                locale,
-                                "Cargar mensajes anteriores",
-                                "Load earlier messages",
-                              )}
-                            </button>
-                          )}
-                          {orderMailMessages(
-                            data.messages.filter((m) => m.conversation_id === conversation),
-                            conversationOrder,
-                          )
-                            .map((m) => (
-                              <article
-                                className={`message ${m.direction}`}
-                                key={m.id}
-                              >
-                                <div>
-                                  <strong>{m.sender}</strong>
-                                  {m.sender_team && (
-                                    <small>
-                                      {teamLabel(m.sender_team, locale)}
-                                    </small>
-                                  )}
-                                  <small>
-                                    {dateLabel(m.sent_at, locale, true)}
-                                  </small>
-                                </div>
-                                <p>{m.body}</p>
-                                {(data.gmail_files || [])
-                                  .filter(
-                                    (f) =>
-                                      f.archive_message_id ===
-                                      m.archive_message_id,
-                                  )
-                                  .map((f) => (
-                                    <a
-                                      className="button"
-                                      key={f.id}
-                                      href={`/api/gmail/files/${f.id}`}
-                                    >
-                                      {f.name} ·{" "}
-                                      {t(locale, "Descargar", "Download")}
-                                    </a>
-                                  ))}
-                                {(data.attachments || [])
-                                  .filter((a) => a.message_id === m.id)
-                                  .map((a) => (
-                                    <button
-                                      className="button"
-                                      key={a.id}
-                                      disabled={!!a.imported_document_id}
-                                      onClick={() =>
-                                        setModal(`attachment:${a.id}`)
-                                      }
-                                    >
-                                      <FileText size={14} />
-                                      {a.name} ·{" "}
-                                      {a.imported_document_id
-                                        ? t(locale, "Incorporado", "Imported")
-                                        : t(
-                                            locale,
-                                            "Revisar adjunto",
-                                            "Review attachment",
-                                          )}
-                                    </button>
-                                  ))}
-                                <small>
-                                  {m.direction === "outbound"
-                                    ? t(
-                                        locale,
-                                        "Aceptado por Gmail",
-                                        "Accepted by Gmail",
-                                      )
-                                    : t(locale, "Recibido", "Received")}
-                                </small>
-                              </article>
-                            ))}
-                        </div>
-                        <form
-                          className="reply-form"
-                          onSubmit={async (e) => {
-                            e.preventDefault();
-                            const form = e.currentTarget;
-                            try {
-                              await act("reply", {
-                                conversation_id: conversation,
-                                body: new FormData(form).get("body"),
-                                ...(new FormData(form).get("account_id")
-                                  ? {
-                                      account_id: new FormData(form).get(
-                                        "account_id",
-                                      ),
-                                    }
-                                  : {}),
-                                attachment_ids: new FormData(form).getAll(
-                                  "attachment_id",
-                                ),
-                                gmail_file_ids: new FormData(form).getAll(
-                                  "gmail_file_id",
-                                ),
-                              });
-                              form.reset();
-                            } catch {}
-                          }}
-                        >
-                          {data.gmail_history_enabled && (
-                            <>
-                              <label>
-                                {t(locale, "Enviar desde", "Send from")}
-                                <select name="account_id">
-                                  <option value="">
-                                    {t(
-                                      locale,
-                                      "Cuenta principal del expediente o cuenta del hilo",
-                                      "Case primary account or thread account",
-                                    )}
-                                  </option>
-                                  {data.accounts
-                                    .filter((a) => a.status === "connected")
-                                    .map((a) => (
-                                      <option value={a.id} key={a.id}>
-                                        {a.email}
-                                      </option>
-                                    ))}
-                                </select>
-                              </label>
-                              <details>
-                                <summary>
-                                  {t(
-                                    locale,
-                                    "Adjuntar documentos aprobados",
-                                    "Attach approved documents",
-                                  )}
-                                </summary>
-                                {data.documents
-                                  .filter(
-                                    (d) =>
-                                      d.opportunity_id ===
-                                        data.conversations.find(
-                                          (c) => c.id === conversation,
-                                        )?.opportunity_id &&
-                                      d.status === "approved",
-                                  )
-                                  .map((d) => (
-                                    <label key={d.id}>
-                                      <input
-                                        type="checkbox"
-                                        name="attachment_id"
-                                        value={d.id}
-                                      />{" "}
-                                      {d.name}
-                                    </label>
-                                  ))}
-                                {(data.gmail_files || [])
-                                  .filter(
-                                    (f) =>
-                                      f.opportunity_id ===
-                                        data.conversations.find(
-                                          (c) => c.id === conversation,
-                                        )?.opportunity_id &&
-                                      f.status === "approved" &&
-                                      f.storage_path,
-                                  )
-                                  .map((f) => (
-                                    <label key={f.id}>
-                                      <input
-                                        type="checkbox"
-                                        name="gmail_file_id"
-                                        value={f.id}
-                                      />{" "}
-                                      {f.name}
-                                    </label>
-                                  ))}
-                              </details>
-                            </>
-                          )}
-                          <textarea
-                            name="body"
-                            required
-                            placeholder={t(
-                              locale,
-                              "Escribe tu respuesta…",
-                              "Write your reply…",
-                            )}
-                            rows={4}
-                            maxLength={10000}
-                          />
-                          <div>
-                            <small>
-                              {t(
-                                locale,
-                                "Se enviará desde la cuenta del hilo.",
-                                "Sent from the account linked to this thread.",
-                              )}
-                            </small>
-                            <SaveButton
-                              locale={locale}
-                              busy={busy}
-                              label={t(
-                                locale,
-                                "Enviar respuesta",
-                                "Send reply",
-                              )}
-                            />
-                          </div>
-                        </form>
-                      </>
-                    ) : (
-                      <Empty
-                        title={t(
-                          locale,
-                          "Selecciona una conversación",
-                          "Select a conversation",
-                        )}
-                      />
-                    )}
-                  </div>
-                </section>
-                )}
               {view === "campaigns" && (
                 <div className="campaign-grid">
                   {data.campaigns.map((c) => (
@@ -2420,7 +2123,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
           )}
           {!data.demo &&
             !selected &&
-            ["pipeline", "leads", "tasks", "inbox"].includes(view) && (
+            ["pipeline", "leads", "tasks"].includes(view) && (
               <div className="table-footer">
                 <span>
                   {loading
