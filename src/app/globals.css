@@ -2850,6 +2850,11 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--charcoal); }
 .gmail-attachment-image { display: block; max-width: 100%; max-height: 65vh; object-fit: contain; margin: auto; }
 
 /* Desktop layouts fit the viewport at the browser's normal 100% zoom. */
+.gmail-candidate-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin: 18px 0 12px; }
+.gmail-candidate-filters label { display: grid; gap: 6px; flex: 1 1 180px; min-width: 0; font-size: 12px; }
+.gmail-candidate-filters label.gmail-candidate-search { flex: 2 1 300px; }
+.gmail-candidate-filters input, .gmail-candidate-filters select { width: 100%; min-width: 0; }
+.gmail-candidate-filters .button { flex: 0 0 auto; }
 .main-shell,
 .content,
 .conversation-content,

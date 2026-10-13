@@ -13,6 +13,10 @@ import {
   historyAction,
 } from "@/lib/server/gmail-history-actions";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
+import {
+  filterGmailCandidates,
+  parseCandidateFilters,
+} from "@/lib/gmail-candidate-filters";
 
 export async function GET(request: Request) {
   try {
@@ -298,10 +302,12 @@ export async function GET(request: Request) {
       0,
       Math.min(100000, Math.floor(Number(params.get("page")) || 0)),
     );
-    const result = await db
+    const filters = parseCandidateFilters(params);
+    const candidatesQuery = db
       .from("gmail_candidates")
       .select("*", { count: "exact" })
-      .eq("run_id", runId)
+      .eq("run_id", runId);
+    const result = await filterGmailCandidates(candidatesQuery, filters)
       .order("last_at", { ascending: false })
       .order("id")
       .range(page * 50, page * 50 + 49);
@@ -318,6 +324,14 @@ export async function GET(request: Request) {
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (e) {
+    if (e instanceof z.ZodError)
+      return Response.json(
+        {
+          error:
+            "Filtros de participantes inválidos. / Invalid participant filters.",
+        },
+        { status: 400 },
+      );
     return jsonError(e);
   }
 }

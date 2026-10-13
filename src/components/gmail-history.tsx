@@ -5,6 +5,10 @@ import { dateLabel } from "@/lib/domain";
 import { MailThreadEvidence as MailEvidence } from "./mail-evidence";
 import { gmailRunErrorMessage } from "@/lib/gmail-errors";
 import {
+  defaultCandidateFilters,
+  type CandidateFilters,
+} from "@/lib/gmail-candidate-filters";
+import {
   historyRefreshMessage,
   initialHistoryRun,
   startHistoryPolling,
@@ -124,9 +128,46 @@ export function GmailHistory({
 }) {
   const [data, setData] = useState<HistoryData>({ accounts: [], runs: [] });
   const [runId, setRunId] = useState(""),
-    [page, setPage] = useState(0),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const [listing, setListing] = useState({
+    ...defaultCandidateFilters,
+    page: 0,
+  });
+  const [candidateSearch, setCandidateSearch] = useState("");
+  const [loadedListingKey, setLoadedListingKey] = useState("");
+  const page = listing.page;
+  const listingKey = new URLSearchParams({
+    ...listing,
+    page: String(page),
+    ...(runId ? { run: runId } : {}),
+  }).toString();
+  const candidatesReady = loadedListingKey === listingKey;
+  function setPage(next: number) {
+    setListing((current) => ({ ...current, page: next }));
+  }
+  function setFilter<Key extends keyof CandidateFilters>(
+    key: Key,
+    value: CandidateFilters[Key],
+  ) {
+    setListing((current) => ({ ...current, [key]: value, page: 0 }));
+  }
+  function clearCandidateFilters() {
+    setCandidateSearch("");
+    setListing({ ...defaultCandidateFilters, page: 0 });
+  }
+  useEffect(() => {
+    const timer = setTimeout(
+      () =>
+        setListing((current) =>
+          current.q === candidateSearch.trim()
+            ? current
+            : { ...current, q: candidateSearch.trim(), page: 0 },
+        ),
+      350,
+    );
+    return () => clearTimeout(timer);
+  }, [candidateSearch]);
   const [editing, setEditing] = useState<HistoryCandidate | null>(null),
     [source, setSource] = useState<string | null>(null);
   const [evidenceLimit, setEvidenceLimit] = useState(20);
@@ -160,7 +201,7 @@ export function GmailHistory({
       /* Storage can be disabled. */
     }
     setRunId(id);
-    setPage(0);
+    clearCandidateFilters();
   }
   const [organizations, setOrganizations] = useState<
     { id: string; domain: string }[]
@@ -168,11 +209,14 @@ export function GmailHistory({
   useEffect(() => {
     if (workspace.demo) return;
     const polling = startHistoryPolling<HistoryData>(
-      `/api/gmail/history?${new URLSearchParams({ ...(runId ? { run: runId } : {}), page: String(page) })}`,
+      `/api/gmail/history?${listingKey}`,
       {
         data: (body) => {
           setData(body);
+          setLoadedListingKey(listingKey);
           setRefreshError(null);
+          const lastPage = Math.max(0, Math.ceil((body.total || 0) / 50) - 1);
+          if (page > lastPage) setPage(lastPage);
           if (restoredProfile.current !== workspace.profile.id) {
             let saved: string | null = null;
             try {
@@ -193,7 +237,7 @@ export function GmailHistory({
     };
     // Each change of run/page cancels the previous request and polling closure.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runId, page, workspace.demo, workspace.profile.id]);
+  }, [listingKey, workspace.demo, workspace.profile.id]);
   useEffect(() => {
     if (workspace.demo) return;
     fetch("/api/gmail/config")
@@ -599,7 +643,180 @@ export function GmailHistory({
                   </details>
                 </>
               )}
-              <div className="table-scroll">
+              <div className="gmail-candidate-filters">
+                <label className="gmail-candidate-search">
+                  <span>
+                    {t(locale, "Buscar participantes", "Search participants")}
+                  </span>
+                  <input
+                    type="search"
+                    maxLength={200}
+                    value={candidateSearch}
+                    placeholder={t(
+                      locale,
+                      "Nombre, correo o empresa…",
+                      "Name, email or company…",
+                    )}
+                    onChange={(e) => setCandidateSearch(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <span>
+                    {t(locale, "Tipo de participante", "Participant type")}
+                  </span>
+                  <select
+                    value={listing.kind}
+                    onChange={(e) =>
+                      setFilter(
+                        "kind",
+                        e.target.value as CandidateFilters["kind"],
+                      )
+                    }
+                  >
+                    <option value="all">
+                      {t(locale, "Todos los tipos", "All types")}
+                    </option>
+                    <option value="client">
+                      {t(locale, "Clientes", "Customers")}
+                    </option>
+                    <option value="lender">Lenders</option>
+                    <option value="broker">
+                      {t(
+                        locale,
+                        "Brokers / intermediarios",
+                        "Brokers / intermediaries",
+                      )}
+                    </option>
+                    <option value="team">{t(locale, "Equipo", "Team")}</option>
+                    <option value="other">{t(locale, "Otros", "Other")}</option>
+                    <option value="unknown">
+                      {t(locale, "Sin clasificar", "Unclassified")}
+                    </option>
+                  </select>
+                </label>
+                <label>
+                  <span>{t(locale, "Clasificación", "Classification")}</span>
+                  <select
+                    value={listing.classification}
+                    onChange={(e) =>
+                      setFilter(
+                        "classification",
+                        e.target.value as CandidateFilters["classification"],
+                      )
+                    }
+                  >
+                    <option value="all">
+                      {t(
+                        locale,
+                        "Todas las clasificaciones",
+                        "All classifications",
+                      )}
+                    </option>
+                    <option value="active">
+                      {t(locale, "Activos", "Active")}
+                    </option>
+                    <option value="inactive">
+                      {t(locale, "Inactivos", "Inactive")}
+                    </option>
+                    <option value="unknown">
+                      {t(
+                        locale,
+                        "Pendiente de clasificación",
+                        "Awaiting classification",
+                      )}
+                    </option>
+                  </select>
+                </label>
+                <label>
+                  <span>
+                    {t(locale, "Estado de importación", "Import status")}
+                  </span>
+                  <select
+                    value={listing.import_state}
+                    onChange={(e) =>
+                      setFilter(
+                        "import_state",
+                        e.target.value as CandidateFilters["import_state"],
+                      )
+                    }
+                  >
+                    <option value="all">
+                      {t(locale, "Todos los estados", "All statuses")}
+                    </option>
+                    <option value="pending">
+                      {t(locale, "Pendientes de incorporar", "Awaiting import")}
+                    </option>
+                    <option value="selected">
+                      {t(
+                        locale,
+                        "Seleccionados por confirmar",
+                        "Selected, awaiting confirmation",
+                      )}
+                    </option>
+                    <option value="queued">
+                      {t(
+                        locale,
+                        "En cola / incorporación en curso",
+                        "Queued / importing",
+                      )}
+                    </option>
+                    <option value="imported">
+                      {t(locale, "Incorporados", "Imported")}
+                    </option>
+                    <option value="errors">
+                      {t(locale, "Con errores por revisar", "Errors to review")}
+                    </option>
+                  </select>
+                </label>
+                <label>
+                  <span>
+                    {t(locale, "Coincidencia por correo", "Email match")}
+                  </span>
+                  <select
+                    value={listing.match}
+                    onChange={(e) =>
+                      setFilter(
+                        "match",
+                        e.target.value as CandidateFilters["match"],
+                      )
+                    }
+                  >
+                    <option value="all">
+                      {t(locale, "Todos los contactos", "All contacts")}
+                    </option>
+                    <option value="existing">
+                      {t(locale, "Con contacto existente", "Existing contact")}
+                    </option>
+                    <option value="new">
+                      {t(
+                        locale,
+                        "Sin contacto previo detectado",
+                        "No prior contact detected",
+                      )}
+                    </option>
+                  </select>
+                </label>
+                <button className="button" onClick={clearCandidateFilters}>
+                  {t(locale, "Limpiar filtros", "Clear filters")}
+                </button>
+              </div>
+              <p role="status" aria-live="polite">
+                {candidatesReady
+                  ? `${t(locale, "Resultados", "Results")}: ${data.total || 0}${stats ? ` / ${stats.candidates} ${t(locale, "participantes del análisis", "analysis participants")}` : ""}`
+                  : t(
+                      locale,
+                      "Buscando participantes…",
+                      "Searching participants…",
+                    )}
+              </p>
+              <p className="muted">
+                {t(
+                  locale,
+                  "Los filtros cambian la lista; las selecciones se conservan. Confirmar importación incluye todos los participantes seleccionados del análisis.",
+                  "Filters change the list; selections are preserved. Confirm import includes all selected participants in this analysis.",
+                )}
+              </p>
+              <div className="table-scroll" aria-busy={!candidatesReady}>
                 <table>
                   <thead>
                     <tr>
@@ -613,7 +830,8 @@ export function GmailHistory({
                     </tr>
                   </thead>
                   <tbody>
-                    {(data.candidates || []).map((c) => (
+                    {candidatesReady &&
+                      (data.candidates || []).map((c) => (
                       <tr key={c.id}>
                         <td>
                           <input
@@ -814,14 +1032,25 @@ export function GmailHistory({
                             ))}
                         </td>
                       </tr>
-                    ))}
+                      ))}
+                    {candidatesReady && !data.candidates?.length && (
+                      <tr>
+                        <td colSpan={5}>
+                          {t(
+                            locale,
+                            "No hay participantes que coincidan con esta búsqueda y filtros.",
+                            "No participants match this search and filters.",
+                          )}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
               <div className="card-actions">
                 <button
                   className="button"
-                  disabled={page === 0}
+                  disabled={!candidatesReady || page === 0}
                   onClick={() => setPage(page - 1)}
                 >
                   {t(locale, "Anterior", "Previous")}
@@ -831,7 +1060,9 @@ export function GmailHistory({
                 </span>
                 <button
                   className="button"
-                  disabled={(page + 1) * 50 >= (data.total || 0)}
+                  disabled={
+                    !candidatesReady || (page + 1) * 50 >= (data.total || 0)
+                  }
                   onClick={() => setPage(page + 1)}
                 >
                   {t(locale, "Siguiente", "Next")}
