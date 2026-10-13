@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mailChatMessages, type MailReplySend } from "../src/lib/mail-chat";
+import {
+  mailChatMessages,
+  orderMailMessages,
+  type MailReplySend,
+} from "../src/lib/mail-chat";
 import type { Message } from "../src/lib/domain";
 
 const accounts = [{ id: "daniel", email: "daniel@example.com" }];
@@ -26,6 +30,26 @@ const received: Message = {
   status: "received",
   sent_at: "2026-10-12T12:00:00Z",
 };
+
+test("date order compares actual instants across time zones and leaves pagination data unchanged", () => {
+  const loaded = [
+    { ...received, id: "later", sent_at: "2026-10-12T10:00:00-05:00" },
+    { ...received, id: "earlier", sent_at: "2026-10-12T14:30:00Z" },
+  ];
+  assert.deepEqual(
+    orderMailMessages(loaded).map((m) => m.id),
+    ["later", "earlier"],
+  );
+  assert.deepEqual(
+    orderMailMessages(loaded, "oldest").map((m) => m.id),
+    ["earlier", "later"],
+  );
+  assert.deepEqual(
+    loaded.map((m) => m.id),
+    ["later", "earlier"],
+  );
+  assert.deepEqual(orderMailMessages([]), []);
+});
 
 test("a queued or failed reply remains visible in its thread with the sender and visible recipients", () => {
   for (const status of ["queued", "sending", "failed", "uncertain"]) {

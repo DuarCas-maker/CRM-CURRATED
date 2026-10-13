@@ -2944,11 +2944,28 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--charcoal); }
   .inline-mail-editor > form { grid-template-columns: minmax(0, 1fr); }
   .inline-mail-editor { padding: 14px; }
 }
-.mail-inbox .messages {
-  max-height: 60vh;
-  min-height: 260px;
-  overflow-y: auto;
+.inbox .conversation-content { min-height: 0; overflow: hidden; }
+.conversation-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--line);
 }
+.mail-date-order { display: grid; gap: 6px; font-size: 12px; margin: 0; }
+.mail-date-order select { min-width: 190px; max-width: 100%; }
+.inbox .messages {
+  height: clamp(260px, 52vh, 600px);
+  min-height: 0;
+  max-height: 600px;
+  flex: 0 0 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+}
+.inbox .message { overflow-wrap: anywhere; }
 .source-chat {
   max-height: 65vh;
   overflow-y: auto;

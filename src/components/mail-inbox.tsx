@@ -13,6 +13,7 @@ import type { Action } from "./crm";
 import { t, Empty, Modal } from "./ui";
 import { MailEditor } from "./mail-editor";
 import { MailboxStatus } from "./mailbox-status";
+import { MailOrder } from "./mail-order";
 import { forwardedBody, type MailDraft } from "@/lib/mail-manager";
 import { MailBody } from "./mail-bubble";
 import { messageChannels, suggestedReply } from "@/lib/mail-display";
@@ -20,6 +21,8 @@ import { teamLabel } from "@/lib/gmail-team";
 import {
   mailChatMessages,
   mailSendLabels,
+  orderMailMessages,
+  type MailDateOrder,
   type MailReplySend,
 } from "@/lib/mail-chat";
 type Channels = {
@@ -89,6 +92,13 @@ export function MailInbox({
   const [reply, setReply] = useState<Message | null>(null);
   const [editing, setEditing] = useState<MailDraft | null>(null);
   const [search, setSearch] = useState("");
+  const [dateOrder, setDateOrder] = useState<MailDateOrder>("newest");
+  const messageList = useRef<HTMLDivElement>(null);
+  const originalList = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (messageList.current) messageList.current.scrollTop = 0;
+    if (originalList.current) originalList.current.scrollTop = 0;
+  }, [dateOrder, caseId, process, selectedThread, channel]);
   const [originalThread, setOriginalThread] = useState<string | null>(null);
   const [to, setTo] = useState("");
   const [cc, setCc] = useState("");
@@ -297,6 +307,7 @@ export function MailInbox({
   const visible = messages.filter(
     (m) => channel === "all" || channelOf(m).includes(channel),
   );
+  const orderedMessages = orderMailMessages(visible, dateOrder);
   const latestReplyTarget =
     visible.filter((m) => !m.queued_send && m.direction === "inbound").at(-1) ||
     visible.filter((m) => !m.queued_send).at(-1);
@@ -579,7 +590,24 @@ export function MailInbox({
               placeholder={t(locale, "Texto o remitente", "Text or sender")}
             />
           </label>
-          <div className="messages">
+          <div className="conversation-controls">
+            <MailOrder
+              locale={locale}
+              value={dateOrder}
+              onChange={setDateOrder}
+            />
+          </div>
+          <div
+            className="messages"
+            ref={messageList}
+            tabIndex={0}
+            role="region"
+            aria-label={t(
+              locale,
+              "Historial de la conversación",
+              "Conversation history",
+            )}
+          >
             {loading && (
               <p role="status">
                 {t(locale, "Cargando mensajes…", "Loading messages…")}
@@ -594,7 +622,7 @@ export function MailInbox({
                 )}
               </button>
             )}
-            {visible.map((m) => (
+            {orderedMessages.map((m) => (
               <Fragment key={m.id}>
                 <article
                   className={`message ${m.direction === "outbound" || m.sender_team || metadata.team_emails.includes(m.sender) ? "outbound" : "inbound"}`}
@@ -787,6 +815,11 @@ export function MailInbox({
           }
           close={() => setOriginalThread(null)}
         >
+          <MailOrder
+            locale={locale}
+            value={dateOrder}
+            onChange={setDateOrder}
+          />
           <p>
             {
               data.accounts.find(
@@ -806,9 +839,21 @@ export function MailInbox({
               {t(locale, "Cargar anteriores", "Load earlier messages")}
             </button>
           )}
-          {messages
-            .filter((m) => m.conversation_id === originalThread)
-            .map((m) => (
+          <div
+            className="source-chat"
+            ref={originalList}
+            tabIndex={0}
+            role="region"
+            aria-label={t(
+              locale,
+              "Historial del hilo original",
+              "Original thread history",
+            )}
+          >
+            {orderMailMessages(
+              messages.filter((m) => m.conversation_id === originalThread),
+              dateOrder,
+            ).map((m) => (
               <article className="document-row" key={m.id}>
                 <div>
                   <strong>{m.sender}</strong>
@@ -817,6 +862,7 @@ export function MailInbox({
                 </div>
               </article>
             ))}
+          </div>
         </Modal>
       )}
       {editing && (

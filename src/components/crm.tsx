@@ -58,6 +58,8 @@ import { demoAction } from "@/lib/demo-actions";
 import { Integrations } from "./integrations";
 import { MailComposer, MailSendStatus } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
+import { MailOrder } from "./mail-order";
+import { orderMailMessages, type MailDateOrder } from "@/lib/mail-chat";
 import { LenderContacts } from "./lender-contacts";
 import {
   getLeadTab,
@@ -142,6 +144,12 @@ export default function CRM({ initial }: { initial: Workspace }) {
   );
   const [role, setRole] = useState<Role>(initial.profile.role);
   useEffect(() => setExpandedHistory(false), [view, conversation]);
+  const [conversationOrder, setConversationOrder] =
+    useState<MailDateOrder>("newest");
+  const conversationHistory = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (conversationHistory.current) conversationHistory.current.scrollTop = 0;
+  }, [conversation, conversationOrder]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const requestKeys = useRef(new Map<string, string>());
@@ -1658,7 +1666,20 @@ export default function CRM({ initial }: { initial: Workspace }) {
                             <ChevronRight size={14} />
                           </button>
                         </div>
-                        <div className="messages">
+                        <div className="conversation-controls">
+                          <MailOrder
+                            locale={locale}
+                            value={conversationOrder}
+                            onChange={setConversationOrder}
+                          />
+                        </div>
+                        <div
+                          className="messages"
+                          ref={conversationHistory}
+                          tabIndex={0}
+                          role="region"
+                          aria-label={t(locale, "Historial de la conversación", "Conversation history")}
+                        >
                           {expandedHistory && (
                             <button
                               className="text-button"
@@ -1687,8 +1708,10 @@ export default function CRM({ initial }: { initial: Workspace }) {
                               )}
                             </button>
                           )}
-                          {data.messages
-                            .filter((m) => m.conversation_id === conversation)
+                          {orderMailMessages(
+                            data.messages.filter((m) => m.conversation_id === conversation),
+                            conversationOrder,
+                          )
                             .map((m) => (
                               <article
                                 className={`message ${m.direction}`}

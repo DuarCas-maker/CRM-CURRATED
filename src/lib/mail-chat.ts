@@ -17,6 +17,20 @@ export type MailReplySend = {
   last_error?: string | null;
 };
 export type MailChatMessage = Message & { queued_send?: MailReplySend };
+export type MailDateOrder = "newest" | "oldest";
+
+export function orderMailMessages<T extends Pick<Message, "id" | "sent_at">>(
+  messages: readonly T[],
+  order: MailDateOrder = "newest",
+): T[] {
+  const direction = order === "newest" ? -1 : 1;
+  return [...messages].sort(
+    (a, b) =>
+      direction *
+      (Date.parse(a.sent_at) - Date.parse(b.sent_at) ||
+        a.id.localeCompare(b.id)),
+  );
+}
 
 // A queued reply stays visible until its actual Gmail message is available.
 // Gmail IDs are scoped to a mailbox; RFC Message-ID can match across mailboxes.
@@ -36,24 +50,25 @@ export function mailChatMessages(
             m.conversation_id === s.conversation_id),
       ),
   );
-  return [
-    ...messages,
-    ...pending.map((s): MailChatMessage => ({
-      id: `send:${s.id}`,
-      conversation_id: s.conversation_id,
-      direction: "outbound",
-      sender: accounts.find((a) => a.id === s.account_id)?.email || "",
-      body: s.body,
-      sent_at: s.sent_at || s.created_at,
-      status: s.status,
-      queued_send: s,
-      participants: [
-        { email: s.to_email, role: "to" },
-        ...(s.cc_emails || []).map((email) => ({ email, role: "cc" })),
-      ],
-    })),
-  ].sort(
-    (a, b) => a.sent_at.localeCompare(b.sent_at) || a.id.localeCompare(b.id),
+  return orderMailMessages(
+    [
+      ...messages,
+      ...pending.map((s): MailChatMessage => ({
+        id: `send:${s.id}`,
+        conversation_id: s.conversation_id,
+        direction: "outbound",
+        sender: accounts.find((a) => a.id === s.account_id)?.email || "",
+        body: s.body,
+        sent_at: s.sent_at || s.created_at,
+        status: s.status,
+        queued_send: s,
+        participants: [
+          { email: s.to_email, role: "to" },
+          ...(s.cc_emails || []).map((email) => ({ email, role: "cc" })),
+        ],
+      })),
+    ],
+    "oldest",
   );
 }
 
