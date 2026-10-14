@@ -653,6 +653,20 @@ export async function sendNext() {
       bucket?: string;
       mime_type?: string;
     }[] = [];
+    for (const asset of msg.campaign_asset_snapshot || []) {
+      if (!msg.enrollment_id || asset.bucket !== "campaign-assets")
+        throw new Error("INVALID_CAMPAIGN_ATTACHMENT");
+      const blob = checked(
+        await client.storage
+          .from("campaign-assets")
+          .download(asset.storage_path),
+      )!;
+      const bytes = Buffer.from(await blob.arrayBuffer());
+      if (hash(bytes) !== asset.content_hash)
+        throw new Error("ATTACHMENT_HASH_MISMATCH");
+      files.push({ name: asset.name, mime: asset.mime_type, bytes });
+      snapshot.push(asset);
+    }
     for (const id of msg.attachment_ids || []) {
       const doc = checked(
         await client

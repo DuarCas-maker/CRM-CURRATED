@@ -3066,3 +3066,12 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--charcoal); }
 .document-review-confirm { display: flex; align-items: flex-start; gap: 8px; margin: 16px 0; font-size: 13px; }
 .document-review-layout details { margin-top: 16px; font-size: 12px; overflow-wrap: anywhere; }
 @media(max-width: 760px) { .document-review-layout { grid-template-columns: 1fr; } .document-review-preview { max-height: 42vh; } }
+/* Operational follow-up stays readable on narrow screens. */
+.operational-panel { margin-bottom: 24px; }
+.operational-panel > .muted, .operational-panel > .card-actions { margin: 16px 20px; }
+.operational-panel .operational-filters { padding: 0 20px; }
+.operational-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.operational-panel table { min-width: 850px; }
+.operational-panel td { vertical-align: top; }
+.operational-panel td small, .operational-panel td .text-button { display: block; margin: 5px 0; }
+.operational-panel td { overflow-wrap: anywhere; }

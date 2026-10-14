@@ -2,6 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
 import { DocumentReview, DocumentChecklistSetup } from "./document-review";
+import { UnderwritingWorkspace } from "./underwriting-workspace";
 import { MailComposer, MailSendStatus } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
 import { MailBody } from "./mail-bubble";
@@ -428,6 +429,13 @@ export function OpportunityDetail({
           )}
           {tab === "analysis" && (
             <div className="tab-content">
+              <UnderwritingWorkspace
+                data={data}
+                opportunity={o}
+                locale={locale}
+                editable={editable}
+                refresh={refresh}
+              />
               <div className="activity-toolbar">
                 <h2>
                   {t(
@@ -448,6 +456,15 @@ export function OpportunityDetail({
               </div>
               {analyses.map((a) => (
                 <article className="analysis-card" key={a.id}>
+                  {a.is_current === false && (
+                    <p className="error-banner">
+                      {t(
+                        locale,
+                        "Análisis anterior: los documentos cambiaron. Requiere un nuevo análisis.",
+                        "Previous analysis: documents changed. A new analysis is required.",
+                      )}
+                    </p>
+                  )}
                   <div className="person">
                     <Avatar name={name(a.reviewer_id)} small />
                     <strong>{name(a.reviewer_id)}</strong>

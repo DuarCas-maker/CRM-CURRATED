@@ -14,6 +14,7 @@ import { gmailHistoryEnabled } from "@/lib/gmail-feature";
 import { sendManagedMail } from "@/lib/server/mail-manager";
 import { documentAction } from "@/lib/server/document-review";
 import { initializeDocumentChecklist } from "@/lib/server/document-checklist";
+import { campaignPreviewValues } from "@/lib/campaign-templates";
 import { lenderDirectorySchema } from "@/lib/lender-directory";
 const envelope = z.object({
   kind: z.string().max(50),
@@ -67,14 +68,6 @@ export async function POST(request: Request) {
         await mailAction(kind, p, idempotency_key, db, profile),
       );
     if (
-      kind === "activate_campaign" &&
-      process.env.PUBLIC_FORM_ENABLED !== "true"
-    )
-      throw new HttpError(
-        503,
-        "Enable the validated public application before activating outreach.",
-      );
-    if (
       kind === "preferences" &&
       p.email &&
       !process.env.NOTIFICATION_GMAIL_ACCOUNT_ID
@@ -93,6 +86,15 @@ export async function POST(request: Request) {
             )!
           : p;
       if (!c) throw new HttpError(404, "Campaign not found");
+      if (
+        kind === "activate_campaign" &&
+        c.requires_application !== false &&
+        process.env.PUBLIC_FORM_ENABLED !== "true"
+      )
+        throw new HttpError(
+          503,
+          "Enable the validated public application before activating application outreach.",
+        );
       const templates = [
         c.subject,
         c.body,
@@ -106,6 +108,7 @@ export async function POST(request: Request) {
       try {
         templates.forEach((s) =>
           renderTemplate(String(s), {
+            ...campaignPreviewValues,
             name: "Preview",
             company: "Example",
             application_url: "https://example.com/apply",

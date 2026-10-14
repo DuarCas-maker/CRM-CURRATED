@@ -40,6 +40,7 @@ import {
   roleLabels,
   canSeeOpportunity,
   canSeeArea,
+  renderTemplate,
 } from "@/lib/domain";
 import {
   Avatar,
@@ -55,6 +56,19 @@ import { OpportunityDetail } from "./opportunity-detail";
 import { ImportWizard } from "./import-wizard";
 import { LenderForm } from "./lender-form";
 import { LenderDirectory } from "./lender-directory";
+import {
+  LenderGuidelinesEditor,
+  LenderImportWizard,
+} from "./lender-management";
+import { UnderwritingSettingsPanel } from "./underwriting-settings";
+import {
+  OperationalDashboard,
+  OperationalSettingsPanel,
+} from "./operational-dashboard";
+import { demoOperationalDashboard } from "@/lib/operations";
+import { CampaignTemplates } from "./campaign-templates";
+import type { EmailTemplate } from "@/lib/campaign-templates";
+import { campaignPreviewValues } from "@/lib/campaign-templates";
 import { teamLabel } from "@/lib/gmail-team";
 import { demoAction } from "@/lib/demo-actions";
 import { Integrations } from "./integrations";
@@ -116,8 +130,11 @@ const leadTabEmpty: Record<LeadTab, [string, string]> = {
 };
 export default function CRM({ initial }: { initial: Workspace }) {
   const [data, setData] = useState(initial);
+  const extensionsReady = data.demo || data.crm_extensions_ready !== false;
   const [locale, setLocale] = useState<Locale>(initial.preferences.locale);
   const [view, setView] = useState<View>("overview");
+  const [settingsSection, setSettingsSection] = useState("general");
+  const [attentionFilter, setAttentionFilter] = useState("all");
   const [query, setQuery] = useState("");
   const [stage, setStage] = useState("all");
   const [owner, setOwner] = useState("all");
@@ -129,10 +146,16 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [modal, setModal] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
   const [extraSteps, setExtraSteps] = useState<number[]>([]);
+  const [campaignSection, setCampaignSection] = useState("campaigns");
+  const [campaignTemplate, setCampaignTemplate] =
+    useState<EmailTemplate | null>(null);
   const editingLender = data.lenders.find((l) => modal === `lender:${l.id}`);
   useEffect(() => {
-    if (modal === "campaign") setExtraSteps([]);
-  }, [modal]);
+    if (modal === "campaign")
+      setExtraSteps(
+        campaignTemplate?.steps.slice(1).map((_, i) => i + 1) || [],
+      );
+  }, [modal, campaignTemplate]);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [error, setError] = useState("");
@@ -151,6 +174,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     view,
     lead_status: leadStatus,
     page: String(selected ? 0 : page),
+    attention: attentionFilter,
     ...(selected ? { case: selected } : {}),
   }).toString();
   useEffect(() => {
@@ -178,7 +202,16 @@ export default function CRM({ initial }: { initial: Workspace }) {
   }, [requestParams, initial.demo]);
   useEffect(() => {
     setPage(0);
-  }, [query, stage, owner, campaignFilter, period, view, leadStatus]);
+  }, [
+    query,
+    stage,
+    owner,
+    campaignFilter,
+    period,
+    view,
+    leadStatus,
+    attentionFilter,
+  ]);
   useEffect(() => {
     if (initial.demo) return;
     const controller = new AbortController();
@@ -293,6 +326,14 @@ export default function CRM({ initial }: { initial: Workspace }) {
     (o) => !["funded", "lost", "paused"].includes(o.stage),
   );
   const isAdmin = ["superadmin", "seller_admin"].includes(profile.role);
+  const operational = data.demo
+    ? demoOperationalDashboard(
+        { ...data, profile },
+        filtered,
+        attentionFilter,
+        page,
+      )
+    : data.operational;
   const canVerifyLeads = isAdmin && leadStatus !== "converted";
   const closerAdmin = ["superadmin", "closer_admin"].includes(profile.role);
   const ownerStats =
@@ -869,6 +910,25 @@ export default function CRM({ initial }: { initial: Workspace }) {
         <main
           className={`content ${view === "inbox" && !activeOpportunity ? "conversations-content" : ""}`}
         >
+          {!extensionsReady && (
+            <div
+              className="panel"
+              style={{ padding: 16, marginBottom: 16 }}
+              role="status"
+            >
+              {profile.role === "superadmin"
+                ? t(
+                    locale,
+                    "La actualización está publicada. Para activar análisis IA, plantillas, importación de lenders y seguimiento, aplica las migraciones 027–031 en Supabase y configura OpenAI en web y worker.",
+                    "The update is published. Apply Supabase migrations 027–031 and configure OpenAI on web and worker to activate the new features.",
+                  )
+                : t(
+                    locale,
+                    "Las nuevas funciones están pendientes de activación por el administrador.",
+                    "New features await administrator activation.",
+                  )}
+            </div>
+          )}
           {error && (
             <div className="error-banner" role="alert">
               <AlertCircle size={18} />
@@ -970,20 +1030,32 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     {view === "campaigns" && isAdmin && (
                       <button
                         className="button primary"
-                        onClick={() => setModal("campaign")}
+                        onClick={() => {
+                          setCampaignTemplate(null);
+                          setModal("campaign");
+                        }}
                       >
                         <Plus size={17} />
                         {t(locale, "Crear campaña", "Create campaign")}
                       </button>
                     )}
                     {view === "lenders" && closerAdmin && (
-                      <button
-                        className="button primary"
-                        onClick={() => setModal("lender")}
-                      >
-                        <Plus size={17} />
-                        {t(locale, "Agregar lender", "Add lender")}
-                      </button>
+                      <>
+                        <button
+                          className="button"
+                          disabled={!extensionsReady}
+                          onClick={() => setModal("import-lenders")}
+                        >
+                          {t(locale, "Importar lenders", "Import lenders")}
+                        </button>
+                        <button
+                          className="button primary"
+                          onClick={() => setModal("lender")}
+                        >
+                          <Plus size={17} />
+                          {t(locale, "Agregar lender", "Add lender")}
+                        </button>
+                      </>
                     )}
                     {view === "tasks" && (
                       <button
@@ -1041,18 +1113,31 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   <Metric
                     label={t(locale, "Requieren atención", "Need attention")}
                     value={String(
-                      data.stats
-                        ? data.stats.overdue + data.stats.unread
-                        : overdue.length + unread,
+                      operational && view === "overview"
+                        ? operational.counts.attention
+                        : data.stats
+                          ? data.stats.overdue + data.stats.unread
+                          : overdue.length + unread,
                     ).padStart(2, "0")}
                     note={t(
                       locale,
-                      "Tareas vencidas y respuestas",
-                      "Overdue tasks and replies",
+                      "Clientes con asuntos por atender",
+                      "Clients with issues to address",
                     )}
                     icon={<Clock3 size={18} />}
                   />
                 </div>
+              )}
+              {view === "overview" && operational && (
+                <OperationalDashboard
+                  data={operational}
+                  locale={locale}
+                  filter={attentionFilter}
+                  setFilter={setAttentionFilter}
+                  page={page}
+                  setPage={setPage}
+                  open={(id) => setSelected(id)}
+                />
               )}
               {view === "overview" && (
                 <div className="overview-middle">
@@ -1643,105 +1728,192 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 />
               )}
               {view === "campaigns" && (
-                <div className="campaign-grid">
-                  {data.campaigns.map((c) => (
-                    <section className="panel campaign-card" key={c.id}>
-                      <div className="card-top">
-                        <span className="large-icon">
-                          <Send size={22} />
-                        </span>
-                        <span
-                          className={`badge ${c.status === "active" ? "stage-funded" : ""}`}
-                        >
-                          {c.status}
-                        </span>
-                      </div>
-                      <h2>{c.name}</h2>
-                      <p>
-                        {
-                          data.accounts.find((a) => a.id === c.account_id)
-                            ?.email
-                        }
-                      </p>
-                      <div className="campaign-meta">
-                        <span>
-                          {t(
-                            locale,
-                            "Seller responsable",
-                            "Responsible seller",
-                          )}
-                          <strong>{name(c.seller_id)}</strong>
-                        </span>
-                        <span>
-                          {t(locale, "Audiencia", "Audience")}
-                          <strong>{c.audience_count} leads</strong>
-                        </span>
-                        <span>
-                          {t(locale, "Límite diario", "Daily limit")}
-                          <strong>{c.daily_limit}</strong>
-                        </span>
-                        <span>
-                          {t(locale, "Horario", "Schedule")}
-                          <strong>
-                            {c.start_hour}:00–{c.end_hour}:00
-                          </strong>
-                        </span>
-                      </div>
-                      <small>
-                        {c.timezone} · {c.steps.length + 1}{" "}
-                        {t(locale, "paso(s)", "step(s)")}
-                      </small>
-                      <div className="card-actions">
-                        <button
-                          className="button"
-                          onClick={() => setModal(`preview:${c.id}`)}
-                        >
-                          {t(locale, "Vista previa", "Preview")}
-                        </button>
-                        {isAdmin && (
-                          <button
-                            disabled={busy}
-                            className="button primary"
-                            onClick={() =>
-                              act(
-                                c.status === "active"
-                                  ? "pause_campaign"
-                                  : "activate_campaign",
-                                { id: c.id },
-                              ).catch(() => {})
-                            }
-                          >
-                            {c.status === "active"
-                              ? t(locale, "Pausar", "Pause")
-                              : t(locale, "Activar", "Activate")}
-                          </button>
-                        )}
-                      </div>
-                    </section>
-                  ))}
-                  {!data.campaigns.length && (
-                    <Empty
-                      title={t(
-                        locale,
-                        "Crea tu primera campaña",
-                        "Create your first campaign",
-                      )}
-                      body={t(
-                        locale,
-                        "Selecciona audiencia, cuenta y responsable por separado.",
-                        "Choose an audience, sender account and owner independently.",
-                      )}
+                <div>
+                  <div className="card-actions" style={{ marginBottom: 16 }}>
+                    <button
+                      className="button"
+                      onClick={() => setCampaignSection("campaigns")}
+                    >
+                      {t(locale, "Campañas", "Campaigns")}
+                    </button>
+                    <button
+                      className="button"
+                      disabled={!extensionsReady}
+                      onClick={() => setCampaignSection("templates")}
+                    >
+                      {t(locale, "Plantillas", "Templates")}
+                    </button>
+                  </div>
+                  {campaignSection === "templates" ? (
+                    <CampaignTemplates
+                      data={{ ...data, profile }}
+                      locale={locale}
+                      act={act}
+                      useTemplate={(template) => {
+                        setCampaignTemplate(template);
+                        setModal("campaign");
+                      }}
                     />
+                  ) : (
+                    <div className="campaign-grid">
+                      {data.campaigns.map((c) => (
+                        <section className="panel campaign-card" key={c.id}>
+                          <div className="card-top">
+                            <span className="large-icon">
+                              <Send size={22} />
+                            </span>
+                            <span
+                              className={`badge ${c.status === "active" ? "stage-funded" : ""}`}
+                            >
+                              {c.status}
+                            </span>
+                          </div>
+                          <h2>{c.name}</h2>
+                          {c.template_id && (
+                            <small>
+                              {t(locale, "Plantilla", "Template")} v
+                              {c.template_version} ·{" "}
+                              {c.asset_snapshot?.length || 0}{" "}
+                              {t(locale, "adjuntos", "attachments")}
+                            </small>
+                          )}
+                          {c.delivery_stats && (
+                            <p>
+                              {t(locale, "Enviados", "Sent")}:{" "}
+                              {c.delivery_stats.sent} ·{" "}
+                              {t(locale, "Pendientes", "Pending")}:{" "}
+                              {c.delivery_stats.pending} ·{" "}
+                              {t(locale, "Respuestas", "Replies")}:{" "}
+                              {c.delivery_stats.replied} ·{" "}
+                              {t(
+                                locale,
+                                "Fallidos / por revisar",
+                                "Failed / review",
+                              )}
+                              :{" "}
+                              {c.delivery_stats.failed +
+                                c.delivery_stats.uncertain}
+                            </p>
+                          )}
+                          <p>
+                            {
+                              data.accounts.find((a) => a.id === c.account_id)
+                                ?.email
+                            }
+                          </p>
+                          <div className="campaign-meta">
+                            <span>
+                              {t(
+                                locale,
+                                "Seller responsable",
+                                "Responsible seller",
+                              )}
+                              <strong>{name(c.seller_id)}</strong>
+                            </span>
+                            <span>
+                              {t(locale, "Audiencia", "Audience")}
+                              <strong>{c.audience_count} leads</strong>
+                            </span>
+                            <span>
+                              {t(locale, "Límite diario", "Daily limit")}
+                              <strong>{c.daily_limit}</strong>
+                            </span>
+                            <span>
+                              {t(locale, "Horario", "Schedule")}
+                              <strong>
+                                {c.start_hour}:00–{c.end_hour}:00
+                              </strong>
+                            </span>
+                          </div>
+                          <small>
+                            {c.timezone} · {c.steps.length + 1}{" "}
+                            {t(locale, "paso(s)", "step(s)")}
+                          </small>
+                          <div className="card-actions">
+                            <button
+                              className="button"
+                              onClick={() => setModal(`preview:${c.id}`)}
+                            >
+                              {t(locale, "Vista previa", "Preview")}
+                            </button>
+                            {isAdmin && (
+                              <button
+                                disabled={busy}
+                                className="button primary"
+                                onClick={() =>
+                                  act(
+                                    c.status === "active"
+                                      ? "pause_campaign"
+                                      : "activate_campaign",
+                                    { id: c.id },
+                                  ).catch(() => {})
+                                }
+                              >
+                                {c.status === "active"
+                                  ? t(locale, "Pausar", "Pause")
+                                  : t(locale, "Activar", "Activate")}
+                              </button>
+                            )}
+                          </div>
+                        </section>
+                      ))}
+                      {!data.campaigns.length && (
+                        <Empty
+                          title={t(
+                            locale,
+                            "Crea tu primera campaña",
+                            "Create your first campaign",
+                          )}
+                          body={t(
+                            locale,
+                            "Selecciona audiencia, cuenta y responsable por separado.",
+                            "Choose an audience, sender account and owner independently.",
+                          )}
+                        />
+                      )}
+                    </div>
                   )}
                 </div>
               )}
               {view === "lenders" && (
                 <LenderDirectory
+                  guidelines={
+                    extensionsReady
+                      ? (id) => setModal(`guidelines:${id}`)
+                      : undefined
+                  }
                   data={data}
                   locale={locale}
                   canEdit={closerAdmin}
                   edit={(id) => setModal(`lender:${id}`)}
                 >
+                  <div className="card-actions" style={{ marginBottom: 16 }}>
+                    <span>
+                      {data.lenders.length} {t(locale, "empresas", "companies")}{" "}
+                      · {data.lender_contacts?.length || 0}{" "}
+                      {t(
+                        locale,
+                        "correos en el directorio",
+                        "directory emails",
+                      )}
+                    </span>
+                    <a
+                      className="button"
+                      href={
+                        data.demo
+                          ? "/lender-tiers-reference.pdf"
+                          : "/api/lenders/catalogue"
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t(
+                        locale,
+                        "Catálogo por tiers · PDF",
+                        "Tier catalogue · PDF",
+                      )}
+                    </a>
+                  </div>
                   {data.gmail_history_enabled && !data.demo && (
                     <LenderContacts
                       data={data}
@@ -1897,6 +2069,60 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 </>
               )}
               {view === "settings" && (
+                <div
+                  className="section-tabs"
+                  role="tablist"
+                  aria-label={t(
+                    locale,
+                    "Secciones de configuración",
+                    "Settings sections",
+                  )}
+                >
+                  {[
+                    ["general", "General"],
+                    ["operations", t(locale, "Seguimiento", "Follow-up")],
+                    [
+                      "underwriting",
+                      t(
+                        locale,
+                        "Análisis y underwriting",
+                        "Analysis and underwriting",
+                      ),
+                    ],
+                  ].map(([id, label]) => (
+                    <button
+                      role="tab"
+                      disabled={id !== "general" && !extensionsReady}
+                      aria-selected={settingsSection === id}
+                      className={settingsSection === id ? "active" : ""}
+                      key={id}
+                      onClick={() => setSettingsSection(id)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {view === "settings" &&
+                settingsSection === "underwriting" &&
+                extensionsReady && (
+                  <UnderwritingSettingsPanel
+                    data={{ ...data, profile }}
+                    locale={locale}
+                    act={act}
+                  />
+                )}
+              {view === "settings" &&
+                settingsSection === "operations" &&
+                extensionsReady && (
+                  <OperationalSettingsPanel
+                    data={{ ...data, profile }}
+                    locale={locale}
+                    act={act}
+                    refresh={refresh}
+                  />
+                )}
+              {view === "settings" && settingsSection === "general" && (
                 <div className="settings-grid">
                   {profile.role === "superadmin" && (
                     <Integrations
@@ -2182,106 +2408,731 @@ export default function CRM({ initial }: { initial: Workspace }) {
           close={() => setComposing(false)}
         />
       )}
-      {modal && modal !== "import" && (
-        <Modal
-          title={
-            editingLender
-              ? t(locale, "Editar lender", "Edit lender")
-              : modal.startsWith("preview:")
-                ? t(locale, "Vista previa del mensaje", "Message preview")
-                : {
-                    opportunity: t(
-                      locale,
-                      "Nueva oportunidad",
-                      "New opportunity",
-                    ),
-                    lead: t(locale, "Nuevo lead", "New lead"),
-                    task: t(locale, "Nueva tarea", "New task"),
-                    campaign: t(locale, "Nueva campaña", "New campaign"),
-                    lender: t(locale, "Nuevo lender", "New lender"),
-                    verify: t(
-                      locale,
-                      "Verificación con Bouncer",
-                      "Verify with Bouncer",
-                    ),
-                    filters: t(locale, "Filtros de la vista", "View filters"),
-                    invite: t(
-                      locale,
-                      "Invitar al equipo",
-                      "Invite to workspace",
-                    ),
-                    google: "Google Workspace",
-                    requirements: t(
-                      locale,
-                      "Checklist del producto",
-                      "Product checklist",
-                    ),
-                  }[modal] ||
-                  (modal.startsWith("attachment:")
+      {modal === "import-lenders" && (
+        <LenderImportWizard
+          data={{ ...data, profile }}
+          locale={locale}
+          act={act}
+          refresh={refresh}
+          close={() => setModal(null)}
+        />
+      )}
+      {modal?.startsWith("guidelines:") &&
+        data.lenders.find((l) => l.id === modal.slice(11)) && (
+          <LenderGuidelinesEditor
+            lender={data.lenders.find((l) => l.id === modal.slice(11))!}
+            data={{ ...data, profile }}
+            locale={locale}
+            act={act}
+            refresh={refresh}
+            close={() => setModal(null)}
+          />
+        )}
+      {modal &&
+        modal !== "import" &&
+        modal !== "import-lenders" &&
+        !modal.startsWith("guidelines:") && (
+          <Modal
+            title={
+              editingLender
+                ? t(locale, "Editar lender", "Edit lender")
+                : modal.startsWith("preview:")
+                  ? t(locale, "Vista previa del mensaje", "Message preview")
+                  : {
+                      opportunity: t(
+                        locale,
+                        "Nueva oportunidad",
+                        "New opportunity",
+                      ),
+                      lead: t(locale, "Nuevo lead", "New lead"),
+                      task: t(locale, "Nueva tarea", "New task"),
+                      campaign: t(locale, "Nueva campaña", "New campaign"),
+                      lender: t(locale, "Nuevo lender", "New lender"),
+                      verify: t(
+                        locale,
+                        "Verificación con Bouncer",
+                        "Verify with Bouncer",
+                      ),
+                      filters: t(locale, "Filtros de la vista", "View filters"),
+                      invite: t(
+                        locale,
+                        "Invitar al equipo",
+                        "Invite to workspace",
+                      ),
+                      google: "Google Workspace",
+                      requirements: t(
+                        locale,
+                        "Checklist del producto",
+                        "Product checklist",
+                      ),
+                    }[modal] ||
+                    (modal.startsWith("attachment:")
+                      ? t(
+                          locale,
+                          "Incorporar adjunto al expediente",
+                          "Import attachment to case",
+                        )
+                      : modal)
+            }
+            close={() => {
+              setModal(null);
+              setError("");
+            }}
+            wide={modal === "campaign"}
+          >
+            {error && (
+              <div className="error-banner" role="alert">
+                {error}
+              </div>
+            )}
+            {["opportunity", "lead"].includes(modal) && (
+              <form
+                onSubmit={(e) =>
+                  submit(
+                    e,
+                    modal === "lead" ? "create_lead" : "create_opportunity",
+                  )
+                }
+              >
+                <p className="muted">
+                  {modal === "lead"
                     ? t(
                         locale,
-                        "Incorporar adjunto al expediente",
-                        "Import attachment to case",
+                        "Este contacto quedará en preparación hasta validar su correo con Bouncer.",
+                        "This contact stays in preparation until Bouncer validates the email.",
                       )
-                    : modal)
-          }
-          close={() => {
-            setModal(null);
-            setError("");
-          }}
-          wide={modal === "campaign"}
-        >
-          {error && (
-            <div className="error-banner" role="alert">
-              {error}
-            </div>
-          )}
-          {["opportunity", "lead"].includes(modal) && (
-            <form
-              onSubmit={(e) =>
-                submit(
-                  e,
-                  modal === "lead" ? "create_lead" : "create_opportunity",
-                )
-              }
-            >
-              <p className="muted">
-                {modal === "lead"
-                  ? t(
+                    : t(
+                        locale,
+                        "Una nueva solicitud requiere un cliente con correo ya verificado. Para un contacto nuevo, créalo primero en Preparación de leads.",
+                        "A new request requires a customer with a verified email. Add new contacts in Lead preparation first.",
+                      )}
+                </p>
+                <div className="form-grid">
+                  <Field
+                    name="company"
+                    label={t(locale, "Empresa", "Business")}
+                    required
+                  />
+                  <Field
+                    name="contact"
+                    label={t(locale, "Contacto", "Contact")}
+                    required
+                  />
+                  <Field name="email" label="Email" type="email" required />
+                  <Field name="phone" label={t(locale, "Teléfono", "Phone")} />
+                  <Field
+                    name="amount"
+                    label={t(
                       locale,
-                      "Este contacto quedará en preparación hasta validar su correo con Bouncer.",
-                      "This contact stays in preparation until Bouncer validates the email.",
-                    )
-                  : t(
-                      locale,
-                      "Una nueva solicitud requiere un cliente con correo ya verificado. Para un contacto nuevo, créalo primero en Preparación de leads.",
-                      "A new request requires a customer with a verified email. Add new contacts in Lead preparation first.",
+                      "Monto solicitado (USD)",
+                      "Requested amount (USD)",
                     )}
-              </p>
-              <div className="form-grid">
+                    type="number"
+                    min={0}
+                    required
+                  />
+                  <Field
+                    name="product"
+                    label={t(locale, "Producto", "Product")}
+                  >
+                    {[
+                      "Business loan",
+                      "MCA",
+                      "Line of credit",
+                      "Equipment financing",
+                    ].map((p) => (
+                      <option key={p}>{p}</option>
+                    ))}
+                  </Field>
+                  <Field name="seller_id" label="Seller" value={profile.id}>
+                    {data.profiles
+                      .filter(
+                        (p) =>
+                          ["seller", "seller_admin", "superadmin"].includes(
+                            p.role,
+                          ) &&
+                          (isAdmin || p.id === profile.id),
+                      )
+                      .map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                  </Field>
+                  <Field
+                    name="industry"
+                    label={t(locale, "Industria", "Industry")}
+                  />
+                  <Field
+                    name="next_action"
+                    label={t(locale, "Próxima acción", "Next action")}
+                    required
+                  />
+                  <Field
+                    name="next_action_at"
+                    label={t(locale, "Vencimiento", "Due date")}
+                    type="datetime-local"
+                    required
+                  />
+                </div>
+                <div className="modal-footer">
+                  <SaveButton locale={locale} busy={busy} />
+                </div>
+              </form>
+            )}
+            {modal === "task" && (
+              <form onSubmit={(e) => submit(e, "create_task")}>
                 <Field
-                  name="company"
-                  label={t(locale, "Empresa", "Business")}
+                  name="title"
+                  label={t(locale, "Qué hay que hacer", "What needs to happen")}
                   required
                 />
                 <Field
-                  name="contact"
-                  label={t(locale, "Contacto", "Contact")}
+                  name="opportunity_id"
+                  label={t(locale, "Oportunidad", "Opportunity")}
+                >
+                  {visible.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.company}
+                    </option>
+                  ))}
+                </Field>
+                <Field
+                  name="owner_id"
+                  label={t(locale, "Responsable", "Owner")}
+                >
+                  {data.profiles.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </Field>
+                <Field
+                  name="due_at"
+                  label={t(locale, "Vencimiento", "Due date")}
+                  type="datetime-local"
+                  required
+                />
+                <div className="modal-footer">
+                  <SaveButton locale={locale} busy={busy} />
+                </div>
+              </form>
+            )}
+            {modal.startsWith("attachment:") &&
+              (() => {
+                const attachment = data.attachments?.find(
+                  (a) => a.id === modal.split(":")[1],
+                );
+                const message = data.messages.find(
+                  (m) => m.id === attachment?.message_id,
+                );
+                const parent = data.conversations.find(
+                  (c) => c.id === message?.conversation_id,
+                );
+                return (
+                  <form
+                    onSubmit={(e) =>
+                      submit(e, "import_attachment", { id: attachment?.id })
+                    }
+                  >
+                    <p>{attachment?.name}</p>
+                    <Field
+                      name="document_id"
+                      label={t(
+                        locale,
+                        "Documento correspondiente",
+                        "Corresponding document",
+                      )}
+                    >
+                      {data.documents
+                        .filter(
+                          (d) => d.opportunity_id === parent?.opportunity_id,
+                        )
+                        .map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.name}
+                          </option>
+                        ))}
+                    </Field>
+                    <p className="muted">
+                      {t(
+                        locale,
+                        "Quedará recibido y pendiente de revisión, sin aprobación automática.",
+                        "It will be marked received and pending review, without automatic approval.",
+                      )}
+                    </p>
+                    <div className="modal-footer">
+                      <SaveButton locale={locale} busy={busy} />
+                    </div>
+                  </form>
+                );
+              })()}
+            {(modal === "lender" || editingLender) && (
+              <LenderForm
+                key={editingLender?.id || "new-lender"}
+                lender={editingLender}
+                locale={locale}
+                busy={busy}
+                submit={(e, extras) =>
+                  submit(e, editingLender ? "update_lender" : "create_lender", {
+                    ...extras,
+                    ...(editingLender ? { id: editingLender.id } : {}),
+                  })
+                }
+              />
+            )}
+            {modal === "campaign" && (
+              <form
+                key={campaignTemplate?.id || "custom"}
+                onSubmit={(e) => {
+                  const f = new FormData(e.currentTarget);
+                  const steps = [
+                    ...(Number(f.get("followup_days")) > 0
+                      ? [
+                          {
+                            subject: String(f.get("followup_subject")),
+                            body: String(f.get("followup_body")),
+                            wait_days: Number(f.get("followup_days")),
+                          },
+                        ]
+                      : []),
+                    ...extraSteps.map((id) => ({
+                      subject: String(f.get(`step_${id}_subject`)),
+                      body: String(f.get(`step_${id}_body`)),
+                      wait_days: Number(f.get(`step_${id}_days`)),
+                    })),
+                  ];
+                  submit(e, "create_campaign", {
+                    steps,
+                    ...(campaignTemplate
+                      ? {
+                          template_id: campaignTemplate.id,
+                          template_version: campaignTemplate.version,
+                        }
+                      : {}),
+                  });
+                }}
+              >
+                <div className="form-grid">
+                  <Field
+                    name="name"
+                    label={t(locale, "Nombre de campaña", "Campaign name")}
+                    required
+                  />
+                  <Field
+                    name="account_id"
+                    label={t(locale, "Cuenta remitente", "Sender account")}
+                  >
+                    {data.accounts.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.email}
+                      </option>
+                    ))}
+                  </Field>
+                  <Field
+                    name="seller_id"
+                    label={t(
+                      locale,
+                      "Seller responsable",
+                      "Responsible seller",
+                    )}
+                  >
+                    {data.profiles
+                      .filter((p) =>
+                        ["seller", "seller_admin", "superadmin"].includes(
+                          p.role,
+                        ),
+                      )
+                      .map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                  </Field>
+                  <Field
+                    name="batch_id"
+                    label={t(locale, "Lote de leads", "Lead batch")}
+                  >
+                    <option value="">
+                      {t(
+                        locale,
+                        "Leads sin campaña",
+                        "Leads without a campaign",
+                      )}
+                    </option>
+                    {data.imports.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </Field>
+                  <Field
+                    name="daily_limit"
+                    label={t(locale, "Límite diario", "Daily limit")}
+                    type="number"
+                    value={100}
+                    min={1}
+                    max={2000}
+                    required
+                  />
+                  <Field
+                    name="timezone"
+                    label={t(locale, "Zona horaria", "Time zone")}
+                    value="America/New_York"
+                  >
+                    {[
+                      "America/New_York",
+                      "America/Chicago",
+                      "America/Denver",
+                      "America/Los_Angeles",
+                      "America/Bogota",
+                    ].map((z) => (
+                      <option key={z}>{z}</option>
+                    ))}
+                  </Field>
+                  <Field
+                    name="start_hour"
+                    label={t(locale, "Hora de inicio", "Start hour")}
+                    type="number"
+                    min={0}
+                    max={23}
+                    value={9}
+                    required
+                  />
+                  <Field
+                    name="end_hour"
+                    label={t(locale, "Hora de fin", "End hour")}
+                    type="number"
+                    min={1}
+                    max={24}
+                    value={17}
+                    required
+                  />
+                </div>
+                <Field
+                  name="subject"
+                  label="Subject"
+                  value={
+                    campaignTemplate?.subject ||
+                    "Funding options for {{company}}"
+                  }
+                  required
+                />
+                <Field
+                  name="body"
+                  label={t(locale, "Mensaje inicial", "Initial message")}
+                  type="textarea"
+                  value={
+                    campaignTemplate?.body ||
+                    "Hi {{name}},\n\nLet’s explore financing options for {{company}}. Apply here: {{application_url}}\n\nCurated Financial\nUnsubscribe: {{unsubscribe_url}}"
+                  }
+                  required
+                />
+                <div className="form-grid">
+                  <Field
+                    name="followup_days"
+                    label={t(
+                      locale,
+                      "Espera para seguimiento (días, 0 = sin seguimiento)",
+                      "Follow-up delay (days, 0 = no follow-up)",
+                    )}
+                    type="number"
+                    value={
+                      campaignTemplate
+                        ? campaignTemplate.steps[0]?.wait_days || 0
+                        : 3
+                    }
+                    min={0}
+                    max={90}
+                  />
+                  <Field
+                    name="followup_subject"
+                    label="Follow-up subject"
+                    value={
+                      campaignTemplate?.steps[0]?.subject ||
+                      "Following up · {{company}}"
+                    }
+                  />
+                </div>
+                <Field
+                  name="followup_body"
+                  label={t(
+                    locale,
+                    "Mensaje de seguimiento",
+                    "Follow-up message",
+                  )}
+                  type="textarea"
+                  value={
+                    campaignTemplate?.steps[0]?.body ||
+                    "Hi {{name}},\n\nDo you have any questions about your application? {{application_url}}\n\nUnsubscribe: {{unsubscribe_url}}"
+                  }
+                />
+                {extraSteps.map((id, index) => (
+                  <section className="analysis-card" key={id}>
+                    <div className="split-heading">
+                      <h3>
+                        {t(
+                          locale,
+                          "Seguimiento adicional",
+                          "Additional follow-up",
+                        )}{" "}
+                        {index + 1}
+                      </h3>
+                      <button
+                        className="text-button"
+                        type="button"
+                        onClick={() =>
+                          setExtraSteps(extraSteps.filter((s) => s !== id))
+                        }
+                      >
+                        {t(locale, "Quitar", "Remove")}
+                      </button>
+                    </div>
+                    <Field
+                      name={`step_${id}_days`}
+                      type="number"
+                      min={1}
+                      max={90}
+                      value={campaignTemplate?.steps[index + 1]?.wait_days || 3}
+                      label={t(
+                        locale,
+                        "Días desde el mensaje anterior",
+                        "Days after previous message",
+                      )}
+                      required
+                    />
+                    <Field
+                      name={`step_${id}_subject`}
+                      label={t(locale, "Asunto", "Subject")}
+                      value={
+                        campaignTemplate?.steps[index + 1]?.subject ||
+                        "Following up · {{company}}"
+                      }
+                      required
+                    />
+                    <Field
+                      name={`step_${id}_body`}
+                      label={t(locale, "Mensaje", "Message")}
+                      type="textarea"
+                      value={
+                        campaignTemplate?.steps[index + 1]?.body ||
+                        "Hi {{name}},\n\nYour application link is {{application_url}}\n\nUnsubscribe: {{unsubscribe_url}}"
+                      }
+                      required
+                    />
+                  </section>
+                ))}
+                <button
+                  type="button"
+                  className="button"
+                  disabled={extraSteps.length >= 19}
+                  onClick={() => setExtraSteps([...extraSteps, Date.now()])}
+                >
+                  {t(
+                    locale,
+                    "Agregar paso a la secuencia",
+                    "Add sequence step",
+                  )}
+                </button>
+                <p className="muted">
+                  {t(
+                    locale,
+                    "Solo se incluirán correos válidos, sin exclusiones ni otra secuencia activa. Una respuesta detiene el seguimiento.",
+                    "Only valid, unsuppressed contacts without another active sequence are eligible. A reply stops follow-up.",
+                  )}
+                </p>
+                <div className="modal-footer">
+                  <SaveButton
+                    locale={locale}
+                    busy={busy}
+                    label={t(locale, "Guardar borrador", "Save draft")}
+                  />
+                </div>
+              </form>
+            )}
+            {modal === "verify" && (
+              <form
+                onSubmit={(e) => {
+                  if (
+                    busy ||
+                    loading ||
+                    selectedVerificationCandidates.length === 0
+                  ) {
+                    e.preventDefault();
+                    return;
+                  }
+                  return submit(e, "verify_contacts", {
+                    contact_ids: selectedVerificationCandidates.map(
+                      (o) => o.contact_id,
+                    ),
+                  });
+                }}
+              >
+                <div className="verification-estimate">
+                  <ShieldCheck size={34} />
+                  <strong>
+                    {
+                      new Set(
+                        selectedVerificationCandidates.map((o) => o.contact_id),
+                      ).size
+                    }
+                  </strong>
+                  <span>
+                    {t(
+                      locale,
+                      "verificaciones previstas",
+                      "estimated verifications",
+                    )}
+                  </span>
+                </div>
+                <p>
+                  {t(
+                    locale,
+                    "Se verificarán únicamente los leads seleccionados. Los reintentos técnicos no convierten un correo en inválido. La operación consumirá créditos de Bouncer.",
+                    "Only the selected leads will be verified. Technical errors do not mark addresses invalid. This operation uses Bouncer credits.",
+                  )}
+                </p>
+                <div className="modal-footer">
+                  <SaveButton
+                    locale={locale}
+                    busy={busy}
+                    disabled={
+                      loading || selectedVerificationCandidates.length === 0
+                    }
+                    label={t(
+                      locale,
+                      "Iniciar verificación",
+                      "Start verification",
+                    )}
+                  />
+                </div>
+              </form>
+            )}
+            {modal === "filters" && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const f = new FormData(e.currentTarget);
+                  setPeriod(String(f.get("period")));
+                  setCampaignFilter(
+                    view === "leads" ? "all" : String(f.get("campaign")),
+                  );
+                  setModal(null);
+                }}
+              >
+                <Field
+                  name="period"
+                  label={t(
+                    locale,
+                    view === "leads"
+                      ? "Creación del lead"
+                      : "Creación de oportunidad",
+                    view === "leads" ? "Lead created" : "Opportunity created",
+                  )}
+                  value={period}
+                >
+                  <option value="all">
+                    {t(locale, "Todo el período", "All time")}
+                  </option>
+                  <option value="7">
+                    {t(locale, "Últimos 7 días", "Last 7 days")}
+                  </option>
+                  <option value="30">
+                    {t(locale, "Últimos 30 días", "Last 30 days")}
+                  </option>
+                  <option value="90">
+                    {t(locale, "Últimos 90 días", "Last 90 days")}
+                  </option>
+                </Field>
+                {view !== "leads" && (
+                  <Field
+                    name="campaign"
+                    label={t(locale, "Campaña", "Campaign")}
+                    value={campaignFilter}
+                  >
+                    <option value="all">
+                      {t(locale, "Todas", "All campaigns")}
+                    </option>
+                    {data.campaigns.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </Field>
+                )}
+                <div className="modal-footer">
+                  <SaveButton
+                    locale={locale}
+                    busy={false}
+                    label={t(locale, "Aplicar filtros", "Apply filters")}
+                  />
+                </div>
+              </form>
+            )}
+            {modal === "invite" && (
+              <form onSubmit={(e) => submit(e, "invite_user")}>
+                <Field
+                  name="name"
+                  label={t(locale, "Nombre", "Name")}
                   required
                 />
                 <Field name="email" label="Email" type="email" required />
-                <Field name="phone" label={t(locale, "Teléfono", "Phone")} />
+                <Field name="role" label={t(locale, "Rol", "Role")}>
+                  {Object.entries(roleLabels).map(([r, label]) => (
+                    <option value={r} key={r}>
+                      {label}
+                    </option>
+                  ))}
+                </Field>
+                <div className="modal-footer">
+                  <SaveButton
+                    locale={locale}
+                    busy={busy}
+                    label={t(locale, "Enviar invitación", "Send invitation")}
+                  />
+                </div>
+              </form>
+            )}
+            {modal === "google" && (
+              <form action="/api/gmail/connect" method="get">
+                <p>
+                  {t(
+                    locale,
+                    "Autoriza una cuenta de una organización configurada por el administrador. La contraseña permanece en Google.",
+                    "Authorize an account in an organization configured by the administrator. Your password stays with Google.",
+                  )}
+                </p>
                 <Field
-                  name="amount"
+                  name="organization"
                   label={t(
                     locale,
-                    "Monto solicitado (USD)",
-                    "Requested amount (USD)",
+                    "ID de organización configurada",
+                    "Configured organization ID",
                   )}
-                  type="number"
-                  min={0}
                   required
                 />
+                <div className="modal-footer">
+                  <button
+                    type="submit"
+                    className="button primary"
+                    disabled={data.demo}
+                  >
+                    {t(locale, "Continuar con Google", "Continue with Google")}
+                  </button>
+                </div>
+                {data.demo && (
+                  <p className="muted">
+                    {t(
+                      locale,
+                      "Las conexiones externas no están habilitadas en la demostración.",
+                      "External connections are not enabled in this demo.",
+                    )}
+                  </p>
+                )}
+              </form>
+            )}
+            {modal === "requirements" && (
+              <form onSubmit={(e) => submit(e, "requirements")}>
                 <Field name="product" label={t(locale, "Producto", "Product")}>
                   {[
                     "Business loan",
@@ -2292,634 +3143,84 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     <option key={p}>{p}</option>
                   ))}
                 </Field>
-                <Field name="seller_id" label="Seller" value={profile.id}>
-                  {data.profiles
-                    .filter(
-                      (p) =>
-                        ["seller", "seller_admin", "superadmin"].includes(
-                          p.role,
-                        ) &&
-                        (isAdmin || p.id === profile.id),
-                    )
-                    .map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                </Field>
                 <Field
-                  name="industry"
-                  label={t(locale, "Industria", "Industry")}
-                />
-                <Field
-                  name="next_action"
-                  label={t(locale, "Próxima acción", "Next action")}
-                  required
-                />
-                <Field
-                  name="next_action_at"
-                  label={t(locale, "Vencimiento", "Due date")}
-                  type="datetime-local"
-                  required
-                />
-              </div>
-              <div className="modal-footer">
-                <SaveButton locale={locale} busy={busy} />
-              </div>
-            </form>
-          )}
-          {modal === "task" && (
-            <form onSubmit={(e) => submit(e, "create_task")}>
-              <Field
-                name="title"
-                label={t(locale, "Qué hay que hacer", "What needs to happen")}
-                required
-              />
-              <Field
-                name="opportunity_id"
-                label={t(locale, "Oportunidad", "Opportunity")}
-              >
-                {visible.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.company}
-                  </option>
-                ))}
-              </Field>
-              <Field name="owner_id" label={t(locale, "Responsable", "Owner")}>
-                {data.profiles.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </Field>
-              <Field
-                name="due_at"
-                label={t(locale, "Vencimiento", "Due date")}
-                type="datetime-local"
-                required
-              />
-              <div className="modal-footer">
-                <SaveButton locale={locale} busy={busy} />
-              </div>
-            </form>
-          )}
-          {modal.startsWith("attachment:") &&
-            (() => {
-              const attachment = data.attachments?.find(
-                (a) => a.id === modal.split(":")[1],
-              );
-              const message = data.messages.find(
-                (m) => m.id === attachment?.message_id,
-              );
-              const parent = data.conversations.find(
-                (c) => c.id === message?.conversation_id,
-              );
-              return (
-                <form
-                  onSubmit={(e) =>
-                    submit(e, "import_attachment", { id: attachment?.id })
-                  }
-                >
-                  <p>{attachment?.name}</p>
-                  <Field
-                    name="document_id"
-                    label={t(
-                      locale,
-                      "Documento correspondiente",
-                      "Corresponding document",
-                    )}
-                  >
-                    {data.documents
-                      .filter(
-                        (d) => d.opportunity_id === parent?.opportunity_id,
-                      )
-                      .map((d) => (
-                        <option key={d.id} value={d.id}>
-                          {d.name}
-                        </option>
-                      ))}
-                  </Field>
-                  <p className="muted">
-                    {t(
-                      locale,
-                      "Quedará recibido y pendiente de revisión, sin aprobación automática.",
-                      "It will be marked received and pending review, without automatic approval.",
-                    )}
-                  </p>
-                  <div className="modal-footer">
-                    <SaveButton locale={locale} busy={busy} />
-                  </div>
-                </form>
-              );
-            })()}
-          {(modal === "lender" || editingLender) && (
-            <LenderForm
-              key={editingLender?.id || "new-lender"}
-              lender={editingLender}
-              locale={locale}
-              busy={busy}
-              submit={(e, extras) =>
-                submit(e, editingLender ? "update_lender" : "create_lender", {
-                  ...extras,
-                  ...(editingLender ? { id: editingLender.id } : {}),
-                })
-              }
-            />
-          )}
-          {modal === "campaign" && (
-            <form
-              onSubmit={(e) => {
-                const f = new FormData(e.currentTarget);
-                const steps = [
-                  ...(Number(f.get("followup_days")) > 0
-                    ? [
-                        {
-                          subject: String(f.get("followup_subject")),
-                          body: String(f.get("followup_body")),
-                          wait_days: Number(f.get("followup_days")),
-                        },
-                      ]
-                    : []),
-                  ...extraSteps.map((id) => ({
-                    subject: String(f.get(`step_${id}_subject`)),
-                    body: String(f.get(`step_${id}_body`)),
-                    wait_days: Number(f.get(`step_${id}_days`)),
-                  })),
-                ];
-                submit(e, "create_campaign", { steps });
-              }}
-            >
-              <div className="form-grid">
-                <Field
-                  name="name"
-                  label={t(locale, "Nombre de campaña", "Campaign name")}
-                  required
-                />
-                <Field
-                  name="account_id"
-                  label={t(locale, "Cuenta remitente", "Sender account")}
-                >
-                  {data.accounts.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.email}
-                    </option>
-                  ))}
-                </Field>
-                <Field
-                  name="seller_id"
-                  label={t(locale, "Seller responsable", "Responsible seller")}
-                >
-                  {data.profiles
-                    .filter((p) =>
-                      ["seller", "seller_admin", "superadmin"].includes(p.role),
-                    )
-                    .map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                </Field>
-                <Field
-                  name="batch_id"
-                  label={t(locale, "Lote de leads", "Lead batch")}
-                >
-                  <option value="">
-                    {t(locale, "Leads sin campaña", "Leads without a campaign")}
-                  </option>
-                  {data.imports.map((b) => (
-                    <option key={b.id} value={b.id}>
-                      {b.name}
-                    </option>
-                  ))}
-                </Field>
-                <Field
-                  name="daily_limit"
-                  label={t(locale, "Límite diario", "Daily limit")}
-                  type="number"
-                  value={100}
-                  min={1}
-                  max={2000}
-                  required
-                />
-                <Field
-                  name="timezone"
-                  label={t(locale, "Zona horaria", "Time zone")}
-                  value="America/New_York"
-                >
-                  {[
-                    "America/New_York",
-                    "America/Chicago",
-                    "America/Denver",
-                    "America/Los_Angeles",
-                    "America/Bogota",
-                  ].map((z) => (
-                    <option key={z}>{z}</option>
-                  ))}
-                </Field>
-                <Field
-                  name="start_hour"
-                  label={t(locale, "Hora de inicio", "Start hour")}
-                  type="number"
-                  min={0}
-                  max={23}
-                  value={9}
-                  required
-                />
-                <Field
-                  name="end_hour"
-                  label={t(locale, "Hora de fin", "End hour")}
+                  name="bank_months"
+                  label={t(
+                    locale,
+                    "Meses de extractos",
+                    "Bank statement months",
+                  )}
                   type="number"
                   min={1}
                   max={24}
-                  value={17}
+                  value={4}
                   required
                 />
-              </div>
-              <Field
-                name="subject"
-                label="Subject"
-                value="Funding options for {{company}}"
-                required
-              />
-              <Field
-                name="body"
-                label={t(locale, "Mensaje inicial", "Initial message")}
-                type="textarea"
-                value={
-                  "Hi {{name}},\n\nLet’s explore financing options for {{company}}. Apply here: {{application_url}}\n\nCurated Financial\nUnsubscribe: {{unsubscribe_url}}"
-                }
-                required
-              />
-              <div className="form-grid">
-                <Field
-                  name="followup_days"
-                  label={t(
-                    locale,
-                    "Espera para seguimiento (días, 0 = sin seguimiento)",
-                    "Follow-up delay (days, 0 = no follow-up)",
-                  )}
-                  type="number"
-                  value={3}
-                  min={0}
-                  max={90}
-                />
-                <Field
-                  name="followup_subject"
-                  label="Follow-up subject"
-                  value="Following up · {{company}}"
-                />
-              </div>
-              <Field
-                name="followup_body"
-                label={t(locale, "Mensaje de seguimiento", "Follow-up message")}
-                type="textarea"
-                value={
-                  "Hi {{name}},\n\nDo you have any questions about your application? {{application_url}}\n\nUnsubscribe: {{unsubscribe_url}}"
-                }
-              />
-              {extraSteps.map((id, index) => (
-                <section className="analysis-card" key={id}>
-                  <div className="split-heading">
-                    <h3>
-                      {t(
-                        locale,
-                        "Seguimiento adicional",
-                        "Additional follow-up",
-                      )}{" "}
-                      {index + 1}
-                    </h3>
-                    <button
-                      className="text-button"
-                      type="button"
-                      onClick={() =>
-                        setExtraSteps(extraSteps.filter((s) => s !== id))
-                      }
-                    >
-                      {t(locale, "Quitar", "Remove")}
-                    </button>
-                  </div>
-                  <Field
-                    name={`step_${id}_days`}
-                    type="number"
-                    min={1}
-                    max={90}
-                    value={3}
-                    label={t(
-                      locale,
-                      "Días desde el mensaje anterior",
-                      "Days after previous message",
-                    )}
-                    required
-                  />
-                  <Field
-                    name={`step_${id}_subject`}
-                    label={t(locale, "Asunto", "Subject")}
-                    value="Following up · {{company}}"
-                    required
-                  />
-                  <Field
-                    name={`step_${id}_body`}
-                    label={t(locale, "Mensaje", "Message")}
-                    type="textarea"
-                    value={
-                      "Hi {{name}},\n\nYour application link is {{application_url}}\n\nUnsubscribe: {{unsubscribe_url}}"
-                    }
-                    required
-                  />
-                </section>
-              ))}
-              <button
-                type="button"
-                className="button"
-                disabled={extraSteps.length >= 19}
-                onClick={() => setExtraSteps([...extraSteps, Date.now()])}
-              >
-                {t(locale, "Agregar paso a la secuencia", "Add sequence step")}
-              </button>
-              <p className="muted">
-                {t(
-                  locale,
-                  "Solo se incluirán correos válidos, sin exclusiones ni otra secuencia activa. Una respuesta detiene el seguimiento.",
-                  "Only valid, unsuppressed contacts without another active sequence are eligible. A reply stops follow-up.",
-                )}
-              </p>
-              <div className="modal-footer">
-                <SaveButton
-                  locale={locale}
-                  busy={busy}
-                  label={t(locale, "Guardar borrador", "Save draft")}
-                />
-              </div>
-            </form>
-          )}
-          {modal === "verify" && (
-            <form
-              onSubmit={(e) => {
-                if (
-                  busy ||
-                  loading ||
-                  selectedVerificationCandidates.length === 0
-                ) {
-                  e.preventDefault();
-                  return;
-                }
-                return submit(e, "verify_contacts", {
-                  contact_ids: selectedVerificationCandidates.map(
-                    (o) => o.contact_id,
-                  ),
-                });
-              }}
-            >
-              <div className="verification-estimate">
-                <ShieldCheck size={34} />
-                <strong>
-                  {
-                    new Set(
-                      selectedVerificationCandidates.map((o) => o.contact_id),
-                    ).size
-                  }
-                </strong>
-                <span>
-                  {t(
-                    locale,
-                    "verificaciones previstas",
-                    "estimated verifications",
-                  )}
-                </span>
-              </div>
-              <p>
-                {t(
-                  locale,
-                  "Se verificarán únicamente los leads seleccionados. Los reintentos técnicos no convierten un correo en inválido. La operación consumirá créditos de Bouncer.",
-                  "Only the selected leads will be verified. Technical errors do not mark addresses invalid. This operation uses Bouncer credits.",
-                )}
-              </p>
-              <div className="modal-footer">
-                <SaveButton
-                  locale={locale}
-                  busy={busy}
-                  disabled={
-                    loading || selectedVerificationCandidates.length === 0
-                  }
-                  label={t(
-                    locale,
-                    "Iniciar verificación",
-                    "Start verification",
-                  )}
-                />
-              </div>
-            </form>
-          )}
-          {modal === "filters" && (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const f = new FormData(e.currentTarget);
-                setPeriod(String(f.get("period")));
-                setCampaignFilter(
-                  view === "leads" ? "all" : String(f.get("campaign")),
-                );
-                setModal(null);
-              }}
-            >
-              <Field
-                name="period"
-                label={t(
-                  locale,
-                  view === "leads"
-                    ? "Creación del lead"
-                    : "Creación de oportunidad",
-                  view === "leads" ? "Lead created" : "Opportunity created",
-                )}
-                value={period}
-              >
-                <option value="all">
-                  {t(locale, "Todo el período", "All time")}
-                </option>
-                <option value="7">
-                  {t(locale, "Últimos 7 días", "Last 7 days")}
-                </option>
-                <option value="30">
-                  {t(locale, "Últimos 30 días", "Last 30 days")}
-                </option>
-                <option value="90">
-                  {t(locale, "Últimos 90 días", "Last 90 days")}
-                </option>
-              </Field>
-              {view !== "leads" && (
-                <Field
-                  name="campaign"
-                  label={t(locale, "Campaña", "Campaign")}
-                  value={campaignFilter}
-                >
-                  <option value="all">
-                    {t(locale, "Todas", "All campaigns")}
-                  </option>
-                  {data.campaigns.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </Field>
-              )}
-              <div className="modal-footer">
-                <SaveButton
-                  locale={locale}
-                  busy={false}
-                  label={t(locale, "Aplicar filtros", "Apply filters")}
-                />
-              </div>
-            </form>
-          )}
-          {modal === "invite" && (
-            <form onSubmit={(e) => submit(e, "invite_user")}>
-              <Field name="name" label={t(locale, "Nombre", "Name")} required />
-              <Field name="email" label="Email" type="email" required />
-              <Field name="role" label={t(locale, "Rol", "Role")}>
-                {Object.entries(roleLabels).map(([r, label]) => (
-                  <option value={r} key={r}>
-                    {label}
-                  </option>
-                ))}
-              </Field>
-              <div className="modal-footer">
-                <SaveButton
-                  locale={locale}
-                  busy={busy}
-                  label={t(locale, "Enviar invitación", "Send invitation")}
-                />
-              </div>
-            </form>
-          )}
-          {modal === "google" && (
-            <form action="/api/gmail/connect" method="get">
-              <p>
-                {t(
-                  locale,
-                  "Autoriza una cuenta de una organización configurada por el administrador. La contraseña permanece en Google.",
-                  "Authorize an account in an organization configured by the administrator. Your password stays with Google.",
-                )}
-              </p>
-              <Field
-                name="organization"
-                label={t(
-                  locale,
-                  "ID de organización configurada",
-                  "Configured organization ID",
-                )}
-                required
-              />
-              <div className="modal-footer">
-                <button
-                  type="submit"
-                  className="button primary"
-                  disabled={data.demo}
-                >
-                  {t(locale, "Continuar con Google", "Continue with Google")}
-                </button>
-              </div>
-              {data.demo && (
                 <p className="muted">
                   {t(
                     locale,
-                    "Las conexiones externas no están habilitadas en la demostración.",
-                    "External connections are not enabled in this demo.",
+                    "Se aplicará a oportunidades nuevas. La aplicación firmada siempre es obligatoria.",
+                    "Applies to new opportunities. A signed application is always required.",
                   )}
                 </p>
-              )}
-            </form>
-          )}
-          {modal === "requirements" && (
-            <form onSubmit={(e) => submit(e, "requirements")}>
-              <Field name="product" label={t(locale, "Producto", "Product")}>
-                {[
-                  "Business loan",
-                  "MCA",
-                  "Line of credit",
-                  "Equipment financing",
-                ].map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-              </Field>
-              <Field
-                name="bank_months"
-                label={t(locale, "Meses de extractos", "Bank statement months")}
-                type="number"
-                min={1}
-                max={24}
-                value={4}
-                required
-              />
-              <p className="muted">
-                {t(
-                  locale,
-                  "Se aplicará a oportunidades nuevas. La aplicación firmada siempre es obligatoria.",
-                  "Applies to new opportunities. A signed application is always required.",
-                )}
-              </p>
-              <div className="modal-footer">
-                <SaveButton locale={locale} busy={busy} />
-              </div>
-            </form>
-          )}
-          {modal.startsWith("preview:") &&
-            (() => {
-              const c = data.campaigns.find(
-                (c) => c.id === modal.split(":")[1],
-              )!;
-              const replace = (s: string) =>
-                s
-                  .replaceAll("{{name}}", "Alex")
-                  .replaceAll("{{company}}", "Example Business")
-                  .replaceAll(
-                    "{{application_url}}",
-                    "[Individual secure application link]",
-                  )
-                  .replaceAll(
-                    "{{unsubscribe_url}}",
-                    "[Secure unsubscribe link]",
-                  );
-              const missing = (
-                c.subject +
-                c.body +
-                c.steps.map((s) => s.subject + s.body).join("")
-              ).match(
-                /{{\s*(?!(?:name|company|application_url|unsubscribe_url)\s*}})[^}]+}}/g,
-              );
-              return (
-                <div className="template-preview">
-                  <small>
-                    From:{" "}
-                    {data.accounts.find((a) => a.id === c.account_id)?.email}
-                  </small>
-                  <h3>{replace(c.subject)}</h3>
-                  <p>{replace(c.body)}</p>
-                  {c.steps.map((step, index) => (
-                    <section key={index} className="analysis-card">
-                      <small>
-                        {t(locale, "Seguimiento", "Follow-up")} {index + 1} ·{" "}
-                        {step.wait_days}{" "}
-                        {t(locale, "días después", "days later")}
-                      </small>
-                      <h3>{replace(step.subject)}</h3>
-                      <p>{replace(step.body)}</p>
-                    </section>
-                  ))}
-                  {missing && (
-                    <div className="error-banner">
-                      {t(
-                        locale,
-                        "Variables sin resolver",
-                        "Unresolved variables",
-                      )}
-                      : {missing.join(", ")}
-                    </div>
-                  )}
+                <div className="modal-footer">
+                  <SaveButton locale={locale} busy={busy} />
                 </div>
-              );
-            })()}
-        </Modal>
-      )}
+              </form>
+            )}
+            {modal.startsWith("preview:") &&
+              (() => {
+                const c = data.campaigns.find(
+                  (c) => c.id === modal.split(":")[1],
+                )!;
+                const replace = (s: string) => {
+                  try {
+                    return renderTemplate(s, campaignPreviewValues);
+                  } catch (e) {
+                    return (e as Error).message;
+                  }
+                };
+                const missing = (
+                  c.subject +
+                  c.body +
+                  c.steps.map((s) => s.subject + s.body).join("")
+                ).match(
+                  /{{\s*(?!(?:name|company|amount|industry|phone|application_url|unsubscribe_url)\s*}})[^}]+}}/g,
+                );
+                return (
+                  <div className="template-preview">
+                    <small>
+                      From:{" "}
+                      {data.accounts.find((a) => a.id === c.account_id)?.email}
+                    </small>
+                    <h3>{replace(c.subject)}</h3>
+                    <p>{replace(c.body)}</p>
+                    {c.steps.map((step, index) => (
+                      <section key={index} className="analysis-card">
+                        <small>
+                          {t(locale, "Seguimiento", "Follow-up")} {index + 1} ·{" "}
+                          {step.wait_days}{" "}
+                          {t(locale, "días después", "days later")}
+                        </small>
+                        <h3>{replace(step.subject)}</h3>
+                        <p>{replace(step.body)}</p>
+                      </section>
+                    ))}
+                    {missing && (
+                      <div className="error-banner">
+                        {t(
+                          locale,
+                          "Variables sin resolver",
+                          "Unresolved variables",
+                        )}
+                        : {missing.join(", ")}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+          </Modal>
+        )}
     </div>
   );
 }

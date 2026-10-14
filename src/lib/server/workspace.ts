@@ -5,10 +5,12 @@ import { filterLeadTab, parseLeadTab } from "../lead-tabs";
 import { z } from "zod";
 import { gmailHistoryEnabled } from "../gmail-feature";
 import { teamLabels } from "./gmail-team";
+import { crmExtensionsReady } from "./crm-readiness";
 export async function loadWorkspace(
   params = new URLSearchParams(),
 ): Promise<Workspace> {
   const { db, profile } = await requireUser();
+  const extensionsReady = await crmExtensionsReady(db);
   const page = Math.max(
     0,
     Math.min(100000, Math.floor(Number(params.get("page")) || 0)),
@@ -114,7 +116,6 @@ export async function loadWorkspace(
     ["activities", "activities"],
     ["documents", "documents"],
     ["analyses", "analyses"],
-    ["lenders", "lenders"],
     ["submissions", "submissions"],
     ["offers", "offers"],
     ["accounts", "mail_accounts"],
@@ -124,6 +125,11 @@ export async function loadWorkspace(
     ["notifications", "notifications"],
     ["mail_review", "mail_review"],
   ];
+  if (extensionsReady)
+    queries.push(
+      ["email_templates", "email_templates"],
+      ["campaign_assets", "campaign_assets"],
+    );
   if (profile.role === "superadmin")
     queries.push(["integration_jobs", "jobs"], ["outbox_status", "outbox"]);
   if (gmailHistoryEnabled())
@@ -168,8 +174,22 @@ export async function loadWorkspace(
     }),
   );
   const data = Object.fromEntries(entries) as unknown as Workspace;
-  data.lender_contacts =
-    checkDb(await db.from("lender_contacts").select("*")) || [];
+  const [lenders, lenderContacts] = await Promise.all([
+    readDirectory("lenders", "id"),
+    readDirectory("lender_contacts", "email"),
+  ]);
+  data.lenders = lenders as Workspace["lenders"];
+  data.lender_contacts = lenderContacts as Workspace["lender_contacts"];
+  async function readDirectory(table: string, sort: string) {
+    const rows: unknown[] = [];
+    for (let offset = 0; ; offset += 1000) {
+      let q = db.from(table).select("*").order(sort);
+      if (table === "lenders") q = q.is("archived_at", null);
+      const chunk = checkDb(await q.range(offset, offset + 999)) || [];
+      rows.push(...chunk);
+      if (chunk.length < 1000) return rows;
+    }
+  }
   if (gmailHistoryEnabled()) {
     const permissions =
       checkDb(
@@ -253,5 +273,21 @@ export async function loadWorkspace(
       ((preparing ? leadResponse.count : response.count) || 0) >
       (page + 1) * 100,
     stats,
+    crm_extensions_ready: extensionsReady,
+    ...(extensionsReady && (params.get("view") || "overview") === "overview"
+      ? {
+          operational: checkDb(
+            await db.rpc("operational_dashboard", {
+              search_text: search,
+              owner_filter: owner,
+              stage_filter: stage,
+              campaign_filter: campaign,
+              since_filter: since,
+              attention_filter: params.get("attention") || "all",
+              cursor_offset: page * 50,
+            }),
+          ),
+        }
+      : {}),
   } as Workspace;
 }

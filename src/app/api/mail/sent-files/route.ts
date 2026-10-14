@@ -48,7 +48,9 @@ export async function GET(request: Request) {
       (sent.gmail_file_ids || []).includes(fileId)
         ? "gmail-documents"
         : "case-documents");
-    if (!["case-documents", "gmail-documents"].includes(bucket))
+    if (
+      !["case-documents", "gmail-documents", "campaign-assets"].includes(bucket)
+    )
       throw new HttpError(409, "Invalid attachment snapshot");
     const encrypted = bucket === "gmail-documents";
     const blob = checkDb(

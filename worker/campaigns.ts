@@ -2,12 +2,6 @@ import { db, checked, alertAdmins } from "./db";
 import { renderTemplate } from "../src/lib/domain";
 import { token, hash, encrypt, decrypt } from "../src/lib/server/crypto";
 export async function scheduleCampaigns() {
-  if (
-    process.env.PUBLIC_FORM_ENABLED !== "true" ||
-    !process.env.FORM_DECLARATION_VERSION ||
-    !process.env.FORM_DECLARATION_TEXT
-  )
-    return;
   const client = db();
   const due =
     checked(
@@ -28,6 +22,13 @@ export async function scheduleCampaigns() {
         .single(),
     )!;
     if (campaign.status !== "active") continue;
+    if (
+      campaign.requires_application !== false &&
+      (process.env.PUBLIC_FORM_ENABLED !== "true" ||
+        !process.env.FORM_DECLARATION_VERSION ||
+        !process.env.FORM_DECLARATION_TEXT)
+    )
+      continue;
     const contact = checked(
       await client
         .from("contacts")
@@ -43,7 +44,12 @@ export async function scheduleCampaigns() {
         .eq("id", enrollment.opportunity_id)
         .single(),
     )!;
-    if (opportunity.handed_off_at || opportunity.application_complete) continue;
+    if (
+      opportunity.handed_off_at ||
+      (opportunity.application_complete &&
+        campaign.requires_application !== false)
+    )
+      continue;
     const message =
       enrollment.step === 0 ? campaign : campaign.steps[enrollment.step - 1];
     if (!message) continue;
@@ -58,17 +64,20 @@ export async function scheduleCampaigns() {
       )
     )
       continue;
-    let application = checked(
-      await client
-        .from("application_links")
-        .select("encrypted_token")
-        .eq("opportunity_id", opportunity.id)
-        .is("revoked_at", null)
-        .gt("expires_at", new Date(Date.now() + 86400000).toISOString())
-        .limit(1)
-        .maybeSingle(),
-    );
-    if (!application) {
+    let application =
+      campaign.requires_application !== false
+        ? checked(
+            await client
+              .from("application_links")
+              .select("encrypted_token")
+              .eq("opportunity_id", opportunity.id)
+              .is("revoked_at", null)
+              .gt("expires_at", new Date(Date.now() + 86400000).toISOString())
+              .limit(1)
+              .maybeSingle(),
+          )
+        : null;
+    if (!application && campaign.requires_application !== false) {
       const value = token();
       application = { encrypted_token: encrypt(value) };
       checked(
@@ -112,7 +121,12 @@ export async function scheduleCampaigns() {
       const values = {
         name: contact.name,
         company: opportunity.company,
-        application_url: `${process.env.APP_ORIGIN}/apply/${decrypt(application.encrypted_token)}`,
+        amount: String(opportunity.amount),
+        industry: opportunity.industry,
+        phone: contact.phone,
+        application_url: application
+          ? `${process.env.APP_ORIGIN}/apply/${decrypt(application.encrypted_token)}`
+          : "",
         unsubscribe_url: `${process.env.APP_ORIGIN}/unsubscribe/${decrypt(unsubscribe.encrypted_token)}`,
       };
       const subject = renderTemplate(message.subject, values);
@@ -130,6 +144,9 @@ export async function scheduleCampaigns() {
             message_id_header: `<${enrollment.id}.${enrollment.step}@crm.curated.local>`,
             requested_by: campaign.created_by,
             request_key: key,
+            ...(campaign.asset_snapshot !== undefined
+              ? { campaign_asset_snapshot: campaign.asset_snapshot || [] }
+              : {}),
           },
           { onConflict: "request_key", ignoreDuplicates: true },
         ),

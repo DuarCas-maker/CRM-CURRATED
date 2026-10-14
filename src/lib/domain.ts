@@ -121,8 +121,12 @@ export interface Analysis {
   recommendations: string;
   reviewer_id: string;
   reviewed_at: string;
+  underwriting_run_id?: string | null;
+  is_current?: boolean;
 }
 export interface Lender {
+  guidelines?: import("./lender-management").LenderGuidelines | null;
+  guideline_version?: number;
   id: string;
   name: string;
   products: string[];
@@ -166,6 +170,17 @@ export interface MailAccount {
   sent_today: number;
 }
 export interface Campaign {
+  template_id?: string | null;
+  template_version?: number | null;
+  requires_application?: boolean;
+  asset_snapshot?: import("./campaign-templates").CampaignAsset[];
+  delivery_stats?: {
+    sent: number;
+    pending: number;
+    failed: number;
+    uncertain: number;
+    replied: number;
+  };
   id: string;
   name: string;
   account_id: string;
@@ -239,6 +254,17 @@ export interface Preferences {
   locale: Locale;
 }
 export interface Workspace {
+  crm_extensions_ready?: boolean;
+  operational?: import("./operations").OperationalData;
+  email_templates?: import("./campaign-templates").EmailTemplate[];
+  campaign_assets?: import("./campaign-templates").CampaignAsset[];
+  underwriting_settings?: import("./underwriting").UnderwritingSettings;
+  underwriting_setting_versions?: {
+    version: number;
+    model: string;
+    updated_at: string;
+    updated_by: string | null;
+  }[];
   lender_contacts?: { email: string; lender_id: string; name?: string }[];
   sender_account_ids?: string[];
   mail_sends?: {
@@ -410,6 +436,7 @@ export function handoffErrors(
     !analyses.some(
       (a) =>
         a.opportunity_id === o.id &&
+        a.is_current !== false &&
         a.summary.trim() &&
         a.conclusion.trim() &&
         a.recommendations.trim(),

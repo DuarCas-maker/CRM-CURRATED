@@ -241,26 +241,28 @@ export function demoWorkspace(): Workspace {
         area: o.handed_off_at ? "closer" : "seller",
       })),
     documents: opportunities.flatMap((o) =>
-      o.id === "o1" ? [] : [
-        "Signed application",
-        "Bank statement — June",
-        "Bank statement — July",
-        "Bank statement — August",
-        "Bank statement — September",
-      ].map((name, j) => ({
-        id: `${o.id}d${j}`,
-        opportunity_id: o.id,
-        name,
-        kind: j === 0 ? "application" : "bank_statement",
-        period: j === 0 ? "" : `2026-0${5 + j}`,
-        status: o.application_complete
-          ? "approved"
-          : j === 4
-            ? "pending"
-            : "received",
-        source: "public_form",
-        created_at: ago(3),
-      })),
+      o.id === "o1"
+        ? []
+        : [
+            "Signed application",
+            "Bank statement — June",
+            "Bank statement — July",
+            "Bank statement — August",
+            "Bank statement — September",
+          ].map((name, j) => ({
+            id: `${o.id}d${j}`,
+            opportunity_id: o.id,
+            name,
+            kind: j === 0 ? "application" : "bank_statement",
+            period: j === 0 ? "" : `2026-0${5 + j}`,
+            status: o.application_complete
+              ? "approved"
+              : j === 4
+                ? "pending"
+                : "received",
+            source: "public_form",
+            created_at: ago(3),
+          })),
     ),
     analyses: opportunities
       .filter((o) => o.application_complete)

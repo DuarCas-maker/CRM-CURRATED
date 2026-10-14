@@ -14,12 +14,14 @@ export function LenderDirectory({
   locale,
   canEdit,
   edit,
+  guidelines,
   children,
 }: {
   data: Workspace;
   locale: Locale;
   canEdit: boolean;
   edit: (id: string) => void;
+  guidelines?: (id: string) => void;
   children?: ReactNode;
 }) {
   const [query, setQuery] = useState("");
@@ -116,12 +118,27 @@ export function LenderDirectory({
       <div className="lender-grid">
         {lenders.map((lender) => {
           const portal = lenderPortalUrl(lender.notes);
+          const contacts = (data.lender_contacts || []).filter(
+            (c) => c.lender_id === lender.id,
+          );
           return (
             <section className="panel lender-card" key={lender.id}>
               <div className="lender-logo">
                 <Landmark size={24} />
               </div>
               <h2>{lender.name}</h2>
+              <p>
+                {contacts.length}{" "}
+                {t(locale, "contactos / correos", "contacts / emails")} · Tier{" "}
+                {lender.guidelines?.tier || "?"} ·{" "}
+                {lender.guidelines?.verified
+                  ? t(locale, "Guidelines confirmados", "Confirmed guidelines")
+                  : t(
+                      locale,
+                      "Guidelines sin confirmar",
+                      "Unconfirmed guidelines",
+                    )}
+              </p>
               <div className="product-tags">
                 {lender.products.map((value) => (
                   <span key={value}>{value}</span>
@@ -153,6 +170,26 @@ export function LenderDirectory({
                 )}
               </dl>
               <p>{lender.notes}</p>
+              {contacts.length > 0 && (
+                <details>
+                  <summary>
+                    {t(locale, "Ver contactos", "View contacts")}
+                  </summary>
+                  {contacts.map((c) => (
+                    <p key={c.email}>
+                      {c.name || "—"} · {c.email}
+                    </p>
+                  ))}
+                </details>
+              )}
+              {guidelines && (
+                <button
+                  className="button"
+                  onClick={() => guidelines(lender.id)}
+                >
+                  Guidelines v{lender.guideline_version || 0}
+                </button>
+              )}
               {canEdit && (
                 <button className="button" onClick={() => edit(lender.id)}>
                   {t(locale, "Editar lender", "Edit lender")}

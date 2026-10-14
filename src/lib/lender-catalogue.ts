@@ -1,0 +1,83 @@
+export const referenceLenderTiers: Record<string, string[]> = {
+  "1": [
+    "Channel",
+    "Kapitus",
+    "Mulligan",
+    "GetBacked",
+    "ARF",
+    "Snap",
+    "Rapid",
+    "IOU",
+    "PIRS",
+    "Itria",
+  ],
+  "2": ["GCM", "Byz", "Smarter", "Vox", "Propella", "Fundfi"],
+  "3": [
+    "Everest",
+    "PMF",
+    "Lendini",
+    "Financial",
+    "Accord",
+    "Cooper",
+    "Aspire",
+    "Reliable",
+    "Specialty",
+    "Forward",
+    "Cedar",
+    "Union",
+    "Fox",
+  ],
+  "4": [
+    "SBF",
+    "Clearfund",
+    "AFB",
+    "CapitalShack",
+    "Funding Futures",
+    "TBF",
+    "Merged",
+    "Cucumber",
+    "Rowan",
+    "Cobalt",
+    "Pathway",
+  ],
+  "5": [
+    "YMT",
+    "Wynwood",
+    "Forest",
+    "Seamless",
+    "FinPoint",
+    "MNR",
+    "Lynks",
+    "Diverse",
+    "Alpine",
+    "Thoro",
+  ],
+  reverse: [
+    "Arena",
+    "GFE",
+    "Silverline",
+    "Nexi",
+    "Fenix",
+    "QFS",
+    "Highland Hill",
+    "DLP",
+    "G&G",
+    "FinPoint",
+  ],
+};
+export const referenceSpecialNotes = [
+  "Tier 1: Snap, Kapitus and others may buy out small balances; generally second position maximum.",
+  "Trucking: Kapitus, Mulligan, Byz, Bitty, Clearfund, Wynwood, Silverline, MNR.",
+  "Real estate: Kapitus, Mulligan, Rapid, Everest, Lendini, Financial, Aspire, Bitty.",
+  "Non-US citizens: Byz, Snap, Accord, NewCo, Lendini, Clearfund, Cooper, Arena.",
+  "Defaults, especially ZBLs: Seamless, Funding Futures, Forest, Thoro.",
+  "Reverse consolidation: Alpine, Seamless, FinPoint.",
+  "Tier 6: no lender list was supplied. Confirm current lender guidelines before submitting.",
+];
+export function suggestedLenderTier(name: string) {
+  return (
+    Object.entries(referenceLenderTiers).find(([, names]) =>
+      names.some((n) => n.toLowerCase() === name.trim().toLowerCase()),
+    )?.[0] || "unknown"
+  );
+}

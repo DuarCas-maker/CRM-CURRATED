@@ -12,6 +12,7 @@ import {
 } from "./gmail";
 import { scheduleCampaigns } from "./campaigns";
 import { generatePdf } from "./pdf";
+import { processUnderwriting } from "./underwriting";
 import { deliverNotification } from "./notifications";
 import {
   archiveStep,
@@ -192,6 +193,9 @@ while (!stopping) {
     }, 60000);
     try {
       switch (job.kind) {
+        case "underwriting":
+          await processUnderwriting(job);
+          break;
         case "gmail_attachment_reconcile":
           await reconcileImportAttachments(job.payload);
           break;

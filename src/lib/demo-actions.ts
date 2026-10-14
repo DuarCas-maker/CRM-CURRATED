@@ -16,6 +16,19 @@ import {
   renderTemplate,
 } from "./domain";
 import { normalizeRow, type Mapping } from "./imports";
+import { defaultOperationalSettings } from "./operations";
+import {
+  planLenderImport,
+  lenderImportRowSchema,
+  lenderGuidelinesSchema,
+  type LenderImportRow,
+} from "./lender-management";
+import {
+  campaignPreviewValues,
+  requiresApplication,
+  type CampaignAsset,
+  type EmailTemplate,
+} from "./campaign-templates";
 export function demoAction(
   current: Workspace,
   user: Profile,
@@ -53,6 +66,95 @@ export function demoAction(
       );
   };
   switch (kind) {
+    case "operational_settings": {
+      if (user.role !== "superadmin") throw new Error("Access denied");
+      const settings = {
+        ...defaultOperationalSettings,
+        ...p,
+        version: (d.operational?.settings.version || 1) + 1,
+      };
+      for (const key of [
+        "reply_hours",
+        "followup_hours",
+        "offer_warning_hours",
+      ] as const)
+        if (
+          !Number.isInteger(settings[key]) ||
+          settings[key] < 1 ||
+          settings[key] > (key === "followup_hours" ? 2160 : 720)
+        )
+          throw new Error("Plazo inválido");
+      d.operational = { rows: [], total: 0, counts: {}, settings };
+      break;
+    }
+    case "lender_guidelines": {
+      if (!["superadmin", "closer_admin"].includes(user.role))
+        throw new Error("Access denied");
+      const lender = d.lenders.find((l) => l.id === p.lender_id);
+      if (!lender) throw new Error("Lender missing");
+      lender.guidelines = lenderGuidelinesSchema.parse(p.g);
+      lender.guideline_version = (lender.guideline_version || 0) + 1;
+      break;
+    }
+    case "import_lenders": {
+      if (!["superadmin", "closer_admin"].includes(user.role))
+        throw new Error("Access denied");
+      const rows = (p.rows as LenderImportRow[]).map((r) =>
+        lenderImportRowSchema.parse(r),
+      );
+      const plan = planLenderImport(rows, d.lenders, d.lender_contacts || []);
+      if (plan.errors.length) throw new Error(plan.errors[0].message);
+      d.lender_contacts ||= [];
+      for (const row of rows) {
+        let lender = d.lenders.find(
+          (l) => l.name.toLowerCase() === row.company.toLowerCase(),
+        );
+        if (!lender) {
+          lender = {
+            id: id(),
+            name: row.company,
+            email: row.email,
+            channel: row.channel,
+            products: row.products
+              .split(/[,;]/)
+              .map((p) => p.trim())
+              .filter(Boolean),
+            notes: row.notes,
+          };
+          d.lenders.push(lender);
+        }
+        if (row.email && !d.lender_contacts.some((c) => c.email === row.email))
+          d.lender_contacts.push({
+            email: row.email,
+            lender_id: lender.id,
+            name: row.contact,
+          });
+      }
+      break;
+    }
+    case "campaign_asset": {
+      if (!admin) throw new Error("Access denied");
+      d.campaign_assets = [
+        p.asset as CampaignAsset,
+        ...(d.campaign_assets || []),
+      ];
+      break;
+    }
+    case "campaign_template": {
+      if (!admin) throw new Error("Access denied");
+      const existing = d.email_templates?.find((t) => t.id === p.id);
+      const template = {
+        ...p,
+        version: (existing?.version || 0) + 1,
+        updated_at: now,
+        archived_at: null,
+      } as unknown as EmailTemplate;
+      d.email_templates = [
+        template,
+        ...(d.email_templates || []).filter((t) => t.id !== template.id),
+      ];
+      break;
+    }
     case "create_lead":
     case "create_opportunity": {
       required(
@@ -220,6 +322,25 @@ export function demoAction(
       doc.reviewed_at = now;
       if (typeof p.period === "string") doc.period = p.period;
       activity(`${doc.name}: ${doc.status}`);
+      break;
+    }
+    case "underwriting_settings": {
+      if (user.role !== "superadmin") throw new Error("Superadmin required");
+      const version = (d.underwriting_settings?.version || 1) + 1;
+      d.underwriting_settings = {
+        ...(p as unknown as import("./underwriting").UnderwritingSettings),
+        id: 1,
+        version,
+      };
+      d.underwriting_setting_versions = [
+        {
+          version,
+          model: String(p.model),
+          updated_at: now,
+          updated_by: user.id,
+        },
+        ...(d.underwriting_setting_versions || []),
+      ];
       break;
     }
     case "initialize_document_checklist": {
@@ -433,12 +554,14 @@ export function demoAction(
           (o) => !o.campaign_id && o.verification === "valid",
         ).length,
       };
-      renderTemplate(c.subject + c.body, {
-        name: "Alex",
-        company: "Example",
-        application_url: "url",
-        unsubscribe_url: "url",
-      });
+      renderTemplate(c.subject + c.body, campaignPreviewValues);
+      const template = d.email_templates?.find((t) => t.id === p.template_id);
+      c.template_id = template?.id;
+      c.template_version = template?.version;
+      c.asset_snapshot =
+        d.campaign_assets?.filter((a) => template?.asset_ids.includes(a.id)) ||
+        [];
+      c.requires_application = requiresApplication(c.subject, c.body, c.steps);
       d.campaigns.unshift(c);
       break;
     }
