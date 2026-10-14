@@ -288,27 +288,54 @@ export function DocumentReview({
             <div>
               {!incorporated ? (
                 <>
-                  <label className="field">
-                    {t(locale, "Requisito del expediente", "Case requirement")}
-                    <select
-                      value={target}
-                      disabled={busy || !context.editable}
-                      onChange={(e) => setTarget(e.target.value)}
-                    >
-                      {context.documents.map((d) => (
-                        <option key={d.id} value={d.id}>
-                          {d.name} · {d.period} · {d.status}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <p className="muted">
-                    {t(
-                      locale,
-                      "El archivo quedará recibido. Después podrás revisar y aprobar su contenido.",
-                      "The file will be marked received. You can then review and approve it.",
-                    )}
-                  </p>
+                  {!context.documents.length && (
+                    <>
+                      <p role="status">
+                        {t(
+                          locale,
+                          "Esta oportunidad todavía no tiene requisitos documentales. Crea el checklist para poder relacionar los archivos.",
+                          "This opportunity has no document requirements yet. Create its checklist to link files.",
+                        )}
+                      </p>
+                      {context.editable && (
+                        <DocumentChecklistSetup
+                          opportunityId={context.opportunity.id}
+                          locale={locale}
+                          act={act}
+                          onPrepared={() => setReload((n) => n + 1)}
+                        />
+                      )}
+                    </>
+                  )}
+                  {!!context.documents.length && (
+                    <>
+                      <label className="field">
+                        {t(
+                          locale,
+                          "Requisito del expediente",
+                          "Case requirement",
+                        )}
+                        <select
+                          value={target}
+                          disabled={busy || !context.editable}
+                          onChange={(e) => setTarget(e.target.value)}
+                        >
+                          {context.documents.map((d) => (
+                            <option key={d.id} value={d.id}>
+                              {d.name} · {d.period} · {d.status}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <p className="muted">
+                        {t(
+                          locale,
+                          "El archivo quedará recibido. Después podrás revisar y aprobar su contenido.",
+                          "The file will be marked received. You can then review and approve it.",
+                        )}
+                      </p>
+                    </>
+                  )}
                   {context.editable && (
                     <form
                       onSubmit={async (e) => {
@@ -502,5 +529,56 @@ export function DocumentReview({
         </>
       )}
     </Modal>
+  );
+}
+
+export function DocumentChecklistSetup({
+  opportunityId,
+  locale,
+  act,
+  onPrepared,
+}: {
+  opportunityId: string;
+  locale: Locale;
+  act: Action;
+  onPrepared?: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  return (
+    <div>
+      {error && (
+        <p className="error-banner" role="alert">
+          {error}
+        </p>
+      )}
+      <button
+        type="button"
+        className="button"
+        disabled={busy}
+        onClick={async () => {
+          setBusy(true);
+          setError("");
+          try {
+            await act("initialize_document_checklist", {
+              opportunity_id: opportunityId,
+            });
+            onPrepared?.();
+          } catch (e) {
+            setError((e as Error).message);
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        {busy
+          ? t(locale, "Preparando…", "Preparing…")
+          : t(
+              locale,
+              "Crear checklist de aplicación y extractos",
+              "Create application and statement checklist",
+            )}
+      </button>
+    </div>
   );
 }

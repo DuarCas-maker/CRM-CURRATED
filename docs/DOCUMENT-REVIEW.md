@@ -13,6 +13,7 @@ La migración agrega referencias entre los adjuntos y los documentos, evidencia 
 1. En Conversaciones, abrir un cliente y un correo con PDF, JPG o PNG. Los hilos sin expediente deben asociarse primero mediante el recorrido existente.
 2. Elegir «Incorporar y revisar» / «Revisar adjunto». Comprobar empresa, fecha e identificador de la oportunidad y la vista previa.
 3. Seleccionar el requisito del checklist. Se puede agregar un documento adicional opcional. El adjunto solo puede incorporarse al expediente de su conversación: no se trasladan archivos entre oportunidades automáticamente.
+   Si el expediente importado muestra Documentos 0/0, usar «Crear checklist de aplicación y extractos» desde Documentos o desde el diálogo del adjunto. Esta acción crea únicamente requisitos pendientes, sin incorporar ni aprobar archivos; los reintentos conservan los documentos existentes.
 4. Incorporar el archivo. Queda recibido; a continuación se abre la revisión del documento incorporado.
 5. Comprobar período, contenido y empresa; marcar la casilla de revisión y aprobar, pedir corrección con notas o mantener pendiente. Los períodos de extractos no pueden duplicarse dentro del expediente.
 6. Abrir Documentos en la oportunidad: comprobar estado, notas, responsable y fecha. El contador incluye únicamente documentos obligatorios.
@@ -22,7 +23,7 @@ La migración agrega referencias entre los adjuntos y los documentos, evidencia 
 
 La vista previa compara la huella de los bytes mostrados con la versión del checklist. El servidor vuelve a comprobar esa versión al guardar. Solo PDF, JPG y PNG hasta 20 MB se incorporan; HTML y SVG no se previsualizan como documentos.
 
-La demostración incluye un adjunto ficticio de Evergreen Logistics para recorrer incorporación, corrección y aprobación sin descargar archivos ni modificar datos reales. Sus cambios se reinician al recargar.
+La demostración incluye un expediente vacío y un adjunto ficticio de Evergreen Logistics para recorrer creación del checklist, incorporación, corrección y aprobación sin descargar archivos ni modificar datos reales. Sus cambios se reinician al recargar.
 
 ## Validación
 

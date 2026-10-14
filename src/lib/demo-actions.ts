@@ -222,6 +222,17 @@ export function demoAction(
       activity(`${doc.name}: ${doc.status}`);
       break;
     }
+    case "initialize_document_checklist": {
+      if(!o) throw new Error("Case required");
+      if(d.documents.some(doc=>doc.opportunity_id===o.id))break;
+      d.documents.push({id:id(),opportunity_id:o.id,name:"Signed application",kind:"application",period:"",required:true,status:"pending",source:"checklist",created_at:now});
+      const date=new Date(now);
+      for(let offset=1;offset<=4;offset++){
+        const period=new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth()-offset,1)).toISOString().slice(0,7);
+        d.documents.push({id:id(),opportunity_id:o.id,name:`Bank statement — ${period}`,kind:"bank_statement",period,required:true,status:"pending",source:"checklist",created_at:now});
+      }
+      activity("Document checklist initialized");break;
+    }
     case "incorporate_document": {
       const attachment = d.attachments?.find((a) => a.id === p.source_id);
       const message = d.messages.find((m) => m.id === attachment?.message_id);

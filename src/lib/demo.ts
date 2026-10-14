@@ -241,7 +241,7 @@ export function demoWorkspace(): Workspace {
         area: o.handed_off_at ? "closer" : "seller",
       })),
     documents: opportunities.flatMap((o) =>
-      [
+      o.id === "o1" ? [] : [
         "Signed application",
         "Bank statement — June",
         "Bank statement — July",

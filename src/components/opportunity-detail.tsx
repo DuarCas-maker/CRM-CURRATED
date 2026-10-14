@@ -1,7 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
-import { DocumentReview } from "./document-review";
+import { DocumentReview, DocumentChecklistSetup } from "./document-review";
 import { MailComposer, MailSendStatus } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
 import { MailBody } from "./mail-bubble";
@@ -357,6 +357,10 @@ export function OpportunityDetail({
                   "required documents approved",
                 )}
               </p>
+              {!docs.length && <>
+                <p>{t(locale,"Este expediente aún no tiene un checklist. Prepáralo y luego usa Incorporar y revisar junto a los adjuntos de Correo e histórico para relacionarlos.","This case has no checklist yet. Create one, then use Add and review beside attachments in Mail and history to link them.")}</p>
+                {editable && <DocumentChecklistSetup opportunityId={o.id} locale={locale} act={act}/>}
+              </>}
               {docs.map((d) => (
                 <div className="document-row" key={d.id}>
                   <span
