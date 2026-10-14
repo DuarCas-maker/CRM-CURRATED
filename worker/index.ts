@@ -23,6 +23,7 @@ import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
 import { gmailSyncMode } from "../src/lib/gmail-sync";
 import { scheduleMailboxJobs } from "./gmail-schedule";
 import { reconcileEngagement, linkEngagementThread } from "./gmail-engagement";
+import { reconcileImportAttachments } from "./gmail-import-scope";
 import { setTimeout as delay } from "node:timers/promises";
 import { writeFile } from "node:fs/promises";
 let stopping = false;
@@ -191,6 +192,9 @@ while (!stopping) {
     }, 60000);
     try {
       switch (job.kind) {
+        case "gmail_attachment_reconcile":
+          await reconcileImportAttachments(job.payload);
+          break;
         case "gmail_engagement_reconcile":
           await reconcileEngagement(job.payload);
           break;

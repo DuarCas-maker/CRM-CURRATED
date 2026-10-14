@@ -1,5 +1,15 @@
 # Gmail histórico: implementación y activación
 
+## Adjuntos de mensajes posteriores al análisis (migración 026)
+
+El candidato podía conservar únicamente el primer correo del hilo y sus contadores originales. Los archivos de respuestas posteriores estaban en `gmail_archive_messages`, pero el selector y la copia exigían que esos mensajes también pertenecieran al análisis original en `gmail_run_messages`. El resultado era «0 adjuntos encontrados» pese a disponer de los archivos en el archivo del CRM. Los directorios continuos sin membresía de análisis tenían la misma limitación.
+
+La migración **026_gmail_import_thread_attachments.sql** usa los hilos Gmail exactos de la evidencia del participante dentro de su propia cuenta. Ese mismo alcance se usa para listar, guardar la selección, encolar copias e incorporar todos los mensajes de la conversación, incluidos los de otro remitente o alias que respondió en el mismo hilo. No agrupa hilos por asunto ni cruza cuentas. Se mantienen los permisos, la selección explícita, la exclusión orientativa de imágenes insertadas y el límite de 20 MB por archivo.
+
+La sincronización y los análisis nuevos actualizan los contadores del hilo completo. Una tarea persistente repara los contadores existentes en lotes de 50, con reintentos idempotentes. Esta tarea actualiza metadatos; no descarga ni copia documentos. Las selecciones y los archivos ya copiados se conservan.
+
+Aplicar **solo 026** sobre una base con **001–024** instaladas; no depende de la migración 025 de revisión documental. Detener temporalmente el worker anterior, aplicar el SQL completo y arrancar el worker actualizado, que reconoce el trabajo `gmail_attachment_reconcile`. No hay variables nuevas. Después, volver a abrir el selector: el total corresponde a los archivos de todos los mensajes guardados del hilo; el total seleccionado sigue dependiendo de la decisión del usuario.
+
 ## Incorporación por respuestas y pestañas (migración 024)
 
 Esta etapa sustituye la incorporación exclusivamente manual descrita más abajo. La fecha de inicio acordada es **2026-10-13 00:00 America/Bogota**, equivalente a **2026-10-13T05:00:00Z**. No cambia con la fecha de despliegue.
