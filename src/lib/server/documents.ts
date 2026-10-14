@@ -7,6 +7,24 @@ export async function storeDocument(
   source: string,
   actor: string | null,
 ) {
+  const uploaded = await uploadDocument(file, documentId, opportunityId);
+  const db = serviceClient();
+  checkDb(
+    await db.rpc("register_document", {
+      document_id: documentId,
+      path: uploaded.path,
+      content_hash: uploaded.contentHash,
+      source,
+      actor,
+    }),
+  );
+  return { received: true };
+}
+export async function uploadDocument(
+  file: File,
+  documentId: string,
+  opportunityId: string,
+) {
   if (file.size === 0 || file.size > 20 * 1024 * 1024)
     throw new HttpError(413, "File must be between 1 byte and 20 MB");
   const bytes = Buffer.from(await file.arrayBuffer());
@@ -34,14 +52,5 @@ export async function storeDocument(
   });
   if (upload.error && !upload.error.message.toLowerCase().includes("exist"))
     throw new HttpError(500, "Document upload failed");
-  checkDb(
-    await db.rpc("register_document", {
-      document_id: documentId,
-      path,
-      content_hash: contentHash,
-      source,
-      actor,
-    }),
-  );
-  return { received: true };
+  return { path, contentHash };
 }

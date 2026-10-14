@@ -26,6 +26,8 @@ import { MailboxStatus, type MailboxState } from "./mailbox-status";
 import { MailOrder } from "./mail-order";
 import { MailClientPicker, type MailClientChoice } from "./mail-client-picker";
 import { MailMessage, type MailVisibleFile } from "./mail-message";
+import { DocumentReview } from "./document-review";
+import type { DocumentSelection } from "@/lib/document-review";
 import { MailSendStatus } from "./mail-composer";
 import { MailBody } from "./mail-bubble";
 import { forwardedBody, type MailDraft } from "@/lib/mail-manager";
@@ -100,6 +102,8 @@ export function ConversationsWorkspace({
     scope?: Workspace,
   ) => void;
 }) {
+  const [documentSelection, setDocumentSelection] =
+    useState<DocumentSelection | null>(null);
   const initial = useMemo(
     () => data.opportunities.filter((o) => canSeeOpportunity(data.profile, o)),
     [data.opportunities, data.profile],
@@ -1317,18 +1321,14 @@ export function ConversationsWorkspace({
                   locale={locale}
                   teamEmails={metadata.team_emails}
                   files={files.filter((f) => f.message_id === m.id)}
+                  onFileReview={(f) =>
+                    setDocumentSelection({ source: "saved", id: f.id })
+                  }
                   legacyAttachments={legacyAttachments.filter(
                     (a) => a.message_id === m.id,
                   )}
-                  onAttachment={
-                    onAttachment
-                      ? (a, message) => {
-                          const parent = metadata.conversations.find(
-                            (c) => c.id === message.conversation_id,
-                          );
-                          if (parent) onAttachment(a, message, parent, scoped);
-                        }
-                      : undefined
+                  onAttachment={(a) =>
+                    setDocumentSelection({ source: "legacy", id: a.id })
                   }
                   onReply={chooseReply}
                   onForward={forward}
@@ -1559,6 +1559,18 @@ export function ConversationsWorkspace({
             ))}
           </div>
         </Modal>
+      )}
+      {documentSelection && (
+        <DocumentReview
+          selection={documentSelection}
+          data={effectiveData}
+          locale={locale}
+          act={act}
+          close={() => {
+            setDocumentSelection(null);
+            bump();
+          }}
+        />
       )}
     </section>
   );

@@ -107,6 +107,10 @@ export interface Document {
   created_at: string;
   storage_path?: string;
   required?: boolean;
+  content_hash?: string | null;
+  review_notes?: string;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
 }
 export interface Analysis {
   id: string;

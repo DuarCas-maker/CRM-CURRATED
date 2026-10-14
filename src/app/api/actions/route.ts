@@ -12,6 +12,7 @@ import { readBounded } from "@/lib/server/body";
 import { mailAction } from "@/lib/server/mail-actions";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
 import { sendManagedMail } from "@/lib/server/mail-manager";
+import { documentAction } from "@/lib/server/document-review";
 import { lenderDirectorySchema } from "@/lib/lender-directory";
 const envelope = z.object({
   kind: z.string().max(50),
@@ -29,6 +30,10 @@ export async function POST(request: Request) {
     );
     if (!parsed.success) throw new HttpError(400, "Invalid request");
     const { kind, payload: p, idempotency_key } = parsed.data;
+    if (["incorporate_document", "review_document"].includes(kind))
+      return Response.json({
+        result: await documentAction(kind, p, idempotency_key, db, profile.id),
+      });
     if (kind === "create_lender" || kind === "update_lender") {
       const parsedLender = lenderDirectorySchema.safeParse(p);
       if (!parsedLender.success)

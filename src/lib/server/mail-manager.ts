@@ -46,7 +46,9 @@ export async function messageFiles(
     ? checkDb(
         await db
           .from("gmail_saved_attachments")
-          .select("id,archive_message_id,name,size,status,last_error")
+          .select(
+            "id,archive_message_id,name,size,status,last_error,imported_document_id",
+          )
           .in("archive_message_id", archives),
       ) || []
     : [];
@@ -126,6 +128,8 @@ export async function messageFiles(
         name: f.name,
         href: `/api/gmail/files/${f.id}`,
         last_error: f.last_error,
+        review_source: "saved" as const,
+        imported_document_id: f.imported_document_id,
       }));
   });
 }

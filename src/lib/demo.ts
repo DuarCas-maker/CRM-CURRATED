@@ -462,6 +462,15 @@ export function demoWorkspace(): Workspace {
     ],
     messages: [
       {
+        id: "m-document-demo",
+        conversation_id: "co2",
+        direction: "inbound",
+        sender: "contact1@example.com",
+        body: "Adjunto el extracto de septiembre para completar la solicitud de Evergreen Logistics. Archivo ficticio para probar el checklist.",
+        sent_at: ago(0, 1),
+        status: "received",
+      },
+      {
         id: "m1",
         conversation_id: "co1",
         direction: "outbound",
@@ -478,6 +487,15 @@ export function demoWorkspace(): Workspace {
         body: "Hi Sofia,\n\nWe are planning to expand our kitchen and would need about $65,000. What documents do you need to get started?\n\nThanks,\nOlivia",
         sent_at: ago(0, 1),
         status: "received",
+      },
+    ],
+    attachments: [
+      {
+        id: "attachment-document-demo",
+        message_id: "m-document-demo",
+        name: "September statement — demo.pdf",
+        size: 1024,
+        imported_document_id: null,
       },
     ],
     notifications: [

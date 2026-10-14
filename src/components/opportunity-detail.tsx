@@ -1,6 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
+import { DocumentReview } from "./document-review";
 import { MailComposer, MailSendStatus } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
 import { MailBody } from "./mail-bubble";
@@ -65,6 +66,7 @@ export function OpportunityDetail({
   const [composing, setComposing] = useState(false);
   const [error, setError] = useState("");
   const [secureLink, setSecureLink] = useState("");
+  const [reviewDocument, setReviewDocument] = useState<string | null>(null);
   const name = (id: string | null) =>
     data.profiles.find((p) => p.id === id)?.name ||
     t(locale, "Sin asignar", "Unassigned");
@@ -342,6 +344,19 @@ export function OpportunityDetail({
                   "Receiving a file does not approve it. Review its contents and period.",
                 )}
               </p>
+              <p role="status">
+                {
+                  docs.filter(
+                    (d) => d.required !== false && d.status === "approved",
+                  ).length
+                }
+                /{docs.filter((d) => d.required !== false).length}{" "}
+                {t(
+                  locale,
+                  "documentos obligatorios aprobados",
+                  "required documents approved",
+                )}
+              </p>
               {docs.map((d) => (
                 <div className="document-row" key={d.id}>
                   <span
@@ -359,6 +374,14 @@ export function OpportunityDetail({
                       {d.period} · {d.source} ·{" "}
                       {dateLabel(d.created_at, locale)}
                     </small>
+                    {d.review_notes && <small>{d.review_notes}</small>}
+                    {d.reviewed_at && (
+                      <small>
+                        {t(locale, "Revisado por", "Reviewed by")}{" "}
+                        {name(d.reviewed_by || null)} ·{" "}
+                        {dateLabel(d.reviewed_at, locale, true)}
+                      </small>
+                    )}
                   </div>
                   <span
                     className={`badge ${d.status === "approved" ? "stage-funded" : "stage-documents_pending"}`}
@@ -374,7 +397,7 @@ export function OpportunityDetail({
                       d.status,
                     )}
                   </span>
-                  {d.storage_path && (
+                  {d.storage_path && !data.demo && (
                     <a
                       className="icon-button"
                       href={`/api/documents/${d.id}`}
@@ -386,28 +409,14 @@ export function OpportunityDetail({
                     </a>
                   )}
                   {editable && d.status !== "pending" && (
-                    <select
-                      aria-label={`${t(locale, "Revisión", "Review")} ${d.name}`}
-                      value={d.status}
+                    <button
+                      type="button"
+                      className="button"
                       disabled={busy}
-                      onChange={(e) =>
-                        act("review_document", {
-                          id: d.id,
-                          opportunity_id: o.id,
-                          status: e.target.value,
-                        }).catch(() => {})
-                      }
+                      onClick={() => setReviewDocument(d.id)}
                     >
-                      <option value="received">
-                        {t(locale, "Revisar", "Review")}
-                      </option>
-                      <option value="approved">
-                        {t(locale, "Aprobar", "Approve")}
-                      </option>
-                      <option value="correction">
-                        {t(locale, "Pedir corrección", "Request correction")}
-                      </option>
-                    </select>
+                      {t(locale, "Revisar documento", "Review document")}
+                    </button>
                   )}
                 </div>
               ))}
@@ -694,6 +703,15 @@ export function OpportunityDetail({
           busy={busy}
           close={() => setComposing(false)}
           opportunity={o}
+        />
+      )}
+      {reviewDocument && (
+        <DocumentReview
+          selection={{ source: "document", id: reviewDocument }}
+          data={{ ...data, profile }}
+          locale={locale}
+          act={act}
+          close={() => setReviewDocument(null)}
         />
       )}
       {modal && (

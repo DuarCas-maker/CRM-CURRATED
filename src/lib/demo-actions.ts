@@ -190,7 +190,7 @@ export function demoAction(
         name: text("name"),
         kind: text("kind"),
         period: text("period"),
-        required: p.required !== "false",
+        required: p.required !== "false" && p.required !== false,
         status: "pending",
         source: "checklist",
         created_at: now,
@@ -205,12 +205,48 @@ export function demoAction(
     }
     case "review_document": {
       const doc = d.documents.find(
-        (doc) => doc.id === p.id && doc.opportunity_id === o?.id,
+        (doc) =>
+          doc.id === (p.document_id || p.id) && doc.opportunity_id === o?.id,
       );
       if (!doc || doc.status === "pending")
         throw new Error("Document not received");
       doc.status = text("status") as typeof doc.status;
+      if (p.status === "correction" && !text("notes").trim())
+        throw new Error("Explain the requested correction");
+      if (p.expected_hash && p.expected_hash !== (doc.content_hash || "demo"))
+        throw new Error("Document changed; reopen the review");
+      doc.review_notes = text("notes");
+      doc.reviewed_by = user.id;
+      doc.reviewed_at = now;
+      if (typeof p.period === "string") doc.period = p.period;
       activity(`${doc.name}: ${doc.status}`);
+      break;
+    }
+    case "incorporate_document": {
+      const attachment = d.attachments?.find((a) => a.id === p.source_id);
+      const message = d.messages.find((m) => m.id === attachment?.message_id);
+      const conversation = d.conversations.find(
+        (c) => c.id === message?.conversation_id,
+      );
+      const doc = d.documents.find(
+        (d) => d.id === p.document_id && d.opportunity_id === o?.id,
+      );
+      if (!attachment || !doc || conversation?.opportunity_id !== o?.id)
+        throw new Error("Attachment belongs to another opportunity");
+      if (
+        attachment.imported_document_id &&
+        attachment.imported_document_id !== doc.id
+      )
+        throw new Error("Attachment already incorporated");
+      attachment.imported_document_id = doc.id;
+      doc.status = "received";
+      doc.source = "conversation";
+      doc.content_hash = "demo";
+      doc.storage_path = "demo";
+      doc.review_notes = "";
+      doc.reviewed_by = null;
+      doc.reviewed_at = null;
+      activity(`Document received: ${doc.name}`);
       break;
     }
     case "upload_demo": {

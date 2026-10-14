@@ -73,6 +73,8 @@ Debe ejecutarse la prueba de aceptación con una muestra de la base real antes d
 
 ## Formulario, archivos y traspaso
 
+**Revisión documental desde conversaciones (migración 025):** incorporar adjuntos al checklist de su oportunidad, revisar PDF/imágenes, registrar notas y aprobar la versión exacta. Aplicar 025 después de 001–024 y antes de desplegar la web. El recorrido de prueba y sus límites están en [DOCUMENT-REVIEW.md](docs/DOCUMENT-REVIEW.md).
+
 La estructura inicial recoge empresa, propietarios, firma electrónica escrita y consentimiento. **Falta cotejarla con el formulario existente de Curated Financial, que no se proporcionó.** No se ha inventado el texto contractual ni se recoge SSN en esta versión. No habilitar recepción real hasta confirmar campos, firma y declaraciones del formulario de referencia.
 
 Después de esa validación, definir `FORM_DECLARATION_TEXT`, `FORM_DECLARATION_VERSION` y `PUBLIC_FORM_ENABLED=true`. El mismo control bloquea la activación de campañas que llevarían a un formulario todavía deshabilitado.

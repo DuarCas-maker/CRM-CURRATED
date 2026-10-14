@@ -3059,3 +3059,10 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--charcoal); }
     padding-bottom: 14px;
   }
 }
+/* Document review shares the same case and preview on narrow screens. */
+.document-review-layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(230px, 1fr); gap: 20px; }
+.document-review-preview { min-width: 0; max-height: 65vh; overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.document-review-preview img { width: 100%; height: auto; }
+.document-review-confirm { display: flex; align-items: flex-start; gap: 8px; margin: 16px 0; font-size: 13px; }
+.document-review-layout details { margin-top: 16px; font-size: 12px; overflow-wrap: anywhere; }
+@media(max-width: 760px) { .document-review-layout { grid-template-columns: 1fr; } .document-review-preview { max-height: 42vh; } }

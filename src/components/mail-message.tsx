@@ -21,6 +21,8 @@ export type MailVisibleFile = {
   name: string;
   href: string;
   last_error?: string | null;
+  review_source?: "saved";
+  imported_document_id?: string | null;
 };
 export function MailMessage({
   message,
@@ -30,6 +32,7 @@ export function MailMessage({
   files,
   legacyAttachments = [],
   onAttachment,
+  onFileReview,
   onReply,
   onForward,
   onOriginal,
@@ -44,6 +47,7 @@ export function MailMessage({
   onForward: (m: Message) => void;
   onOriginal: (m: Message) => void;
   canReplyAll?: boolean;
+  onFileReview?: (file: MailVisibleFile) => void;
   legacyAttachments?: NonNullable<Workspace["attachments"]>;
   onAttachment?: (
     a: NonNullable<Workspace["attachments"]>[number],
@@ -86,12 +90,21 @@ export function MailMessage({
         {!!files.length && (
           <div className="cw-message-files">
             {files.map((f) => (
-              <a key={f.id} href={f.href} title={f.last_error || undefined}>
-                <Paperclip size={12} />
-                {f.name}
-                {f.last_error &&
-                  ` · ${t(locale, "Copia pendiente", "Copy pending")}`}
-              </a>
+              <span key={f.id}>
+                <a key={f.id} href={f.href} title={f.last_error || undefined}>
+                  <Paperclip size={12} />
+                  {f.name}
+                  {f.last_error &&
+                    ` · ${t(locale, "Copia pendiente", "Copy pending")}`}
+                </a>
+                {f.review_source && onFileReview && (
+                  <button type="button" onClick={() => onFileReview(f)}>
+                    {f.imported_document_id
+                      ? t(locale, "Revisar documento", "Review document")
+                      : t(locale, "Incorporar y revisar", "Add and review")}
+                  </button>
+                )}
+              </span>
             ))}
           </div>
         )}
@@ -101,7 +114,7 @@ export function MailMessage({
               <button
                 key={a.id}
                 type="button"
-                disabled={!!a.imported_document_id || !onAttachment}
+                disabled={!onAttachment}
                 onClick={() => onAttachment?.(a, message)}
               >
                 <Paperclip size={12} />
