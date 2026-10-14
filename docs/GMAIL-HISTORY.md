@@ -1,5 +1,21 @@
 # Gmail histórico: implementación y activación
 
+## Incorporación por respuestas y pestañas (migración 024)
+
+Esta etapa sustituye la incorporación exclusivamente manual descrita más abajo. La fecha de inicio acordada es **2026-10-13 00:00 America/Bogota**, equivalente a **2026-10-13T05:00:00Z**. No cambia con la fecha de despliegue.
+
+- Configuración muestra **Pendientes** e **Incorporados**, con contadores y filtros. La lista reúne los contactos de la cuenta seleccionada entre sus análisis históricos y la sincronización continua, sin repetir una dirección dentro de la cuenta. Ambas pestañas se ordenan por el último mensaje recibido; los envíos no cambian esa fecha y los contactos sin recibidos quedan al final. Los registros en cola permanecen en Pendientes hasta completar su incorporación.
+- Una respuesta humana con interés desde la fecha de inicio incorpora al lead a Conversaciones y Oportunidades. Se consideran interés las solicitudes de información, tasas, aplicación, documentos o contacto futuro. Las expresiones ambiguas y las señales contradictorias requieren revisión en Pendientes. La detección usa reglas conservadoras en español e inglés sobre el texto nuevo del remitente, sin el asunto, citas ni historial; no usa servicios de IA externos.
+- El interés anterior a la fecha de inicio no incorpora automáticamente contactos históricos pendientes. Se conserva y requiere aprobación manual o una respuesta nueva con interés. Los remitentes de entrega, incluidos `mailer-daemon@googlemail.com`, los rebotes, campañas entrantes, respuestas automáticas y vacaciones no activan casos.
+- Si un registro ya incorporado contiene una respuesta ambigua, «Confirmar interés revisado» permite al administrador aprobar su interés después de abrir la evidencia, sin reimportar ni duplicar la oportunidad. La decisión manual queda registrada y exige un correo humano del cliente.
+- Se reutiliza una oportunidad abierta de la misma persona/empresa, conservando su propietario. Si existen varias, se requiere asociación manual. Si no hay una abierta, se crea otra en etapa `replied`, con la clasificación comercial pendiente; una empresa desconocida se identifica como «Por clasificar», sin inventar su nombre. La respuesta permite acceso a la oportunidad sin falsificar la verificación Bouncer del contacto ni habilitar campañas a direcciones sin verificar.
+- Después de incorporar, el hilo completo y los envíos posteriores permanecen disponibles. Un rechazo explícito posterior del cliente marca la oportunidad como perdida y registra su evidencia; nunca elimina la conversación. Los mensajes del equipo y lenders requieren una respuesta humana y un caso identificable por vínculo existente, referencia RFC o participante cliente inequívoco; nunca crean una oportunidad por sí solos ni un rechazo suyo cierra la oportunidad del cliente.
+- Al renovar una oportunidad cerrada desde el mismo hilo de Gmail, la conversación anterior permanece en su caso. La nueva usa una clave interna distinta y mantiene el ID físico de Gmail para responder correctamente. Los mensajes y tareas conservan sus asociaciones por caso y proceso.
+
+Para activar: detener temporalmente el worker anterior, aplicar una sola vez **024_reply_engagement.sql** después de **001–023**, y desplegar web y worker de esta versión. Mantener `GMAIL_HISTORY_ENABLED=true` en ambos y conservar el modo de sincronización existente. No repetir instaladores ni migraciones ya instaladas. Esta implementación local no aplica SQL ni despliega en producción.
+
+La migración encola una reconciliación persistente del archivo cifrado y de mensajes existentes en lotes de 25. El worker clasifica la evidencia localmente y reconstruye la visibilidad de las conversaciones actuales; durante ese recorrido la bandeja se va completando. Los contactos y correos originales se conservan. Las incorporaciones nuevas recuperan todo su hilo mediante trabajos paginados; un fallo no adelanta el cursor. Las pruebas usan bases PostgreSQL aisladas y llamadas de integración simuladas, sin enviar correos reales.
+
 Desde la migración **021**, la recepción de correo nuevo es independiente de aprobar el histórico. Para esta versión, seguir [MAIL-MANAGER.md](MAIL-MANAGER.md); este documento conserva el recorrido y los límites de la importación histórica.
 
 ## Lo encontrado y lo implementado

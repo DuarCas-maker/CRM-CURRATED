@@ -23,6 +23,13 @@ export async function GET(
         .single(),
     )!;
     const paramsUrl = new URL(request.url).searchParams;
+    const selectedIds = paramsUrl.has("ids")
+      ? z
+          .array(z.uuid())
+          .min(1)
+          .max(100)
+          .parse(paramsUrl.get("ids")!.split(","))
+      : null;
     let query = db
       .from("messages")
       .select("*")
@@ -30,6 +37,7 @@ export async function GET(
       .order("sent_at", { ascending: false })
       .order("id", { ascending: false })
       .limit(100);
+    if (selectedIds) query = query.in("id", selectedIds);
     const search = (paramsUrl.get("q") || "")
       .replace(/[%,().\\]/g, " ")
       .slice(0, 150)
@@ -47,7 +55,7 @@ export async function GET(
       );
     }
     const messages = checkDb(await query) || [];
-    if (gmailHistoryEnabled()) {
+    {
       const labels = await teamLabels(messages.map((m) => m.sender));
       for (const message of messages)
         message.sender_team = labels.get(message.sender.toLowerCase());
@@ -69,21 +77,20 @@ export async function GET(
         attachments,
         files: gmailHistoryEnabled() ? await messageFiles(db, messages) : [],
         // The user's RLS-protected conversation lookup above authorizes this exact case/thread.
-        sends: gmailHistoryEnabled()
-          ? checkDb(
-              await serviceClient()
-                .from("outbox")
-                .select(
-                  "id,conversation_id,reply_message_id,account_id,to_email,cc_emails,body,subject,status,message_id_header,gmail_message_id,created_at,sent_at,last_error",
-                )
-                .eq("opportunity_id", conversation.opportunity_id)
-                .eq("conversation_id", id)
-                .not("reply_message_id", "is", null)
-                .order("created_at", { ascending: false })
-                .limit(100),
-            ) || []
-          : [],
-        hasMore: messages.length === 100,
+        sends:
+          checkDb(
+            await serviceClient()
+              .from("outbox")
+              .select(
+                "id,conversation_id,reply_message_id,account_id,to_email,cc_emails,body,subject,status,message_id_header,gmail_message_id,created_at,sent_at,last_error",
+              )
+              .eq("opportunity_id", conversation.opportunity_id)
+              .eq("conversation_id", id)
+              .not("reply_message_id", "is", null)
+              .order("created_at", { ascending: false })
+              .limit(100),
+          ) || [],
+        hasMore: !selectedIds && messages.length === 100,
       },
       { headers: { "Cache-Control": "no-store" } },
     );

@@ -427,7 +427,7 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
       /evidence required/,
     );
 
-    // Known contacts still need manual association for a new thread; ownership stays intact.
+    // Outgoing mail cannot activate a new thread. Explicit association still preserves ownership.
     await db.query("update mail_accounts set sync_enabled=true where id=$1", [
       account,
     ]);
@@ -469,7 +469,8 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
     );
     const review = (
       await db.query<{ id: string }>(
-        "select id from mail_review where gmail_message_id='m2'",
+        "insert into mail_review(account_id,gmail_message_id,reason) values($1,'m2','Explicit manual association fixture') returning id",
+        [account],
       )
     ).rows[0].id;
     await asUser(admin);
@@ -535,7 +536,8 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
     await db.query("select gmail_associate_continuous($1)", [duplicate]);
     const duplicateReview = (
       await db.query<{ id: string }>(
-        "select id from mail_review where gmail_message_id='copy-m2'",
+        "insert into mail_review(account_id,gmail_message_id,reason) values($1,'copy-m2','Explicit manual association fixture') returning id",
+        [secondAccount],
       )
     ).rows[0].id;
     await asUser(admin);

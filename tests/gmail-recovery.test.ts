@@ -272,6 +272,7 @@ test("archive quota recovery retains its cursor and messages, clears stale error
           run.lease_token = randomUUID();
           return Response.json([{ ...run }]);
         }
+        if (resource === "rpc/gmail_record_reply" || resource === "rpc/gmail_associate_continuous") return Response.json(null);
         if (resource === "rpc/gmail_store_message") {
           assert.equal(body.lease, run.lease_token);
           const id = body.entry.gmail_message_id;

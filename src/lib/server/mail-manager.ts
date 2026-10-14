@@ -177,7 +177,13 @@ export async function sendManagedMail(
               input: { ...common, targets: input.targets },
             }),
           )
-        : checkDb(await db.rpc("queue_mail_email", common));
+        : input.mode === "reply" && input.lender_id
+          ? checkDb(
+              await db.rpc("queue_lender_reply", {
+                input: { ...common, lender: input.lender_id },
+              }),
+            )
+          : checkDb(await db.rpc("queue_mail_email", common));
   if (input.draft_id)
     checkDb(
       await db

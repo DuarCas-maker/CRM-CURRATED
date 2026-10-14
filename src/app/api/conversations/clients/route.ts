@@ -19,7 +19,7 @@ export async function GET(request: Request) {
       .parse(params.get("page") || 0);
     const base = () =>
       db
-        .from("opportunity_workspace")
+        .from("opportunity_inbox")
         .select(columns, { count: "exact" })
         .is("archived_at", null)
         .order("updated_at", { ascending: false })

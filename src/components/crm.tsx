@@ -53,6 +53,8 @@ import {
 } from "./ui";
 import { OpportunityDetail } from "./opportunity-detail";
 import { ImportWizard } from "./import-wizard";
+import { LenderForm } from "./lender-form";
+import { LenderDirectory } from "./lender-directory";
 import { teamLabel } from "@/lib/gmail-team";
 import { demoAction } from "@/lib/demo-actions";
 import { Integrations } from "./integrations";
@@ -369,7 +371,13 @@ export default function CRM({ initial }: { initial: Workspace }) {
               "Cambio aplicado en la demostración",
               "Change applied in this demo",
             )
-          : ["compose_email", "compose_lenders", "reply", "mail_send"].includes(kind)
+          : [
+                "compose_email",
+                "compose_lenders",
+                "reply",
+                "lender_reply",
+                "mail_send",
+              ].includes(kind)
             ? t(
                 locale,
                 "Correo en cola. Consulta el estado de envíos.",
@@ -759,7 +767,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
           </div>
         </div>
       </aside>
-      <div className={`main-shell ${view === "inbox" && !activeOpportunity ? "conversations-shell" : ""}`}>
+      <div
+        className={`main-shell ${view === "inbox" && !activeOpportunity ? "conversations-shell" : ""}`}
+      >
         <header className="topbar">
           <div className="breadcrumb">
             <button
@@ -856,7 +866,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
             </select>
           </div>
         )}
-        <main className={`content ${view === "inbox" && !activeOpportunity ? "conversations-content" : ""}`}>
+        <main
+          className={`content ${view === "inbox" && !activeOpportunity ? "conversations-content" : ""}`}
+        >
           {error && (
             <div className="error-banner" role="alert">
               <AlertCircle size={18} />
@@ -883,101 +895,108 @@ export default function CRM({ initial }: { initial: Workspace }) {
             />
           ) : (
             <>
-              {view !== "inbox" && <div className="page-heading">
-                <div>
-                  <div className="eyebrow">
-                    {view === "overview"
-                      ? t(
-                          locale,
-                          "TU CENTRO DE OPERACIONES",
-                          "YOUR OPERATIONS HUB",
-                        )
-                      : "CURATED FINANCIAL"}
+              {view !== "inbox" && (
+                <div className="page-heading">
+                  <div>
+                    <div className="eyebrow">
+                      {view === "overview"
+                        ? t(
+                            locale,
+                            "TU CENTRO DE OPERACIONES",
+                            "YOUR OPERATIONS HUB",
+                          )
+                        : "CURATED FINANCIAL"}
+                    </div>
+                    <h1>{t(locale, ...titles[view])}</h1>
+                    <p>
+                      {view === "overview"
+                        ? t(
+                            locale,
+                            `Tienes ${overdue.length} tareas vencidas y ${unread} respuesta pendiente de atención.`,
+                            `You have ${overdue.length} overdue tasks and ${unread} reply awaiting attention.`,
+                          )
+                        : t(
+                            locale,
+                            "Cada caso, con un responsable y un próximo paso.",
+                            "Every case, with an owner and a next step.",
+                          )}
+                    </p>
                   </div>
-                  <h1>{t(locale, ...titles[view])}</h1>
-                  <p>
-                    {view === "overview"
-                      ? t(
-                          locale,
-                          `Tienes ${overdue.length} tareas vencidas y ${unread} respuesta pendiente de atención.`,
-                          `You have ${overdue.length} overdue tasks and ${unread} reply awaiting attention.`,
-                        )
-                      : t(
-                          locale,
-                          "Cada caso, con un responsable y un próximo paso.",
-                          "Every case, with an owner and a next step.",
-                        )}
-                  </p>
-                </div>
-                <div className="heading-actions">
-                  {data.gmail_history_enabled &&
-                    ["pipeline", "inbox"].includes(view) && (
-                      <button
-                        className="button primary"
-                        onClick={() => setComposing(true)}
-                      >
-                        <Mail size={16} />
-                        {t(locale, "Nuevo correo", "New email")}
-                      </button>
-                    )}
-                  {["overview", "pipeline", "leads"].includes(view) && (
-                    <>
-                      {isAdmin && (
-                        <button
-                          className="button"
-                          onClick={() => setModal("import")}
-                        >
-                          <Upload size={16} />
-                          {t(locale, "Importar leads", "Import leads")}
-                        </button>
-                      )}
-                      {["superadmin", "seller_admin", "seller"].includes(
-                        profile.role,
-                      ) && (
+                  <div className="heading-actions">
+                    {data.gmail_history_enabled &&
+                      ["pipeline", "inbox"].includes(view) && (
                         <button
                           className="button primary"
-                          onClick={() =>
-                            setModal(view === "leads" ? "lead" : "opportunity")
-                          }
+                          onClick={() => setComposing(true)}
                         >
-                          <Plus size={17} />
-                          {view === "leads"
-                            ? t(locale, "Nuevo lead", "New lead")
-                            : t(locale, "Nueva oportunidad", "New opportunity")}
+                          <Mail size={16} />
+                          {t(locale, "Nuevo correo", "New email")}
                         </button>
                       )}
-                    </>
-                  )}
-                  {view === "campaigns" && isAdmin && (
-                    <button
-                      className="button primary"
-                      onClick={() => setModal("campaign")}
-                    >
-                      <Plus size={17} />
-                      {t(locale, "Crear campaña", "Create campaign")}
-                    </button>
-                  )}
-                  {view === "lenders" && closerAdmin && (
-                    <button
-                      className="button primary"
-                      onClick={() => setModal("lender")}
-                    >
-                      <Plus size={17} />
-                      {t(locale, "Agregar lender", "Add lender")}
-                    </button>
-                  )}
-                  {view === "tasks" && (
-                    <button
-                      className="button primary"
-                      onClick={() => setModal("task")}
-                    >
-                      <Plus size={17} />
-                      {t(locale, "Nueva tarea", "New task")}
-                    </button>
-                  )}
+                    {["overview", "pipeline", "leads"].includes(view) && (
+                      <>
+                        {isAdmin && (
+                          <button
+                            className="button"
+                            onClick={() => setModal("import")}
+                          >
+                            <Upload size={16} />
+                            {t(locale, "Importar leads", "Import leads")}
+                          </button>
+                        )}
+                        {["superadmin", "seller_admin", "seller"].includes(
+                          profile.role,
+                        ) && (
+                          <button
+                            className="button primary"
+                            onClick={() =>
+                              setModal(
+                                view === "leads" ? "lead" : "opportunity",
+                              )
+                            }
+                          >
+                            <Plus size={17} />
+                            {view === "leads"
+                              ? t(locale, "Nuevo lead", "New lead")
+                              : t(
+                                  locale,
+                                  "Nueva oportunidad",
+                                  "New opportunity",
+                                )}
+                          </button>
+                        )}
+                      </>
+                    )}
+                    {view === "campaigns" && isAdmin && (
+                      <button
+                        className="button primary"
+                        onClick={() => setModal("campaign")}
+                      >
+                        <Plus size={17} />
+                        {t(locale, "Crear campaña", "Create campaign")}
+                      </button>
+                    )}
+                    {view === "lenders" && closerAdmin && (
+                      <button
+                        className="button primary"
+                        onClick={() => setModal("lender")}
+                      >
+                        <Plus size={17} />
+                        {t(locale, "Agregar lender", "Add lender")}
+                      </button>
+                    )}
+                    {view === "tasks" && (
+                      <button
+                        className="button primary"
+                        onClick={() => setModal("task")}
+                      >
+                        <Plus size={17} />
+                        {t(locale, "Nueva tarea", "New task")}
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-              }
+              )}
               {["overview", "reports"].includes(view) && (
                 <div className="metrics">
                   <Metric
@@ -1716,53 +1735,22 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   )}
                 </div>
               )}
-              {view === "lenders" &&
-                data.gmail_history_enabled &&
-                !data.demo && (
-                  <LenderContacts
-                    data={data}
-                    locale={locale}
-                    act={act}
-                    busy={busy}
-                  />
-                )}
               {view === "lenders" && (
-                <div className="lender-grid">
-                  {data.lenders.map((l) => (
-                    <section className="panel lender-card" key={l.id}>
-                      <div className="lender-logo">
-                        <Landmark size={24} />
-                      </div>
-                      <h2>{l.name}</h2>
-                      <div className="product-tags">
-                        {l.products.map((p) => (
-                          <span key={p}>{p}</span>
-                        ))}
-                      </div>
-                      <dl>
-                        <dt>
-                          {t(
-                            locale,
-                            "Canal de presentación",
-                            "Submission channel",
-                          )}
-                        </dt>
-                        <dd>{l.channel}</dd>
-                        <dt>{t(locale, "Contacto", "Contact")}</dt>
-                        <dd>{l.email}</dd>
-                      </dl>
-                      <p>{l.notes}</p>
-                      {closerAdmin && (
-                        <button
-                          className="button"
-                          onClick={() => setModal(`lender:${l.id}`)}
-                        >
-                          {t(locale, "Editar lender", "Edit lender")}
-                        </button>
-                      )}
-                    </section>
-                  ))}
-                </div>
+                <LenderDirectory
+                  data={data}
+                  locale={locale}
+                  canEdit={closerAdmin}
+                  edit={(id) => setModal(`lender:${id}`)}
+                >
+                  {data.gmail_history_enabled && !data.demo && (
+                    <LenderContacts
+                      data={data}
+                      locale={locale}
+                      act={act}
+                      busy={busy}
+                    />
+                  )}
+                </LenderDirectory>
               )}
               {view === "reports" && (
                 <>
@@ -2425,56 +2413,18 @@ export default function CRM({ initial }: { initial: Workspace }) {
               );
             })()}
           {(modal === "lender" || editingLender) && (
-            <form
-              onSubmit={(e) =>
-                submit(
-                  e,
-                  editingLender ? "update_lender" : "create_lender",
-                  editingLender ? { id: editingLender.id } : {},
-                )
+            <LenderForm
+              key={editingLender?.id || "new-lender"}
+              lender={editingLender}
+              locale={locale}
+              busy={busy}
+              submit={(e, extras) =>
+                submit(e, editingLender ? "update_lender" : "create_lender", {
+                  ...extras,
+                  ...(editingLender ? { id: editingLender.id } : {}),
+                })
               }
-            >
-              <Field
-                name="name"
-                label={t(locale, "Nombre", "Name")}
-                value={editingLender?.name}
-                required
-              />
-              <Field
-                name="email"
-                label="Email"
-                type="email"
-                value={editingLender?.email}
-                required
-              />
-              <Field
-                name="products"
-                value={editingLender?.products.join(", ")}
-                label={t(
-                  locale,
-                  "Productos (separados por coma)",
-                  "Products (comma separated)",
-                )}
-                required
-              />
-              <Field
-                name="channel"
-                label={t(locale, "Canal", "Channel")}
-                value={editingLender?.channel}
-              >
-                <option value="email">Email</option>
-                <option value="portal">Portal</option>
-              </Field>
-              <Field
-                name="notes"
-                value={editingLender?.notes}
-                label={t(locale, "Referencias y notas", "References and notes")}
-                type="textarea"
-              />
-              <div className="modal-footer">
-                <SaveButton locale={locale} busy={busy} />
-              </div>
-            </form>
+            />
           )}
           {modal === "campaign" && (
             <form

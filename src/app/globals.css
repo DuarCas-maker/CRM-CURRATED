@@ -1159,6 +1159,32 @@ tr:last-child td {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
 }
+.lender-directory-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+.lender-directory-filters .input-icon {
+  position: relative;
+  flex: 1 1 280px;
+  min-width: 0;
+}
+.lender-directory-filters select {
+  flex: 0 1 180px;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 12px;
+}
+.lender-directory-count {
+  font-size: 12px;
+  color: var(--muted);
+}
+.lender-card dd {
+  overflow-wrap: anywhere;
+}
 .campaign-card,
 .lender-card {
   padding: 25px;

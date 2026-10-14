@@ -190,6 +190,8 @@ export interface ImportBatch {
   created_at: string;
 }
 export interface Conversation {
+  gmail_delivery_thread_id?: string | null;
+  manually_incorporated_at?: string | null;
   process_id?: string | null;
   recipient_email?: string | null;
   id: string;
@@ -202,6 +204,7 @@ export interface Conversation {
   updated_at: string;
 }
 export interface Message {
+  reply_intent?: import("./mail-interest").ReplyIntent | null;
   gmail_message_id?: string;
   participants?: import("./mail-display").MailPeer[];
   internet_message_id?: string;
@@ -232,7 +235,7 @@ export interface Preferences {
   locale: Locale;
 }
 export interface Workspace {
-  lender_contacts?: { email: string; lender_id: string }[];
+  lender_contacts?: { email: string; lender_id: string; name?: string }[];
   sender_account_ids?: string[];
   mail_sends?: {
     id: string;

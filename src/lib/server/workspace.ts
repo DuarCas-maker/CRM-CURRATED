@@ -163,13 +163,14 @@ export async function loadWorkspace(
         .order(sort, { ascending: false })
         .limit(related.has(key) ? 3000 : 500);
       if (related.has(key)) q = q.in("opportunity_id", caseIds);
+      if (key === "lenders") q = q.is("archived_at", null);
       return [key, checkDb(await q) || []] as const;
     }),
   );
   const data = Object.fromEntries(entries) as unknown as Workspace;
+  data.lender_contacts =
+    checkDb(await db.from("lender_contacts").select("*")) || [];
   if (gmailHistoryEnabled()) {
-    data.lender_contacts =
-      checkDb(await db.from("lender_contacts").select("email,lender_id")) || [];
     const permissions =
       checkDb(
         await db

@@ -23,6 +23,11 @@ export const historyActionSchema = z.discriminatedUnion("operation", [
     candidate_id: uuid,
   }),
   z.object({
+    operation: z.literal("approve_interest"),
+    run_id: uuid,
+    candidate_id: uuid,
+  }),
+  z.object({
     operation: z.literal("prepare_team_thread"),
     run_id: uuid,
     candidate_id: uuid,
@@ -175,6 +180,23 @@ export async function historyAction(input: HistoryAction, actor: Profile) {
         run: run.id,
         actor: actor.id,
         only_candidate: input.candidate_id,
+      }),
+    );
+    return { ok: true };
+  }
+  if (input.operation === "approve_interest") {
+    checkDb(
+      await db
+        .from("gmail_candidates")
+        .select("id")
+        .eq("id", input.candidate_id)
+        .eq("run_id", run.id)
+        .single(),
+    );
+    checkDb(
+      await db.rpc("gmail_approve_interest", {
+        candidate: input.candidate_id,
+        actor: actor.id,
       }),
     );
     return { ok: true };

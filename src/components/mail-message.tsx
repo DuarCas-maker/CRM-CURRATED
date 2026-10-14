@@ -33,6 +33,7 @@ export function MailMessage({
   onReply,
   onForward,
   onOriginal,
+  canReplyAll = false,
 }: {
   message: MailChatMessage;
   data: Workspace;
@@ -42,6 +43,7 @@ export function MailMessage({
   onReply: (m: Message, all?: boolean) => void;
   onForward: (m: Message) => void;
   onOriginal: (m: Message) => void;
+  canReplyAll?: boolean;
   legacyAttachments?: NonNullable<Workspace["attachments"]>;
   onAttachment?: (
     a: NonNullable<Workspace["attachments"]>[number],
@@ -55,7 +57,11 @@ export function MailMessage({
   const named =
     data.profiles.find(
       (p) => p.email.toLowerCase() === message.sender.toLowerCase(),
-    )?.name || message.participants?.find((p) => p.role === "from")?.name;
+    )?.name ||
+    data.lender_contacts?.find(
+      (p) => p.email.toLowerCase() === message.sender.toLowerCase(),
+    )?.name ||
+    message.participants?.find((p) => p.role === "from")?.name;
   return (
     <article className={`cw-message ${outbound ? "outgoing" : "incoming"}`}>
       <span className="cw-message-avatar" aria-hidden="true">
@@ -151,7 +157,9 @@ export function MailMessage({
                   </button>
                   <button
                     type="button"
-                    disabled={!data.gmail_history_enabled || data.demo}
+                    disabled={
+                      (!data.gmail_history_enabled && !canReplyAll) || data.demo
+                    }
                     onClick={() => onReply(message, true)}
                   >
                     <ReplyAll size={13} />

@@ -24,6 +24,11 @@ import {
 } from "./gmail-team";
 
 export interface HistoryCandidate {
+  inbox_approved_at?: string | null;
+  run_id?: string;
+  run_status?: string;
+  last_received_at?: string | null;
+  latest_reply_intent?: "positive" | "negative" | "review" | "ignored" | null;
   result_opportunity_id?: string | null;
   import_requested_at?: string | null;
   imported_at: string | null;
@@ -55,6 +60,7 @@ export interface HistoryCandidate {
   last_error: string | null;
 }
 interface HistoryRun {
+  is_live_directory?: boolean;
   id: string;
   account_id: string;
   purpose: string;
@@ -71,6 +77,7 @@ interface HistoryRun {
   finished_at: string | null;
 }
 interface HistoryData {
+  directory_counts?: { pending: number; incorporated: number };
   team_members?: TeamIdentity[];
   accounts: {
     id: string;
@@ -132,6 +139,7 @@ export function GmailHistory({
     [error, setError] = useState("");
   const [listing, setListing] = useState({
     ...defaultCandidateFilters,
+    tab: "pending" as "pending" | "incorporated",
     page: 0,
   });
   const [candidateSearch, setCandidateSearch] = useState("");
@@ -154,7 +162,11 @@ export function GmailHistory({
   }
   function clearCandidateFilters() {
     setCandidateSearch("");
-    setListing({ ...defaultCandidateFilters, page: 0 });
+    setListing((current) => ({
+      ...defaultCandidateFilters,
+      tab: current.tab,
+      page: 0,
+    }));
   }
   useEffect(() => {
     const timer = setTimeout(
@@ -173,6 +185,7 @@ export function GmailHistory({
   const [evidenceLimit, setEvidenceLimit] = useState(20);
   const [attachmentScope, setAttachmentScope] = useState<{
     runId: string;
+    runStatus?: string;
     candidateId?: string;
     confirmImport?: boolean;
     confirmCandidateId?: string;
@@ -287,7 +300,7 @@ export function GmailHistory({
   function selectPayload(c: HistoryCandidate, selected: boolean) {
     return {
       operation: "select",
-      run_id: runId,
+      run_id: c.run_id || runId,
       candidate_id: c.id,
       selected,
       name: c.name,
@@ -309,8 +322,8 @@ export function GmailHistory({
       <p>
         {t(
           locale,
-          "Autorizar una cuenta permite analizar hasta un año. La incorporación comercial requiere revisión y confirmación; no envía correos ni ejecuta Bouncer.",
-          "Account authorization allows analysis of up to one year. Commercial import requires review and confirmation; it does not send emails or run Bouncer.",
+          "El historial se conserva y los correos nuevos se sincronizan automáticamente. Las respuestas humanas con interés recibidas desde el 13 de octubre de 2026, 00:00 (Colombia), incorporan al lead a Conversaciones y Oportunidades. Las respuestas ambiguas quedan pendientes de revisión.",
+          "History is retained and new mail syncs automatically. Human replies showing interest received since October 13, 2026, 00:00 (Colombia), add the lead to Conversations and Opportunities. Unclear replies await review.",
         )}
       </p>
       {workspace.demo ? (
@@ -480,7 +493,10 @@ export function GmailHistory({
               </option>
               {data.runs
                 .filter(
-                  (r) => r.purpose === "historical" || r.status === "review",
+                  (r) =>
+                    r.purpose === "historical" ||
+                    r.status === "review" ||
+                    r.is_live_directory,
                 )
                 .map((r) => (
                   <option key={r.id} value={r.id}>
@@ -643,6 +659,47 @@ export function GmailHistory({
                   </details>
                 </>
               )}
+              <div
+                className="card-actions"
+                role="tablist"
+                aria-label={t(
+                  locale,
+                  "Incorporación de contactos",
+                  "Contact incorporation",
+                )}
+              >
+                {(["pending", "incorporated"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    role="tab"
+                    aria-selected={listing.tab === tab}
+                    className={`button${listing.tab === tab ? " primary" : ""}`}
+                    onClick={() =>
+                      setListing((current) => ({
+                        ...current,
+                        tab,
+                        import_state: "all",
+                        page: 0,
+                      }))
+                    }
+                  >
+                    {tab === "pending"
+                      ? t(locale, "Pendientes", "Pending")
+                      : t(locale, "Incorporados", "Incorporated")}
+                    {data.directory_counts
+                      ? ` (${data.directory_counts[tab]})`
+                      : ""}
+                  </button>
+                ))}
+              </div>
+              <p className="muted">
+                {t(
+                  locale,
+                  "Todos los contactos de esta cuenta, ordenados por el último correo recibido. Los envíos propios no cambian el orden. Los históricos pendientes requieren aprobación manual o una nueva respuesta con interés.",
+                  "All contacts in this mailbox, ordered by latest received email. Your outgoing mail does not change the order. Pending historical contacts require manual approval or a new reply showing interest.",
+                )}
+              </p>
               <div className="gmail-candidate-filters">
                 <label className="gmail-candidate-search">
                   <span>
@@ -743,26 +800,38 @@ export function GmailHistory({
                     <option value="all">
                       {t(locale, "Todos los estados", "All statuses")}
                     </option>
-                    <option value="pending">
-                      {t(locale, "Pendientes de incorporar", "Awaiting import")}
-                    </option>
-                    <option value="selected">
-                      {t(
-                        locale,
-                        "Seleccionados por confirmar",
-                        "Selected, awaiting confirmation",
-                      )}
-                    </option>
-                    <option value="queued">
-                      {t(
-                        locale,
-                        "En cola / incorporación en curso",
-                        "Queued / importing",
-                      )}
-                    </option>
-                    <option value="imported">
-                      {t(locale, "Incorporados", "Imported")}
-                    </option>
+                    {listing.tab === "pending" && (
+                      <option value="pending">
+                        {t(
+                          locale,
+                          "Pendientes de incorporar",
+                          "Awaiting import",
+                        )}
+                      </option>
+                    )}
+                    {listing.tab === "pending" && (
+                      <option value="selected">
+                        {t(
+                          locale,
+                          "Seleccionados por confirmar",
+                          "Selected, awaiting confirmation",
+                        )}
+                      </option>
+                    )}
+                    {listing.tab === "pending" && (
+                      <option value="queued">
+                        {t(
+                          locale,
+                          "En cola / incorporación en curso",
+                          "Queued / importing",
+                        )}
+                      </option>
+                    )}
+                    {listing.tab === "incorporated" && (
+                      <option value="imported">
+                        {t(locale, "Incorporados", "Imported")}
+                      </option>
+                    )}
                     <option value="errors">
                       {t(locale, "Con errores por revisar", "Errors to review")}
                     </option>
@@ -802,7 +871,7 @@ export function GmailHistory({
               </div>
               <p role="status" aria-live="polite">
                 {candidatesReady
-                  ? `${t(locale, "Resultados", "Results")}: ${data.total || 0}${stats ? ` / ${stats.candidates} ${t(locale, "participantes del análisis", "analysis participants")}` : ""}`
+                  ? `${t(locale, "Resultados", "Results")}: ${data.total || 0}`
                   : t(
                       locale,
                       "Buscando participantes…",
@@ -826,216 +895,273 @@ export function GmailHistory({
                       </th>
                       <th>{t(locale, "Evidencia", "Evidence")}</th>
                       <th>{t(locale, "Clasificación", "Classification")}</th>
+                      <th>{t(locale, "Último recibido", "Last received")}</th>
                       <th>{t(locale, "Revisión", "Review")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {candidatesReady &&
                       (data.candidates || []).map((c) => (
-                      <tr key={c.id}>
-                        <td>
-                          <input
-                            type="checkbox"
-                            aria-label={`${t(locale, "Seleccionar", "Select")} ${c.email}`}
-                            checked={c.selected}
-                            disabled={
-                              busy ||
-                              c.participant_kind === "team" ||
-                              !!c.imported_at ||
-                              !!c.import_requested_at ||
-                              ![
-                                "review",
-                                "completed",
-                                "importing",
-                                "failed",
-                              ].includes(run.status)
-                            }
-                            onChange={() => {
-                              if (c.selected) action(selectPayload(c, false));
-                              else {
+                        <tr key={c.id}>
+                          <td>
+                            <input
+                              type="checkbox"
+                              aria-label={`${t(locale, "Seleccionar", "Select")} ${c.email}`}
+                              checked={c.selected}
+                              disabled={
+                                busy ||
+                                c.participant_kind === "team" ||
+                                !!c.imported_at ||
+                                !!c.import_requested_at ||
+                                ![
+                                  "review",
+                                  "completed",
+                                  "importing",
+                                  "failed",
+                                ].includes(c.run_status || run.status)
+                              }
+                              onChange={() => {
+                                if (c.selected) action(selectPayload(c, false));
+                                else {
+                                  setEditing(c);
+                                  setSearch(c.company_name || c.name);
+                                  findMatches(c);
+                                }
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <strong>{c.name || c.email}</strong>
+                            <small>{c.email}</small>
+                            <small>
+                              {c.participant_kind === "team"
+                                ? t(
+                                    locale,
+                                    "Asociación por conversación",
+                                    "Associate each conversation",
+                                  )
+                                : c.company_name ||
+                                  t(
+                                    locale,
+                                    "Empresa pendiente de confirmar",
+                                    "Confirm company",
+                                  )}
+                            </small>
+                          </td>
+                          <td>
+                            {c.inbound_count}{" "}
+                            {t(locale, "recibidos", "received")} /{" "}
+                            {c.outbound_count} {t(locale, "enviados", "sent")}
+                            <small>
+                              {c.campaign_count}{" "}
+                              {t(
+                                locale,
+                                "con señales de campaña",
+                                "with campaign signals",
+                              )}{" "}
+                              · {c.attachment_count}{" "}
+                              {t(locale, "adjuntos", "attachments")}
+                            </small>
+                            <button
+                              className="text-button"
+                              onClick={() => setSource(c.evidence_ids[0])}
+                            >
+                              {t(locale, "Abrir correo", "Open email")}
+                            </button>
+                            <button
+                              className="text-button"
+                              onClick={() =>
+                                setAttachmentScope({
+                                  runId: c.run_id || run.id,
+                                  runStatus: c.run_status || run.status,
+                                  candidateId: c.id,
+                                })
+                              }
+                            >
+                              {t(
+                                locale,
+                                "Revisar adjuntos",
+                                "Review attachments",
+                              )}
+                            </button>
+                          </td>
+                          <td>
+                            {c.participant_kind === "team"
+                              ? data.team_members?.find(
+                                  (m) => m.email === c.email,
+                                )
+                                ? teamLabel(
+                                    data.team_members.find(
+                                      (m) => m.email === c.email,
+                                    )!,
+                                    locale,
+                                  )
+                                : t(locale, "Equipo", "Team")
+                              : `${c.participant_kind} · ${c.classification}`}
+                            <small>
+                              {c.copied_only
+                                ? t(locale, "Solo en copia", "Copied only")
+                                : t(
+                                    locale,
+                                    "Comunicación directa",
+                                    "Direct communication",
+                                  )}
+                            </small>
+                          </td>
+                          <td>
+                            {c.last_received_at
+                              ? dateLabel(c.last_received_at, locale, true)
+                              : t(
+                                  locale,
+                                  "Sin correos recibidos",
+                                  "No received email",
+                                )}
+                            <small>
+                              {c.latest_reply_intent === "review"
+                                ? t(
+                                    locale,
+                                    "Interés por revisar",
+                                    "Interest needs review",
+                                  )
+                                : c.latest_reply_intent === "positive"
+                                  ? t(locale, "Con interés", "Interested")
+                                  : c.latest_reply_intent === "negative"
+                                    ? t(locale, "Sin interés", "Not interested")
+                                    : c.latest_reply_intent === "ignored"
+                                      ? t(
+                                          locale,
+                                          "Mensaje automático",
+                                          "Automatic message",
+                                        )
+                                      : ""}
+                            </small>
+                          </td>
+                          <td>
+                            <small>
+                              {c.participant_kind === "team"
+                                ? t(locale, "Miembro del equipo", "Team member")
+                                : c.existing_contact_id
+                                  ? t(
+                                      locale,
+                                      "Contacto existente; no se sobrescribirán sus datos",
+                                      "Existing contact; current data stays unchanged",
+                                    )
+                                  : t(locale, "Contacto nuevo", "New contact")}
+                            </small>
+                            {c.last_error && (
+                              <small className="error-banner">
+                                {c.last_error}
+                              </small>
+                            )}
+                            <button
+                              className="button"
+                              disabled={
+                                busy ||
+                                (c.participant_kind !== "team" &&
+                                  (!!c.imported_at ||
+                                    !!c.import_requested_at)) ||
+                                ![
+                                  "review",
+                                  "completed",
+                                  "importing",
+                                  "failed",
+                                  ...(c.participant_kind === "team"
+                                    ? ["completed"]
+                                    : []),
+                                ].includes(c.run_status || run.status)
+                              }
+                              onClick={() => {
                                 setEditing(c);
                                 setSearch(c.company_name || c.name);
                                 findMatches(c);
-                              }
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <strong>{c.name || c.email}</strong>
-                          <small>{c.email}</small>
-                          <small>
-                            {c.participant_kind === "team"
-                              ? t(
-                                  locale,
-                                  "Asociación por conversación",
-                                  "Associate each conversation",
-                                )
-                              : c.company_name ||
-                                t(
-                                  locale,
-                                  "Empresa pendiente de confirmar",
-                                  "Confirm company",
-                                )}
-                          </small>
-                        </td>
-                        <td>
-                          {c.inbound_count} {t(locale, "recibidos", "received")}{" "}
-                          / {c.outbound_count} {t(locale, "enviados", "sent")}
-                          <small>
-                            {c.campaign_count}{" "}
-                            {t(
-                              locale,
-                              "con señales de campaña",
-                              "with campaign signals",
-                            )}{" "}
-                            · {c.attachment_count}{" "}
-                            {t(locale, "adjuntos", "attachments")}
-                          </small>
-                          <button
-                            className="text-button"
-                            onClick={() => setSource(c.evidence_ids[0])}
-                          >
-                            {t(locale, "Abrir correo", "Open email")}
-                          </button>
-                          <button
-                            className="text-button"
-                            onClick={() =>
-                              setAttachmentScope({
-                                runId: run.id,
-                                candidateId: c.id,
-                              })
-                            }
-                          >
-                            {t(
-                              locale,
-                              "Revisar adjuntos",
-                              "Review attachments",
-                            )}
-                          </button>
-                        </td>
-                        <td>
-                          {c.participant_kind === "team"
-                            ? data.team_members?.find(
-                                (m) => m.email === c.email,
-                              )
-                              ? teamLabel(
-                                  data.team_members.find(
-                                    (m) => m.email === c.email,
-                                  )!,
-                                  locale,
-                                )
-                              : t(locale, "Equipo", "Team")
-                            : `${c.participant_kind} · ${c.classification}`}
-                          <small>
-                            {c.copied_only
-                              ? t(locale, "Solo en copia", "Copied only")
-                              : t(
-                                  locale,
-                                  "Comunicación directa",
-                                  "Direct communication",
-                                )}
-                          </small>
-                        </td>
-                        <td>
-                          <small>
-                            {c.participant_kind === "team"
-                              ? t(locale, "Miembro del equipo", "Team member")
-                              : c.existing_contact_id
-                                ? t(
+                              }}
+                            >
+                              {t(locale, "Revisar", "Review")}
+                            </button>
+                            {c.participant_kind !== "team" &&
+                              (c.imported_at ? (
+                                <>
+                                  <small>
+                                    {t(locale, "Incorporado", "Imported")}
+                                  </small>
+                                  {c.latest_reply_intent === "review" &&
+                                    !c.inbox_approved_at &&
+                                    ["client", "unknown"].includes(
+                                      c.participant_kind,
+                                    ) && (
+                                      <button
+                                        type="button"
+                                        className="button"
+                                        disabled={busy}
+                                        onClick={() =>
+                                          action({
+                                            operation: "approve_interest",
+                                            run_id: c.run_id || run.id,
+                                            candidate_id: c.id,
+                                          })
+                                        }
+                                      >
+                                        {t(
+                                          locale,
+                                          "Confirmar interés revisado",
+                                          "Confirm reviewed interest",
+                                        )}
+                                      </button>
+                                    )}
+                                  {c.result_opportunity_id && openCase && (
+                                    <button
+                                      className="text-button"
+                                      onClick={() =>
+                                        openCase(c.result_opportunity_id!)
+                                      }
+                                    >
+                                      {t(locale, "Ver expediente", "View case")}
+                                    </button>
+                                  )}
+                                </>
+                              ) : c.import_requested_at ? (
+                                <small role="status">
+                                  {t(
                                     locale,
-                                    "Contacto existente; no se sobrescribirán sus datos",
-                                    "Existing contact; current data stays unchanged",
-                                  )
-                                : t(locale, "Contacto nuevo", "New contact")}
-                          </small>
-                          {c.last_error && (
-                            <small className="error-banner">
-                              {c.last_error}
-                            </small>
-                          )}
-                          <button
-                            className="button"
-                            disabled={
-                              busy ||
-                              (c.participant_kind !== "team" &&
-                                (!!c.imported_at || !!c.import_requested_at)) ||
-                              ![
-                                "review",
-                                "completed",
-                                "importing",
-                                "failed",
-                                ...(c.participant_kind === "team"
-                                  ? ["completed"]
-                                  : []),
-                              ].includes(run.status)
-                            }
-                            onClick={() => {
-                              setEditing(c);
-                              setSearch(c.company_name || c.name);
-                              findMatches(c);
-                            }}
-                          >
-                            {t(locale, "Revisar", "Review")}
-                          </button>
-                          {c.participant_kind !== "team" &&
-                            (c.imported_at ? (
-                              <>
-                                <small>
-                                  {t(locale, "Incorporado", "Imported")}
+                                    "Incorporación en curso",
+                                    "Import in progress",
+                                  )}
                                 </small>
-                                {c.result_opportunity_id && openCase && (
-                                  <button
-                                    className="text-button"
-                                    onClick={() =>
-                                      openCase(c.result_opportunity_id!)
-                                    }
-                                  >
-                                    {t(locale, "Ver expediente", "View case")}
-                                  </button>
-                                )}
-                              </>
-                            ) : c.import_requested_at ? (
-                              <small role="status">
-                                {t(
-                                  locale,
-                                  "Incorporación en curso",
-                                  "Import in progress",
-                                )}
-                              </small>
-                            ) : (
-                              <button
-                                className="button primary"
-                                disabled={
-                                  busy ||
-                                  !c.selected ||
-                                  ![
-                                    "review",
-                                    "completed",
-                                    "importing",
-                                  ].includes(run.status)
-                                }
-                                onClick={() =>
-                                  setAttachmentScope({
-                                    runId: run.id,
-                                    candidateId: c.id,
-                                    confirmCandidateId: c.id,
-                                    confirmImport: true,
-                                  })
-                                }
-                              >
-                                {t(
-                                  locale,
-                                  "Importar este registro",
-                                  "Import this record",
-                                )}
-                              </button>
-                            ))}
-                        </td>
-                      </tr>
+                              ) : (
+                                <button
+                                  className="button primary"
+                                  disabled={
+                                    busy ||
+                                    !c.selected ||
+                                    ![
+                                      "review",
+                                      "completed",
+                                      "importing",
+                                    ].includes(c.run_status || run.status)
+                                  }
+                                  onClick={() =>
+                                    setAttachmentScope({
+                                      runId: c.run_id || run.id,
+                                      runStatus: c.run_status || run.status,
+                                      candidateId: c.id,
+                                      confirmCandidateId: c.id,
+                                      confirmImport: true,
+                                    })
+                                  }
+                                >
+                                  {t(
+                                    locale,
+                                    "Importar este registro",
+                                    "Import this record",
+                                  )}
+                                </button>
+                              ))}
+                          </td>
+                        </tr>
                       ))}
                     {candidatesReady && !data.candidates?.length && (
                       <tr>
-                        <td colSpan={5}>
+                        <td colSpan={6}>
                           {t(
                             locale,
                             "No hay participantes que coincidan con esta búsqueda y filtros.",
@@ -1163,7 +1289,7 @@ export function GmailHistory({
                     openCase?.(id);
                   }}
                   candidateId={editing.id}
-                  runId={runId}
+                  runId={editing.run_id || runId}
                   workspace={workspace}
                   locale={locale}
                   openSource={setSource}
@@ -1409,7 +1535,9 @@ export function GmailHistory({
           {...attachmentScope}
           locale={locale}
           editable={["review", "completed", "importing"].includes(
-            data.runs.find((r) => r.id === attachmentScope.runId)?.status || "",
+            attachmentScope.runStatus ||
+              data.runs.find((r) => r.id === attachmentScope.runId)?.status ||
+              "",
           )}
           close={() => setAttachmentScope(null)}
           openSource={setSource}

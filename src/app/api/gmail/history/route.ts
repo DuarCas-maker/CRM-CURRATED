@@ -282,6 +282,7 @@ export async function GET(request: Request) {
         .neq("status", "completed")
         .order("created_at", { ascending: false })
         .limit(50),
+      db.from("gmail_runs").select("*").eq("is_live_directory", true),
       ...(runId
         ? [db.from("gmail_runs").select("*").eq("id", z.uuid().parse(runId))]
         : []),
@@ -303,14 +304,36 @@ export async function GET(request: Request) {
       Math.min(100000, Math.floor(Number(params.get("page")) || 0)),
     );
     const filters = parseCandidateFilters(params);
-    const candidatesQuery = db
-      .from("gmail_candidates")
+    const tab = z
+      .enum(["pending", "incorporated"])
+      .parse(params.get("tab") || "pending");
+    const selectedRun = runs.find((r) => r.id === runId);
+    if (!selectedRun) throw new HttpError(404, "Analysis not found");
+    let candidatesQuery = db
+      .from("gmail_candidate_directory")
       .select("*", { count: "exact" })
-      .eq("run_id", runId);
+      .eq("account_id", selectedRun.account_id);
+    candidatesQuery =
+      tab === "pending"
+        ? candidatesQuery.is("imported_at", null)
+        : candidatesQuery.not("imported_at", "is", null);
     const result = await filterGmailCandidates(candidatesQuery, filters)
-      .order("last_at", { ascending: false })
+      .order("last_received_at", { ascending: false, nullsFirst: false })
       .order("id")
       .range(page * 50, page * 50 + 49);
+    const tabCounts = await Promise.all([
+      db
+        .from("gmail_candidate_directory")
+        .select("id", { count: "exact", head: true })
+        .eq("account_id", selectedRun.account_id)
+        .is("imported_at", null),
+      db
+        .from("gmail_candidate_directory")
+        .select("id", { count: "exact", head: true })
+        .eq("account_id", selectedRun.account_id)
+        .not("imported_at", "is", null),
+    ]);
+    tabCounts.forEach(checkDb);
     return Response.json(
       {
         accounts,
@@ -318,6 +341,10 @@ export async function GET(request: Request) {
         team_members,
         candidates: checkDb(result),
         total: result.count,
+        directory_counts: {
+          pending: tabCounts[0].count || 0,
+          incorporated: tabCounts[1].count || 0,
+        },
         page,
         stats: checkDb(await db.rpc("gmail_preview_stats", { run: runId })),
       },

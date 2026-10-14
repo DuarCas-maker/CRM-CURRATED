@@ -5,7 +5,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MailEditor } from "../src/components/mail-editor";
 import { demoWorkspace } from "../src/lib/demo";
 function render(
-  options: { advanced?: boolean; authorized?: boolean; demo?: boolean } = {},
+  options: {
+    advanced?: boolean;
+    authorized?: boolean;
+    demo?: boolean;
+    lender?: boolean;
+  } = {},
 ) {
   const data = demoWorkspace();
   data.demo = options.demo || false;
@@ -30,6 +35,9 @@ function render(
         conversation_id: co.id,
         subject: co.subject,
         to_email: "customer@example.com",
+        lender_id: options.lender
+          ? "00000000-0000-4000-8000-000000000001"
+          : undefined,
       },
     }),
   );
@@ -56,4 +64,16 @@ test("advanced replies retain sender, copies, attachments and the signature read
 });
 test("explicit demo mailbox status still permits the existing simulated reply", () => {
   assert(!submit(render({ demo: true })).includes("disabled"));
+});
+test("company replies expose the reviewed recipient, copies and authorized account without requiring the advanced signature feature", () => {
+  const html = render({ lender: true });
+  assert(!submit(html).includes("disabled"));
+  assert(html.includes("Enviar desde"));
+  assert(html.includes("CC y CCO"));
+  assert(!html.includes("Registrar destinatario"));
+  assert(!html.includes("Documentos del expediente"));
+  assert(!html.includes("Vista previa de la firma"));
+  assert(
+    submit(render({ lender: true, authorized: false })).includes("disabled"),
+  );
 });

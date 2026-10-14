@@ -12,6 +12,7 @@ import { readBounded } from "@/lib/server/body";
 import { mailAction } from "@/lib/server/mail-actions";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
 import { sendManagedMail } from "@/lib/server/mail-manager";
+import { lenderDirectorySchema } from "@/lib/lender-directory";
 const envelope = z.object({
   kind: z.string().max(50),
   payload: z.record(z.string(), z.unknown()),
@@ -28,6 +29,16 @@ export async function POST(request: Request) {
     );
     if (!parsed.success) throw new HttpError(400, "Invalid request");
     const { kind, payload: p, idempotency_key } = parsed.data;
+    if (kind === "create_lender" || kind === "update_lender") {
+      const parsedLender = lenderDirectorySchema.safeParse(p);
+      if (!parsedLender.success)
+        throw new HttpError(400, parsedLender.error.issues[0].message);
+      Object.assign(p, parsedLender.data);
+    }
+    if (kind === "lender_reply" || kind === "lender_contact")
+      return Response.json(
+        await mailAction(kind, p, idempotency_key, db, profile),
+      );
     if (kind === "mail_send") {
       if (!gmailHistoryEnabled())
         throw new HttpError(503, "Enable Gmail integration first");

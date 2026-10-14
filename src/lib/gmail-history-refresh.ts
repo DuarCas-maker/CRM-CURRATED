@@ -96,11 +96,19 @@ export function startHistoryPolling<T>(
 }
 
 export function initialHistoryRun(
-  runs: readonly { id: string; purpose: string; status: string }[],
+  runs: readonly {
+    id: string;
+    purpose: string;
+    status: string;
+    is_live_directory?: boolean;
+  }[],
   saved: string | null,
 ) {
   const available = runs.filter(
-    (run) => run.purpose === "historical" || run.status === "review",
+    (run) =>
+      run.purpose === "historical" ||
+      run.status === "review" ||
+      run.is_live_directory,
   );
   if (saved === "" || available.some((run) => run.id === saved)) return saved!;
   return (

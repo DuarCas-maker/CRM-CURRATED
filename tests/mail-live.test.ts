@@ -114,6 +114,11 @@ test("a real-time sync path receives a reply without any historical run and neve
           archived++;
           return Response.json({ id: archiveId });
         }
+        if (path === "gmail_record_reply") {
+          assert.equal(body.archive, archiveId);
+          assert.equal(body.intent, "review");
+          return Response.json(null);
+        }
         if (path === "gmail_associate_continuous") return Response.json(null);
         if (path === "gmail_link_message") return Response.json(messageId);
         if (path === "messages") {

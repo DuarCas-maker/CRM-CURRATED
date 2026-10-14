@@ -5,6 +5,7 @@ import { serviceClient, checkDb, HttpError } from "./supabase";
 import { gmail } from "./google";
 import { storeDocument } from "./documents";
 import { makeApplicationLink } from "./application-links";
+import { outgoingMailSchema } from "../mail-manager";
 export async function mailAction(
   kind: string,
   p: Record<string, unknown>,
@@ -13,14 +14,49 @@ export async function mailAction(
   profile: Profile,
 ) {
   const service = serviceClient();
+  if (kind === "lender_reply") {
+    const input = outgoingMailSchema.parse(p);
+    if (input.mode !== "reply" || !input.lender_id)
+      throw new HttpError(400, "Choose the lender reply");
+    const result = checkDb(
+      await db.rpc("queue_lender_reply", {
+        input: {
+          case_id: input.opportunity_id,
+          account: input.account_id,
+          lender: input.lender_id,
+          conversation: input.conversation_id,
+          reply_message: input.reply_message_id,
+          recipient: input.to_email,
+          copies: input.cc_emails,
+          hidden_copies: input.bcc_emails,
+          subject_text: input.subject,
+          body_text: input.body,
+          process: input.process_id || null,
+          submission: input.submission_id || null,
+          files: input.attachment_ids,
+          gmail_files: input.gmail_file_ids,
+          uploads: input.upload_ids,
+          signature: "",
+          display_name: "",
+          request: requestKey,
+        },
+      }),
+    );
+    return { ok: true, result };
+  }
   if (kind === "lender_contact") {
     const input = z
-      .object({ lender_id: z.uuid(), email: z.email().max(254) })
+      .object({
+        lender_id: z.uuid(),
+        email: z.email().max(254),
+        name: z.string().trim().max(150).default(""),
+      })
       .parse(p);
     checkDb(
-      await db.rpc("register_lender_contact", {
+      await db.rpc("register_named_lender_contact", {
         lender: input.lender_id,
         address: input.email,
+        display_name: input.name,
       }),
     );
     return { ok: true };
@@ -355,7 +391,7 @@ export async function mailAction(
       message_id_header: `<${requestKey}@crm.curated.local>`,
       requested_by: profile.id,
       request_key: requestKey,
-      gmail_thread_id: account === co.account_id ? co.gmail_thread_id : null,
+      gmail_thread_id: account === co.account_id ? co.gmail_delivery_thread_id || co.gmail_thread_id : null,
     };
     const previous = checkDb(
       await service

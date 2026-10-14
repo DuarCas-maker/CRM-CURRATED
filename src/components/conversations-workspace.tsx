@@ -30,6 +30,7 @@ import { MailSendStatus } from "./mail-composer";
 import { MailBody } from "./mail-bubble";
 import { forwardedBody, type MailDraft } from "@/lib/mail-manager";
 import { suggestedReply } from "@/lib/mail-display";
+import { lenderReplyRecipients, lenderEmailResolver } from "@/lib/lender-mail";
 import {
   mailChatMessages,
   orderMailMessages,
@@ -163,6 +164,20 @@ export function ConversationsWorkspace({
   const effectiveData: Workspace = {
     ...data,
     ...(scoped || {}),
+    lenders: [
+      ...new Map(
+        [
+          ...data.lenders,
+          ...metadata.lenders.map((l) => ({
+            ...data.lenders.find((d) => d.id === l.id),
+            ...l,
+          })),
+        ].map((l) => [l.id, l]),
+      ).values(),
+    ] as Workspace["lenders"],
+    lender_contacts: metadata.lender_contacts.length
+      ? metadata.lender_contacts
+      : data.lender_contacts,
     opportunities: selectedCase
       ? [
           ...new Map(
@@ -335,11 +350,13 @@ export function ConversationsWorkspace({
   const processPool = summaries.filter(
     (s) =>
       process === "all" ||
-      s.conversation_ids.some(
-        (id) =>
-          (metadata.conversations.find((c) => c.id === id)?.process_id ||
-            "") === process,
-      ),
+      (s.process_id !== undefined
+        ? (s.process_id || "") === process
+        : s.conversation_ids.some(
+            (id) =>
+              (metadata.conversations.find((c) => c.id === id)?.process_id ||
+                "") === process,
+          )),
   );
   const pendingThreads: ThreadSummary[] = mailbox.pending.map((p) => {
     const emails = p.participants.map((a) => a.email.toLowerCase());
@@ -388,6 +405,7 @@ export function ConversationsWorkspace({
     if (active && !activeId) setActiveId(active.id);
   }, [active?.id, activeId]);
   const activeCoIds = active?.conversation_ids.join(",") || "";
+  const activeMessageIds = active?.message_ids?.join(",") || "";
   useEffect(() => {
     setReply(null);
     setReplyAll(false);
@@ -434,12 +452,24 @@ export function ConversationsWorkspace({
     setError("");
     Promise.all(
       ids.map(async (id) => {
-        const r = await fetch(`/api/conversations/${id}/messages`, {
-          signal: controller.signal,
-        });
+        const selected = active?.message_ids?.filter(
+          (mid) => active.message_conversations?.[mid] === id,
+        );
+        const r = await fetch(
+          `/api/conversations/${id}/messages${selected ? `?${new URLSearchParams({ ids: selected.slice(0, 100).join(",") })}` : ""}`,
+          {
+            signal: controller.signal,
+          },
+        );
         const p = await r.json();
         if (!r.ok) throw Error(p.error);
-        return [id, p as Page] as const;
+        return [
+          id,
+          {
+            ...p,
+            hasMore: selected ? selected.length > p.messages.length : p.hasMore,
+          } as Page,
+        ] as const;
       }),
     )
       .then((rows) => {
@@ -461,7 +491,15 @@ export function ConversationsWorkspace({
                 id,
                 {
                   ...page,
-                  hasMore: previous.hasMore,
+                  hasMore: active?.message_ids
+                    ? active.message_ids.some(
+                        (mid) =>
+                          active.message_conversations?.[mid] === id &&
+                          ![...previous.messages, ...page.messages].some(
+                            (m) => m.id === mid,
+                          ),
+                      )
+                    : previous.hasMore,
                   messages: orderMailMessages(
                     [
                       ...new Map(
@@ -503,6 +541,7 @@ export function ConversationsWorkspace({
     return () => controller.abort();
   }, [
     activeCoIds,
+    activeMessageIds,
     activeKey,
     pendingMode,
     revision,
@@ -552,6 +591,7 @@ export function ConversationsWorkspace({
   const rawMessages = Object.values(pages)
     .flatMap((p) => p.messages)
     .filter((m) => active?.conversation_ids.includes(m.conversation_id))
+    .filter((m) => !active?.message_ids || active.message_ids.includes(m.id))
     .filter((m) => {
       const key = m.internet_message_id || m.id;
       if (seen.has(key)) return false;
@@ -560,7 +600,14 @@ export function ConversationsWorkspace({
     });
   const messages = mailChatMessages(
     rawMessages,
-    sends.filter((s) => active?.conversation_ids.includes(s.conversation_id)),
+    sends.filter(
+      (s) =>
+        active?.conversation_ids.includes(s.conversation_id) &&
+        (!active?.message_ids ||
+          active.message_ids.includes(s.reply_message_id)) &&
+        (active?.category !== "lender" ||
+          lenderEmailResolver(metadata)(s.to_email) === active.lender_ids[0]),
+    ),
     effectiveData.accounts,
   );
   const latestReply =
@@ -581,13 +628,15 @@ export function ConversationsWorkspace({
     ...(reply?.direction === "outbound" ? [reply.sender] : []),
   ];
   const replyRecipients = reply
-    ? suggestedReply(reply.participants || [], reply.sender, own)
+    ? active?.category === "lender"
+      ? lenderReplyRecipients(reply, active.lender_ids[0], metadata, own[0])
+      : suggestedReply(reply.participants || [], reply.sender, own)
     : { to: "", cc: [] };
-  if (reply && !replyRecipients.to)
+  if (reply && !replyRecipients.to && active?.category !== "lender")
     replyRecipients.to =
       co?.recipient_email ||
       (active?.category === "client" ? selectedCase?.email || "" : "");
-  if (!managed && !data.demo) {
+  if (!managed && !data.demo && active?.category !== "lender") {
     const submission = effectiveData.submissions.find(
       (s) => s.id === co?.submission_id,
     );
@@ -671,8 +720,13 @@ export function ConversationsWorkspace({
             .filter((id) => pages[id]?.hasMore)
             .map(async (id) => {
               const first = orderMailMessages(pages[id].messages, "oldest")[0];
+              const remaining = active?.message_ids?.filter(
+                (mid) =>
+                  active.message_conversations?.[mid] === id &&
+                  !pages[id].messages.some((m) => m.id === mid),
+              );
               const r = await fetch(
-                `/api/conversations/${id}/messages?${new URLSearchParams({ before: first.sent_at, cursor: first.id })}`,
+                `/api/conversations/${id}/messages?${new URLSearchParams(remaining ? { ids: remaining.slice(0, 100).join(",") } : { before: first.sent_at, cursor: first.id })}`,
               );
               const p = await r.json();
               if (!r.ok) throw Error(p.error);
@@ -680,6 +734,9 @@ export function ConversationsWorkspace({
                 id,
                 {
                   ...p,
+                  hasMore: remaining
+                    ? remaining.length > p.messages.length
+                    : p.hasMore,
                   messages: [
                     ...new Map(
                       [...p.messages, ...pages[id].messages].map(
@@ -1110,7 +1167,9 @@ export function ConversationsWorkspace({
                 {t(locale, "Volver", "Back")}
               </button>
               <h2>
-                {active?.subject ||
+                {(active?.category === "lender"
+                  ? `${metadata.lenders.find((l) => l.id === active.lender_ids[0])?.name || "Lender"} · ${active.subject}`
+                  : active?.subject) ||
                   t(
                     locale,
                     "Selecciona una conversación",
@@ -1251,6 +1310,7 @@ export function ConversationsWorkspace({
                 </article>
               ) : (
                 <MailMessage
+                  canReplyAll={active?.category === "lender"}
                   key={m.id}
                   message={m}
                   data={effectiveData}
@@ -1326,7 +1386,7 @@ export function ConversationsWorkspace({
                   <button
                     className={`cw-link ${replyAll ? "active" : ""}`}
                     type="button"
-                    disabled={!managed}
+                    disabled={!managed && active.category !== "lender"}
                     onClick={() => setReplyAll(!replyAll)}
                   >
                     <ReplyAll size={12} />
@@ -1374,7 +1434,18 @@ export function ConversationsWorkspace({
                     reply_message_id: reply.id,
                     account_id: co?.account_id,
                     process_id: co?.process_id,
-                    submission_id: co?.submission_id || undefined,
+                    lender_id:
+                      active.category === "lender"
+                        ? active.lender_ids[0]
+                        : undefined,
+                    submission_id:
+                      active.category === "lender"
+                        ? metadata.submissions?.find(
+                            (s) =>
+                              s.lender_id === active.lender_ids[0] &&
+                              s.process_id === co?.process_id,
+                          )?.id
+                        : co?.submission_id || undefined,
                     subject: co?.subject,
                     to_email: replyRecipients.to,
                     cc_emails: replyAll ? replyRecipients.cc : [],

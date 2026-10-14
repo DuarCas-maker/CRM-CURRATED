@@ -322,14 +322,16 @@ export function demoAction(
     case "create_lender":
       if (!["superadmin", "closer_admin"].includes(user.role))
         throw new Error("Access denied");
-      required("name", "email");
+      required("name");
+      if (text("channel") !== "portal") required("email");
       d.lenders.push({
         id: id(),
         name: text("name"),
         email: text("email"),
         products: text("products")
           .split(",")
-          .map((s) => s.trim()),
+          .map((s) => s.trim())
+          .filter(Boolean),
         channel: text("channel"),
         notes: text("notes"),
       });
@@ -344,7 +346,8 @@ export function demoAction(
         email: text("email"),
         products: text("products")
           .split(",")
-          .map((s) => s.trim()),
+          .map((s) => s.trim())
+          .filter(Boolean),
         channel: text("channel"),
         notes: text("notes"),
       });

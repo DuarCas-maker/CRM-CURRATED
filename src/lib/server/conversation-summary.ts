@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { checkDb, serviceClient } from "./supabase";
 import { teamLabels } from "./gmail-team";
+import { readableMail } from "../mail-display";
 import {
   summarizeThreads,
   type MailChannels,
@@ -25,7 +26,7 @@ export async function conversationSummary(
           await db
             .from("messages")
             .select(
-              "id,conversation_id,sender,direction,sent_at,internet_message_id,references_header,participants",
+              "id,conversation_id,sender,direction,sent_at,internet_message_id,references_header,participants,nature,reply_intent",
             )
             .in("conversation_id", coIds.slice(i, i + 100))
             .order("id")
@@ -33,31 +34,6 @@ export async function conversationSummary(
         ) || [];
       headers.push(...rows);
       if (rows.length < 1000) break;
-    }
-  }
-  const newest = new Map<string, ThreadHeader>();
-  for (const m of headers)
-    if (
-      !newest.has(m.conversation_id) ||
-      Date.parse(m.sent_at) >
-        Date.parse(newest.get(m.conversation_id)!.sent_at) ||
-      (Date.parse(m.sent_at) ===
-        Date.parse(newest.get(m.conversation_id)!.sent_at) &&
-        m.id.localeCompare(newest.get(m.conversation_id)!.id) > 0)
-    )
-      newest.set(m.conversation_id, m);
-  const previewIds = [...newest.values()].map((m) => m.id);
-  for (let i = 0; i < previewIds.length; i += 100) {
-    const rows =
-      checkDb(
-        await db
-          .from("messages")
-          .select("id,body")
-          .in("id", previewIds.slice(i, i + 100)),
-      ) || [];
-    for (const row of rows) {
-      const h = headers.find((m) => m.id === row.id);
-      if (h) h.body = row.body;
     }
   }
   const replies: { conversation_id: string; reply_message_id: string }[] = [];
@@ -86,10 +62,30 @@ export async function conversationSummary(
   );
   const teamEmails = [...new Set([...channels.team_emails, ...teams.keys()])];
   const summaries = summarizeThreads(
-    { ...channels, team_emails: teamEmails },
+    { ...channels, team_emails: teamEmails, enforce_engagement: true },
     headers,
     replies,
   );
+  const previewIds = [
+    ...new Set(
+      summaries
+        .map((s) => s.message_ids?.[0])
+        .filter((id): id is string => !!id),
+    ),
+  ];
+  for (let i = 0; i < previewIds.length; i += 100) {
+    const rows =
+      checkDb(
+        await db
+          .from("messages")
+          .select("id,body")
+          .in("id", previewIds.slice(i, i + 100)),
+      ) || [];
+    for (const s of summaries) {
+      const body = rows.find((r) => r.id === s.message_ids?.[0])?.body;
+      if (body !== undefined) s.snippet = readableMail(body).text.slice(0, 220);
+    }
+  }
   if (search.trim()) {
     const matches = new Set<string>();
     const q = search
@@ -109,11 +105,11 @@ export async function conversationSummary(
                 .order("id")
                 .range(page * 1000, page * 1000 + 999),
             ) || [];
-          rows.forEach((r) => matches.add(r.conversation_id));
+          rows.forEach((r) => matches.add(r.id));
           if (rows.length < 1000) break;
         }
     for (const s of summaries)
-      s.search_matched = s.conversation_ids.some((id) => matches.has(id));
+      s.search_matched = (s.message_ids || []).some((id) => matches.has(id));
   }
   return { summaries, headers, teamEmails };
 }

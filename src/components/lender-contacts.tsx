@@ -16,6 +16,7 @@ export function LenderContacts({
 }) {
   const [lender, setLender] = useState(data.lenders[0]?.id || ""),
     [email, setEmail] = useState(""),
+    [name, setName] = useState(""),
     [error, setError] = useState("");
   return (
     <section className="panel settings-panel">
@@ -23,8 +24,8 @@ export function LenderContacts({
       <p>
         {t(
           locale,
-          "Confirma los correos de sus empleados para reunir sus mensajes en el mismo chat. El dominio por sí solo no los asocia.",
-          "Confirm employee email addresses to group their messages in one chat. A domain alone does not associate them.",
+          "Los contactos de una empresa comparten conversación por proceso. Los correos de su dominio propio se reconocen automáticamente; los proveedores de correo compartidos requieren una dirección registrada.",
+          "Company contacts share a conversation per process. Addresses on its own domain are recognized automatically; shared email providers require a registered address.",
         )}
       </p>
       {error && (
@@ -45,7 +46,10 @@ export function LenderContacts({
       {(data.lender_contacts || [])
         .filter((c) => c.lender_id === lender)
         .map((c) => (
-          <p key={c.email}>{c.email}</p>
+          <p key={c.email}>
+            {c.name ? `${c.name} · ` : ""}
+            {c.email}
+          </p>
         ))}
       {["superadmin", "closer_admin", "closer"].includes(data.profile.role) && (
         <form
@@ -57,13 +61,23 @@ export function LenderContacts({
               await act("lender_contact", {
                 lender_id: lender,
                 email: email.trim(),
+                name: name.trim(),
               });
               setEmail("");
+              setName("");
             } catch (e) {
               setError((e as Error).message);
             }
           }}
         >
+          <label>
+            {t(locale, "Nombre del contacto", "Contact name")}
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={150}
+            />
+          </label>
           <label>
             {t(locale, "Correo del empleado", "Employee email")}
             <input

@@ -1,6 +1,8 @@
 import type { Conversation, Message, Opportunity } from "./domain";
 import type { MailPeer } from "./mail-display";
 import { readableMail } from "./mail-display";
+import { lenderEmailResolver, lenderMessageIds } from "./lender-mail";
+import { automatedSender } from "./mail-interest";
 
 export type ThreadCategory = "client" | "team" | "lender" | "review";
 export type ThreadHeader = Pick<
@@ -11,6 +13,8 @@ export type ThreadHeader = Pick<
   references_header?: string | null;
   participants?: MailPeer[];
   body?: string;
+  nature?: string;
+  reply_intent?: import("./mail-interest").ReplyIntent | null;
 };
 export type ThreadSummary = {
   id: string;
@@ -25,6 +29,9 @@ export type ThreadSummary = {
   participants: MailPeer[];
   unread: boolean;
   search_matched?: boolean;
+  process_id?: string | null;
+  message_ids?: string[];
+  message_conversations?: Record<string, string>;
 };
 export type CaseMailContext = {
   opportunity: Opportunity;
@@ -34,11 +41,12 @@ export type CaseMailContext = {
   followup: { title: string; at: string | null } | null;
 };
 export type MailChannels = {
+  enforce_engagement?: boolean;
   conversations: Conversation[];
   processes: { id: string; label: string; sequence_number: number }[];
   routes: { conversation_id: string; lender_id: string }[];
   lenders: { id: string; name: string; email: string }[];
-  lender_contacts: { email: string; lender_id: string }[];
+  lender_contacts: { email: string; lender_id: string; name?: string }[];
   team_emails: string[];
   client_emails: string[];
   submissions?: { id: string; lender_id: string; process_id?: string | null }[];
@@ -55,7 +63,7 @@ export type MailChannels = {
 
 // Group only authoritative reply relationships within the same case and process.
 // Neither a sender, a lender nor an identical subject is evidence of one thread.
-export function summarizeThreads(
+export function summarizeOriginalThreads(
   context: MailChannels,
   headers: ThreadHeader[],
   replies: { conversation_id: string; reply_message_id: string }[] = [],
@@ -182,6 +190,146 @@ export function summarizeThreads(
     });
   }
   return result.sort(
+    (a, b) =>
+      Date.parse(b.sent_at) - Date.parse(a.sent_at) || a.id.localeCompare(b.id),
+  );
+}
+
+// Lender views are client + financing process + company, regardless of Gmail thread/mailbox.
+// Physical conversations and RFC reply relationships remain intact for actual email delivery.
+export function summarizeThreads(
+  context: MailChannels,
+  headers: ThreadHeader[],
+  replies: { conversation_id: string; reply_message_id: string }[] = [],
+): ThreadSummary[] {
+  const originals = summarizeOriginalThreads(context, headers, replies);
+  const resolve = lenderEmailResolver(context);
+  const coMap = new Map(context.conversations.map((c) => [c.id, c]));
+  const originalMap = new Map(
+    originals.flatMap((s) => s.conversation_ids.map((id) => [id, s] as const)),
+  );
+  const buckets = new Map<
+    string,
+    { template: ThreadSummary; messages: ThreadHeader[] }
+  >();
+  for (const m of headers) {
+    const c = coMap.get(m.conversation_id),
+      original = originalMap.get(m.conversation_id);
+    if (!c || !original) continue;
+    let firms = lenderMessageIds(m, resolve, context.team_emails);
+    // Older records without recipient headers can still use an unambiguous evaluation route.
+    if (
+      !firms.length &&
+      m.direction === "outbound" &&
+      !(m.participants || []).some((p) => p.role !== "from")
+    ) {
+      const sub = context.submissions?.find((s) => s.id === c.submission_id);
+      if (sub) firms = [sub.lender_id];
+    }
+    const sender = m.sender.toLowerCase();
+    const peers = [
+      sender,
+      ...(m.participants || [])
+        .filter((p) => p.role !== "bcc")
+        .map((p) => p.email.toLowerCase()),
+    ];
+    const category: ThreadCategory =
+      context.client_emails.includes(sender) ||
+      ((m.direction === "outbound" || context.team_emails.includes(sender)) &&
+        peers.some((e) => context.client_emails.includes(e)))
+        ? "client"
+        : peers.every((e) => context.team_emails.includes(e))
+          ? "team"
+          : "review";
+    const process =
+      c.process_id ||
+      original.conversation_ids
+        .map((id) => coMap.get(id)?.process_id)
+        .find(Boolean) ||
+      null;
+    const keys = firms.length
+      ? firms.map((id) => ({
+          key: `lender:${c.opportunity_id}:${process || "unassigned"}:${id}`,
+          firm: id,
+        }))
+      : [{ key: `${category}:${original.id}`, firm: "" }];
+    for (const { key, firm } of keys) {
+      let bucket = buckets.get(key);
+      if (!bucket) {
+        bucket = {
+          template: {
+            ...original,
+            id: key,
+            process_id: process,
+            category: firm ? "lender" : category,
+            lender_ids: firm ? [firm] : [],
+          },
+          messages: [],
+        };
+        buckets.set(key, bucket);
+      }
+      bucket.messages.push(m);
+    }
+  }
+  const result = [...buckets.values()].map(
+    ({ template, messages }): ThreadSummary => {
+      messages.sort(
+        (a, b) =>
+          Date.parse(b.sent_at) - Date.parse(a.sent_at) ||
+          b.id.localeCompare(a.id),
+      );
+      const latest = messages[0];
+      const ids = [...new Set(messages.map((m) => m.conversation_id))].sort();
+      const participants = [
+        ...new Map(
+          messages
+            .flatMap((m) => [
+              { email: m.sender, role: "from" },
+              ...(m.participants || []).filter((p) => p.role !== "bcc"),
+            ])
+            .map((p) => [`${p.role}:${p.email.toLowerCase()}`, p]),
+        ).values(),
+      ];
+      const visibleParticipants =
+        template.category === "lender"
+          ? participants.filter(
+              (p) =>
+                resolve(p.email) === template.lender_ids[0] ||
+                context.team_emails.includes(p.email.toLowerCase()),
+            )
+          : participants;
+      return {
+        ...template,
+        conversation_ids: ids,
+        message_ids: messages.map((m) => m.id),
+        message_conversations: Object.fromEntries(
+          messages.map((m) => [m.id, m.conversation_id]),
+        ),
+        subject: coMap.get(latest.conversation_id)!.subject,
+        sender: latest.sender,
+        snippet: readableMail(latest.body || "").text.slice(0, 220),
+        sent_at: latest.sent_at,
+        participants: visibleParticipants,
+        unread: ids.some((id) => coMap.get(id)?.needs_attention),
+      };
+    },
+  );
+  // Preserve empty original records without creating inactive chats for every lender.
+  for (const s of originals)
+    if (!headers.some((m) => s.conversation_ids.includes(m.conversation_id)))
+      result.push(s);
+  const clientEngaged = headers.some((m) => m.direction === "inbound" && m.nature === "personal" && m.reply_intent === "positive" && context.client_emails.includes(m.sender.toLowerCase())) || context.conversations.some((c) => c.manually_incorporated_at);
+  const visible = context.enforce_engagement
+    ? result.filter((thread) => {
+        const messages = headers.filter((m) => thread.message_ids?.includes(m.id));
+        const human = messages.filter((m) => m.direction === "inbound" && m.nature === "personal" && !automatedSender(m.sender) && m.reply_intent !== "ignored");
+        if (thread.category === "lender") return human.some((m) => resolve(m.sender) === thread.lender_ids[0]);
+        if (thread.category === "team") return human.some((m) => context.team_emails.includes(m.sender.toLowerCase()));
+        if (thread.category === "client" && clientEngaged) return true;
+        return human.some((m) => m.reply_intent === "positive") || thread.conversation_ids.some((id) => coMap.get(id)?.manually_incorporated_at);
+      })
+    : result;
+  return visible.sort(
     (a, b) =>
       Date.parse(b.sent_at) - Date.parse(a.sent_at) || a.id.localeCompare(b.id),
   );

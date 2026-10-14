@@ -3,6 +3,7 @@ import { gmail, GmailError, organization } from "../src/lib/server/google";
 import { hash, encrypt } from "../src/lib/server/crypto";
 import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
 import { gmailPushEnabled } from "../src/lib/gmail-sync";
+import { recordReplyIntent } from "./gmail-engagement";
 import { isGmailQuotaError } from "../src/lib/gmail-errors";
 import { decrypt } from "../src/lib/server/crypto";
 import {
@@ -500,6 +501,7 @@ export async function ingestLiveMessage(
       .select("id")
       .single(),
   )!;
+  await recordReplyIntent(archive.id, snapshot);
   checked(
     await client.rpc("gmail_associate_continuous", { archive: archive.id }),
   );

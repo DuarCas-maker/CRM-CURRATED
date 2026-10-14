@@ -66,6 +66,7 @@ export function MailEditor({
   );
   const [mode, setMode] = useState(start.mode || "compose");
   const legacyReply = mode === "reply" && !data.gmail_history_enabled;
+  const lenderReply = mode === "reply" && !!start.lender_id;
   useEffect(() => {
     onAccountChange?.(accountId);
   }, [accountId, onAccountChange]);
@@ -187,6 +188,7 @@ export function MailEditor({
       ? {
           conversation_id: start.conversation_id,
           reply_message_id: start.reply_message_id,
+          lender_id: start.lender_id,
         }
       : {}),
     ...(["reply", "forward"].includes(mode)
@@ -346,10 +348,14 @@ export function MailEditor({
             if (mode === "lenders")
               p.to_email = Object.values(targets)[0] || "";
             const result = await act(
-              data.gmail_history_enabled && !data.demo ? "mail_send" : "reply",
+              data.gmail_history_enabled && !data.demo
+                ? "mail_send"
+                : lenderReply && !data.demo
+                  ? "lender_reply"
+                  : "reply",
               p,
             );
-            if (data.gmail_history_enabled && !data.demo)
+            if ((data.gmail_history_enabled || lenderReply) && !data.demo)
               onQueued?.(p, typeof result === "string" ? result : undefined);
             close();
           } catch (e) {
@@ -359,7 +365,7 @@ export function MailEditor({
           }
         }}
       >
-        {!legacyReply && (
+        {(!legacyReply || lenderReply) && (
           <EditorOptions
             compact={compact}
             title={`${t(locale, "Destinatarios y cuenta", "Recipients and account")} · ${to || "—"}`}
@@ -490,7 +496,11 @@ export function MailEditor({
                     {t(locale, "Cliente o equipo", "Customer or team")}
                   </option>
                   {evaluations
-                    .filter((s) => s.process_id === process)
+                    .filter(
+                      (s) =>
+                        s.process_id === process &&
+                        (!start.lender_id || s.lender_id === start.lender_id),
+                    )
                     .map((s) => (
                       <option value={s.id} key={s.id}>
                         {data.lenders.find((l) => l.id === s.lender_id)?.name ||
@@ -510,82 +520,85 @@ export function MailEditor({
                     "Each lender receives a separate email.",
                   )}
                 </p>
-                {data.lenders.map((l) => (
-                  <div className="document-row" key={l.id}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        disabled={locked}
-                        checked={l.id in targets}
-                        onChange={(e) =>
-                          setTargets((old) => {
-                            const next = { ...old };
-                            if (e.target.checked) next[l.id] = l.email;
-                            else delete next[l.id];
-                            return next;
-                          })
-                        }
-                      />
-                      {l.name}
-                    </label>
-                    {l.id in targets && (
-                      <select
-                        aria-label={l.name}
-                        disabled={locked}
-                        value={targets[l.id]}
-                        onChange={(e) =>
-                          setTargets((old) => ({
-                            ...old,
-                            [l.id]: e.target.value,
-                          }))
-                        }
-                      >
-                        {(data.lender_contacts || [])
-                          .filter((c) => c.lender_id === l.id)
-                          .map((c) => (
-                            <option value={c.email} key={c.email}>
-                              {c.email}
-                            </option>
-                          ))}
-                      </select>
-                    )}
-                    {l.id in targets && (
-                      <select
-                        disabled={locked}
-                        aria-label={t(
-                          locale,
-                          "Evaluación del lender",
-                          "Lender evaluation",
-                        )}
-                        value={targetEvaluations[l.id] || ""}
-                        onChange={(e) =>
-                          setTargetEvaluations((old) => ({
-                            ...old,
-                            [l.id]: e.target.value,
-                          }))
-                        }
-                      >
-                        <option value="">
-                          {t(
+                {data.lenders
+                  .filter((l) => !!l.email)
+                  .map((l) => (
+                    <div className="document-row" key={l.id}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          disabled={locked}
+                          checked={l.id in targets}
+                          onChange={(e) =>
+                            setTargets((old) => {
+                              const next = { ...old };
+                              if (e.target.checked) next[l.id] = l.email;
+                              else delete next[l.id];
+                              return next;
+                            })
+                          }
+                        />
+                        {l.name}
+                      </label>
+                      {l.id in targets && (
+                        <select
+                          aria-label={l.name}
+                          disabled={locked}
+                          value={targets[l.id]}
+                          onChange={(e) =>
+                            setTargets((old) => ({
+                              ...old,
+                              [l.id]: e.target.value,
+                            }))
+                          }
+                        >
+                          {(data.lender_contacts || [])
+                            .filter((c) => c.lender_id === l.id)
+                            .map((c) => (
+                              <option value={c.email} key={c.email}>
+                                {c.email}
+                              </option>
+                            ))}
+                        </select>
+                      )}
+                      {l.id in targets && (
+                        <select
+                          disabled={locked}
+                          aria-label={t(
                             locale,
-                            "Usar evaluación única o crear borrador",
-                            "Use single evaluation or create draft",
+                            "Evaluación del lender",
+                            "Lender evaluation",
                           )}
-                        </option>
-                        {evaluations
-                          .filter(
-                            (s) =>
-                              s.lender_id === l.id && s.process_id === process,
-                          )
-                          .map((s) => (
-                            <option value={s.id} key={s.id}>
-                              {s.id.slice(0, 8)}
-                            </option>
-                          ))}
-                      </select>
-                    )}
-                  </div>
-                ))}
+                          value={targetEvaluations[l.id] || ""}
+                          onChange={(e) =>
+                            setTargetEvaluations((old) => ({
+                              ...old,
+                              [l.id]: e.target.value,
+                            }))
+                          }
+                        >
+                          <option value="">
+                            {t(
+                              locale,
+                              "Usar evaluación única o crear borrador",
+                              "Use single evaluation or create draft",
+                            )}
+                          </option>
+                          {evaluations
+                            .filter(
+                              (s) =>
+                                s.lender_id === l.id &&
+                                s.process_id === process,
+                            )
+                            .map((s) => (
+                              <option value={s.id} key={s.id}>
+                                {s.id.slice(0, 8)}
+                              </option>
+                            ))}
+                        </select>
+                      )}
+                    </div>
+                  ))}
               </>
             ) : (
               <>
@@ -603,8 +616,12 @@ export function MailEditor({
                   <summary>
                     {t(
                       locale,
-                      "CC, CCO y registro de contacto",
-                      "CC, BCC and contact registration",
+                      legacyReply
+                        ? "CC y CCO"
+                        : "CC, CCO y registro de contacto",
+                      legacyReply
+                        ? "CC and BCC"
+                        : "CC, BCC and contact registration",
                     )}
                     {!!cc && ` · ${mailCopies(cc).length} CC`}
                     {!!bcc &&
@@ -631,80 +648,92 @@ export function MailEditor({
                       onChange={(e) => setBcc(e.target.value)}
                     />
                   </label>
-                  <label className="field">
-                    {t(
-                      locale,
-                      "Nombre del contacto, opcional",
-                      "Contact name, optional",
-                    )}
-                    <input
-                      maxLength={150}
-                      disabled={locked}
-                      value={contactName}
-                      onChange={(e) => setContactName(e.target.value)}
-                    />
-                  </label>
-                  <label className="field">
-                    {t(
-                      locale,
-                      "Guardar destinatario como",
-                      "Register recipient as",
-                    )}
-                    <select
-                      disabled={locked}
-                      value={contactLender}
-                      onChange={(e) => setContactLender(e.target.value)}
-                    >
-                      <option value="">
-                        {t(locale, "Contacto del cliente", "Customer contact")}
-                      </option>
-                      {data.lenders.map((l) => (
-                        <option value={l.id} key={l.id}>
-                          {l.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <button
-                    className="text-button"
-                    type="button"
-                    disabled={locked || !to}
-                    onClick={async () => {
-                      setWorking(true);
-                      setError("");
-                      try {
-                        const r = await fetch("/api/mail", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            action: "contact",
-                            request_id: crypto.randomUUID(),
-                            payload: {
-                              opportunity_id: caseId,
-                              email: to.trim(),
-                              name: contactName.trim() || to.trim(),
-                              lender_id: contactLender || null,
-                            },
-                          }),
-                        });
-                        const p = await r.json();
-                        if (!r.ok) throw Error(p.error);
-                        setNotice(
-                          t(
-                            locale,
-                            "Destinatario registrado.",
-                            "Recipient registered.",
-                          ),
-                        );
-                      } catch (e) {
-                        setError((e as Error).message);
-                      } finally {
-                        setWorking(false);
-                      }
-                    }}
-                  >
-                    {t(locale, "Registrar destinatario", "Register recipient")}
-                  </button>
+                  {!legacyReply && (
+                    <>
+                      <label className="field">
+                        {t(
+                          locale,
+                          "Nombre del contacto, opcional",
+                          "Contact name, optional",
+                        )}
+                        <input
+                          maxLength={150}
+                          disabled={locked}
+                          value={contactName}
+                          onChange={(e) => setContactName(e.target.value)}
+                        />
+                      </label>
+                      <label className="field">
+                        {t(
+                          locale,
+                          "Guardar destinatario como",
+                          "Register recipient as",
+                        )}
+                        <select
+                          disabled={locked}
+                          value={contactLender}
+                          onChange={(e) => setContactLender(e.target.value)}
+                        >
+                          <option value="">
+                            {t(
+                              locale,
+                              "Contacto del cliente",
+                              "Customer contact",
+                            )}
+                          </option>
+                          {data.lenders.map((l) => (
+                            <option value={l.id} key={l.id}>
+                              {l.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button
+                        className="text-button"
+                        type="button"
+                        disabled={locked || !to}
+                        onClick={async () => {
+                          setWorking(true);
+                          setError("");
+                          try {
+                            const r = await fetch("/api/mail", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                action: "contact",
+                                request_id: crypto.randomUUID(),
+                                payload: {
+                                  opportunity_id: caseId,
+                                  email: to.trim(),
+                                  name: contactName.trim() || to.trim(),
+                                  lender_id: contactLender || null,
+                                },
+                              }),
+                            });
+                            const p = await r.json();
+                            if (!r.ok) throw Error(p.error);
+                            setNotice(
+                              t(
+                                locale,
+                                "Destinatario registrado.",
+                                "Recipient registered.",
+                              ),
+                            );
+                          } catch (e) {
+                            setError((e as Error).message);
+                          } finally {
+                            setWorking(false);
+                          }
+                        }}
+                      >
+                        {t(
+                          locale,
+                          "Registrar destinatario",
+                          "Register recipient",
+                        )}
+                      </button>
+                    </>
+                  )}
                 </details>
               </>
             )}
@@ -900,8 +929,12 @@ export function MailEditor({
           <small className="muted">
             {t(
               locale,
-              "Respuesta básica desde la cuenta original del hilo. Las opciones avanzadas requieren la integración de Gmail habilitada.",
-              "Basic reply from the original thread account. Advanced options require the Gmail integration to be enabled.",
+              lenderReply
+                ? "Respuesta al lender desde la cuenta seleccionada, conservando el hilo original. Adjuntos y firma requieren la integración avanzada habilitada."
+                : "Respuesta básica desde la cuenta original del hilo. Las opciones avanzadas requieren la integración de Gmail habilitada.",
+              lenderReply
+                ? "Reply to the lender from the selected account, preserving the original thread. Attachments and signature require the advanced integration."
+                : "Basic reply from the original thread account. Advanced options require the Gmail integration to be enabled.",
             )}
           </small>
         )}

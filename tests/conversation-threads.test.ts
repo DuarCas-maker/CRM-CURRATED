@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  summarizeThreads,
+  summarizeOriginalThreads as summarizeThreads,
   filterThreads,
   elapsedMailTime,
   type MailChannels,

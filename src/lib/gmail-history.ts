@@ -1,4 +1,5 @@
 import { messageText, type GmailPart } from "../../worker/mime";
+import { automatedSender } from "./mail-interest";
 
 export type GmailMessage = {
   id: string;
@@ -182,7 +183,15 @@ export function snapshotMessage(
       : statuses.length && statuses.every((s) => s.startsWith("4."))
         ? "temporary_bounce"
         : "delivery_report"
-    : h("Auto-Submitted") && h("Auto-Submitted").toLowerCase() !== "no"
+    : (h("Auto-Submitted") && h("Auto-Submitted").toLowerCase() !== "no") ||
+        h("X-Autoreply") ||
+        h("X-Autorespond") ||
+        participants.some(
+          (p) => p.role === "from" && automatedSender(p.email),
+        ) ||
+        /^(?:automatic reply|auto[ -]?reply|out of office|respuesta automatica|respuesta automática|fuera de la oficina)\b/i.test(
+          h("Subject"),
+        )
       ? "automatic"
       : h("List-ID") ||
           h("List-Unsubscribe") ||
@@ -210,7 +219,11 @@ export function snapshotMessage(
     gmail_message_id: msg.id,
     gmail_thread_id: msg.threadId,
     internet_message_id: h("Message-ID"),
-    references_header: h("References"),
+    references_header: [
+      ...new Set(
+        `${h("References")} ${h("In-Reply-To")}`.match(/<[^<>]+>/g) || [],
+      ),
+    ].join(" "),
     subject: h("Subject"),
     sent_at: new Date(Number(msg.internalDate)).toISOString(),
     direction: outbound ? "outbound" : "inbound",

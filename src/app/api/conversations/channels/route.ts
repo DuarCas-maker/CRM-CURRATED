@@ -5,7 +5,6 @@ import {
   checkDb,
   jsonError,
 } from "@/lib/server/supabase";
-import { teamLabels } from "@/lib/server/gmail-team";
 import { conversationSummary } from "@/lib/server/conversation-summary";
 import type { MailChannels } from "@/lib/conversation-threads";
 export async function GET(request: Request) {
@@ -54,25 +53,37 @@ export async function GET(request: Request) {
             ),
         ) || []
       : [];
-    const lenderIds = [
-      ...new Set([
-        ...routes.map((r) => r.lender_id),
-        ...submissions.map((s) => s.lender_id),
-      ]),
-    ];
-    const lenders = lenderIds.length
-      ? checkDb(
-          await db.from("lenders").select("id,name,email").in("id", lenderIds),
-        ) || []
-      : [];
-    const contacts = lenderIds.length
-      ? checkDb(
+    // Directory reads already allow authenticated CRM users. Recognize historical
+    // senders even when this case's lender routes have not yet been indexed.
+    const lenders: MailChannels["lenders"] = [];
+    const contacts: MailChannels["lender_contacts"] = [];
+    for (let page = 0; ; page++) {
+      const rows =
+        checkDb(
+          await db
+            .from("lenders")
+            .select("id,name,email")
+            .is("archived_at", null)
+            .order("id")
+            .range(page * 1000, page * 1000 + 999),
+        ) || [];
+      lenders.push(...rows);
+      if (rows.length < 1000) break;
+    }
+    for (let page = 0; ; page++) {
+      const rows =
+        checkDb(
           await db
             .from("lender_contacts")
-            .select("email,lender_id")
-            .in("lender_id", lenderIds),
-        ) || []
-      : [];
+            .select("*")
+            .order("email")
+            .range(page * 1000, page * 1000 + 999),
+        ) || [];
+      contacts.push(
+        ...rows.filter((r) => lenders.some((l) => l.id === r.lender_id)),
+      );
+      if (rows.length < 1000) break;
+    }
     const accounts =
       checkDb(await db.from("mail_accounts").select("id,email,status")) || [];
     const links = opportunity.company_id

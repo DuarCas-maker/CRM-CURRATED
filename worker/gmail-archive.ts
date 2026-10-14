@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { recordReplyIntent } from "./gmail-engagement";
 import { db, checked } from "./db";
 import { gmail, GmailError } from "../src/lib/server/google";
 import { isGmailQuotaError } from "../src/lib/gmail-errors";
@@ -244,12 +245,10 @@ export async function archiveStep(runId: string) {
                 },
               }),
             ) as string;
+            await recordReplyIntent(archiveId, snapshot);
+            // Receipt time, not the type of scan, decides automatic activation.
+            checked(await client.rpc("gmail_associate_continuous", { archive: archiveId }));
             if (run.purpose === "continuous") {
-              checked(
-                await client.rpc("gmail_associate_continuous", {
-                  archive: archiveId,
-                }),
-              );
               await linkAndCopy(
                 {
                   id: archiveId,
@@ -487,6 +486,7 @@ export async function linkAndCopy(archive: Archive, _copySince: string) {
   const snapshot = JSON.parse(
     decrypt(archive.encrypted_payload),
   ) as MailSnapshot;
+  await recordReplyIntent(archive.id, snapshot);
   const linked = checked(
     await client.rpc("gmail_link_message", {
       archive_id: archive.id,

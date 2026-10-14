@@ -22,6 +22,7 @@ export const outgoingMailSchema = z
     conversation_id: z.uuid().optional(),
     reply_message_id: z.uuid().optional(),
     submission_id: z.uuid().optional(),
+    lender_id: z.uuid().optional(),
     attachment_ids: z.array(z.uuid()).max(10).default([]),
     gmail_file_ids: z.array(z.uuid()).max(10).default([]),
     upload_ids: z.array(z.uuid()).max(20).default([]),

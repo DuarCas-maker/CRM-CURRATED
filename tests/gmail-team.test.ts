@@ -51,6 +51,9 @@ test("team thread worker retries a partial page without advancing its persistent
     encrypted_payload: encrypt(
       JSON.stringify({
         body: "Fixture",
+        participants: [],
+        direction: "inbound",
+        nature: "personal",
         sent_at: new Date().toISOString(),
         attachments: [],
       }),
@@ -61,6 +64,7 @@ test("team thread worker retries a partial page without advancing its persistent
     const body = init?.body ? JSON.parse(String(init.body)) : {};
     if (path.endsWith("/rpc/gmail_team_thread_page"))
       return Response.json(body.cursor_offset === 0 ? archive : []);
+    if (path.endsWith("/rpc/gmail_record_reply")) return Response.json(null);
     if (path.endsWith("/rpc/gmail_link_message")) {
       linked++;
       if (!failed && linked === 4) {
@@ -558,6 +562,7 @@ test("live Gmail team mail preserves campaigns and waits, and an unassociated te
         return Response.json({ id: randomUUID() });
       if (
         table === "gmail_associate_continuous" ||
+        table === "gmail_record_reply" ||
         table === "gmail_process_live_reply" ||
         table === "gmail_track_live_wait"
       )
