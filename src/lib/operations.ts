@@ -180,9 +180,22 @@ export function demoOperationalDashboard(
       const review = docs.filter(
           (d) => !!d.storage_path && d.status !== "approved",
         ).length,
-        missing = docs.filter(
-          (d) => d.required !== false && !d.storage_path,
-        ).length,
+        missing =
+          docs.filter(
+            (d) =>
+              d.kind !== "bank_statement" &&
+              d.required !== false &&
+              !d.storage_path,
+          ).length +
+          Math.max(
+            0,
+            4 -
+              new Set(
+                docs
+                  .filter((d) => d.kind === "bank_statement" && d.storage_path)
+                  .map((d) => d.content_hash || d.id),
+              ).size,
+          ),
         expiring = offers.filter(
           (f) =>
             Date.parse(f.expires_at) <=

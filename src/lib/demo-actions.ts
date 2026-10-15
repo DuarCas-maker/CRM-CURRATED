@@ -216,9 +216,12 @@ export function demoAction(
         d.documents.push({
           id: id(),
           opportunity_id: created.id,
-          name: i ? `Bank statement ${i}` : "Signed application",
+          name: i ? `Bank Statement ${i}` : "Signed application",
           kind: i ? "bank_statement" : "application",
           period: "",
+          bank_name: "",
+          statement_number: i || null,
+          required: !i,
           status: "pending",
           source: "checklist",
           created_at: now,
@@ -285,18 +288,68 @@ export function demoAction(
       break;
     case "add_document": {
       if (!o) throw new Error("Case required");
-      required("name", "kind");
+      required("kind");
+      const bank = text("bank_name");
+      if (text("kind") === "bank_statement") required("bank_name");
+      else required("name");
+      const number =
+        Math.max(
+          0,
+          ...d.documents
+            .filter(
+              (doc) =>
+                doc.opportunity_id === o.id &&
+                doc.kind === "bank_statement" &&
+                (doc.bank_name || "").toLowerCase() === bank.toLowerCase(),
+            )
+            .map((doc) => doc.statement_number || 0),
+        ) + 1;
       d.documents.push({
         id: id(),
         opportunity_id: o.id,
-        name: text("name"),
+        name:
+          text("kind") === "bank_statement"
+            ? `Bank Statement ${number}`
+            : text("name"),
         kind: text("kind"),
-        period: text("period"),
-        required: p.required !== "false" && p.required !== false,
+        period: "",
+        bank_name: text("kind") === "bank_statement" ? bank : "",
+        statement_number: text("kind") === "bank_statement" ? number : null,
+        required:
+          text("kind") !== "bank_statement" &&
+          p.required !== "false" &&
+          p.required !== false,
         status: "pending",
         source: "checklist",
         created_at: now,
       });
+      break;
+    }
+    case "classify_document": {
+      const doc = d.documents.find(
+        (doc) => doc.id === p.document_id && doc.opportunity_id === o?.id,
+      );
+      if (!doc || doc.kind !== "bank_statement")
+        throw new Error("Bank statement required");
+      required("bank_name");
+      if (
+        (doc.bank_name || "").toLowerCase() !== text("bank_name").toLowerCase()
+      )
+        doc.statement_number =
+          Math.max(
+            0,
+            ...d.documents
+              .filter(
+                (other) =>
+                  other.opportunity_id === o?.id &&
+                  other.kind === "bank_statement" &&
+                  (other.bank_name || "").toLowerCase() ===
+                    text("bank_name").toLowerCase(),
+              )
+              .map((other) => other.statement_number || 0),
+          ) + 1;
+      doc.bank_name = text("bank_name");
+      doc.name = `Bank Statement ${doc.statement_number}`;
       break;
     }
     case "assign_seller": {
@@ -344,15 +397,36 @@ export function demoAction(
       break;
     }
     case "initialize_document_checklist": {
-      if(!o) throw new Error("Case required");
-      if(d.documents.some(doc=>doc.opportunity_id===o.id))break;
-      d.documents.push({id:id(),opportunity_id:o.id,name:"Signed application",kind:"application",period:"",required:true,status:"pending",source:"checklist",created_at:now});
-      const date=new Date(now);
-      for(let offset=1;offset<=4;offset++){
-        const period=new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth()-offset,1)).toISOString().slice(0,7);
-        d.documents.push({id:id(),opportunity_id:o.id,name:`Bank statement — ${period}`,kind:"bank_statement",period,required:true,status:"pending",source:"checklist",created_at:now});
+      if (!o) throw new Error("Case required");
+      if (d.documents.some((doc) => doc.opportunity_id === o.id)) break;
+      d.documents.push({
+        id: id(),
+        opportunity_id: o.id,
+        name: "Signed application",
+        kind: "application",
+        period: "",
+        required: true,
+        status: "pending",
+        source: "checklist",
+        created_at: now,
+      });
+      for (let offset = 1; offset <= 4; offset++) {
+        d.documents.push({
+          id: id(),
+          opportunity_id: o.id,
+          name: `Bank Statement ${offset}`,
+          kind: "bank_statement",
+          period: "",
+          bank_name: "",
+          statement_number: offset,
+          required: false,
+          status: "pending",
+          source: "checklist",
+          created_at: now,
+        });
       }
-      activity("Document checklist initialized");break;
+      activity("Document checklist initialized");
+      break;
     }
     case "incorporate_document": {
       const attachment = d.attachments?.find((a) => a.id === p.source_id);

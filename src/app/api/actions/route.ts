@@ -32,8 +32,24 @@ export async function POST(request: Request) {
     );
     if (!parsed.success) throw new HttpError(400, "Invalid request");
     const { kind, payload: p, idempotency_key } = parsed.data;
+    if (["add_document", "classify_document"].includes(kind))
+      return Response.json({
+        result: checkDb(
+          await db.rpc("crm_command", {
+            kind,
+            p,
+            request_key: idempotency_key,
+          }),
+        ),
+      });
     if (kind === "initialize_document_checklist")
-      return Response.json({result: await initializeDocumentChecklist(db, z.uuid().parse(p.opportunity_id), profile.id)});
+      return Response.json({
+        result: await initializeDocumentChecklist(
+          db,
+          z.uuid().parse(p.opportunity_id),
+          profile.id,
+        ),
+      });
     if (["incorporate_document", "review_document"].includes(kind))
       return Response.json({
         result: await documentAction(kind, p, idempotency_key, db, profile.id),

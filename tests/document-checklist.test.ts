@@ -101,13 +101,19 @@ test("the empty Gmail demo case creates an application and four unique pending s
   assert.equal(docs.filter((d) => d.kind === "application").length, 1);
   assert.equal(
     new Set(
-      docs.filter((d) => d.kind === "bank_statement").map((d) => d.period),
+      docs
+        .filter((d) => d.kind === "bank_statement")
+        .map((d) => d.statement_number),
     ).size,
     4,
   );
   assert.ok(
     docs.every(
-      (d) => d.status === "pending" && d.required === true && !d.storage_path,
+      (d) =>
+        d.status === "pending" &&
+        d.required === (d.kind === "application") &&
+        !d.storage_path &&
+        !d.period,
     ),
   );
 });

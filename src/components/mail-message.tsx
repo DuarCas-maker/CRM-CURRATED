@@ -98,7 +98,11 @@ export function MailMessage({
                     ` · ${t(locale, "Copia pendiente", "Copy pending")}`}
                 </a>
                 {f.review_source && onFileReview && (
-                  <button type="button" onClick={() => onFileReview(f)}>
+                  <button
+                    className="document-import-button"
+                    type="button"
+                    onClick={() => onFileReview(f)}
+                  >
                     {f.imported_document_id
                       ? t(locale, "Revisar documento", "Review document")
                       : t(locale, "Incorporar y revisar", "Add and review")}

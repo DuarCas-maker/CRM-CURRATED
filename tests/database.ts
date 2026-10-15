@@ -141,7 +141,7 @@ await db.query(
   [created.id],
 );
 await db.query(
-  "update documents set status='approved',storage_path='test/path.pdf' where opportunity_id=$1",
+  "update documents set status='approved',storage_path='test/path.pdf',content_hash=repeat(md5(id::text),2) where opportunity_id=$1",
   [created.id],
 );
 await asUser(users.seller);

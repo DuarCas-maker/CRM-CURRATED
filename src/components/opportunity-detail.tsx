@@ -2,6 +2,9 @@
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
 import { DocumentReview, DocumentChecklistSetup } from "./document-review";
+import { DocumentCreate } from "./document-create";
+import { CompanyApplicationForm } from "./company-application";
+import { documentLabel, documentProgress } from "@/lib/document-labels";
 import { UnderwritingWorkspace } from "./underwriting-workspace";
 import { MailComposer, MailSendStatus } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
@@ -77,6 +80,21 @@ export function OpportunityDetail({
   const closerAccess = !!o.handed_off_at && isCloserRole(profile.role);
   const editable = sellerAccess || closerAccess;
   const docs = data.documents.filter((d) => d.opportunity_id === o.id);
+  const documentStatus = documentProgress(docs);
+  const documentGroups = [
+    ...new Set(
+      docs.map((d) =>
+        d.kind === "bank_statement"
+          ? d.bank_name ||
+            t(locale, "Banco por identificar", "Bank to identify")
+          : t(
+              locale,
+              "Aplicación y otros documentos",
+              "Application and other documents",
+            ),
+      ),
+    ),
+  ];
   const analyses = data.analyses.filter((a) => a.opportunity_id === o.id);
   const activities = data.activities.filter(
     (a) => a.opportunity_id === o.id && canSeeArea(profile, o, a.area),
@@ -320,12 +338,22 @@ export function OpportunityDetail({
                   <div>
                     <button
                       className="button"
+                      onClick={() => setModal("company-application")}
+                    >
+                      {t(
+                        locale,
+                        "Completar aplicación / PDF",
+                        "Complete application / PDF",
+                      )}
+                    </button>
+                    <button
+                      className="button"
                       onClick={() => setModal("add-document")}
                     >
                       {t(
                         locale,
-                        "Agregar requisito o informe",
-                        "Add requirement or report",
+                        "Agregar extracto u otro documento",
+                        "Add statement or other document",
                       )}
                     </button>
                     <button
@@ -341,89 +369,122 @@ export function OpportunityDetail({
               <p className="muted">
                 {t(
                   locale,
-                  "Recibir un archivo no equivale a aprobarlo. Revisa su contenido y período.",
-                  "Receiving a file does not approve it. Review its contents and period.",
+                  "Aprueba la aplicación y al menos cuatro extractos en total. Puedes guardar extractos de todos los bancos y documentos adicionales.",
+                  "Approve the application and at least four statements in total. You can save statements from every bank and additional documents.",
                 )}
               </p>
               <p role="status">
-                {
-                  docs.filter(
-                    (d) => d.required !== false && d.status === "approved",
-                  ).length
-                }
-                /{docs.filter((d) => d.required !== false).length}{" "}
+                {documentStatus.approved}/{documentStatus.total}{" "}
                 {t(
                   locale,
                   "documentos obligatorios aprobados",
                   "required documents approved",
                 )}
               </p>
-              {!docs.length && <>
-                <p>{t(locale,"Este expediente aún no tiene un checklist. Prepáralo y luego usa Incorporar y revisar junto a los adjuntos de Correo e histórico para relacionarlos.","This case has no checklist yet. Create one, then use Add and review beside attachments in Mail and history to link them.")}</p>
-                {editable && <DocumentChecklistSetup opportunityId={o.id} locale={locale} act={act}/>}
-              </>}
-              {docs.map((d) => (
-                <div className="document-row" key={d.id}>
-                  <span
-                    className={`document-icon ${d.status === "approved" ? "approved" : ""}`}
-                  >
-                    {d.status === "approved" ? (
-                      <ShieldCheck size={20} />
-                    ) : (
-                      <FileText size={20} />
-                    )}
-                  </span>
-                  <div>
-                    <strong>{d.name}</strong>
-                    <small>
-                      {d.period} · {d.source} ·{" "}
-                      {dateLabel(d.created_at, locale)}
-                    </small>
-                    {d.review_notes && <small>{d.review_notes}</small>}
-                    {d.reviewed_at && (
-                      <small>
-                        {t(locale, "Revisado por", "Reviewed by")}{" "}
-                        {name(d.reviewed_by || null)} ·{" "}
-                        {dateLabel(d.reviewed_at, locale, true)}
-                      </small>
-                    )}
-                  </div>
-                  <span
-                    className={`badge ${d.status === "approved" ? "stage-funded" : "stage-documents_pending"}`}
-                  >
+              {!docs.length && (
+                <>
+                  <p>
                     {t(
                       locale,
-                      {
-                        pending: "Pendiente",
-                        received: "Recibido",
-                        approved: "Aprobado",
-                        correction: "Corregir",
-                      }[d.status],
-                      d.status,
+                      "Este expediente aún no tiene un checklist. Prepáralo y luego usa Incorporar y revisar junto a los adjuntos de Correo e histórico para relacionarlos.",
+                      "This case has no checklist yet. Create one, then use Add and review beside attachments in Mail and history to link them.",
                     )}
-                  </span>
-                  {d.storage_path && !data.demo && (
-                    <a
-                      className="icon-button"
-                      href={`/api/documents/${d.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label="Open document"
-                    >
-                      <Download size={17} />
-                    </a>
+                  </p>
+                  {editable && (
+                    <DocumentChecklistSetup
+                      opportunityId={o.id}
+                      locale={locale}
+                      act={act}
+                    />
                   )}
-                  {editable && d.status !== "pending" && (
-                    <button
-                      type="button"
-                      className="button"
-                      disabled={busy}
-                      onClick={() => setReviewDocument(d.id)}
-                    >
-                      {t(locale, "Revisar documento", "Review document")}
-                    </button>
-                  )}
-                </div>
+                </>
+              )}
+              {documentGroups.map((group) => (
+                <section key={group} className="document-bank-group">
+                  <h3>{group}</h3>
+                  {docs
+                    .filter(
+                      (d) =>
+                        (d.kind === "bank_statement"
+                          ? d.bank_name ||
+                            t(
+                              locale,
+                              "Banco por identificar",
+                              "Bank to identify",
+                            )
+                          : t(
+                              locale,
+                              "Aplicación y otros documentos",
+                              "Application and other documents",
+                            )) === group,
+                    )
+                    .sort(
+                      (a, b) =>
+                        (a.statement_number || 0) - (b.statement_number || 0),
+                    )
+                    .map((d) => (
+                      <div className="document-row" key={d.id}>
+                        <span
+                          className={`document-icon ${d.status === "approved" ? "approved" : ""}`}
+                        >
+                          {d.status === "approved" ? (
+                            <ShieldCheck size={20} />
+                          ) : (
+                            <FileText size={20} />
+                          )}
+                        </span>
+                        <div>
+                          <strong>{documentLabel(d, locale)}</strong>
+                          <small>
+                            {d.source} · {dateLabel(d.created_at, locale)}
+                          </small>
+                          {d.review_notes && <small>{d.review_notes}</small>}
+                          {d.reviewed_at && (
+                            <small>
+                              {t(locale, "Revisado por", "Reviewed by")}{" "}
+                              {name(d.reviewed_by || null)} ·{" "}
+                              {dateLabel(d.reviewed_at, locale, true)}
+                            </small>
+                          )}
+                        </div>
+                        <span
+                          className={`badge ${d.status === "approved" ? "stage-funded" : "stage-documents_pending"}`}
+                        >
+                          {t(
+                            locale,
+                            {
+                              pending: "Pendiente",
+                              received: "Recibido",
+                              approved: "Aprobado",
+                              correction: "Corregir",
+                            }[d.status],
+                            d.status,
+                          )}
+                        </span>
+                        {d.storage_path && !data.demo && (
+                          <a
+                            className="icon-button"
+                            href={`/api/documents/${d.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Open document"
+                          >
+                            <Download size={17} />
+                          </a>
+                        )}
+                        {editable && d.status !== "pending" && (
+                          <button
+                            type="button"
+                            className="button"
+                            disabled={busy}
+                            onClick={() => setReviewDocument(d.id)}
+                          >
+                            {t(locale, "Revisar documento", "Review document")}
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                </section>
               ))}
             </div>
           )}
@@ -735,7 +796,16 @@ export function OpportunityDetail({
           close={() => setReviewDocument(null)}
         />
       )}
-      {modal && (
+      {modal === "company-application" && (
+        <CompanyApplicationForm
+          opportunity={o}
+          workspace={data}
+          locale={locale}
+          refresh={refresh}
+          close={() => setModal(null)}
+        />
+      )}
+      {modal && modal !== "company-application" && (
         <Modal
           title={t(
             locale,
@@ -813,48 +883,13 @@ export function OpportunityDetail({
             </form>
           )}
           {modal === "add-document" && (
-            <form onSubmit={(e) => submit(e, "add_document")}>
-              <Field
-                name="name"
-                label={t(locale, "Nombre del documento", "Document name")}
-                required
-              />
-              <Field name="kind" label={t(locale, "Tipo", "Type")}>
-                <option value="additional">
-                  {t(locale, "Documento adicional", "Additional document")}
-                </option>
-                <option value="analysis_report">
-                  {t(locale, "Informe de análisis", "Analysis report")}
-                </option>
-              </Field>
-              <Field
-                name="period"
-                label={t(locale, "Período o referencia", "Period or reference")}
-              />
-              <Field
-                name="required"
-                label={t(
-                  locale,
-                  "Requerido para traspaso",
-                  "Required for handoff",
-                )}
-              >
-                <option value="true">{t(locale, "Sí", "Yes")}</option>
-                <option value="false">
-                  {t(locale, "Opcional", "Optional")}
-                </option>
-              </Field>
-              <p className="muted">
-                {t(
-                  locale,
-                  "Después de guardar, usa Incorporar archivo para adjuntar el documento.",
-                  "After saving, use Add document to upload the file.",
-                )}
-              </p>
-              <div className="modal-footer">
-                <SaveButton locale={locale} busy={busy} />
-              </div>
-            </form>
+            <DocumentCreate
+              opportunityId={o.id}
+              documents={docs}
+              locale={locale}
+              act={act}
+              onCreated={() => setModal(null)}
+            />
           )}
           {modal === "request-documents" && (
             <form onSubmit={(e) => submit(e, "request_documents")}>

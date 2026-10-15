@@ -333,8 +333,8 @@ export function UnderwritingWorkspace({
         <p>
           {t(
             locale,
-            "Aprueba la aplicación y los cuatro últimos extractos, además de los requisitos obligatorios.",
-            "Approve the application, the latest four statements and all required documents.",
+            "Aprueba la aplicación y al menos cuatro extractos en total, además de los requisitos obligatorios. Se analizarán todos los extractos aprobados de cada banco.",
+            "Approve the application, at least four statements in total and all required documents. All approved statements from every bank will be analyzed.",
           )}
         </p>
       )}
@@ -447,13 +447,29 @@ export function UnderwritingWorkspace({
               </thead>
               <tbody>
                 {report.monthly_financials.map((m) => {
-                  const calculated = report.calculated_metrics?.find(
-                    (c) => c.period === m.period,
-                  );
+                  const calculated =
+                    report.calculated_metrics?.find(
+                      (c) => c.document_id === m.document_id,
+                    ) ||
+                    report.calculated_metrics?.find(
+                      (c) => !c.document_id && c.period === m.period,
+                    );
                   return (
-                    <tr key={m.period}>
+                    <tr key={m.document_id}>
                       <td>
-                        {m.period} · {factLabel(m.confidence, locale)}
+                        {
+                          review.document_snapshot.find(
+                            (d) => d.id === m.document_id,
+                          )?.bank_name
+                        }{" "}
+                        ·{" "}
+                        {m.period ||
+                          t(
+                            locale,
+                            "Período sin confirmar",
+                            "Period unconfirmed",
+                          )}{" "}
+                        · {factLabel(m.confidence, locale)}
                       </td>
                       <td>{amount(m.deposits)}</td>
                       <td>{amount(m.funding_deposits)}</td>
@@ -490,9 +506,16 @@ export function UnderwritingWorkspace({
             )}
           </p>
           {report.monthly_financials.map((m) => (
-            <details key={m.period}>
+            <details key={m.document_id}>
               <summary>
-                {m.period} · {t(locale, "Ver evidencia", "View evidence")}
+                {
+                  review.document_snapshot.find((d) => d.id === m.document_id)
+                    ?.bank_name
+                }{" "}
+                ·{" "}
+                {m.period ||
+                  t(locale, "Período sin confirmar", "Period unconfirmed")}{" "}
+                · {t(locale, "Ver evidencia", "View evidence")}
               </summary>
               <Evidence refs={m.evidence} run={review} locale={locale} />
               <p>

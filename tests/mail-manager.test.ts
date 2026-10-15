@@ -435,9 +435,24 @@ test("live mail works before historical import, requires manual new-thread assoc
       [caseId, closer],
     );
     const lenders = [randomUUID(), randomUUID()];
+    await db.query("select initialize_checklist($1,'MCA')", [caseId]);
+    await db.query(
+      "update documents set status='approved',storage_path='fixture.pdf',content_hash=repeat(md5(id::text),2) where opportunity_id=$1 and kind in ('application','bank_statement')",
+      [caseId],
+    );
+    const packageFiles = (
+      await db.query<{ id: string }>(
+        "select id from documents where opportunity_id=$1 and kind in ('application','bank_statement')",
+        [caseId],
+      )
+    ).rows.map((d) => d.id);
     await db.query(
       "insert into lenders(id,name,email,channel) values($1,'Lender A','a@lender.test','email'),($2,'Lender B','b@lender.test','email')",
       lenders,
+    );
+    await db.query(
+      "insert into lender_contacts(lender_id,email,name) values($1,'review@lender.test','Review contact')",
+      [lenders[0]],
     );
     const upload = randomUUID();
     await db.query(
@@ -460,11 +475,29 @@ test("live mail works before historical import, requires manual new-thread assoc
       request: randomUUID(),
       process: conversation.process_id,
       uploads: [upload],
+      files: packageFiles,
       targets: lenders.map((lender_id, i) => ({
         lender_id,
         email: i === 0 ? "a@lender.test" : "b@lender.test",
+        cc_emails: i === 0 ? ["review@lender.test"] : [],
       })),
     };
+    await assert.rejects(
+      db.query("select queue_mail_lenders($1)", [
+        { ...batch, request: randomUUID(), files: [] },
+      ]),
+      /Include the approved application/,
+    );
+    await assert.rejects(
+      db.query("select queue_mail_lenders($1)", [
+        {
+          ...batch,
+          request: randomUUID(),
+          targets: [{ ...batch.targets[0], cc_emails: ["b@lender.test"] }],
+        },
+      ]),
+      /must belong to this lender/,
+    );
     const result = (
       await db.query<{ sends: { id: string }[] }>(
         "select queue_mail_lenders($1) sends",
@@ -472,6 +505,34 @@ test("live mail works before historical import, requires manual new-thread assoc
       )
     ).rows[0].sends;
     assert.equal(result.length, 2);
+    await db.exec("reset role");
+    const queued = (
+      await db.query<{
+        to_email: string;
+        cc_emails: string[];
+        attachment_ids: string[];
+      }>(
+        "select to_email,cc_emails,attachment_ids from outbox where id=any($1) order by to_email",
+        [result.map((r) => r.id)],
+      )
+    ).rows;
+    assert.deepEqual(queued[0].cc_emails, ["review@lender.test"]);
+    assert.deepEqual(queued[1].cc_emails, []);
+    assert.deepEqual(queued[0].attachment_ids, queued[1].attachment_ids);
+    const frozen = (
+      await db.query<{
+        attachment_snapshot: {
+          id: string;
+          content_hash: string;
+          storage_path: string;
+        }[];
+      }>("select attachment_snapshot from outbox where id=$1", [result[0].id])
+    ).rows[0].attachment_snapshot;
+    assert.equal(frozen.length, packageFiles.length);
+    assert.ok(
+      frozen.every((d) => !!d.content_hash && d.storage_path === "fixture.pdf"),
+    );
+    await asUser(seller);
     assert.deepEqual(
       (
         await db.query<{ sends: unknown }>(

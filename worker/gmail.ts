@@ -668,23 +668,32 @@ export async function sendNext() {
       snapshot.push(asset);
     }
     for (const id of msg.attachment_ids || []) {
-      const doc = checked(
-        await client
-          .from("documents")
-          .select("*")
-          .eq("id", id)
-          .eq("opportunity_id", msg.opportunity_id)
-          .eq("status", "approved")
-          .single(),
-      )!;
+      const frozen = msg.attachment_snapshot?.find(
+        (entry: { id: string; bucket?: string }) =>
+          entry.id === id && entry.bucket === "case-documents",
+      );
+      const doc =
+        frozen ||
+        checked(
+          await client
+            .from("documents")
+            .select("*")
+            .eq("id", id)
+            .eq("opportunity_id", msg.opportunity_id)
+            .eq("status", "approved")
+            .single(),
+        )!;
       if (!doc.storage_path) throw new Error("DOCUMENT_NOT_APPROVED");
       const file = checked(
         await client.storage.from("case-documents").download(doc.storage_path),
       )!;
+      const bytes = Buffer.from(await file.arrayBuffer());
+      if (doc.content_hash && hash(bytes) !== doc.content_hash)
+        throw new Error("ATTACHMENT_HASH_MISMATCH");
       files.push({
         name: doc.name + (doc.storage_path.endsWith(".pdf") ? ".pdf" : ""),
         mime: file.type,
-        bytes: Buffer.from(await file.arrayBuffer()),
+        bytes,
       });
       snapshot.push({
         id: doc.id,

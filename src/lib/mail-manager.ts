@@ -23,7 +23,7 @@ export const outgoingMailSchema = z
     reply_message_id: z.uuid().optional(),
     submission_id: z.uuid().optional(),
     lender_id: z.uuid().optional(),
-    attachment_ids: z.array(z.uuid()).max(10).default([]),
+    attachment_ids: z.array(z.uuid()).max(20).default([]),
     gmail_file_ids: z.array(z.uuid()).max(10).default([]),
     upload_ids: z.array(z.uuid()).max(20).default([]),
     targets: z
@@ -31,6 +31,7 @@ export const outgoingMailSchema = z
         z.object({
           lender_id: z.uuid(),
           email: address,
+          cc_emails: z.array(address).max(20).default([]),
           submission_id: z.uuid().optional(),
         }),
       )

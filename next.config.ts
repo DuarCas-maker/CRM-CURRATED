@@ -22,7 +22,7 @@ const config: NextConfig = {
           {
             key: "Content-Security-Policy",
             // Chrome checks the Google redirect after the same-origin OAuth form submission.
-            value: `default-src 'self'; script-src 'self' 'unsafe-inline' ${process.env.NODE_ENV === "development" ? "'unsafe-eval'" : ""}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' blob: ${supabaseOrigin} ${supabaseOrigin.replace(/^http/, "ws")} ${process.env.NODE_ENV === "development" ? "ws://localhost:* ws://127.0.0.1:*" : ""}; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://accounts.google.com`,
+            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${process.env.NODE_ENV === "development" ? "'unsafe-eval'" : ""}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' blob: data:; connect-src 'self' blob: ${supabaseOrigin} ${supabaseOrigin.replace(/^http/, "ws")} ${process.env.NODE_ENV === "development" ? "ws://localhost:* ws://127.0.0.1:*" : ""}; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://accounts.google.com`,
           },
         ],
       },

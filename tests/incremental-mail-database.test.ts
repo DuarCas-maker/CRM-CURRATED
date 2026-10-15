@@ -393,6 +393,13 @@ test("incremental approvals, pending team links, historical duplicate matching a
         { lender_id: lenders[0], email: "anthony@lender.test" },
         { lender_id: lenders[1], email: "other@lender.test" },
       ]);
+    await db.exec("reset role");
+    await db.query("select initialize_checklist($1,'MCA')", [caseId]);
+    await db.query(
+      "update documents set status='approved',storage_path='fixture.pdf',content_hash=repeat(md5(id::text),2) where opportunity_id=$1 and kind in ('application','bank_statement')",
+      [caseId],
+    );
+    await asUser(admin);
     const queue = async (key = request, subject = "Client A") =>
       db.query(
         "select queue_lender_emails($1,$2,$3,$4,$5,'Please evaluate','{}','{}',$6)",

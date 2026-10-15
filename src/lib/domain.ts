@@ -103,6 +103,8 @@ export interface Document {
   kind: string;
   period: string;
   status: "pending" | "received" | "approved" | "correction";
+  bank_name?: string;
+  statement_number?: number | null;
   source: string;
   created_at: string;
   storage_path?: string;
@@ -432,6 +434,18 @@ export function handoffErrors(
   );
   if (required.length === 0 || required.some((d) => d.status !== "approved"))
     errors.push("documents");
+  const caseDocs = documents.filter((d) => d.opportunity_id === o.id);
+  if (
+    !caseDocs.some(
+      (d) => d.kind === "application" && d.status === "approved",
+    ) ||
+    new Set(
+      caseDocs
+        .filter((d) => d.kind === "bank_statement" && d.status === "approved")
+        .map((d) => d.content_hash || d.id),
+    ).size < 4
+  )
+    if (!errors.includes("documents")) errors.push("documents");
   if (
     !analyses.some(
       (a) =>

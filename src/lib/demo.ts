@@ -252,9 +252,12 @@ export function demoWorkspace(): Workspace {
           ].map((name, j) => ({
             id: `${o.id}d${j}`,
             opportunity_id: o.id,
-            name,
+            name: j ? `Bank Statement ${j}` : name,
             kind: j === 0 ? "application" : "bank_statement",
             period: j === 0 ? "" : `2026-0${5 + j}`,
+            bank_name: j ? "Demo Bank" : "",
+            statement_number: j || null,
+            required: !j,
             status: o.application_complete
               ? "approved"
               : j === 4

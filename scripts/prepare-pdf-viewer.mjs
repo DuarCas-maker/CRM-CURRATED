@@ -10,7 +10,7 @@ await cp(
   resolve(source, "build/pdf.worker.min.mjs"),
   resolve(target, "pdf.worker.min.mjs"),
 );
-for (const directory of ["cmaps", "standard_fonts"]) {
+for (const directory of ["cmaps", "standard_fonts", "wasm", "iccs"]) {
   await cp(resolve(source, directory), resolve(target, directory), {
     recursive: true,
   });

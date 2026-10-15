@@ -255,7 +255,13 @@ test("documents stay within their opportunity, review the exact version, preserv
     assert.equal((await state()).status, "received");
     assert.equal((await state()).review_notes, "");
     await assert.rejects(call("review_document", review), /Document changed/);
-    await assert.rejects(db.query("select crm_command('review_document',$1,$2)",[JSON.stringify({...review,id:doc.id}),randomUUID()]),/Document changed/);
+    await assert.rejects(
+      db.query("select crm_command('review_document',$1,$2)", [
+        JSON.stringify({ ...review, id: doc.id }),
+        randomUUID(),
+      ]),
+      /Document changed/,
+    );
     assert.equal(
       (
         await db.query("select * from document_versions where document_id=$1", [
@@ -314,13 +320,10 @@ test("documents stay within their opportunity, review the exact version, preserv
       ).rows[0].source_gmail_file_id,
       saved,
     );
-    await assert.rejects(
-      call("review_document", {
-        ...review,
-        period: docs.filter((d) => d.opportunity_id === caseId)[1].period,
-      }),
-      /unique constraint/,
-    );
+    await call("review_document", {
+      ...review,
+      period: docs.filter((d) => d.opportunity_id === caseId)[1].period,
+    });
     await asUser(outsider);
     assert.equal(
       (await db.query("select * from document_reviews")).rows.length,

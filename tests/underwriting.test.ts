@@ -35,7 +35,7 @@ function fixture(documents: UnderwritingDocument[]): UnderwritingReport {
       .filter((d) => d.kind === "bank_statement")
       .map((d) => ({
         document_id: d.id,
-        period: d.period,
+        period: d.period || "2026-09",
         deposits: 100000,
         funding_deposits: 20000,
         internal_transfers: 10000,
@@ -104,6 +104,34 @@ test("underwriting calculates true revenue and affordability without counting fi
   assert.throws(
     () => calculateUnderwritingMetrics(report),
     /INCONSISTENT_REVENUE/,
+  );
+});
+
+test("different banks may share a month and their metrics remain tied to the correct document", () => {
+  const overlapping = [
+    { ...docs[0], period: "", bank_name: "First Bank" },
+    { ...docs[0], id: randomUUID(), period: "", bank_name: "Second Bank" },
+  ];
+  const report = fixture(overlapping);
+  report.monthly_financials[1].deposits = 200000;
+  const validated = validateUnderwritingReport(report, overlapping, []);
+  assert.notEqual(
+    validated.calculated_metrics[0].document_id,
+    validated.calculated_metrics[1].document_id,
+  );
+  assert.notEqual(
+    validated.calculated_metrics[0].true_revenue,
+    validated.calculated_metrics[1].true_revenue,
+  );
+  const unknown = fixture([{ ...docs[0], period: "" }]);
+  unknown.monthly_financials[0].period = "";
+  unknown.monthly_financials[0].confidence = "not_confirmed";
+  assert.ok(
+    validateUnderwritingReport(
+      unknown,
+      [{ ...docs[0], period: "" }],
+      [],
+    ).missing_information.some((v) => v.includes("período")),
   );
 });
 test("reports reject evidence from another case, duplicate periods, invented lenders and unsupported SBA conclusions", () => {
@@ -315,8 +343,8 @@ test("queued underwriting freezes inputs, requires human approval, fences worker
     await assert.rejects(request(), /Approve the application/);
     await db.exec("reset role");
     await db.query(
-      "update documents set status='approved',content_hash=$2,storage_path='fixture.pdf' where opportunity_id=$1",
-      [caseId, hash(bytes)],
+      "update documents set status='approved',content_hash=repeat(md5(id::text),2),storage_path='fixture.pdf' where opportunity_id=$1",
+      [caseId],
     );
     await asUser(seller);
     const run = (await request()).rows[0].id;

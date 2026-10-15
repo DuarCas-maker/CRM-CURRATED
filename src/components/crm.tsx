@@ -374,8 +374,16 @@ export default function CRM({ initial }: { initial: Workspace }) {
     setBusy(true);
     setError("");
     try {
-      if (data.demo) setData(demoAction(data, { ...profile }, kind, payload));
-      else {
+      if (data.demo) {
+        const next = demoAction(data, { ...profile }, kind, payload);
+        if (kind === "add_document")
+          result = {
+            document_id: next.documents.find(
+              (d) => !data.documents.some((old) => old.id === d.id),
+            )?.id,
+          };
+        setData(next);
+      } else {
         const normalized = Object.fromEntries(
           Object.entries(payload).map(([key, value]) => [
             key,

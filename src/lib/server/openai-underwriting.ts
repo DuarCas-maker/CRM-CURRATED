@@ -36,6 +36,8 @@ export function underwritingRequest(options: {
           filename: d.snapshot.name,
           kind: d.snapshot.kind,
           period: d.snapshot.period,
+          bank_name: d.snapshot.bank_name || null,
+          statement_number: d.snapshot.statement_number || null,
         })),
         lender_catalog: options.lenders,
       }),
@@ -71,14 +73,14 @@ export function underwritingRequest(options: {
         detail: "high",
       });
   }
-  if (options.documents.length > 10)
+  if (options.documents.length > 24)
     throw new UnderwritingProviderError("DOCUMENT_COUNT_LIMIT");
   return {
     model: options.model,
     reasoning: { effort: "low" },
     instructions:
       options.prompt +
-      "\nThe supplied structured screening_rules are the authoritative numerical criteria, overriding any older numerical thresholds in the prompt. They are internal screening rules, not verified lender or SBA eligibility policies.",
+      "\nThe supplied structured screening_rules are the authoritative numerical criteria, overriding any older numerical thresholds in the prompt. They are internal screening rules, not verified lender or SBA eligibility policies. Analyze every supplied bank statement, across every bank. When a manifest period is empty, extract its YYYY-MM period from the file and cite the evidence; never infer it from the numbered filename. Different documents and banks may share the same period. Flag missing periods or insufficient month coverage for the human reviewer.",
     store: false,
     max_output_tokens: options.maxOutputTokens,
     input: [{ role: "user", content }],

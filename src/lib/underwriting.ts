@@ -147,6 +147,8 @@ export type UnderwritingDocument = {
   name: string;
   kind: string;
   period: string;
+  bank_name?: string;
+  statement_number?: number | null;
   content_hash: string;
   storage_path: string;
   required: boolean;
@@ -221,6 +223,7 @@ export function calculateUnderwritingMetrics(report: UnderwritingReport) {
     if (revenue !== null && revenue < 0)
       throw new Error("INCONSISTENT_REVENUE");
     return {
+      document_id: m.document_id,
       period: m.period,
       true_revenue: revenue,
       debt_to_revenue:
@@ -262,14 +265,19 @@ export function validateUnderwritingReport(
   ];
   if (refs.some((r) => !documentIds.has(r.document_id)))
     throw new Error("UNKNOWN_EVIDENCE");
-  const months = new Set<string>();
+  const statements = new Set<string>();
   for (const m of report.monthly_financials) {
     const doc = banks.find(
-      (d) => d.id === m.document_id && d.period === m.period,
+      (d) => d.id === m.document_id && (!d.period || d.period === m.period),
     );
-    if (!doc || months.has(m.period))
+    if (
+      !doc ||
+      statements.has(m.document_id) ||
+      (!/^\d{4}-(0[1-9]|1[0-2])$/.test(m.period) &&
+        !(m.period === "" && m.confidence !== "confirmed"))
+    )
       throw new Error("INVALID_STATEMENT_PERIOD");
-    months.add(m.period);
+    statements.add(m.document_id);
     if (
       m.confidence === "confirmed" &&
       !m.evidence.some(
@@ -277,11 +285,17 @@ export function validateUnderwritingReport(
       )
     )
       throw new Error("MISSING_EVIDENCE");
-    const days = new Date(
-      Number(m.period.slice(0, 4)),
-      Number(m.period.slice(5)),
-      0,
-    ).getDate();
+    const days = m.period
+      ? new Date(
+          Number(m.period.slice(0, 4)),
+          Number(m.period.slice(5)),
+          0,
+        ).getDate()
+      : 31;
+    if (!m.period)
+      report.missing_information.push(
+        `Confirmar período del documento ${m.document_id}`,
+      );
     if ((m.negative_balance_days ?? 0) > days || (m.net_debit_days ?? 0) > days)
       throw new Error("INVALID_DAY_COUNT");
     if (
@@ -294,7 +308,7 @@ export function validateUnderwritingReport(
     )
       throw new Error("INCONSISTENT_DAILY_BALANCES");
   }
-  if (banks.some((b) => !months.has(b.period)))
+  if (banks.some((b) => !statements.has(b.id)))
     throw new Error("MISSING_STATEMENT");
   if (
     [...report.positions, ...report.risks].some(

@@ -104,6 +104,17 @@ export function MailEditor({
       (start.targets || []).map((l) => [l.lender_id, l.email]),
     ),
   );
+  const [targetCopies, setTargetCopies] = useState<Record<string, string[]>>(
+    Object.fromEntries(
+      (start.targets || []).map((target) => [
+        target.lender_id,
+        target.cc_emails || [],
+      ]),
+    ),
+  );
+  const [packagePreview, setPackagePreview] = useState<ReturnType<
+    typeof payload
+  > | null>(null);
   const [uploads, setUploads] = useState<
     { id: string; name: string; size: number }[]
   >(
@@ -206,6 +217,7 @@ export function MailEditor({
     targets: Object.entries(targets).map(([lender_id, email]) => ({
       lender_id,
       email,
+      cc_emails: (targetCopies[lender_id] || []).filter((e) => e !== email),
       ...(targetEvaluations[lender_id]
         ? { submission_id: targetEvaluations[lender_id] }
         : {}),
@@ -347,6 +359,10 @@ export function MailEditor({
             const p = payload();
             if (mode === "lenders")
               p.to_email = Object.values(targets)[0] || "";
+            if (mode === "lenders") {
+              setPackagePreview(p);
+              return;
+            }
             const result = await act(
               data.gmail_history_enabled && !data.demo
                 ? "mail_send"
@@ -382,6 +398,7 @@ export function MailEditor({
                   setCaseId(e.target.value);
                   setProcess("");
                   setTargets({});
+                  setTargetCopies({});
                   setTargetEvaluations({});
                   setUploads([]);
                   setDocuments([]);
@@ -560,6 +577,48 @@ export function MailEditor({
                               </option>
                             ))}
                         </select>
+                      )}
+                      {l.id in targets && (
+                        <fieldset disabled={locked}>
+                          <legend>
+                            {t(
+                              locale,
+                              "Copias (CC) de este lender",
+                              "Copies (CC) for this lender",
+                            )}
+                          </legend>
+                          {(data.lender_contacts || [])
+                            .filter(
+                              (c) =>
+                                c.lender_id === l.id &&
+                                c.email !== targets[l.id],
+                            )
+                            .map((c) => (
+                              <label
+                                key={c.email}
+                                className="document-review-confirm"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={(targetCopies[l.id] || []).includes(
+                                    c.email,
+                                  )}
+                                  onChange={(e) =>
+                                    setTargetCopies((old) => ({
+                                      ...old,
+                                      [l.id]: e.target.checked
+                                        ? [...(old[l.id] || []), c.email]
+                                        : (old[l.id] || []).filter(
+                                            (email) => email !== c.email,
+                                          ),
+                                    }))
+                                  }
+                                />
+                                {c.name ? `${c.name} · ` : ""}
+                                {c.email}
+                              </label>
+                            ))}
+                        </fieldset>
                       )}
                       {l.id in targets && (
                         <select
@@ -968,11 +1027,105 @@ export function MailEditor({
             label={
               mode === "reply"
                 ? t(locale, "Enviar respuesta", "Send reply")
-                : t(locale, "Enviar correo", "Send email")
+                : mode === "lenders"
+                  ? t(
+                      locale,
+                      "Revisar paquete y correos",
+                      "Review package and emails",
+                    )
+                  : t(locale, "Enviar correo", "Send email")
             }
           />
         </div>
       </form>
+      {packagePreview && (
+        <Modal
+          wide
+          title={t(
+            locale,
+            "Revisar envío a lenders",
+            "Review lender submission",
+          )}
+          close={() => {
+            if (!locked) setPackagePreview(null);
+          }}
+        >
+          <p>
+            {t(
+              locale,
+              "Se enviará un correo independiente por lender con los mismos documentos seleccionados.",
+              "A separate email will be sent to each lender with the same selected documents.",
+            )}
+          </p>
+          {packagePreview.targets.map((target) => (
+            <p key={target.lender_id}>
+              <strong>
+                {data.lenders.find((l) => l.id === target.lender_id)?.name}
+              </strong>
+              <br />
+              To: {target.email}
+              <br />
+              CC: {target.cc_emails.join(", ") || "—"}
+            </p>
+          ))}
+          <h3>{packagePreview.subject}</h3>
+          <p style={{ whiteSpace: "pre-wrap" }}>{packagePreview.body}</p>
+          <h3>{t(locale, "Archivos seleccionados", "Selected files")}</h3>
+          <ul>
+            {packagePreview.attachment_ids.map((id) => (
+              <li key={id}>{data.documents.find((d) => d.id === id)?.name}</li>
+            ))}
+            {packagePreview.gmail_file_ids.map((id) => (
+              <li key={id}>
+                {data.gmail_files?.find((d) => d.id === id)?.name || id}
+              </li>
+            ))}
+            {uploads
+              .filter((f) => packagePreview.upload_ids.includes(f.id))
+              .map((f) => (
+                <li key={f.id}>{f.name}</li>
+              ))}
+          </ul>
+          {error && (
+            <p className="error-banner" role="alert">
+              {error}
+            </p>
+          )}
+          <div className="modal-footer">
+            <button
+              className="button"
+              disabled={locked}
+              onClick={() => setPackagePreview(null)}
+            >
+              {t(locale, "Volver a editar", "Back to editing")}
+            </button>
+            <button
+              className="button primary"
+              disabled={locked || submitting.current}
+              onClick={async () => {
+                if (submitting.current) return;
+                submitting.current = true;
+                setError("");
+                try {
+                  const result = await act("mail_send", packagePreview);
+                  onQueued?.(
+                    packagePreview,
+                    typeof result === "string" ? result : undefined,
+                  );
+                  setPackagePreview(null);
+                  close();
+                } catch (e) {
+                  setError((e as Error).message);
+                } finally {
+                  submitting.current = false;
+                }
+              }}
+            >
+              {t(locale, "Confirmar y enviar", "Confirm and send")}
+            </button>
+          </div>
+        </Modal>
+      )}
     </MailEditorFrame>
   );
 }

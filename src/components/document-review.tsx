@@ -6,6 +6,8 @@ import type { DocumentSelection } from "@/lib/document-review";
 import type { Action } from "./crm";
 import { Modal, t } from "./ui";
 import { GmailPdfPreview } from "./gmail-pdf-preview";
+import { DocumentCreate } from "./document-create";
+import { documentLabel } from "@/lib/document-labels";
 
 type Context = {
   name: string;
@@ -51,7 +53,7 @@ export function DocumentReview({
   const [context, setContext] = useState<Context | null>(null);
   const [target, setTarget] = useState("");
   const [notes, setNotes] = useState("");
-  const [period, setPeriod] = useState("");
+  const [bank, setBank] = useState("");
   const [status, setStatus] = useState("approved");
   const [confirmed, setConfirmed] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -63,7 +65,6 @@ export function DocumentReview({
     hash: string | null;
   } | null>(null);
   const [reload, setReload] = useState(0);
-  const [newName, setNewName] = useState("");
   useEffect(() => {
     const controller = new AbortController();
     setContext(null);
@@ -118,14 +119,16 @@ export function DocumentReview({
         }
         setContext(body);
         setTarget(
-          body.document_id ||
+          (previous) =>
+            body.document_id ||
+            (body.documents.some((d) => d.id === previous) ? previous : "") ||
             body.documents.find((d) => d.status === "pending")?.id ||
             body.documents[0]?.id ||
             "",
         );
         const doc = body.documents.find((d) => d.id === body.document_id);
         setNotes(doc?.review_notes || "");
-        setPeriod(doc?.period || "");
+        setBank(doc?.bank_name || "");
         setStatus(doc?.status === "correction" ? "correction" : "approved");
       } catch (e) {
         if (!controller.signal.aborted) setError((e as Error).message);
@@ -168,11 +171,21 @@ export function DocumentReview({
     (d) => d.id === (context.document_id || target),
   );
   const incorporated = !!context?.document_id;
+  useEffect(() => {
+    setBank(doc?.bank_name || "");
+  }, [doc?.id, doc?.bank_name]);
   async function save() {
     if (!context || !doc) return;
     setBusy(true);
     setError("");
     try {
+      if (doc.kind === "bank_statement" && bank.trim() !== doc.bank_name) {
+        await act("classify_document", {
+          opportunity_id: context.opportunity.id,
+          document_id: doc.id,
+          bank_name: bank.trim(),
+        });
+      }
       if (!incorporated) {
         if (
           doc.storage_path &&
@@ -201,7 +214,7 @@ export function DocumentReview({
           expected_hash: doc.content_hash || "demo",
           status,
           notes,
-          period,
+          period: doc.period || "",
         });
         close();
       }
@@ -312,17 +325,28 @@ export function DocumentReview({
                       <label className="field">
                         {t(
                           locale,
-                          "Requisito del expediente",
-                          "Case requirement",
+                          "Guardar este archivo como",
+                          "Save this file as",
                         )}
                         <select
                           value={target}
                           disabled={busy || !context.editable}
-                          onChange={(e) => setTarget(e.target.value)}
+                          onChange={(e) => {
+                            setTarget(e.target.value);
+                            setBank(
+                              context.documents.find(
+                                (d) => d.id === e.target.value,
+                              )?.bank_name || "",
+                            );
+                          }}
                         >
                           {context.documents.map((d) => (
                             <option key={d.id} value={d.id}>
-                              {d.name} · {d.period} · {d.status}
+                              {d.bank_name ? `${d.bank_name} · ` : ""}
+                              {documentLabel(d, locale)}
+                              {d.storage_path
+                                ? ` · ${t(locale, "Ya tiene un archivo", "Has a file")}`
+                                : ""}
                             </option>
                           ))}
                         </select>
@@ -337,61 +361,30 @@ export function DocumentReview({
                     </>
                   )}
                   {context.editable && (
-                    <form
-                      onSubmit={async (e) => {
-                        e.preventDefault();
-                        setBusy(true);
-                        setError("");
-                        try {
-                          await act("add_document", {
-                            opportunity_id: context.opportunity.id,
-                            name: newName,
-                            kind: "additional",
-                            required: false,
-                          });
-                          setNewName("");
+                    <details>
+                      <summary>
+                        {t(
+                          locale,
+                          "Crear otro extracto o documento",
+                          "Create another statement or document",
+                        )}
+                      </summary>
+                      <DocumentCreate
+                        opportunityId={context.opportunity.id}
+                        documents={context.documents}
+                        locale={locale}
+                        act={act}
+                        onCreated={(id) => {
+                          if (id) setTarget(id);
                           setReload((n) => n + 1);
-                        } catch (e) {
-                          setError((e as Error).message);
-                        } finally {
-                          setBusy(false);
-                        }
-                      }}
-                    >
-                      <label className="field">
-                        {t(locale, "Otro documento", "Additional document")}
-                        <input
-                          value={newName}
-                          maxLength={200}
-                          onChange={(e) => setNewName(e.target.value)}
-                          placeholder={t(
-                            locale,
-                            "Nombre del documento adicional",
-                            "Additional document name",
-                          )}
-                        />
-                      </label>
-                      <button
-                        className="button"
-                        disabled={busy || !newName.trim()}
-                      >
-                        {t(locale, "Agregar al checklist", "Add to checklist")}
-                      </button>
-                    </form>
+                        }}
+                      />
+                    </details>
                   )}
                 </>
               ) : (
                 <>
-                  <p>{doc?.name}</p>
-                  <label className="field">
-                    {t(locale, "Período", "Period")}
-                    <input
-                      type={doc?.kind === "bank_statement" ? "month" : "text"}
-                      value={period}
-                      disabled={!context.editable || busy}
-                      onChange={(e) => setPeriod(e.target.value)}
-                    />
-                  </label>
+                  <p>{doc && documentLabel(doc, locale)}</p>
                   <label className="field">
                     {t(locale, "Resultado de revisión", "Review outcome")}
                     <select
@@ -436,8 +429,12 @@ export function DocumentReview({
                       />
                       {t(
                         locale,
-                        "Revisé el contenido, la empresa y el período del archivo.",
-                        "I reviewed the file contents, business and period.",
+                        doc?.kind === "application"
+                          ? "Confirmé que la aplicación está completa, firmada y pertenece a esta empresa."
+                          : "Revisé el contenido y confirmé que el archivo pertenece a esta empresa.",
+                        doc?.kind === "application"
+                          ? "I confirmed the application is complete, signed and belongs to this business."
+                          : "I reviewed the contents and confirmed the file belongs to this business.",
                       )}
                     </label>
                   )}
@@ -485,6 +482,29 @@ export function DocumentReview({
                   </details>
                 </>
               )}
+              {doc?.kind === "bank_statement" && (
+                <label className="field">
+                  {t(locale, "Banco de este extracto", "Statement bank")}
+                  <input
+                    value={bank}
+                    maxLength={120}
+                    onChange={(e) => setBank(e.target.value)}
+                    disabled={busy || !context.editable}
+                    placeholder={t(
+                      locale,
+                      "Escribe el nombre del banco",
+                      "Enter the bank name",
+                    )}
+                  />
+                  <small>
+                    {t(
+                      locale,
+                      "El período se identificará al analizar el archivo.",
+                      "The statement period will be identified during file analysis.",
+                    )}
+                  </small>
+                </label>
+              )}
               {!context.editable && (
                 <p>
                   {t(
@@ -505,14 +525,13 @@ export function DocumentReview({
                 busy ||
                 !context.editable ||
                 !doc ||
+                (doc.kind === "bank_statement" && !bank.trim()) ||
                 (!data.demo && !preview) ||
                 (!data.demo &&
                   incorporated &&
                   preview?.hash !== doc.content_hash) ||
                 (incorporated &&
-                  (!confirmed ||
-                    (status === "correction" && !notes.trim()) ||
-                    (doc.kind === "bank_statement" && !period)))
+                  (!confirmed || (status === "correction" && !notes.trim())))
               }
             >
               {busy
