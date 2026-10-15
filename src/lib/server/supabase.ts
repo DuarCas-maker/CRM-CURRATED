@@ -51,8 +51,9 @@ export class HttpError extends Error {
   constructor(
     public status: number,
     message: string,
+    options?: ErrorOptions,
   ) {
-    super(message);
+    super(message, options);
   }
 }
 export async function requireUser() {
@@ -129,10 +130,18 @@ export function jsonError(e: unknown) {
     { status: 500 },
   );
 }
-export function checkDb<T>(result: {
-  data: T;
-  error: { message: string } | null;
-}): T {
-  if (result.error) throw new HttpError(400, result.error.message);
+export function checkDb<T>(
+  result: {
+    data: T;
+    error: { message: string; code?: string } | null;
+  },
+  operation?: string,
+): T {
+  if (result.error)
+    throw new HttpError(
+      400,
+      result.error.message,
+      operation ? { cause: { operation, code: result.error.code } } : undefined,
+    );
   return result.data;
 }

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { gmailHistoryEnabled } from "../gmail-feature";
 import { teamLabels } from "./gmail-team";
 import { crmExtensionsReady } from "./crm-readiness";
+import { loadWorkspaceMail } from "./workspace-mail";
 export async function loadWorkspace(
   params = new URLSearchParams(),
 ): Promise<Workspace> {
@@ -56,16 +57,19 @@ export async function loadWorkspace(
     )
       leadQuery = leadQuery.eq("verification", params.get("stage"));
     const result = await leadQuery.range(page * 100, page * 100 + 99);
-    leadResponse = { data: checkDb(result) || [], count: result.count };
+    leadResponse = {
+      data: checkDb(result, "lead_workspace") || [],
+      count: result.count,
+    };
   }
+  const opportunityView =
+    !caseId && params.get("view") === "tasks"
+      ? "opportunity_tasks"
+      : !caseId && params.get("view") === "inbox"
+        ? "opportunity_inbox"
+        : "opportunity_workspace";
   let query = db
-    .from(
-      !caseId && params.get("view") === "tasks"
-        ? "opportunity_tasks"
-        : !caseId && params.get("view") === "inbox"
-          ? "opportunity_inbox"
-          : "opportunity_workspace",
-    )
+    .from(opportunityView)
     .select("*", { count: "exact" })
     .is("archived_at", null)
     .order("created_at", { ascending: false });
@@ -81,7 +85,9 @@ export async function loadWorkspace(
     if (since) query = query.gte("created_at", since);
   }
   const response = await query.range(page * 100, page * 100 + 99);
-  const opportunities = preparing ? [] : checkDb(response) || [];
+  const opportunities = preparing
+    ? []
+    : checkDb(response, opportunityView) || [];
   const caseIds = opportunities.map((o) => o.id);
   if (gmailHistoryEnabled() && caseIds.length) {
     const metadata =
@@ -90,6 +96,7 @@ export async function loadWorkspace(
           .from("opportunities")
           .select("id,primary_account_id,historical_approved_at")
           .in("id", caseIds),
+        "opportunities.gmail_metadata",
       ) || [];
     for (const o of opportunities)
       Object.assign(o, metadata.find((m) => m.id === o.id) || {});
@@ -102,6 +109,7 @@ export async function loadWorkspace(
       campaign_filter: campaign,
       since_filter: since,
     }),
+    "workspace_stats",
   );
   const preferences = checkDb(
     await db
@@ -109,6 +117,7 @@ export async function loadWorkspace(
       .select("internal,email,push,locale")
       .eq("user_id", profile.id)
       .maybeSingle(),
+    "notification_preferences",
   ) || { internal: true, email: false, push: false, locale: "es" };
   const queries = [
     ["profiles", "profiles"],
@@ -170,7 +179,7 @@ export async function loadWorkspace(
         .limit(related.has(key) ? 3000 : 500);
       if (related.has(key)) q = q.in("opportunity_id", caseIds);
       if (key === "lenders") q = q.is("archived_at", null);
-      return [key, checkDb(await q) || []] as const;
+      return [key, checkDb(await q, table) || []] as const;
     }),
   );
   const data = Object.fromEntries(entries) as unknown as Workspace;
@@ -185,7 +194,7 @@ export async function loadWorkspace(
     for (let offset = 0; ; offset += 1000) {
       let q = db.from(table).select("*").order(sort);
       if (table === "lenders") q = q.is("archived_at", null);
-      const chunk = checkDb(await q.range(offset, offset + 999)) || [];
+      const chunk = checkDb(await q.range(offset, offset + 999), table) || [];
       rows.push(...chunk);
       if (chunk.length < 1000) return rows;
     }
@@ -198,6 +207,7 @@ export async function loadWorkspace(
           .select("account_id")
           .eq("user_id", profile.id)
           .eq("can_send", true),
+        "mail_permissions",
       ) || [];
     data.sender_account_ids = data.accounts
       .filter(
@@ -208,32 +218,16 @@ export async function loadWorkspace(
       )
       .map((a) => a.id);
     data.mail_sends =
-      checkDb(await db.rpc("mail_send_status", { cases: caseIds })) || [];
+      checkDb(
+        await db.rpc("mail_send_status", { cases: caseIds }),
+        "mail_send_status",
+      ) || [];
   }
   const conversations = data.conversations as Workspace["conversations"];
-  const messages =
-    checkDb(
-      await db
-        .from("messages")
-        .select("*")
-        .in(
-          "conversation_id",
-          conversations.map((c) => c.id),
-        )
-        .order("sent_at", { ascending: false })
-        .limit(1000),
-    ) || [];
-  const attachments =
-    checkDb(
-      await db
-        .from("message_attachments")
-        .select("*")
-        .in(
-          "message_id",
-          messages.map((m) => m.id),
-        )
-        .limit(1000),
-    ) || [];
+  const { messages, attachments } = await loadWorkspaceMail(
+    db,
+    conversations.map((c) => c.id),
+  );
   if (gmailHistoryEnabled()) {
     const labels = await teamLabels(messages.map((m) => m.sender));
     for (const message of messages)
@@ -286,6 +280,7 @@ export async function loadWorkspace(
               attention_filter: params.get("attention") || "all",
               cursor_offset: page * 50,
             }),
+            "operational_dashboard",
           ),
         }
       : {}),

@@ -12,7 +12,7 @@ export async function crmExtensionsReady(db: SupabaseClient) {
     ["PGRST205", "PGRST204", "42P01"].includes(result.error.code)
   )
     return false;
-  return !!checkDb(result);
+  return !!checkDb(result, "operational_settings");
 }
 export async function requireCrmExtensions(db: SupabaseClient) {
   if (!(await crmExtensionsReady(db)))

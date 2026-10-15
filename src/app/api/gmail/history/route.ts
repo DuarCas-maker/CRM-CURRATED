@@ -333,7 +333,7 @@ export async function GET(request: Request) {
         .eq("account_id", selectedRun.account_id)
         .not("imported_at", "is", null),
     ]);
-    tabCounts.forEach(checkDb);
+    tabCounts.forEach((result) => checkDb(result));
     return Response.json(
       {
         accounts,
