@@ -5,6 +5,9 @@ import { PDFDocument } from "pdf-lib";
 import {
   companyApplicationSchema,
   validateCompleteApplication,
+  formatTaxId,
+  adultBirthDate,
+  usStates,
 } from "../src/lib/company-application";
 import { companyApplicationPdf } from "../src/lib/server/company-application-pdf";
 import { featureDatabase } from "./feature-database";
@@ -29,6 +32,72 @@ const data = companyApplicationSchema.parse({
       ownership: 100,
     },
   ],
+});
+
+test("reference application keeps optional contact/address fields optional and validates formats, dates and both owners", () => {
+  const minimal = companyApplicationSchema.parse({
+    ...data,
+    business_address: "",
+    commercial_name: "",
+    commercial_email: "",
+    identifier: "",
+    owners: [
+      {
+        name: "Fixture Owner",
+        ssn: "000-00-0000",
+        date_of_birth: "1980-01-01",
+        ownership: 50.5,
+      },
+    ],
+  });
+  validateCompleteApplication(minimal);
+  validateCompleteApplication({
+    ...minimal,
+    owners: [minimal.owners[0], { ...minimal.owners[0], ownership: 49.5 }],
+  });
+  assert.equal(formatTaxId("123456789", "ein"), "12-3456789");
+  assert.equal(formatTaxId("123456789", "ssn"), "123-45-6789");
+  assert.equal(formatTaxId("12-3456789", "ein"), "12-3456789");
+  assert.equal(adultBirthDate(new Date("2024-02-29T12:00:00Z")), "2006-02-28");
+  assert.equal(usStates.length, 51);
+  assert.throws(() =>
+    validateCompleteApplication({ ...minimal, ein: "123456789" }),
+  );
+  assert.throws(() =>
+    validateCompleteApplication({ ...minimal, incorporation_state: "XX" }),
+  );
+  assert.throws(() =>
+    validateCompleteApplication({ ...minimal, inception_date: "2020-02-30" }),
+  );
+  assert.throws(() =>
+    validateCompleteApplication({
+      ...minimal,
+      owners: [{ ...minimal.owners[0], date_of_birth: "2020-01-01" }],
+    }),
+  );
+  assert.throws(() =>
+    validateCompleteApplication({
+      ...minimal,
+      owners: [{ ...minimal.owners[0], ownership: "" }],
+    }),
+  );
+  assert.throws(() =>
+    validateCompleteApplication({
+      ...minimal,
+      owners: [...minimal.owners, { ...minimal.owners[0], ssn: "" }],
+    }),
+  );
+  assert.throws(() =>
+    validateCompleteApplication({
+      ...minimal,
+      owners: [{ ...minimal.owners[0], email: "invalid" }],
+    }),
+  );
+  assert.equal(
+    companyApplicationSchema.parse(data).business_city,
+    "",
+    "legacy records retain old addresses and gain empty structured fields",
+  );
 });
 test("application requires the sample fields and creates an unsigned draft without inventing consent", async () => {
   validateCompleteApplication(data);

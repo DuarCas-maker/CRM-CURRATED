@@ -32,6 +32,18 @@ export async function POST(request: Request) {
     );
     if (!parsed.success) throw new HttpError(400, "Invalid request");
     const { kind, payload: p, idempotency_key } = parsed.data;
+    if (kind === "move_bank_documents") {
+      const result = await db.rpc("move_bank_documents", {
+        p,
+        request_key: idempotency_key,
+      });
+      if (result.error && ["PGRST202", "42883"].includes(result.error.code))
+        throw new HttpError(
+          503,
+          "Aplica la migración 035_bank_document_management.sql en Supabase para cambiar bancos y ordenar extractos. / Apply migration 035_bank_document_management.sql in Supabase to manage statement banks and order.",
+        );
+      return Response.json({ result: checkDb(result) });
+    }
     if (["add_document", "classify_document"].includes(kind))
       return Response.json({
         result: checkDb(

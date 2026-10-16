@@ -3068,6 +3068,9 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--charcoal); }
 .cw-message-files .document-import-button { background: #e2e3e5; border: 1px solid #85898f; color: #15181d; font-weight: 600; padding: 7px 10px; border-radius: 6px; }
 .cw-message-files .document-import-button:hover { background: #cdd0d4; border-color: #535861; }
 .document-bank-group { margin-top: 22px; }
+.bank-management-toolbar, .bank-move-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.bank-move-item > span { flex: 1; }
+.document-row { flex-wrap: wrap; }
 .document-bank-group h3 { margin-bottom: 10px; font-size: 15px; }
 .signature-pad canvas { width: 100%; height: auto; aspect-ratio: 900 / 220; display: block; border: 1px solid var(--bronze); border-radius: 8px; background: white; touch-action: none; cursor: crosshair; }
 .company-application-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }

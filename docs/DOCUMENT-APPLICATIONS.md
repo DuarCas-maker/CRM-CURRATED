@@ -4,6 +4,24 @@
 
 Después de las migraciones 001–031, ejecutar **032_bank_documents.sql**, **033_company_applications.sql** y **034_lender_document_packages.sql**, en ese orden, desde el SQL Editor de la instancia Supabase. No ejecutar nuevamente las migraciones anteriores. Desplegar la web y el worker desde el mismo commit y recargar el CRM.
 
+Para la gestión directa de bancos y orden, ejecutar después **035_bank_document_management.sql** completo (`begin;` a `commit;`). No requiere variables adicionales. El despliegue de Coolify por push actualiza la aplicación, pero no ejecuta las migraciones de Supabase.
+
+## Gestión de bancos desde Documentos
+
+Cada extracto tiene **Cambiar banco / orden**. También se pueden seleccionar varios extractos (o todos) y usar **Cambiar banco / ordenar seleccionados**. Elegir un banco existente o escribir uno nuevo, indicar la posición inicial y ordenar los seleccionados con las flechas. La vista previa muestra el resultado antes de guardar.
+
+La operación es atómica: renumera consecutivamente los bancos afectados sin duplicar posiciones. Conserva archivos, estado de aprobación, notas, revisor e historial. Registra auditoría y rechaza una lista desactualizada por cambios simultáneos. Un análisis que utilizó la clasificación bancaria anterior queda desactualizado y debe revisarse.
+
+## Campos de aplicación
+
+La estructura sigue los datos del formulario CF-007: cinco tipos de entidad, estados de EE. UU. y D. C. en desplegables, direcciones separadas (calle, ciudad, estado y ZIP), EIN `12-3456789`, SSN visible `123-45-6789` y segundo propietario Sí/No. Teléfono y ZIP conservan entrada libre; los porcentajes permiten decimales. Los datos nuevos de dirección se incluyen en el PDF. Las direcciones antiguas se conservan en su campo original; no se infieren ciudad, estado ni ZIP.
+
+Para generar o firmar se exigen nombre legal, entidad, EIN, estado de constitución, fecha de inicio y, para cada propietario, nombre, SSN, nacimiento (18 años mínimo) y participación de 0 a 100. La suma no puede exceder 100. Los correos, si se completan, deben ser válidos; correos, teléfonos y direcciones son opcionales. Se pueden guardar borradores incompletos.
+
+El asesor se precarga con el seller responsable de la oportunidad; los usuarios con permiso de edición pueden corregirlo. Como los perfiles no tienen un código comercial separado, el identificador inicial es el ID estable del perfil y puede sustituirse por su código comercial. Se completan datos de asesor faltantes en borradores antiguos; las versiones firmadas no se modifican automáticamente.
+
+La aplicación no añade controles para cargar documentos: se gestionan desde Documentos.
+
 La generación utiliza `pdf-lib` en el backend existente del CRM y guarda el PDF en el Storage privado de Supabase. No usa DocRaptor ni n8n, ni requiere otra API key. No se añadió una Edge Function: se aprovecha el servidor que ya ejecuta el CRM para evitar otro servicio de conversión.
 
 El texto de declaraciones corresponde al PDF de ejemplo facilitado por el usuario, conservando su redacción. `FORM_DECLARATION_TEXT`, si está configurado, sustituye ese texto. La firma guarda una copia exacta de las declaraciones revisadas: una modificación posterior de configuración no cambia un PDF firmado.

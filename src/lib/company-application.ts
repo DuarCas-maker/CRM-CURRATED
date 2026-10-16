@@ -4,6 +4,88 @@ import { z } from "zod";
 export const SAMPLE_APPLICATION_DECLARATION =
   "The above hereby authorizes Curated Financial, on a on exclusive basis, to seek financial transactions on its behalf from the date stated herein, and otherwise from time to time until any and all loans and/or revenue based financings are repaid in full and the relationship with the merchant is completed, including but not limited to for any renewal or for any purpose relating thereto.\n\nBy signing below, the Merchant and its owners/principals: (1) certify that all information and documents submitted in connection with this application are true, correct, and complete; and (2) authorize Curated Financial Inc. and its assignees/designees to obtain credit reports and any other information regarding the Merchant and its owners and principals to verify the information provided on the application.";
 const text = z.string().trim().max(250).default("");
+export const entityTypes = [
+  "Sole Proprietorship",
+  "LLC",
+  "Corporation",
+  "Partnership",
+  "Non-Profit",
+] as const;
+export const usStates = Object.entries({
+  AL: "Alabama",
+  AK: "Alaska",
+  AZ: "Arizona",
+  AR: "Arkansas",
+  CA: "California",
+  CO: "Colorado",
+  CT: "Connecticut",
+  DE: "Delaware",
+  DC: "District of Columbia",
+  FL: "Florida",
+  GA: "Georgia",
+  HI: "Hawaii",
+  ID: "Idaho",
+  IL: "Illinois",
+  IN: "Indiana",
+  IA: "Iowa",
+  KS: "Kansas",
+  KY: "Kentucky",
+  LA: "Louisiana",
+  ME: "Maine",
+  MD: "Maryland",
+  MA: "Massachusetts",
+  MI: "Michigan",
+  MN: "Minnesota",
+  MS: "Mississippi",
+  MO: "Missouri",
+  MT: "Montana",
+  NE: "Nebraska",
+  NV: "Nevada",
+  NH: "New Hampshire",
+  NJ: "New Jersey",
+  NM: "New Mexico",
+  NY: "New York",
+  NC: "North Carolina",
+  ND: "North Dakota",
+  OH: "Ohio",
+  OK: "Oklahoma",
+  OR: "Oregon",
+  PA: "Pennsylvania",
+  RI: "Rhode Island",
+  SC: "South Carolina",
+  SD: "South Dakota",
+  TN: "Tennessee",
+  TX: "Texas",
+  UT: "Utah",
+  VT: "Vermont",
+  VA: "Virginia",
+  WA: "Washington",
+  WV: "West Virginia",
+  WI: "Wisconsin",
+  WY: "Wyoming",
+});
+export function formatTaxId(value: string, kind: "ein" | "ssn") {
+  const digits = value.replace(/\D/g, "").slice(0, 9);
+  const groups = kind === "ein" ? [2, 7] : [3, 2, 4];
+  let offset = 0;
+  return groups
+    .map((size) => {
+      const part = digits.slice(offset, offset + size);
+      offset += size;
+      return part;
+    })
+    .filter(Boolean)
+    .join("-");
+}
+export function adultBirthDate(today = new Date()) {
+  const year = today.getUTCFullYear() - 18,
+    month = today.getUTCMonth();
+  const day = Math.min(
+    today.getUTCDate(),
+    new Date(Date.UTC(year, month + 1, 0)).getUTCDate(),
+  );
+  return new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
+}
 export const companyOwnerSchema = z.object({
   name: text,
   email: text,
@@ -11,7 +93,12 @@ export const companyOwnerSchema = z.object({
   date_of_birth: text,
   phone: text,
   address: text,
-  ownership: z.coerce.number().min(0).max(100).default(0),
+  city: text,
+  state: text,
+  zip: text,
+  ownership: z
+    .union([z.literal(""), z.coerce.number().min(0).max(100)])
+    .default(""),
 });
 export const companyApplicationSchema = z.object({
   legal_name: text,
@@ -20,6 +107,9 @@ export const companyApplicationSchema = z.object({
   incorporation_state: text,
   inception_date: text,
   business_address: text,
+  business_city: text,
+  business_state: text,
+  business_zip: text,
   owners: z.array(companyOwnerSchema).min(1).max(2),
   commercial_name: text,
   commercial_email: text,
@@ -56,36 +146,51 @@ export function validateCompleteApplication(data: CompanyApplication) {
       data.ein,
       data.incorporation_state,
       data.inception_date,
-      data.business_address,
-      data.commercial_name,
-      data.commercial_email,
-      data.identifier,
     ].some((v) => !v)
   )
     throw new Error(
-      "Completa todos los campos de la aplicación / Complete every application field",
+      "Completa los campos obligatorios / Complete required application fields",
     );
   if (
-    !/^\d{2}-?\d{7}$/.test(data.ein) ||
-    !/^\d{4}-\d{2}-\d{2}$/.test(data.inception_date) ||
-    !z.email().safeParse(data.commercial_email).success
+    !entityTypes.includes(data.entity_type as (typeof entityTypes)[number]) ||
+    !/^\d{2}-\d{7}$/.test(data.ein) ||
+    !validDate(data.inception_date) ||
+    !validState(data.incorporation_state) ||
+    !validState(data.business_state) ||
+    (data.commercial_email &&
+      !z.email().safeParse(data.commercial_email).success)
   )
-    throw new Error("Verifica EIN, fecha y correo / Check EIN, date and email");
+    throw new Error(
+      "Verifica entidad, EIN, estado, fecha y correo / Check entity, EIN, state, date and email",
+    );
   for (const o of data.owners)
     if (
-      [o.name, o.email, o.ssn, o.date_of_birth, o.phone, o.address].some(
-        (v) => !v,
-      ) ||
-      !z.email().safeParse(o.email).success ||
-      !/^\d{3}-?\d{2}-?\d{4}$/.test(o.ssn) ||
-      !/^\d{4}-\d{2}-\d{2}$/.test(o.date_of_birth) ||
-      o.ownership <= 0
+      [o.name, o.ssn, o.date_of_birth].some((v) => !v) ||
+      (o.email && !z.email().safeParse(o.email).success) ||
+      !/^\d{3}-\d{2}-\d{4}$/.test(o.ssn) ||
+      !validDate(o.date_of_birth) ||
+      o.date_of_birth > adultBirthDate() ||
+      !validState(o.state) ||
+      o.ownership === "" ||
+      !Number.isFinite(o.ownership) ||
+      o.ownership < 0 ||
+      o.ownership > 100
     )
       throw new Error(
-        "Completa y verifica la información de los propietarios / Complete and verify owner information",
+        "Verifica los datos obligatorios de los propietarios, SSN y edad mínima de 18 años / Check required owner details, SSN and minimum age of 18",
       );
-  if (data.owners.reduce((sum, o) => sum + o.ownership, 0) > 100)
+  if (data.owners.reduce((sum, o) => sum + Number(o.ownership), 0) > 100)
     throw new Error(
       "La propiedad no puede superar el 100% / Ownership cannot exceed 100%",
     );
+}
+function validDate(value: string) {
+  return (
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    !Number.isNaN(Date.parse(value)) &&
+    new Date(value).toISOString().slice(0, 10) === value
+  );
+}
+function validState(value: string) {
+  return !value || usStates.some(([code]) => code === value);
 }

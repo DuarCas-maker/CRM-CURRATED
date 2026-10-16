@@ -5,6 +5,11 @@ import {
   emptyCompanyApplication,
   SAMPLE_APPLICATION_DECLARATION,
   companyOwnerSchema,
+  companyApplicationSchema,
+  entityTypes,
+  usStates,
+  formatTaxId,
+  adultBirthDate,
   type CompanyApplication,
   type ApplicationSignature,
 } from "@/lib/company-application";
@@ -26,7 +31,10 @@ const fields: [
     "Business Inception Date",
     "date",
   ],
-  ["business_address", "Dirección de la empresa", "Business Address"],
+  ["business_address", "Dirección de la empresa", "Business Street Address"],
+  ["business_city", "Ciudad", "City"],
+  ["business_state", "Estado", "State"],
+  ["business_zip", "Código ZIP", "ZIP Code"],
   ["commercial_name", "Nombre comercial / asesor", "Commercial name"],
   [
     "commercial_email",
@@ -39,10 +47,13 @@ const fields: [
 const ownerFields: [string, string, string, string?][] = [
   ["name", "Nombre del propietario", "Owner Name"],
   ["email", "Correo", "Email", "email"],
-  ["ssn", "SSN", "SSN", "password"],
+  ["ssn", "SSN", "SSN", "text"],
   ["date_of_birth", "Fecha de nacimiento", "Date of Birth", "date"],
   ["phone", "Celular", "Cell Phone", "tel"],
-  ["address", "Dirección", "Owner Address"],
+  ["address", "Dirección", "Owner Street Address"],
+  ["city", "Ciudad", "City"],
+  ["state", "Estado", "State"],
+  ["zip", "Código ZIP", "ZIP Code"],
   ["ownership", "Porcentaje de propiedad", "Ownership Percentage", "number"],
 ];
 export function CompanyApplicationForm({
@@ -58,9 +69,16 @@ export function CompanyApplicationForm({
   close: () => void;
   refresh: () => Promise<void>;
 }) {
-  const [data, setData] = useState(() =>
-      emptyCompanyApplication(opportunity.company),
-    ),
+  const [data, setData] = useState(() => ({
+      ...emptyCompanyApplication(opportunity.company),
+      commercial_name:
+        workspace.profiles.find((p) => p.id === opportunity.seller_id)?.name ||
+        "",
+      commercial_email:
+        workspace.profiles.find((p) => p.id === opportunity.seller_id)?.email ||
+        "",
+      identifier: opportunity.seller_id || "",
+    })),
     [revision, setRevision] = useState(0),
     [loading, setLoading] = useState(!workspace.demo),
     [busy, setBusy] = useState(false),
@@ -88,9 +106,24 @@ export function CompanyApplicationForm({
         if (!r.ok) throw new Error(b.error);
         if (controller.signal.aborted) return;
         if (b.record) {
-          setData(b.record.data);
+          const loaded = companyApplicationSchema.parse(b.record.data);
+          // Preserve signed snapshots; only fill missing advisor details in drafts.
+          if (!b.record.signature && b.defaults) {
+            for (const key of [
+              "commercial_name",
+              "commercial_email",
+              "identifier",
+            ] as const)
+              if (!loaded[key] && b.defaults[key]) {
+                loaded[key] = b.defaults[key];
+                setDirty(true);
+              }
+          }
+          setData(loaded);
           setPreviousSignature(b.record.signature);
         }
+        if (!b.record && b.defaults)
+          setData(companyApplicationSchema.parse(b.defaults));
         setRevision(b.revision);
         setDeclaration(b.declaration);
         setDeclarationHash(b.declaration_hash);
@@ -236,18 +269,75 @@ export function CompanyApplicationForm({
         </p>
       ) : (
         <>
+          <p className="muted">
+            {t(
+              locale,
+              "Obligatorios para generar PDF: nombre legal, entidad, EIN, estado de constitución, inicio del negocio y nombre, SSN, nacimiento y participación de cada propietario. Puedes guardar un borrador incompleto.",
+              "Required for PDF: legal name, entity, EIN, incorporation state, inception date, and each owner's name, SSN, birth date and ownership. You can save an incomplete draft.",
+            )}
+          </p>
           <div className="company-application-fields">
             {fields.map(([key, es, en, type]) => (
               <label className="field" key={key}>
                 {t(locale, es, en)}
-                <input
-                  type={type || "text"}
-                  value={data[key]}
-                  maxLength={250}
-                  disabled={busy}
-                  autoComplete="off"
-                  onChange={(e) => changed({ ...data, [key]: e.target.value })}
-                />
+                {key === "entity_type" ||
+                key === "incorporation_state" ||
+                key === "business_state" ? (
+                  <select
+                    value={data[key]}
+                    disabled={busy}
+                    onChange={(e) =>
+                      changed({ ...data, [key]: e.target.value })
+                    }
+                  >
+                    <option value="">
+                      {t(locale, "Seleccionar…", "Select…")}
+                    </option>
+                    {key === "entity_type"
+                      ? entityTypes.map((value) => (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        ))
+                      : usStates.map(([code, name]) => (
+                          <option key={code} value={code}>
+                            {name} ({code})
+                          </option>
+                        ))}
+                    {data[key] &&
+                      !(key === "entity_type"
+                        ? entityTypes.some((value) => value === data[key])
+                        : usStates.some(([code]) => code === data[key])) && (
+                        <option value={data[key]}>
+                          {data[key]} ·{" "}
+                          {t(
+                            locale,
+                            "valor anterior: selecciona una opción",
+                            "previous value: select an option",
+                          )}
+                        </option>
+                      )}
+                  </select>
+                ) : (
+                  <input
+                    type={type || "text"}
+                    value={data[key]}
+                    maxLength={key === "ein" ? 10 : 250}
+                    inputMode={key === "ein" ? "numeric" : undefined}
+                    placeholder={key === "ein" ? "12-3456789" : undefined}
+                    disabled={busy}
+                    autoComplete="off"
+                    onChange={(e) =>
+                      changed({
+                        ...data,
+                        [key]:
+                          key === "ein"
+                            ? formatTaxId(e.target.value, "ein")
+                            : e.target.value,
+                      })
+                    }
+                  />
+                )}
               </label>
             ))}
           </div>
@@ -262,53 +352,100 @@ export function CompanyApplicationForm({
                 {ownerFields.map(([key, es, en, type]) => (
                   <label className="field" key={key}>
                     {t(locale, es, en)}
-                    <input
-                      type={type || "text"}
-                      min={type === "number" ? 0 : undefined}
-                      max={type === "number" ? 100 : undefined}
-                      autoComplete="off"
-                      value={String(owner[key as keyof typeof owner])}
-                      maxLength={250}
-                      onChange={(e) =>
-                        changed({
-                          ...data,
-                          owners: data.owners.map((o, j) =>
-                            j === i
-                              ? {
-                                  ...o,
-                                  [key]:
-                                    type === "number"
-                                      ? Number(e.target.value)
-                                      : e.target.value,
-                                }
-                              : o,
-                          ),
-                        })
-                      }
-                    />
+                    {key === "state" ? (
+                      <select
+                        value={owner.state}
+                        onChange={(e) =>
+                          changed({
+                            ...data,
+                            owners: data.owners.map((o, j) =>
+                              j === i ? { ...o, state: e.target.value } : o,
+                            ),
+                          })
+                        }
+                      >
+                        <option value="">
+                          {t(locale, "Seleccionar…", "Select…")}
+                        </option>
+                        {usStates.map(([code, name]) => (
+                          <option key={code} value={code}>
+                            {name} ({code})
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type={type || "text"}
+                        min={type === "number" ? 0 : undefined}
+                        max={
+                          type === "number"
+                            ? 100
+                            : key === "date_of_birth"
+                              ? adultBirthDate()
+                              : undefined
+                        }
+                        step={type === "number" ? "any" : undefined}
+                        inputMode={
+                          key === "ssn"
+                            ? "numeric"
+                            : type === "number"
+                              ? "decimal"
+                              : undefined
+                        }
+                        placeholder={key === "ssn" ? "123-45-6789" : undefined}
+                        autoComplete="off"
+                        value={String(owner[key as keyof typeof owner])}
+                        maxLength={key === "ssn" ? 11 : 250}
+                        onChange={(e) =>
+                          changed({
+                            ...data,
+                            owners: data.owners.map((o, j) =>
+                              j === i
+                                ? {
+                                    ...o,
+                                    [key]:
+                                      type === "number"
+                                        ? e.target.value === ""
+                                          ? ""
+                                          : Number(e.target.value)
+                                        : key === "ssn"
+                                          ? formatTaxId(e.target.value, "ssn")
+                                          : e.target.value,
+                                  }
+                                : o,
+                            ),
+                          })
+                        }
+                      />
+                    )}
                   </label>
                 ))}
               </div>
             </fieldset>
           ))}
-          <button
-            className="button"
-            type="button"
-            disabled={busy}
-            onClick={() =>
-              changed({
-                ...data,
-                owners:
-                  data.owners.length === 1
-                    ? [...data.owners, companyOwnerSchema.parse({})]
-                    : data.owners.slice(0, 1),
-              })
-            }
-          >
-            {data.owners.length === 1
-              ? t(locale, "Agregar segundo propietario", "Add second owner")
-              : t(locale, "Quitar segundo propietario", "Remove second owner")}
-          </button>
+          <label className="field">
+            {t(
+              locale,
+              "¿Hay un segundo propietario?",
+              "Is there a second owner?",
+            )}
+            <select
+              disabled={busy}
+              value={data.owners.length > 1 ? "yes" : "no"}
+              onChange={(e) =>
+                changed({
+                  ...data,
+                  owners:
+                    e.target.value === "yes"
+                      ? [...data.owners, companyOwnerSchema.parse({})]
+                      : data.owners.slice(0, 1),
+                })
+              }
+            >
+              <option value="no">{t(locale, "No", "No")}</option>
+              <option value="yes">{t(locale, "Sí", "Yes")}</option>
+            </select>
+          </label>
           <h3>{t(locale, "Firma", "Signature")}</h3>
           {previousSignature && (
             <p>

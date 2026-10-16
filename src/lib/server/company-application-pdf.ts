@@ -91,6 +91,9 @@ export async function companyApplicationPdf(
     ["State of Incorporation", d.incorporation_state],
     ["Business Inception Date", d.inception_date],
     ["Business Address", d.business_address],
+    ["City", d.business_city],
+    ["State", d.business_state],
+    ["ZIP Code", d.business_zip],
   ])
     line(`${label}: ${value}`);
   d.owners.forEach((o, i) => {
@@ -103,6 +106,9 @@ export async function companyApplicationPdf(
       ["Date of Birth", o.date_of_birth],
       ["Cell Phone", o.phone],
       ["Owner Address", o.address],
+      ["City", o.city],
+      ["State", o.state],
+      ["ZIP Code", o.zip],
       ["Ownership Percentage", `${o.ownership}%`],
     ])
       line(`${label}: ${value}`);

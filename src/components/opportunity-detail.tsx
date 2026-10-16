@@ -2,6 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
 import { DocumentReview, DocumentChecklistSetup } from "./document-review";
+import { BankDocumentManagement } from "./bank-document-management";
 import { DocumentCreate } from "./document-create";
 import { CompanyApplicationForm } from "./company-application";
 import { documentLabel, documentProgress } from "@/lib/document-labels";
@@ -74,6 +75,10 @@ export function OpportunityDetail({
   const [composing, setComposing] = useState(false);
   const [error, setError] = useState("");
   const [secureLink, setSecureLink] = useState("");
+  const [selectedStatements, setSelectedStatements] = useState<string[]>([]);
+  const [movingStatements, setMovingStatements] = useState<string[] | null>(
+    null,
+  );
   const [reviewDocument, setReviewDocument] = useState<string | null>(null);
   const name = (id: string | null) =>
     data.profiles.find((p) => p.id === id)?.name ||
@@ -407,6 +412,44 @@ export function OpportunityDetail({
                   )}
                 </>
               )}
+              {editable && docs.some((d) => d.kind === "bank_statement") && (
+                <div className="bank-management-toolbar">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={docs
+                        .filter((d) => d.kind === "bank_statement")
+                        .every((d) => selectedStatements.includes(d.id))}
+                      onChange={(e) =>
+                        setSelectedStatements(
+                          e.target.checked
+                            ? docs
+                                .filter((d) => d.kind === "bank_statement")
+                                .map((d) => d.id)
+                            : [],
+                        )
+                      }
+                    />{" "}
+                    {t(
+                      locale,
+                      "Seleccionar todos los extractos",
+                      "Select all statements",
+                    )}
+                  </label>
+                  <button
+                    className="button"
+                    disabled={busy || !selectedStatements.length}
+                    onClick={() => setMovingStatements(selectedStatements)}
+                  >
+                    {t(
+                      locale,
+                      "Cambiar banco / ordenar seleccionados",
+                      "Change bank / order selected",
+                    )}{" "}
+                    ({selectedStatements.length})
+                  </button>
+                </div>
+              )}
               {documentGroups.map((group) => (
                 <section key={group} className="document-bank-group">
                   <h3>{group}</h3>
@@ -432,6 +475,27 @@ export function OpportunityDetail({
                     )
                     .map((d) => (
                       <div className="document-row" key={d.id}>
+                        {editable && d.kind === "bank_statement" && (
+                          <input
+                            type="checkbox"
+                            aria-label={
+                              t(locale, "Seleccionar", "Select") +
+                              " " +
+                              group +
+                              " " +
+                              documentLabel(d, locale)
+                            }
+                            checked={selectedStatements.includes(d.id)}
+                            disabled={busy}
+                            onChange={(e) =>
+                              setSelectedStatements((ids) =>
+                                e.target.checked
+                                  ? [...ids, d.id]
+                                  : ids.filter((id) => id !== d.id),
+                              )
+                            }
+                          />
+                        )}
                         <span
                           className={`document-icon ${d.status === "approved" ? "approved" : ""}`}
                         >
@@ -479,6 +543,20 @@ export function OpportunityDetail({
                           >
                             <Download size={17} />
                           </a>
+                        )}
+                        {editable && d.kind === "bank_statement" && (
+                          <button
+                            type="button"
+                            className="button"
+                            disabled={busy}
+                            onClick={() => setMovingStatements([d.id])}
+                          >
+                            {t(
+                              locale,
+                              "Cambiar banco / orden",
+                              "Change bank / order",
+                            )}
+                          </button>
                         )}
                         {editable && d.status !== "pending" && (
                           <button
@@ -793,6 +871,18 @@ export function OpportunityDetail({
           busy={busy}
           close={() => setComposing(false)}
           opportunity={o}
+        />
+      )}
+      {movingStatements && (
+        <BankDocumentManagement
+          documents={docs}
+          selected={movingStatements}
+          locale={locale}
+          act={act}
+          close={() => {
+            setMovingStatements(null);
+            setSelectedStatements([]);
+          }}
         />
       )}
       {reviewDocument && (

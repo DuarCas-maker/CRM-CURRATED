@@ -11,6 +11,7 @@ import { readBounded } from "@/lib/server/body";
 import { decrypt, encrypt, hash } from "@/lib/server/crypto";
 import {
   companyApplicationSchema,
+  emptyCompanyApplication,
   representativeSignatureSchema,
   validateCompleteApplication,
   type CompanyApplicationRecord,
@@ -26,7 +27,7 @@ async function context(id: string) {
   const opportunity = checkDb(
     await db
       .from("opportunities")
-      .select("id,company_id,company,contact_id")
+      .select("id,company_id,company,contact_id,seller_id")
       .eq("id", id)
       .single(),
   )!;
@@ -57,8 +58,21 @@ export async function GET(request: Request) {
       .uuid()
       .parse(new URL(request.url).searchParams.get("opportunity"));
     const c = await context(id);
+    const advisor = checkDb(
+      await c.db
+        .from("profiles")
+        .select("id,name,email")
+        .eq("id", c.opportunity.seller_id)
+        .maybeSingle(),
+    );
     return Response.json(
       {
+        defaults: {
+          ...emptyCompanyApplication(c.opportunity.company),
+          commercial_name: advisor?.name || "",
+          commercial_email: advisor?.email || "",
+          identifier: advisor?.id || "",
+        },
         revision: c.current?.revision || 0,
         record: c.current
           ? JSON.parse(decrypt(c.current.encrypted_payload))

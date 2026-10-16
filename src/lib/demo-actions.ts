@@ -1,3 +1,4 @@
+import { planBankMove } from "./bank-document-management";
 import type {
   Workspace,
   Profile,
@@ -323,6 +324,19 @@ export function demoAction(
         source: "checklist",
         created_at: now,
       });
+      break;
+    }
+    case "move_bank_documents": {
+      if (!o) throw new Error("Access denied");
+      const changed = planBankMove(
+        d.documents.filter((doc) => doc.opportunity_id === o.id),
+        p.document_ids as string[],
+        text("bank_name"),
+        Number(p.position),
+      );
+      d.documents = d.documents.map(
+        (doc) => changed.find((next) => next.id === doc.id) || doc,
+      );
       break;
     }
     case "classify_document": {
