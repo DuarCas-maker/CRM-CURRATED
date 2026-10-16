@@ -1,4 +1,5 @@
 import type { Document, Locale } from "./domain";
+import { hasDocumentFile } from "./document-intake";
 
 export function documentLabel(doc: Document, locale: Locale): string {
   if (doc.kind === "bank_statement") {
@@ -17,12 +18,24 @@ export function documentLabel(doc: Document, locale: Locale): string {
 
 export function documentProgress(documents: Document[]) {
   const application = documents.some(
-    (d) => d.kind === "application" && d.status === "approved",
+    (d) =>
+      d.kind === "application" && hasDocumentFile(d) && d.status === "approved",
   );
   const banks = documents.filter(
-    (d) => d.kind === "bank_statement" && d.status === "approved",
+    (d) =>
+      d.kind === "bank_statement" &&
+      hasDocumentFile(d) &&
+      d.status === "approved",
   );
   const statements = new Set(banks.map((d) => d.content_hash || d.id)).size;
+  const receivedStatements = new Set(
+    documents
+      .filter((d) => d.kind === "bank_statement" && hasDocumentFile(d))
+      .map((d) => d.content_hash || d.id),
+  ).size;
+  const applicationReceived = documents.some(
+    (d) => d.kind === "application" && hasDocumentFile(d),
+  );
   const extra = documents.filter(
     (d) =>
       !["application", "bank_statement"].includes(d.kind) &&
@@ -31,7 +44,16 @@ export function documentProgress(documents: Document[]) {
   const approved =
     Number(application) +
     Math.min(4, statements) +
-    extra.filter((d) => d.status === "approved").length;
+    extra.filter((d) => hasDocumentFile(d) && d.status === "approved").length;
   const total = 5 + extra.length;
-  return { approved, total, statements, ready: approved === total };
+  return {
+    approved,
+    total,
+    statements,
+    receivedStatements,
+    applicationReceived,
+    applicationApproved: application,
+    missingStatements: Math.max(0, 4 - receivedStatements),
+    ready: approved === total,
+  };
 }

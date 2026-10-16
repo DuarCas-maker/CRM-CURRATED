@@ -13,6 +13,7 @@ import { mailAction } from "@/lib/server/mail-actions";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
 import { sendManagedMail } from "@/lib/server/mail-manager";
 import { documentAction } from "@/lib/server/document-review";
+import { receiveDocument } from "@/lib/server/document-intake";
 import { initializeDocumentChecklist } from "@/lib/server/document-checklist";
 import { campaignPreviewValues } from "@/lib/campaign-templates";
 import { lenderDirectorySchema } from "@/lib/lender-directory";
@@ -32,6 +33,10 @@ export async function POST(request: Request) {
     );
     if (!parsed.success) throw new HttpError(400, "Invalid request");
     const { kind, payload: p, idempotency_key } = parsed.data;
+    if (kind === "receive_document")
+      return Response.json({
+        result: await receiveDocument(p, idempotency_key, db, profile.id),
+      });
     if (kind === "move_bank_documents") {
       const result = await db.rpc("move_bank_documents", {
         p,

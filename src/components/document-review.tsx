@@ -6,7 +6,7 @@ import type { DocumentSelection } from "@/lib/document-review";
 import type { Action } from "./crm";
 import { Modal, t } from "./ui";
 import { GmailPdfPreview } from "./gmail-pdf-preview";
-import { DocumentCreate } from "./document-create";
+import { DocumentIntake } from "./document-intake";
 import { documentLabel } from "@/lib/document-labels";
 
 type Context = {
@@ -186,38 +186,15 @@ export function DocumentReview({
           bank_name: bank.trim(),
         });
       }
-      if (!incorporated) {
-        if (
-          doc.storage_path &&
-          !window.confirm(
-            t(
-              locale,
-              "Este requisito ya tiene un archivo. La nueva versión requerirá otra aprobación. ¿Continuar?",
-              "This requirement has a file. A new version requires approval again. Continue?",
-            ),
-          )
-        )
-          return;
-        await act("incorporate_document", {
-          opportunity_id: context.opportunity.id,
-          document_id: doc.id,
-          source: current.source,
-          source_id: current.id,
-          expected_hash: doc.content_hash || null,
-        });
-        setCurrent({ source: "document", id: doc.id });
-        setReload((n) => n + 1);
-      } else {
-        await act("review_document", {
-          opportunity_id: context.opportunity.id,
-          document_id: doc.id,
-          expected_hash: doc.content_hash || "demo",
-          status,
-          notes,
-          period: doc.period || "",
-        });
-        close();
-      }
+      await act("review_document", {
+        opportunity_id: context.opportunity.id,
+        document_id: doc.id,
+        expected_hash: doc.content_hash || "demo",
+        status,
+        notes,
+        period: doc.period || "",
+      });
+      close();
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -300,88 +277,19 @@ export function DocumentReview({
             </div>
             <div>
               {!incorporated ? (
-                <>
-                  {!context.documents.length && (
-                    <>
-                      <p role="status">
-                        {t(
-                          locale,
-                          "Esta oportunidad todavía no tiene requisitos documentales. Crea el checklist para poder relacionar los archivos.",
-                          "This opportunity has no document requirements yet. Create its checklist to link files.",
-                        )}
-                      </p>
-                      {context.editable && (
-                        <DocumentChecklistSetup
-                          opportunityId={context.opportunity.id}
-                          locale={locale}
-                          act={act}
-                          onPrepared={() => setReload((n) => n + 1)}
-                        />
-                      )}
-                    </>
-                  )}
-                  {!!context.documents.length && (
-                    <>
-                      <label className="field">
-                        {t(
-                          locale,
-                          "Guardar este archivo como",
-                          "Save this file as",
-                        )}
-                        <select
-                          value={target}
-                          disabled={busy || !context.editable}
-                          onChange={(e) => {
-                            setTarget(e.target.value);
-                            setBank(
-                              context.documents.find(
-                                (d) => d.id === e.target.value,
-                              )?.bank_name || "",
-                            );
-                          }}
-                        >
-                          {context.documents.map((d) => (
-                            <option key={d.id} value={d.id}>
-                              {d.bank_name ? `${d.bank_name} · ` : ""}
-                              {documentLabel(d, locale)}
-                              {d.storage_path
-                                ? ` · ${t(locale, "Ya tiene un archivo", "Has a file")}`
-                                : ""}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <p className="muted">
-                        {t(
-                          locale,
-                          "El archivo quedará recibido. Después podrás revisar y aprobar su contenido.",
-                          "The file will be marked received. You can then review and approve it.",
-                        )}
-                      </p>
-                    </>
-                  )}
-                  {context.editable && (
-                    <details>
-                      <summary>
-                        {t(
-                          locale,
-                          "Crear otro extracto o documento",
-                          "Create another statement or document",
-                        )}
-                      </summary>
-                      <DocumentCreate
-                        opportunityId={context.opportunity.id}
-                        documents={context.documents}
-                        locale={locale}
-                        act={act}
-                        onCreated={(id) => {
-                          if (id) setTarget(id);
-                          setReload((n) => n + 1);
-                        }}
-                      />
-                    </details>
-                  )}
-                </>
+                <DocumentIntake
+                  selection={current}
+                  opportunityId={context.opportunity.id}
+                  documents={context.documents}
+                  filename={context.name}
+                  previewHash={preview?.hash || null}
+                  previewReady={!!preview}
+                  editable={context.editable}
+                  demo={!!data.demo}
+                  locale={locale}
+                  act={act}
+                  close={close}
+                />
               ) : (
                 <>
                   <p>{doc && documentLabel(doc, locale)}</p>
@@ -482,7 +390,7 @@ export function DocumentReview({
                   </details>
                 </>
               )}
-              {doc?.kind === "bank_statement" && (
+              {incorporated && doc?.kind === "bank_statement" && (
                 <label className="field">
                   {t(locale, "Banco de este extracto", "Statement bank")}
                   <input
@@ -516,35 +424,37 @@ export function DocumentReview({
               )}
             </div>
           </div>
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="button primary"
-              onClick={() => void save()}
-              disabled={
-                busy ||
-                !context.editable ||
-                !doc ||
-                (doc.kind === "bank_statement" && !bank.trim()) ||
-                (!data.demo && !preview) ||
-                (!data.demo &&
-                  incorporated &&
-                  preview?.hash !== doc.content_hash) ||
-                (incorporated &&
-                  (!confirmed || (status === "correction" && !notes.trim())))
-              }
-            >
-              {busy
-                ? t(locale, "Guardando…", "Saving…")
-                : incorporated
-                  ? t(locale, "Guardar revisión", "Save review")
-                  : t(
-                      locale,
-                      "Incorporar a esta oportunidad",
-                      "Add to this opportunity",
-                    )}
-            </button>
-          </div>
+          {incorporated && (
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="button primary"
+                onClick={() => void save()}
+                disabled={
+                  busy ||
+                  !context.editable ||
+                  !doc ||
+                  (doc.kind === "bank_statement" && !bank.trim()) ||
+                  (!data.demo && !preview) ||
+                  (!data.demo &&
+                    incorporated &&
+                    preview?.hash !== doc.content_hash) ||
+                  (incorporated &&
+                    (!confirmed || (status === "correction" && !notes.trim())))
+                }
+              >
+                {busy
+                  ? t(locale, "Guardando…", "Saving…")
+                  : incorporated
+                    ? t(locale, "Guardar revisión", "Save review")
+                    : t(
+                        locale,
+                        "Incorporar a esta oportunidad",
+                        "Add to this opportunity",
+                      )}
+              </button>
+            </div>
+          )}
         </>
       )}
     </Modal>

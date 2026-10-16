@@ -1,11 +1,13 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
-import { DocumentReview, DocumentChecklistSetup } from "./document-review";
+import { DocumentReview } from "./document-review";
 import { BankDocumentManagement } from "./bank-document-management";
+import { DocumentUpload } from "./document-upload";
 import { DocumentCreate } from "./document-create";
 import { CompanyApplicationForm } from "./company-application";
 import { documentLabel, documentProgress } from "@/lib/document-labels";
+import { hasDocumentFile } from "@/lib/document-intake";
 import { UnderwritingWorkspace } from "./underwriting-workspace";
 import { MailComposer, MailSendStatus } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
@@ -94,9 +96,10 @@ export function OpportunityDetail({
   const editable = sellerAccess || closerAccess;
   const docs = data.documents.filter((d) => d.opportunity_id === o.id);
   const documentStatus = documentProgress(docs);
+  const visibleDocs = docs.filter(hasDocumentFile);
   const documentGroups = [
     ...new Set(
-      docs.map((d) =>
+      visibleDocs.map((d) =>
         d.kind === "bank_statement"
           ? d.bank_name ||
             t(locale, "Banco por identificar", "Bank to identify")
@@ -252,12 +255,7 @@ export function OpportunityDetail({
                   onClick={() => setTab(id)}
                 >
                   {t(locale, es, en)}
-                  {id === "documents" && (
-                    <span>
-                      {docs.filter((d) => d.status === "approved").length}/
-                      {docs.length}
-                    </span>
-                  )}
+                  {id === "documents" && <span>{visibleDocs.length}</span>}
                 </button>
               ))}
             </div>
@@ -391,16 +389,6 @@ export function OpportunityDetail({
                     </button>
                     <button
                       className="button"
-                      onClick={() => setModal("add-document")}
-                    >
-                      {t(
-                        locale,
-                        "Agregar extracto u otro documento",
-                        "Add statement or other document",
-                      )}
-                    </button>
-                    <button
-                      className="button"
                       onClick={() => setModal("upload")}
                     >
                       <Plus size={16} />
@@ -416,74 +404,97 @@ export function OpportunityDetail({
                   "Approve the application and at least four statements in total. You can save statements from every bank and additional documents.",
                 )}
               </p>
-              <p role="status">
-                {documentStatus.approved}/{documentStatus.total}{" "}
-                {t(
-                  locale,
-                  "documentos obligatorios aprobados",
-                  "required documents approved",
+              <div className="document-progress" role="status">
+                <p>
+                  <strong>
+                    {Math.min(4, documentStatus.receivedStatements)}/4{" "}
+                    {t(locale, "extractos recibidos", "statements received")}
+                  </strong>{" "}
+                  · {Math.min(4, documentStatus.statements)}/4{" "}
+                  {t(locale, "aprobados", "approved")}
+                  {documentStatus.receivedStatements > 4
+                    ? ` · ${documentStatus.receivedStatements} ${t(locale, "archivos en total", "files in total")}`
+                    : ""}
+                </p>
+                <p>
+                  {documentStatus.applicationReceived
+                    ? t(locale, "Aplicación recibida", "Application received")
+                    : t(
+                        locale,
+                        "Falta recibir la aplicación",
+                        "Application not received",
+                      )}{" "}
+                  ·{" "}
+                  {documentStatus.applicationApproved
+                    ? t(locale, "Aprobada", "Approved")
+                    : t(locale, "Pendiente de aprobación", "Pending approval")}
+                </p>
+                {documentStatus.missingStatements > 0 && (
+                  <p>
+                    {t(locale, "Faltan", "Missing")}{" "}
+                    {documentStatus.missingStatements}{" "}
+                    {t(
+                      locale,
+                      "extractos para completar el mínimo. Pueden ser del mismo banco o de bancos diferentes.",
+                      "statements to meet the minimum. They may belong to the same or different banks.",
+                    )}
+                  </p>
                 )}
-              </p>
-              {!docs.length && (
+              </div>
+              {!visibleDocs.length && (
                 <>
                   <p>
                     {t(
                       locale,
-                      "Este expediente aún no tiene un checklist. Prepáralo y luego usa Incorporar y revisar junto a los adjuntos de Correo e histórico para relacionarlos.",
-                      "This case has no checklist yet. Create one, then use Add and review beside attachments in Mail and history to link them.",
+                      "Aún no hay archivos guardados. Usa Incorporar archivo o Incorporar y revisar junto a un adjunto de Correo e histórico. El sistema asignará el siguiente extracto disponible.",
+                      "No files have been saved. Use Add document or Add and review beside a Mail and history attachment. The next available statement will be assigned.",
                     )}
                   </p>
-                  {editable && (
-                    <DocumentChecklistSetup
-                      opportunityId={o.id}
-                      locale={locale}
-                      act={act}
-                    />
-                  )}
                 </>
               )}
-              {editable && docs.some((d) => d.kind === "bank_statement") && (
-                <div className="bank-management-toolbar">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={docs
-                        .filter((d) => d.kind === "bank_statement")
-                        .every((d) => selectedStatements.includes(d.id))}
-                      onChange={(e) =>
-                        setSelectedStatements(
-                          e.target.checked
-                            ? docs
-                                .filter((d) => d.kind === "bank_statement")
-                                .map((d) => d.id)
-                            : [],
-                        )
-                      }
-                    />{" "}
-                    {t(
-                      locale,
-                      "Seleccionar todos los extractos",
-                      "Select all statements",
-                    )}
-                  </label>
-                  <button
-                    className="button"
-                    disabled={busy || !selectedStatements.length}
-                    onClick={() => setMovingStatements(selectedStatements)}
-                  >
-                    {t(
-                      locale,
-                      "Cambiar banco / ordenar seleccionados",
-                      "Change bank / order selected",
-                    )}{" "}
-                    ({selectedStatements.length})
-                  </button>
-                </div>
-              )}
+              {editable &&
+                visibleDocs.some((d) => d.kind === "bank_statement") && (
+                  <div className="bank-management-toolbar">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={visibleDocs
+                          .filter((d) => d.kind === "bank_statement")
+                          .every((d) => selectedStatements.includes(d.id))}
+                        onChange={(e) =>
+                          setSelectedStatements(
+                            e.target.checked
+                              ? visibleDocs
+                                  .filter((d) => d.kind === "bank_statement")
+                                  .map((d) => d.id)
+                              : [],
+                          )
+                        }
+                      />{" "}
+                      {t(
+                        locale,
+                        "Seleccionar todos los extractos",
+                        "Select all statements",
+                      )}
+                    </label>
+                    <button
+                      className="button"
+                      disabled={busy || !selectedStatements.length}
+                      onClick={() => setMovingStatements(selectedStatements)}
+                    >
+                      {t(
+                        locale,
+                        "Cambiar banco / ordenar seleccionados",
+                        "Change bank / order selected",
+                      )}{" "}
+                      ({selectedStatements.length})
+                    </button>
+                  </div>
+                )}
               {documentGroups.map((group) => (
                 <section key={group} className="document-bank-group">
                   <h3>{group}</h3>
-                  {docs
+                  {visibleDocs
                     .filter(
                       (d) =>
                         (d.kind === "bank_statement"
@@ -947,6 +958,7 @@ export function OpportunityDetail({
       )}
       {modal && modal !== "company-application" && (
         <Modal
+          wide={modal === "upload"}
           title={t(
             locale,
             (
@@ -1471,61 +1483,15 @@ export function OpportunityDetail({
             </div>
           )}
           {modal === "upload" && (
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setError("");
-                const form = new FormData(e.currentTarget);
-                form.set("opportunity_id", o.id);
-                try {
-                  if (data.demo)
-                    await act("upload_demo", {
-                      opportunity_id: o.id,
-                      name: (form.get("file") as File).name,
-                      document_id: form.get("document_id"),
-                    });
-                  else {
-                    const res = await fetch("/api/documents", {
-                      method: "POST",
-                      body: form,
-                    });
-                    const result = await res.json();
-                    if (!res.ok) throw new Error(result.error);
-                    location.reload();
-                  }
-                  setModal(null);
-                } catch (e) {
-                  setError((e as Error).message);
-                }
-              }}
-            >
-              <Field
-                name="document_id"
-                label={t(
-                  locale,
-                  "Documento del checklist",
-                  "Checklist document",
-                )}
-              >
-                {docs.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name}
-                  </option>
-                ))}
-              </Field>
-              <label className="field">
-                <span>PDF / JPG / PNG · 20 MB</span>
-                <input
-                  name="file"
-                  type="file"
-                  accept="application/pdf,image/jpeg,image/png"
-                  required
-                />
-              </label>
-              <div className="modal-footer">
-                <SaveButton busy={busy} locale={locale} />
-              </div>
-            </form>
+            <DocumentUpload
+              opportunityId={o.id}
+              documents={docs}
+              locale={locale}
+              demo={!!data.demo}
+              act={act}
+              refresh={refresh}
+              close={() => setModal(null)}
+            />
           )}
           {modal.startsWith("lender-email:") && (
             <form

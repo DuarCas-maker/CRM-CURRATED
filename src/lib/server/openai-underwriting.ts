@@ -95,7 +95,13 @@ export function underwritingRequest(options: {
   };
 }
 export async function callUnderwritingProvider(
-  body: ReturnType<typeof underwritingRequest>,
+  body: {
+    model: string;
+    input: unknown[];
+    store: boolean;
+    text: unknown;
+    [key: string]: unknown;
+  },
   apiKey: string,
   fetcher: typeof fetch = fetch,
 ) {

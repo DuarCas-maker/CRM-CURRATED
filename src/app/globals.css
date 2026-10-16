@@ -3068,6 +3068,8 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--charcoal); }
 .cw-message-files .document-import-button { background: #e2e3e5; border: 1px solid #85898f; color: #15181d; font-weight: 600; padding: 7px 10px; border-radius: 6px; }
 .cw-message-files .document-import-button:hover { background: #cdd0d4; border-color: #535861; }
 .document-bank-group { margin-top: 22px; }
+.intake-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0; }
+.intake-destination, .document-progress { padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
 .bank-management-toolbar, .bank-move-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
 .bank-move-item > span { flex: 1; }
 .document-row { flex-wrap: wrap; }

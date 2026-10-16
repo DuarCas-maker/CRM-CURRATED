@@ -1,3 +1,4 @@
+import { intakeDestination, receiveDocumentSchema } from "./document-intake";
 import { planBankMove } from "./bank-document-management";
 import type {
   Workspace,
@@ -440,6 +441,71 @@ export function demoAction(
         });
       }
       activity("Document checklist initialized");
+      break;
+    }
+    case "receive_upload_demo":
+    case "receive_document": {
+      if (!o) throw new Error("Case required");
+      const attachment = d.attachments?.find((a) => a.id === p.source_id);
+      const message = d.messages.find((m) => m.id === attachment?.message_id);
+      const conversation = d.conversations.find(
+        (c) => c.id === message?.conversation_id,
+      );
+      if (
+        kind !== "receive_upload_demo" &&
+        (!attachment || conversation?.opportunity_id !== o.id)
+      )
+        throw new Error("Attachment belongs to another opportunity");
+      if (attachment?.imported_document_id) break;
+      const parsed = receiveDocumentSchema.parse({
+        ...p,
+        opportunity_id: crypto.randomUUID(),
+        source_id: crypto.randomUUID(),
+        replace_document_id: null,
+      });
+      const docs = d.documents.filter((doc) => doc.opportunity_id === o.id);
+      const destination = intakeDestination(
+        docs,
+        parsed.kind,
+        parsed.bank_name,
+      );
+      let doc =
+        docs.find((doc) => doc.id === p.replace_document_id) ||
+        destination.document;
+      if (doc?.storage_path && !p.replace_document_id)
+        throw new Error("Document changed");
+      if (!doc) {
+        doc = {
+          id: id(),
+          opportunity_id: o.id,
+          name: "",
+          kind: parsed.kind,
+          period: "",
+          status: "pending",
+          source: "conversation",
+          created_at: now,
+          required: parsed.kind === "application",
+        };
+        d.documents.push(doc);
+      }
+      doc.name =
+        parsed.kind === "bank_statement"
+          ? "Bank Statement " + destination.number
+          : parsed.kind === "application"
+            ? "Signed application"
+            : parsed.name;
+      doc.bank_name = parsed.kind === "bank_statement" ? parsed.bank_name : "";
+      doc.statement_number = destination.number;
+      doc.status = parsed.approve ? "approved" : "received";
+      doc.storage_path = "demo";
+      doc.content_hash = String(p.expected_source_hash);
+      doc.source =
+        kind === "receive_upload_demo" ? "team_upload" : "conversation";
+      doc.review_notes = "";
+      doc.reviewed_by = parsed.approve ? user.id : null;
+      doc.reviewed_at = parsed.approve ? now : null;
+      if (attachment) attachment.imported_document_id = doc.id;
+      activity("Document received: " + doc.name);
       break;
     }
     case "incorporate_document": {

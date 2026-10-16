@@ -263,6 +263,10 @@ export function demoWorkspace(): Workspace {
               : j === 4
                 ? "pending"
                 : "received",
+            storage_path:
+              o.application_complete || j !== 4
+                ? `demo/${o.id}d${j}.pdf`
+                : undefined,
             source: "public_form",
             created_at: ago(3),
           })),

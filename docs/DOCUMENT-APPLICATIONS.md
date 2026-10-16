@@ -6,6 +6,20 @@ Después de las migraciones 001–031, ejecutar **032_bank_documents.sql**, **03
 
 Para la gestión directa de bancos y orden, ejecutar después **035_bank_document_management.sql** completo (`begin;` a `commit;`). No requiere variables adicionales. El despliegue de Coolify por push actualiza la aplicación, pero no ejecuta las migraciones de Supabase.
 
+Para la incorporación simplificada y sugerencias por contenido, aplicar después **036_document_intake.sql** completo. La función de recepción solo puede invocarla el servidor que verificó usuario, permisos y bytes del archivo. La clasificación requiere `OPENAI_API_KEY` también en el servicio **web** de Coolify (no basta con tenerla en el worker); reutiliza el modelo de Configuración → Análisis. Nunca se expone la clave al navegador.
+
+## Incorporación simplificada
+
+Documentos muestra únicamente archivos reales. Los espacios vacíos existentes se conservan internamente para reutilizarlos al guardar y no aparecen como bancos sin archivos. El contador distingue **4/4 extractos recibidos** de **0/4 aprobados**. Cuatro archivos distintos de BMO completan la recepción mínima, aunque existan cuatro espacios vacíos antiguos sin banco. Los extractos aprobados de cualquier banco completan el mínimo de aprobación; una copia idéntica cuenta una sola vez.
+
+Desde el adjunto de una conversación, **Incorporar y revisar** muestra el archivo y propone su tipo leyendo el contenido. Los impuestos, cuentas por pagar y facturas se clasifican como otros documentos. El tipo es editable; si no puede identificarse, se elige manualmente. El banco se sugiere por el nombre del archivo o, como respaldo, por el único banco que ya tiene archivos en la oportunidad. Indicar banco es obligatorio al guardar extractos. La IA no determina el banco ni aprueba documentos.
+
+**Se guardará como** muestra el siguiente número del banco. Se reutiliza primero un espacio vacío de ese banco o uno sin banco, antes de crear otro. Se puede guardar incluso si la oportunidad aún no tiene checklist. **Incorporar archivo** usa el mismo flujo con PDF, JPG o PNG subidos desde el equipo. La opción avanzada permite reemplazar un archivo seleccionado explícitamente, con control de versión y confirmación.
+
+**Guardar** incorpora como recibido y cierra la ventana. **Guardar y aprobar** exige confirmar la revisión del archivo mostrado y su pertenencia a la empresa; recepción, banco, número, procedencia y revisión se confirman en una sola transacción. Una solicitud desactualizada no sobrescribe el archivo de otro usuario; un reintento confirmado no duplica la aprobación.
+
+La clasificación usa Responses con el PDF o imagen real, salida JSON validada y `store:false`. Se conserva una sugerencia privada por versión exacta para evitar llamadas repetidas al abrir la misma revisión. No hay reintentos automáticos de solicitudes inciertas; un fallo permite continuar manualmente o solicitar otro intento. Los ensayos de IA usan únicamente PDF ficticios.
+
 ## Gestión de bancos desde Documentos
 
 Cada extracto tiene **Cambiar banco / orden**. También se pueden seleccionar varios extractos (o todos) y usar **Cambiar banco / ordenar seleccionados**. Elegir un banco existente o escribir uno nuevo, indicar la posición inicial y ordenar los seleccionados con las flechas. La vista previa muestra el resultado antes de guardar.
