@@ -18,7 +18,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import type { Message, Locale, Workspace, Opportunity } from "@/lib/domain";
-import { dateLabel, canSeeOpportunity } from "@/lib/domain";
+import { dateLabel, canSeeOpportunity, isCloserRole } from "@/lib/domain";
 import type { Action } from "./crm";
 import { t, Empty, Modal } from "./ui";
 import { MailEditor } from "./mail-editor";
@@ -27,6 +27,7 @@ import { MailOrder } from "./mail-order";
 import { MailClientPicker, type MailClientChoice } from "./mail-client-picker";
 import { MailMessage, type MailVisibleFile } from "./mail-message";
 import { DocumentReview } from "./document-review";
+import { OpportunityDetail } from "./opportunity-detail";
 import type { DocumentSelection } from "@/lib/document-review";
 import { MailSendStatus } from "./mail-composer";
 import { MailBody } from "./mail-bubble";
@@ -104,6 +105,9 @@ export function ConversationsWorkspace({
 }) {
   const [documentSelection, setDocumentSelection] =
     useState<DocumentSelection | null>(null);
+  const [casePanel, setCasePanel] = useState<
+    "messages" | "activity" | "documents" | "analysis" | "lenders"
+  >("messages");
   const initial = useMemo(
     () => data.opportunities.filter((o) => canSeeOpportunity(data.profile, o)),
     [data.opportunities, data.profile],
@@ -212,6 +216,7 @@ export function ConversationsWorkspace({
     return () => clearTimeout(timer);
   }, [query]);
   useEffect(() => {
+    setCasePanel("messages");
     setTab("all");
     setActiveId("");
     setProcess("all");
@@ -459,14 +464,55 @@ export function ConversationsWorkspace({
         const selected = active?.message_ids?.filter(
           (mid) => active.message_conversations?.[mid] === id,
         );
-        const r = await fetch(
-          `/api/conversations/${id}/messages${selected ? `?${new URLSearchParams({ ids: selected.slice(0, 100).join(",") })}` : ""}`,
-          {
-            signal: controller.signal,
-          },
+        // Refresh all loaded attachments after a review, including older pages.
+        const previousIds =
+          loadedSource.current === activeKey
+            ? (pages[id]?.messages || []).map((m) => m.id)
+            : [];
+        const requestedIds = [
+          ...new Set([...(selected?.slice(0, 100) || []), ...previousIds]),
+        ];
+        const requests: string[] = selected ? [] : [""];
+        for (let i = 0; i < requestedIds.length; i += 100)
+          requests.push(
+            `?${new URLSearchParams({ ids: requestedIds.slice(i, i + 100).join(",") })}`,
+          );
+        const results: Page[] = await Promise.all(
+          requests.map(async (suffix) => {
+            const r = await fetch(
+              `/api/conversations/${id}/messages${suffix}`,
+              { signal: controller.signal },
+            );
+            const page = await r.json();
+            if (!r.ok) throw Error(page.error);
+            return page;
+          }),
         );
-        const p = await r.json();
-        if (!r.ok) throw Error(p.error);
+        const p: Page = {
+          messages: [
+            ...new Map(
+              results.flatMap((p) => p.messages).map((m) => [m.id, m]),
+            ).values(),
+          ],
+          attachments: [
+            ...new Map(
+              results.flatMap((p) => p.attachments).map((a) => [a.id, a]),
+            ).values(),
+          ],
+          files: [
+            ...new Map(
+              results
+                .flatMap((p) => p.files || [])
+                .map((f) => [`${f.message_id}:${f.id}`, f]),
+            ).values(),
+          ],
+          sends: [
+            ...new Map(
+              results.flatMap((p) => p.sends || []).map((s) => [s.id, s]),
+            ).values(),
+          ],
+          hasMore: results[0]?.hasMore || false,
+        };
         return [
           id,
           {
@@ -940,7 +986,83 @@ export function ConversationsWorkspace({
           </div>
         </div>
       </div>
-      <div className={`cw-area ${readerVisible ? "reader-visible" : ""}`}>
+      {!pendingMode && selectedCase && (
+        <nav
+          className="cw-case-navigation"
+          aria-label={t(locale, "Gestionar oportunidad", "Manage opportunity")}
+        >
+          {(
+            [
+              ["messages", "Conversaciones", "Conversations"],
+              ["documents", "Documentos", "Documents"],
+              ["analysis", "Análisis manual", "Manual review"],
+              ["activity", "Gestionar oportunidad", "Manage opportunity"],
+              ...(isCloserRole(data.profile.role) && selectedCase.handed_off_at
+                ? [
+                    [
+                      "lenders",
+                      "Lenders y ofertas",
+                      "Lenders & offers",
+                    ] as const,
+                  ]
+                : []),
+            ] as const
+          ).map(([id, es, en]) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={casePanel === id}
+              className={casePanel === id ? "active" : ""}
+              onClick={() => setCasePanel(id)}
+            >
+              {t(locale, es, en)}
+            </button>
+          ))}
+        </nav>
+      )}
+      {casePanel !== "messages" && !pendingMode && selectedCase && (
+        <section
+          className="cw-opportunity-panel"
+          aria-label={t(
+            locale,
+            "Expediente de la oportunidad",
+            "Opportunity case",
+          )}
+        >
+          {!data.demo && !scoped ? (
+            <p role="status">
+              {t(locale, "Cargando expediente…", "Loading case…")}
+            </p>
+          ) : (
+            <OpportunityDetail
+              key={`${caseId}:${casePanel}`}
+              opportunity={
+                scoped?.opportunities.find((o) => o.id === caseId) ||
+                selectedCase
+              }
+              data={effectiveData}
+              profile={data.profile}
+              locale={locale}
+              busy={busy}
+              embedded
+              initialTab={casePanel}
+              act={async (kind, payload) => {
+                const result = await act(kind, payload);
+                bump();
+                return result;
+              }}
+              refresh={async () => {
+                bump();
+              }}
+              back={() => setCasePanel("messages")}
+            />
+          )}
+        </section>
+      )}
+      <div
+        className={`cw-area ${readerVisible ? "reader-visible" : ""}`}
+        style={casePanel !== "messages" ? { display: "none" } : undefined}
+      >
         <aside
           className="cw-thread-list"
           aria-label={t(

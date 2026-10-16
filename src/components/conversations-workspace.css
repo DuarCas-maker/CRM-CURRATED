@@ -45,6 +45,58 @@
   flex: none;
   padding: 12px;
 }
+.cw-case-navigation {
+  display: flex;
+  flex: none;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 3px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.cw-case-navigation button {
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 14px;
+  background: transparent;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.cw-case-navigation button.active {
+  background: var(--surface);
+  color: var(--charcoal);
+  font-weight: 600;
+}
+.cw-opportunity-panel {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.cw-message-files .cw-attachment.processed > a,
+.cw-message-files .cw-attachment.processed > button,
+.cw-message-files button.cw-attachment.processed {
+  color: #166534;
+  background: #edf8ef;
+  border-color: #a7d7b2;
+}
+.cw-message-files .cw-attachment.correction > a,
+.cw-message-files .cw-attachment.correction > button,
+.cw-message-files button.cw-attachment.correction {
+  color: #854d0e;
+  background: #fffbeb;
+  border-color: #ead08b;
+}
+.cw-message-files .cw-attachment.linked > button,
+.cw-message-files button.cw-attachment.linked {
+  color: #1e40af;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
 .conversations-workspace button,
 .conversations-workspace input,
 .conversations-workspace select,

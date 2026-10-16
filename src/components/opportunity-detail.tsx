@@ -55,6 +55,8 @@ export function OpportunityDetail({
   busy,
   back,
   refresh,
+  initialTab = "activity",
+  embedded = false,
 }: {
   opportunity: Opportunity;
   data: Workspace;
@@ -64,8 +66,10 @@ export function OpportunityDetail({
   busy: boolean;
   back: () => void;
   refresh: () => Promise<void>;
+  initialTab?: "activity" | "documents" | "analysis" | "lenders";
+  embedded?: boolean;
 }) {
-  const [tab, setTab] = useState("activity");
+  const [tab, setTab] = useState<string>(initialTab);
   const [modal, setModal] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
   const [error, setError] = useState("");
@@ -158,10 +162,12 @@ export function OpportunityDetail({
   }
   return (
     <>
-      <button className="back-link" onClick={back}>
-        <ArrowLeft size={16} />
-        {t(locale, "Volver a oportunidades", "Back to opportunities")}
-      </button>
+      {!embedded && (
+        <button className="back-link" onClick={back}>
+          <ArrowLeft size={16} />
+          {t(locale, "Volver a oportunidades", "Back to opportunities")}
+        </button>
+      )}
       <div className="case-heading">
         <div className="case-title">
           <span className="company-icon large tone-1">
@@ -220,31 +226,33 @@ export function OpportunityDetail({
       </div>
       <div className="case-layout">
         <section className="panel case-main">
-          <div className="case-tabs">
-            {[
-              ["activity", "Actividad", "Activity"],
-              ["mail_history", "Correo e histórico", "Email and history"],
-              ["documents", "Documentos", "Documents"],
-              ["analysis", "Análisis manual", "Manual review"],
-              ...(isCloserRole(profile.role) && o.handed_off_at
-                ? [["lenders", "Lenders y ofertas", "Lenders & offers"]]
-                : []),
-            ].map(([id, es, en]) => (
-              <button
-                key={id}
-                className={tab === id ? "active" : ""}
-                onClick={() => setTab(id)}
-              >
-                {t(locale, es, en)}
-                {id === "documents" && (
-                  <span>
-                    {docs.filter((d) => d.status === "approved").length}/
-                    {docs.length}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
+          {!embedded && (
+            <div className="case-tabs">
+              {[
+                ["activity", "Actividad", "Activity"],
+                ["mail_history", "Correo e histórico", "Email and history"],
+                ["documents", "Documentos", "Documents"],
+                ["analysis", "Análisis manual", "Manual review"],
+                ...(isCloserRole(profile.role) && o.handed_off_at
+                  ? [["lenders", "Lenders y ofertas", "Lenders & offers"]]
+                  : []),
+              ].map(([id, es, en]) => (
+                <button
+                  key={id}
+                  className={tab === id ? "active" : ""}
+                  onClick={() => setTab(id)}
+                >
+                  {t(locale, es, en)}
+                  {id === "documents" && (
+                    <span>
+                      {docs.filter((d) => d.status === "approved").length}/
+                      {docs.length}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
           {tab === "mail_history" && (
             <>
               <MailSendStatus data={data} locale={locale} caseId={o.id} />

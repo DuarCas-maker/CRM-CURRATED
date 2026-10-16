@@ -8,6 +8,7 @@ import { z } from "zod";
 import { teamLabels } from "@/lib/server/gmail-team";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
 import { messageFiles } from "@/lib/server/mail-manager";
+import { attachmentProcessing } from "@/lib/server/attachment-processing";
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -71,11 +72,16 @@ export async function GET(
             ),
         ) || []
       : [];
+    const processed = await attachmentProcessing(
+      db,
+      gmailHistoryEnabled() ? await messageFiles(db, messages) : [],
+      attachments,
+    );
     return Response.json(
       {
         messages: messages.reverse(),
-        attachments,
-        files: gmailHistoryEnabled() ? await messageFiles(db, messages) : [],
+        attachments: processed.attachments,
+        files: processed.files,
         // The user's RLS-protected conversation lookup above authorizes this exact case/thread.
         sends:
           checkDb(

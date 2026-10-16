@@ -318,14 +318,49 @@ export function summarizeThreads(
   for (const s of originals)
     if (!headers.some((m) => s.conversation_ids.includes(m.conversation_id)))
       result.push(s);
-  const clientEngaged = headers.some((m) => m.direction === "inbound" && m.nature === "personal" && m.reply_intent === "positive" && context.client_emails.includes(m.sender.toLowerCase())) || context.conversations.some((c) => c.manually_incorporated_at);
+  // A classifier's "review" result must not hide an established client exchange.
+  // Require personal, direct correspondence in the same original thread; a
+  // campaign, lender broadcast or unrelated outgoing email is not evidence.
+  const directClientThreads = new Set<string>();
+  for (const m of headers) {
+    const original = originalMap.get(m.conversation_id);
+    if (
+      !original ||
+      m.nature !== "personal" ||
+      !(m.direction === "outbound" || context.team_emails.includes(m.sender.toLowerCase())) ||
+      lenderMessageIds(m, resolve, context.team_emails).length
+    ) continue;
+    for (const p of m.participants || []) {
+      const email = p.email.toLowerCase();
+      if (p.role === "to" && context.client_emails.includes(email))
+        directClientThreads.add(`${original.id}:${email}`);
+    }
+  }
+  const engagedCases = new Set(
+    context.conversations
+      .filter((c) => c.manually_incorporated_at)
+      .map((c) => c.opportunity_id),
+  );
+  for (const m of headers) {
+    const original = originalMap.get(m.conversation_id);
+    const sender = m.sender.toLowerCase();
+    if (
+      original &&
+      m.direction === "inbound" &&
+      m.nature === "personal" &&
+      !automatedSender(sender) &&
+      context.client_emails.includes(sender) &&
+      (m.reply_intent === "positive" ||
+        (m.reply_intent === "review" && directClientThreads.has(`${original.id}:${sender}`)))
+    ) engagedCases.add(original.opportunity_id);
+  }
   const visible = context.enforce_engagement
     ? result.filter((thread) => {
         const messages = headers.filter((m) => thread.message_ids?.includes(m.id));
         const human = messages.filter((m) => m.direction === "inbound" && m.nature === "personal" && !automatedSender(m.sender) && m.reply_intent !== "ignored");
         if (thread.category === "lender") return human.some((m) => resolve(m.sender) === thread.lender_ids[0]);
         if (thread.category === "team") return human.some((m) => context.team_emails.includes(m.sender.toLowerCase()));
-        if (thread.category === "client" && clientEngaged) return true;
+        if (thread.category === "client" && engagedCases.has(thread.opportunity_id)) return true;
         return human.some((m) => m.reply_intent === "positive") || thread.conversation_ids.some((id) => coMap.get(id)?.manually_incorporated_at);
       })
     : result;

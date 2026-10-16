@@ -315,6 +315,7 @@ export interface Workspace {
     status: string;
   }[];
   attachments?: {
+    processing_status?: import("./attachment-processing").AttachmentProcessingStatus;
     id: string;
     message_id: string;
     name: string;

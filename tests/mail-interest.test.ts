@@ -228,3 +228,67 @@ test("inbox hides unanswered lender channels even when they share a client's pos
     1,
   );
 });
+
+test("established client exchanges remain visible when replies need review, without treating campaigns or unrelated sends as engagement", () => {
+  const context: MailChannels = {
+    enforce_engagement: true,
+    conversations: ["client", "unrelated", "other-case"].map((id) => ({
+      id,
+      opportunity_id: id === "other-case" ? "other" : "newday",
+      account_id: "account",
+      area: "seller",
+      submission_id: null,
+      needs_attention: false,
+      subject: "New Day Cafe",
+      updated_at: "2026-10-14T20:00:00Z",
+    })),
+    processes: [],
+    routes: [],
+    lenders: [{ id: "lender", name: "Lender", email: "funding@lender.test" }],
+    lender_contacts: [],
+    client_emails: ["newdaycafe01@gmail.com"],
+    team_emails: ["seller@example.com"],
+  };
+  const incoming: ThreadHeader = {
+    id: "received",
+    conversation_id: "client",
+    sender: "newdaycafe01@gmail.com",
+    direction: "inbound",
+    nature: "personal",
+    reply_intent: "review",
+    sent_at: "2026-10-14T19:00:00Z",
+    participants: [{ role: "to", email: "seller@example.com" }],
+  };
+  const outgoing: ThreadHeader = {
+    ...incoming,
+    id: "sent",
+    sender: "seller@example.com",
+    direction: "outbound",
+    reply_intent: "ignored",
+    sent_at: "2026-10-14T20:00:00Z",
+    participants: [{ role: "to", email: "newdaycafe01@gmail.com" }],
+  };
+  const visible = summarizeThreads(context, [incoming, outgoing]);
+  assert.equal(visible.length, 1);
+  assert.equal(visible[0].category, "client");
+  assert.deepEqual(visible[0].message_ids, ["sent", "received"]);
+  assert.equal(incoming.reply_intent, "review");
+  assert.equal(summarizeThreads(context, [incoming]).length, 0);
+  assert.equal(summarizeThreads(context, [outgoing]).length, 0);
+  for (const nature of ["campaign", "automatic"]) {
+    assert.equal(summarizeThreads(context, [incoming, { ...outgoing, nature }]).length, 0);
+  }
+  for (const reply_intent of ["negative", "ignored"] as const) {
+    assert.equal(summarizeThreads(context, [{ ...incoming, reply_intent }, outgoing]).length, 0);
+  }
+  assert.equal(summarizeThreads(context, [incoming, { ...outgoing, conversation_id: "unrelated" }]).length, 0);
+  assert.equal(summarizeThreads(context, [incoming, {
+    ...outgoing,
+    participants: [...outgoing.participants!, { role: "to", email: "funding@lender.test" }],
+  }]).length, 0);
+  assert.equal(summarizeThreads(context, [incoming, outgoing, {
+    ...incoming,
+    id: "other",
+    conversation_id: "other-case",
+  }]).length, 1);
+});
