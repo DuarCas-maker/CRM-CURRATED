@@ -42,16 +42,6 @@ export async function messageFiles(
   const archives = messages
     .map((m) => m.archive_message_id)
     .filter((id): id is string => !!id);
-  const incoming = archives.length
-    ? checkDb(
-        await db
-          .from("gmail_saved_attachments")
-          .select(
-            "id,archive_message_id,name,size,status,last_error,imported_document_id",
-          )
-          .in("archive_message_id", archives),
-      ) || []
-    : [];
   const headers = messages
     .map((m) => m.internet_message_id)
     .filter((id): id is string => !!id);
@@ -63,6 +53,32 @@ export async function messageFiles(
           .in("id", [...new Set(messages.map((m) => m.conversation_id))]),
       ) || []
     : [];
+  const incoming: {
+    id: string;
+    opportunity_id: string;
+    archive_message_id: string;
+    name: string;
+    last_error?: string | null;
+    imported_document_id?: string | null;
+  }[] = [];
+  for (let page = 0; archives.length; page++) {
+    const rows =
+      checkDb(
+        await db
+          .from("gmail_saved_attachments")
+          .select(
+            "id,opportunity_id,archive_message_id,name,size,status,last_error,imported_document_id",
+          )
+          .in("archive_message_id", archives)
+          .in("opportunity_id", [
+            ...new Set(conversations.map((c) => c.opportunity_id)),
+          ])
+          .order("id")
+          .range(page * 1000, page * 1000 + 999),
+      ) || [];
+    incoming.push(...rows);
+    if (rows.length < 1000) break;
+  }
   const service = serviceClient();
   const sent = headers.length
     ? checkDb(
@@ -110,7 +126,7 @@ export async function messageFiles(
         conversations.find((c) => c.id === m.conversation_id)
           ?.opportunity_id === s.opportunity_id,
     );
-    if (outgoing)
+    if (outgoing?.attachment_snapshot?.length)
       return (outgoing.attachment_snapshot || []).map(
         (f: { id: string; name?: string }) => ({
           message_id: m.id,
@@ -121,7 +137,13 @@ export async function messageFiles(
         }),
       );
     return incoming
-      .filter((f) => f.archive_message_id === m.archive_message_id)
+      .filter(
+        (f) =>
+          f.archive_message_id === m.archive_message_id &&
+          f.opportunity_id ===
+            conversations.find((c) => c.id === m.conversation_id)
+              ?.opportunity_id,
+      )
       .map((f) => ({
         message_id: m.id,
         id: f.id,

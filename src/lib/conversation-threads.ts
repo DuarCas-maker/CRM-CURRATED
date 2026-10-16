@@ -2,7 +2,6 @@ import type { Conversation, Message, Opportunity } from "./domain";
 import type { MailPeer } from "./mail-display";
 import { readableMail } from "./mail-display";
 import { lenderEmailResolver, lenderMessageIds } from "./lender-mail";
-import { automatedSender } from "./mail-interest";
 
 export type ThreadCategory = "client" | "team" | "lender" | "review";
 export type ThreadHeader = Pick<
@@ -41,7 +40,6 @@ export type CaseMailContext = {
   followup: { title: string; at: string | null } | null;
 };
 export type MailChannels = {
-  enforce_engagement?: boolean;
   conversations: Conversation[];
   processes: { id: string; label: string; sequence_number: number }[];
   routes: { conversation_id: string; lender_id: string }[];
@@ -318,53 +316,8 @@ export function summarizeThreads(
   for (const s of originals)
     if (!headers.some((m) => s.conversation_ids.includes(m.conversation_id)))
       result.push(s);
-  // A classifier's "review" result must not hide an established client exchange.
-  // Require personal, direct correspondence in the same original thread; a
-  // campaign, lender broadcast or unrelated outgoing email is not evidence.
-  const directClientThreads = new Set<string>();
-  for (const m of headers) {
-    const original = originalMap.get(m.conversation_id);
-    if (
-      !original ||
-      m.nature !== "personal" ||
-      !(m.direction === "outbound" || context.team_emails.includes(m.sender.toLowerCase())) ||
-      lenderMessageIds(m, resolve, context.team_emails).length
-    ) continue;
-    for (const p of m.participants || []) {
-      const email = p.email.toLowerCase();
-      if (p.role === "to" && context.client_emails.includes(email))
-        directClientThreads.add(`${original.id}:${email}`);
-    }
-  }
-  const engagedCases = new Set(
-    context.conversations
-      .filter((c) => c.manually_incorporated_at)
-      .map((c) => c.opportunity_id),
-  );
-  for (const m of headers) {
-    const original = originalMap.get(m.conversation_id);
-    const sender = m.sender.toLowerCase();
-    if (
-      original &&
-      m.direction === "inbound" &&
-      m.nature === "personal" &&
-      !automatedSender(sender) &&
-      context.client_emails.includes(sender) &&
-      (m.reply_intent === "positive" ||
-        (m.reply_intent === "review" && directClientThreads.has(`${original.id}:${sender}`)))
-    ) engagedCases.add(original.opportunity_id);
-  }
-  const visible = context.enforce_engagement
-    ? result.filter((thread) => {
-        const messages = headers.filter((m) => thread.message_ids?.includes(m.id));
-        const human = messages.filter((m) => m.direction === "inbound" && m.nature === "personal" && !automatedSender(m.sender) && m.reply_intent !== "ignored");
-        if (thread.category === "lender") return human.some((m) => resolve(m.sender) === thread.lender_ids[0]);
-        if (thread.category === "team") return human.some((m) => context.team_emails.includes(m.sender.toLowerCase()));
-        if (thread.category === "client" && engagedCases.has(thread.opportunity_id)) return true;
-        return human.some((m) => m.reply_intent === "positive") || thread.conversation_ids.some((id) => coMap.get(id)?.manually_incorporated_at);
-      })
-    : result;
-  return visible.sort(
+  // Case association determines history visibility; reply intent only drives commercial workflows.
+  return result.sort(
     (a, b) =>
       Date.parse(b.sent_at) - Date.parse(a.sent_at) || a.id.localeCompare(b.id),
   );

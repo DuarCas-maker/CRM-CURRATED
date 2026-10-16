@@ -7,6 +7,7 @@ import { gmailHistoryEnabled } from "../gmail-feature";
 import { teamLabels } from "./gmail-team";
 import { crmExtensionsReady } from "./crm-readiness";
 import { loadWorkspaceMail } from "./workspace-mail";
+import { loadWorkspaceMailFiles } from "./workspace-mail-files";
 export async function loadWorkspace(
   params = new URLSearchParams(),
 ): Promise<Workspace> {
@@ -65,9 +66,7 @@ export async function loadWorkspace(
   const opportunityView =
     !caseId && params.get("view") === "tasks"
       ? "opportunity_tasks"
-      : !caseId && params.get("view") === "inbox"
-        ? "opportunity_inbox"
-        : "opportunity_workspace";
+      : "opportunity_workspace";
   let query = db
     .from(opportunityView)
     .select("*", { count: "exact" })
@@ -228,6 +227,10 @@ export async function loadWorkspace(
     db,
     conversations.map((c) => c.id),
   );
+  const mailFiles =
+    caseId && gmailHistoryEnabled()
+      ? await loadWorkspaceMailFiles(db, messages, attachments)
+      : { files: [], attachments };
   if (gmailHistoryEnabled()) {
     const labels = await teamLabels(messages.map((m) => m.sender));
     for (const message of messages)
@@ -256,7 +259,8 @@ export async function loadWorkspace(
     opportunities,
     leads: leadResponse.data || [],
     messages: messages.reverse(),
-    attachments,
+    attachments: mailFiles.attachments,
+    mail_files: mailFiles.files,
     preferences,
     notifications: preferences.internal ? data.notifications : [],
     demo: false,

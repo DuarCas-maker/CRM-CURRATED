@@ -256,6 +256,7 @@ export interface Preferences {
   locale: Locale;
 }
 export interface Workspace {
+  mail_files?: import("./mail-files").MailVisibleFile[];
   crm_extensions_ready?: boolean;
   operational?: import("./operations").OperationalData;
   email_templates?: import("./campaign-templates").EmailTemplate[];

@@ -10,6 +10,8 @@ import { UnderwritingWorkspace } from "./underwriting-workspace";
 import { MailComposer, MailSendStatus } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
 import { MailBody } from "./mail-bubble";
+import { MailAttachments } from "./mail-attachments";
+import type { DocumentSelection } from "@/lib/document-review";
 import {
   ArrowLeft,
   Phone,
@@ -80,6 +82,8 @@ export function OpportunityDetail({
     null,
   );
   const [reviewDocument, setReviewDocument] = useState<string | null>(null);
+  const [reviewAttachment, setReviewAttachment] =
+    useState<DocumentSelection | null>(null);
   const name = (id: string | null) =>
     data.profiles.find((p) => p.id === id)?.name ||
     t(locale, "Sin asignar", "Unassigned");
@@ -322,7 +326,33 @@ export function OpportunityDetail({
                           {a.type} · {a.area}
                         </small>
                         {a.type === "email" ? (
-                          <MailBody body={a.body} locale={locale} />
+                          <>
+                            <MailBody body={a.body} locale={locale} />
+                            {a.id.startsWith("email:") && (
+                              <MailAttachments
+                                data={data}
+                                locale={locale}
+                                files={(data.mail_files || []).filter(
+                                  (f) => f.message_id === a.id.slice(6),
+                                )}
+                                legacyAttachments={(
+                                  data.attachments || []
+                                ).filter((f) => f.message_id === a.id.slice(6))}
+                                onFileReview={(f) =>
+                                  setReviewAttachment({
+                                    source: "saved",
+                                    id: f.id,
+                                  })
+                                }
+                                onAttachment={(f) =>
+                                  setReviewAttachment({
+                                    source: "legacy",
+                                    id: f.id,
+                                  })
+                                }
+                              />
+                            )}
+                          </>
                         ) : (
                           <p>{a.body}</p>
                         )}
@@ -882,6 +912,18 @@ export function OpportunityDetail({
           close={() => {
             setMovingStatements(null);
             setSelectedStatements([]);
+          }}
+        />
+      )}
+      {reviewAttachment && (
+        <DocumentReview
+          selection={reviewAttachment}
+          data={data}
+          locale={locale}
+          act={act}
+          close={() => {
+            setReviewAttachment(null);
+            void refresh();
           }}
         />
       )}

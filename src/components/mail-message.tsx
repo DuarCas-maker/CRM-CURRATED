@@ -3,10 +3,8 @@ import {
   Reply,
   ReplyAll,
   Forward,
-  Paperclip,
   MoreHorizontal,
   ExternalLink,
-  CheckCircle2,
 } from "lucide-react";
 import type { Locale, Message, Workspace } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
@@ -15,21 +13,10 @@ import { mailSendLabels } from "@/lib/mail-chat";
 import { teamLabel } from "@/lib/gmail-team";
 import { MailBody } from "./mail-bubble";
 import { t } from "./ui";
-import {
-  attachmentProcessingLabels,
-  type AttachmentProcessingStatus,
-} from "@/lib/attachment-processing";
 
-export type MailVisibleFile = {
-  message_id: string;
-  id: string;
-  name: string;
-  href: string;
-  last_error?: string | null;
-  review_source?: "saved";
-  imported_document_id?: string | null;
-  processing_status?: AttachmentProcessingStatus;
-};
+export type { MailVisibleFile } from "@/lib/mail-files";
+import type { MailVisibleFile } from "@/lib/mail-files";
+import { MailAttachments } from "./mail-attachments";
 export function MailMessage({
   message,
   data,
@@ -93,81 +80,16 @@ export function MailMessage({
           </small>
         )}
         <MailBody body={message.body} locale={locale} />
-        {!!files.length && (
-          <div className="cw-message-files">
-            {files.map((f) => {
-              const status =
-                f.processing_status ||
-                (f.imported_document_id ? "linked" : "pending");
-              return (
-                <span key={f.id} className={`cw-attachment ${status}`}>
-                  <a key={f.id} href={f.href} title={f.last_error || undefined}>
-                    {status === "processed" ? (
-                      <CheckCircle2 size={12} />
-                    ) : (
-                      <Paperclip size={12} />
-                    )}
-                    {f.name}
-                    {f.last_error &&
-                      ` · ${t(locale, "Copia pendiente", "Copy pending")}`}
-                  </a>
-                  {f.review_source && onFileReview && (
-                    <button
-                      className="document-import-button"
-                      type="button"
-                      onClick={() => onFileReview(f)}
-                    >
-                      {t(
-                        locale,
-                        attachmentProcessingLabels[status][0],
-                        attachmentProcessingLabels[status][1],
-                      )}
-                    </button>
-                  )}
-                </span>
-              );
-            })}
-          </div>
-        )}
-        {!!legacyAttachments.length && (
-          <div className="cw-message-files">
-            {legacyAttachments.map((a) => {
-              const doc = data.demo
-                ? data.documents.find((d) => d.id === a.imported_document_id)
-                : undefined;
-              const status =
-                a.processing_status ||
-                (doc?.reviewed_at
-                  ? doc.status === "correction"
-                    ? "correction"
-                    : "processed"
-                  : a.imported_document_id
-                    ? "linked"
-                    : "pending");
-              return (
-                <button
-                  key={a.id}
-                  className={`cw-attachment ${status}`}
-                  type="button"
-                  disabled={!onAttachment}
-                  onClick={() => onAttachment?.(a, message)}
-                >
-                  {status === "processed" ? (
-                    <CheckCircle2 size={12} />
-                  ) : (
-                    <Paperclip size={12} />
-                  )}
-                  {a.name} ·{" "}
-                  {t(
-                    locale,
-                    attachmentProcessingLabels[status][0],
-                    attachmentProcessingLabels[status][1],
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        )}
+        <MailAttachments
+          data={data}
+          locale={locale}
+          files={files}
+          legacyAttachments={legacyAttachments}
+          onFileReview={onFileReview}
+          onAttachment={
+            onAttachment ? (a) => onAttachment(a, message) : undefined
+          }
+        />
         <div className="cw-message-bottom">
           {message.direction === "outbound" && (
             <span className={`cw-send-state ${message.status}`} role="status">

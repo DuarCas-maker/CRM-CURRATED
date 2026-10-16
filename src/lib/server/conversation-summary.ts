@@ -62,7 +62,7 @@ export async function conversationSummary(
   );
   const teamEmails = [...new Set([...channels.team_emails, ...teams.keys()])];
   const summaries = summarizeThreads(
-    { ...channels, team_emails: teamEmails, enforce_engagement: true },
+    { ...channels, team_emails: teamEmails },
     headers,
     replies,
   );
