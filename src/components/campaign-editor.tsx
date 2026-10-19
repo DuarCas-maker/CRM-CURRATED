@@ -86,6 +86,24 @@ export function CampaignEditor({
             >
               {t(locale, "Enlace", "Link")}
             </button>
+            {(["black", "blue"] as const).map((color) => (
+              <button
+                key={color}
+                type="button"
+                className="button"
+                onClick={() =>
+                  insert(
+                    `\n:::table ${color}\n| {{company}} | |\n| :--- | ---: |\n| Amount | $0.00 |\n| Terms | 120 months |\n:::\n`,
+                  )
+                }
+              >
+                {t(
+                  locale,
+                  color === "black" ? "Tabla negra" : "Tabla azul",
+                  color === "black" ? "Black table" : "Blue table",
+                )}
+              </button>
+            ))}
           </>
         )}
         <select
@@ -114,8 +132,8 @@ export function CampaignEditor({
         <small>
           {t(
             locale,
-            "Usa los botones para negritas, cursivas, listas y enlaces. Revisa el resultado en la vista previa.",
-            "Use the toolbar for bold, italic, lists and links. Check the result in the preview.",
+            "Usa los botones para negritas, cursivas, tablas, listas y enlaces. En las tablas, cada línea es una fila. Revisa el resultado en la vista previa.",
+            "Use the toolbar for bold, italic, tables, lists and links. Each table line is a row. Check the result in the preview.",
           )}
         </small>
       )}

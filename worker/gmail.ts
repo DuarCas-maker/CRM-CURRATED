@@ -890,7 +890,9 @@ export async function sendNext() {
       cc: msg.cc_emails || [],
       bcc: msg.bcc_emails || [],
       senderName: msg.sender_name || undefined,
-      signatureHtml: msg.signature_html || undefined,
+      signatureHtml: msg.body_html?.includes('data-crm-signature="true"')
+        ? undefined
+        : msg.signature_html || undefined,
       subject: msg.subject,
       body: msg.body,
       bodyHtml: msg.body_html || undefined,

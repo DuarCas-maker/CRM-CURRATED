@@ -1,4 +1,5 @@
 import type { Workspace, Opportunity, Stage } from "./domain";
+import { campaignPresets } from "./campaign-presets";
 const now = new Date();
 const ago = (days: number, hours = 0) =>
   new Date(now.getTime() - days * 86400000 - hours * 3600000).toISOString();
@@ -525,6 +526,12 @@ export function demoWorkspace(): Workspace {
         created_at: ago(0, 3),
       },
     ],
+    email_templates: campaignPresets.map((preset) => ({
+      ...preset,
+      version: 1,
+      archived_at: null,
+      updated_at: now.toISOString(),
+    })),
     preferences: { internal: true, email: false, push: false, locale: "es" },
   } as Workspace);
 }

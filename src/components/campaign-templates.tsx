@@ -13,6 +13,7 @@ import { useUnsavedChanges } from "./unsaved-changes";
 import { Modal, t } from "./ui";
 import { CampaignEditor } from "./campaign-editor";
 import { renderCampaignContent } from "@/lib/campaign-content";
+import { campaignPresets } from "@/lib/campaign-presets";
 
 export function CampaignTemplates({
   data,
@@ -228,6 +229,33 @@ export function CampaignTemplates({
           "Personalize each email with client data. Campaigns retain a copy of their template and attachments.",
         )}
       </p>
+      {canEdit && (
+        <details style={{ marginBottom: 16 }}>
+          <summary>
+            {t(
+              locale,
+              "Crear desde las plantillas de referencia de Curated",
+              "Create from Curated reference templates",
+            )}
+          </summary>
+          <div className="card-actions" style={{ marginTop: 8 }}>
+            {campaignPresets.map((preset) => (
+              <button
+                type="button"
+                className="button"
+                key={preset.id}
+                onClick={() => {
+                  setError("");
+                  setRequestKey(crypto.randomUUID());
+                  setDraft({ ...preset, id: undefined });
+                }}
+              >
+                {preset.name}
+              </button>
+            ))}
+          </div>
+        </details>
+      )}
       {error && !draft && (
         <p className="error" role="alert">
           {error}

@@ -44,7 +44,9 @@ test("campaign mail sends the frozen generic attachment and rejects changed byte
       opportunity_id: randomUUID(),
       enrollment_id: randomUUID(),
       campaign_asset_snapshot: [asset],
-      signature_html: "",
+      signature_html: "<div>Duplicate Gmail signature</div>",
+      body_html:
+        '<div data-crm-signature="true"><strong>Example Company</strong><br>Daniel Duarcas</div>',
       sender_name: "Team",
       subject: "Hi Alex",
       body: "Fictional outreach\nhttps://example.test/unsubscribe/test",
@@ -71,6 +73,15 @@ test("campaign mail sends the frozen generic attachment and rejects changed byte
         if (url.hostname === "gmail.googleapis.com") {
           posts++;
           const mime = Buffer.from(body.raw, "base64url").toString();
+          const decodedParts = [
+            ...mime.matchAll(
+              /Content-Transfer-Encoding: base64\r\n\r\n([A-Za-z0-9+/=\r\n]+)/g,
+            ),
+          ]
+            .map((match) => Buffer.from(match[1], "base64").toString())
+            .join("\n");
+          assert(decodedParts.includes("Example Company"));
+          assert(!decodedParts.includes("Duplicate Gmail signature"));
           assert(mime.includes(bytes.toString("base64")));
           assert.match(mime, /Brochure.pdf/);
           return Response.json({

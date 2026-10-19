@@ -4,6 +4,12 @@ Aplicar `supabase/migrations/039_campaign_delivery_controls.sql` después de las
 
 ## Uso
 
+Las referencias **Curated · OFFER · SBA 7(a)** y **Curated · APPROVAL · SBA y Bridge Capital** conservan el texto y los valores de los correos proporcionados, con `{{company}}` para empresa y `{{name}}` para nombre. Incluyen tablas negras/azules, firma de Daniel y enlace de baja. El formato usa tablas con estilos inline compatibles con correo; el texto alternativo también incluye empresa y valores. La firma integrada evita agregar por segunda vez la firma de Gmail.
+
+Para instalarlas en una base existente, ejecutar en el servidor `node --env-file=.env.local --import tsx scripts/install-campaign-presets.ts`. Usa las credenciales de Supabase ya configuradas, crea solo las dos plantillas y sus versiones, y no modifica ediciones existentes. No requiere migración nueva. También se pueden crear copias desde **Plantillas → Crear desde las plantillas de referencia de Curated**.
+
+El editor permite insertar **Tabla negra** o **Tabla azul**. Cada fila está escrita como `| etiqueta | valor |`, dentro de un bloque `:::table black` o `:::table blue` cerrado con `:::`. La fila de separadores conserva las columnas; un segundo encabezado vacío hace que el título ocupe ambas columnas. La firma incluida se delimita con `:::signature` y `:::`. Se admiten enlaces de correo `mailto:` además de HTTP/HTTPS.
+
 1. Preparar y verificar leads. Solo `verification='valid'` permite inscribirlos.
 2. En **Campañas → Plantillas**, crear una plantilla con asunto, mensaje, variables y hasta cinco adjuntos generales (15 MB en total; cada archivo hasta 10 MB). El formato básico admite negritas, cursivas, listas y enlaces HTTP/HTTPS mediante los botones del editor. El HTML introducido como texto no se ejecuta.
 3. Agregar los seguimientos opcionales y guardar. Cada mensaje debe incluir `{{unsubscribe_url}}`. Se pueden duplicar, archivar y restaurar plantillas. El historial conserva las versiones existentes desde la migración y cada edición posterior.
