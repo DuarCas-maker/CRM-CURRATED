@@ -1,0 +1,34 @@
+.application-required {
+  color: #b42318;
+  font-weight: 700;
+}
+.application-extraction {
+  border: 1px solid #b6aa98;
+  border-radius: 10px;
+  padding: 16px;
+  margin: 16px 0;
+  background: #f8f6f2;
+}
+.application-extraction > summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.application-extraction fieldset {
+  margin: 12px 0;
+}
+.application-field-notice {
+  border-left: 3px solid #967433;
+  padding: 9px 12px;
+  margin: 8px 0;
+  background: #f8f3e8;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.application-field-notice strong,
+.application-field-notice small {
+  display: block;
+  margin-bottom: 5px;
+}
+.application-field-notice .button {
+  margin-top: 6px;
+}

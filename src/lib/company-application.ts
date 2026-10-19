@@ -9,6 +9,7 @@ export const entityTypes = [
   "LLC",
   "Corporation",
   "Partnership",
+  "Limited Partnership",
   "Non-Profit",
 ] as const;
 export const usStates = Object.entries({
@@ -111,6 +112,7 @@ export const companyApplicationSchema = z.object({
   business_state: text,
   business_zip: text,
   owners: z.array(companyOwnerSchema).min(1).max(2),
+  second_owner: z.enum(["yes", "no", "unknown"]).optional(),
   commercial_name: text,
   commercial_email: text,
   identifier: text,
@@ -136,18 +138,66 @@ export type CompanyApplicationRecord = {
   declaration?: string | null;
 };
 export function emptyCompanyApplication(company = ""): CompanyApplication {
-  return companyApplicationSchema.parse({ legal_name: company, owners: [{}] });
+  return companyApplicationSchema.parse({
+    legal_name: company,
+    owners: [{}],
+    second_owner: "unknown",
+  });
+}
+export const requiredBusinessFields = [
+  "legal_name",
+  "entity_type",
+  "ein",
+  "incorporation_state",
+  "inception_date",
+] as const;
+export const requiredOwnerFields = [
+  "name",
+  "ssn",
+  "date_of_birth",
+  "ownership",
+] as const;
+export function secondOwnerAnswer(data: CompanyApplication) {
+  // Existing records predate the explicit unknown state.
+  return data.second_owner ?? (data.owners.length > 1 ? "yes" : "no");
+}
+export function bindApplicationAdvisor(
+  data: CompanyApplication,
+  advisors: { id: string; name: string; email: string }[],
+) {
+  if (!data.commercial_email)
+    return { ...data, commercial_name: "", identifier: "" };
+  const advisor = advisors.find(
+    (a) => a.email.toLowerCase() === data.commercial_email.toLowerCase(),
+  );
+  if (!advisor)
+    throw new Error(
+      "Selecciona un comercial activo / Select an active advisor",
+    );
+  return {
+    ...data,
+    commercial_email: advisor.email,
+    commercial_name: advisor.name,
+    identifier: advisor.id,
+  };
+}
+export function applicationFilename(data: CompanyApplication) {
+  const clean = (value: string) =>
+    value
+      .replace(/[<>:"/\\|?*\u0000-\u001f]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 70)
+      .replace(/[. ]+$/, "");
+  return `Application - ${clean(data.legal_name) || "Company"} - ${clean(data.owners[0]?.name || "") || "Owner"}.pdf`;
 }
 export function validateCompleteApplication(data: CompanyApplication) {
-  if (
-    [
-      data.legal_name,
-      data.entity_type,
-      data.ein,
-      data.incorporation_state,
-      data.inception_date,
-    ].some((v) => !v)
-  )
+  const second = secondOwnerAnswer(data);
+  if (second === "unknown" || (second === "yes") !== (data.owners.length === 2))
+    throw new Error(
+      "Confirma si hay un segundo propietario / Confirm whether there is a second owner",
+    );
+  if (requiredBusinessFields.some((key) => !data[key]))
     throw new Error(
       "Completa los campos obligatorios / Complete required application fields",
     );
@@ -155,6 +205,7 @@ export function validateCompleteApplication(data: CompanyApplication) {
     !entityTypes.includes(data.entity_type as (typeof entityTypes)[number]) ||
     !/^\d{2}-\d{7}$/.test(data.ein) ||
     !validDate(data.inception_date) ||
+    data.inception_date > new Date().toISOString().slice(0, 10) ||
     !validState(data.incorporation_state) ||
     !validState(data.business_state) ||
     (data.commercial_email &&

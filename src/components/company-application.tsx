@@ -1,4 +1,5 @@
 "use client";
+import "./company-application.css";
 import { useEffect, useState } from "react";
 import type { Locale, Workspace, Opportunity } from "@/lib/domain";
 import {
@@ -10,13 +11,26 @@ import {
   usStates,
   formatTaxId,
   adultBirthDate,
+  requiredBusinessFields,
+  requiredOwnerFields,
+  secondOwnerAnswer,
+  bindApplicationAdvisor,
   type CompanyApplication,
   type ApplicationSignature,
 } from "@/lib/company-application";
 import { SignaturePad } from "./signature-pad";
+import { ApplicationExtraction } from "./application-extraction";
+import {
+  applicationFieldValue,
+  mergeApplicationExtraction,
+  normalizeExtractionValue,
+  setApplicationField,
+  type ExtractionField,
+  type ExtractionNotice,
+} from "@/lib/application-extraction";
 import { Modal, t } from "./ui";
 const fields: [
-  keyof Omit<CompanyApplication, "owners">,
+  keyof Omit<CompanyApplication, "owners" | "second_owner">,
   string,
   string,
   string?,
@@ -42,7 +56,6 @@ const fields: [
     "Commercial Email",
     "email",
   ],
-  ["identifier", "Identificador", "Identifier"],
 ];
 const ownerFields: [string, string, string, string?][] = [
   ["name", "Nombre del propietario", "Owner Name"],
@@ -94,6 +107,22 @@ export function CompanyApplicationForm({
       workspace.demo ? SAMPLE_APPLICATION_DECLARATION : null,
     );
   const [declarationHash, setDeclarationHash] = useState<string | null>(null);
+  const [advisors, setAdvisors] = useState(
+    workspace.profiles.filter((p) => p.active !== false),
+  );
+  const [confirmExit, setConfirmExit] = useState(false),
+    [extractionPending, setExtractionPending] = useState(false);
+  const [notices, setNotices] = useState<ExtractionNotice[]>([]),
+    [sources, setSources] = useState<string[]>([]);
+  useEffect(() => {
+    if (!dirty && !extractionPending) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty, extractionPending]);
   useEffect(() => {
     if (workspace.demo) return;
     const controller = new AbortController();
@@ -105,6 +134,7 @@ export function CompanyApplicationForm({
         const b = await r.json();
         if (!r.ok) throw new Error(b.error);
         if (controller.signal.aborted) return;
+        if (b.advisors) setAdvisors(b.advisors);
         if (b.record) {
           const loaded = companyApplicationSchema.parse(b.record.data);
           // Preserve signed snapshots; only fill missing advisor details in drafts.
@@ -144,6 +174,83 @@ export function CompanyApplicationForm({
     setAuthorized(false);
     setPreviousSignature(null);
     setMessage("");
+  }
+  function fieldNotices(field: ExtractionField) {
+    return notices
+      .filter((n) => n.field === field)
+      .map((notice, index) => {
+        const candidate = normalizeExtractionValue(field, notice.value);
+        const canApply =
+          notice.reason === "review" &&
+          candidate !== null &&
+          applicationFieldValue(data, field) === "" &&
+          (!field.startsWith("owners.1.") || data.owners.length > 1);
+        return (
+          <div
+            className="application-field-notice"
+            role="status"
+            key={`${field}-${index}`}
+          >
+            <strong>
+              {notice.reason === "missing"
+                ? t(locale, "No encontrado", "Not found")
+                : notice.reason === "conflict"
+                  ? t(
+                      locale,
+                      "Conflicto: requiere revisión",
+                      "Conflicting information: needs review",
+                    )
+                  : notice.reason === "different"
+                    ? t(
+                        locale,
+                        "Diferencia detectada; se conservó el dato existente",
+                        "Difference found; existing value preserved",
+                      )
+                    : t(locale, "Requiere revisión", "Needs review")}
+            </strong>
+            {notice.value && <div>{notice.value}</div>}
+            {notice.evidence.map((e, i) => (
+              <small key={i}>
+                {e.source === "user"
+                  ? t(locale, "Dato proporcionado", "User-provided fact")
+                  : sources[Number(e.source.slice(-1)) - 1]}
+                {e.page ? ` · ${t(locale, "pág.", "p.")} ${e.page}` : ""}:{" "}
+                {e.quote}
+              </small>
+            ))}
+            {canApply && (
+              <button
+                type="button"
+                className="button"
+                disabled={busy}
+                onClick={() => {
+                  const next = setApplicationField(data, field, candidate);
+                  if (
+                    field.endsWith(".ownership") &&
+                    next.owners.reduce(
+                      (sum, o) => sum + Number(o.ownership),
+                      0,
+                    ) > 100
+                  ) {
+                    setError(
+                      t(
+                        locale,
+                        "La propiedad no puede superar el 100%.",
+                        "Ownership cannot exceed 100%.",
+                      ),
+                    );
+                    return;
+                  }
+                  changed(next);
+                  setNotices(notices.filter((n) => n !== notice));
+                }}
+              >
+                {t(locale, "Confirmar e incorporar", "Confirm and fill")}
+              </button>
+            )}
+          </div>
+        );
+      });
   }
   async function save() {
     setBusy(true);
@@ -247,9 +354,34 @@ export function CompanyApplicationForm({
       wide
       title={t(locale, "Aplicación de la empresa", "Company application")}
       close={() => {
-        if (!busy) close();
+        if (!busy) {
+          if (dirty || extractionPending) setConfirmExit(true);
+          else close();
+        }
       }}
     >
+      {confirmExit && (
+        <Modal
+          title={t(locale, "¿Salir sin guardar?", "Leave without saving?")}
+          close={() => setConfirmExit(false)}
+        >
+          <p>
+            {t(
+              locale,
+              "Tienes cambios sin guardar. Si sales, se perderán.",
+              "You have unsaved changes. Leaving will discard them.",
+            )}
+          </p>
+          <div className="modal-footer">
+            <button className="button" onClick={() => setConfirmExit(false)}>
+              {t(locale, "Continuar editando", "Continue editing")}
+            </button>
+            <button className="button primary" onClick={close}>
+              {t(locale, "Salir sin guardar", "Leave without saving")}
+            </button>
+          </div>
+        </Modal>
+      )}
       {error && (
         <p className="error-banner" role="alert">
           {error}
@@ -269,76 +401,155 @@ export function CompanyApplicationForm({
         </p>
       ) : (
         <>
+          <ApplicationExtraction
+            documents={workspace.documents.filter(
+              (d) => d.opportunity_id === opportunity.id,
+            )}
+            opportunityId={opportunity.id}
+            locale={locale}
+            busy={busy}
+            setBusy={setBusy}
+            onPending={setExtractionPending}
+            onResult={(items, names) => {
+              const result = mergeApplicationExtraction(data, items);
+              changed(result.data);
+              setNotices(result.notices);
+              setSources(names);
+              setMessage(
+                t(
+                  locale,
+                  "Extracción completada. Revisa los campos y las sugerencias antes de guardar.",
+                  "Extraction completed. Review the fields and suggestions before saving.",
+                ),
+              );
+            }}
+          />
           <p className="muted">
             {t(
               locale,
-              "Obligatorios para generar PDF: nombre legal, entidad, EIN, estado de constitución, inicio del negocio y nombre, SSN, nacimiento y participación de cada propietario. Puedes guardar un borrador incompleto.",
-              "Required for PDF: legal name, entity, EIN, incorporation state, inception date, and each owner's name, SSN, birth date and ownership. You can save an incomplete draft.",
+              "Los campos marcados con * son obligatorios para generar el PDF; puedes guardar un borrador incompleto.",
+              "Fields marked * are required to generate the PDF; you can save an incomplete draft.",
             )}
           </p>
           <div className="company-application-fields">
             {fields.map(([key, es, en, type]) => (
-              <label className="field" key={key}>
-                {t(locale, es, en)}
-                {key === "entity_type" ||
-                key === "incorporation_state" ||
-                key === "business_state" ? (
-                  <select
-                    value={data[key]}
-                    disabled={busy}
-                    onChange={(e) =>
-                      changed({ ...data, [key]: e.target.value })
-                    }
-                  >
-                    <option value="">
-                      {t(locale, "Seleccionar…", "Select…")}
-                    </option>
-                    {key === "entity_type"
-                      ? entityTypes.map((value) => (
-                          <option key={value} value={value}>
-                            {value}
-                          </option>
-                        ))
-                      : usStates.map(([code, name]) => (
-                          <option key={code} value={code}>
-                            {name} ({code})
-                          </option>
-                        ))}
-                    {data[key] &&
-                      !(key === "entity_type"
-                        ? entityTypes.some((value) => value === data[key])
-                        : usStates.some(([code]) => code === data[key])) && (
-                        <option value={data[key]}>
-                          {data[key]} ·{" "}
-                          {t(
-                            locale,
-                            "valor anterior: selecciona una opción",
-                            "previous value: select an option",
-                          )}
+              <div key={key}>
+                <label className="field">
+                  <span>
+                    {t(locale, es, en)}
+                    {requiredBusinessFields.some((k) => k === key) && (
+                      <span className="application-required" aria-hidden="true">
+                        {" "}
+                        *
+                      </span>
+                    )}
+                  </span>
+                  {key === "commercial_email" ? (
+                    <select
+                      disabled={busy}
+                      value={data.commercial_email}
+                      onChange={(e) =>
+                        changed(
+                          bindApplicationAdvisor(
+                            { ...data, commercial_email: e.target.value },
+                            advisors,
+                          ),
+                        )
+                      }
+                    >
+                      <option value="">
+                        {t(locale, "Seleccionar comercial…", "Select advisor…")}
+                      </option>
+                      {advisors.map((a) => (
+                        <option key={a.id} value={a.email}>
+                          {a.email} · {a.name}
                         </option>
+                      ))}
+                      {data.commercial_email &&
+                        !advisors.some(
+                          (a) => a.email === data.commercial_email,
+                        ) && (
+                          <option value={data.commercial_email}>
+                            {data.commercial_email} ·{" "}
+                            {t(
+                              locale,
+                              "selecciona un usuario activo",
+                              "select an active user",
+                            )}
+                          </option>
+                        )}
+                    </select>
+                  ) : key === "entity_type" ||
+                    key === "incorporation_state" ||
+                    key === "business_state" ? (
+                    <select
+                      aria-required={requiredBusinessFields.some(
+                        (k) => k === key,
                       )}
-                  </select>
-                ) : (
-                  <input
-                    type={type || "text"}
-                    value={data[key]}
-                    maxLength={key === "ein" ? 10 : 250}
-                    inputMode={key === "ein" ? "numeric" : undefined}
-                    placeholder={key === "ein" ? "12-3456789" : undefined}
-                    disabled={busy}
-                    autoComplete="off"
-                    onChange={(e) =>
-                      changed({
-                        ...data,
-                        [key]:
-                          key === "ein"
-                            ? formatTaxId(e.target.value, "ein")
-                            : e.target.value,
-                      })
-                    }
-                  />
-                )}
-              </label>
+                      value={data[key]}
+                      disabled={busy}
+                      onChange={(e) =>
+                        changed({ ...data, [key]: e.target.value })
+                      }
+                    >
+                      <option value="">
+                        {t(locale, "Seleccionar…", "Select…")}
+                      </option>
+                      {key === "entity_type"
+                        ? entityTypes.map((value) => (
+                            <option key={value} value={value}>
+                              {value}
+                            </option>
+                          ))
+                        : usStates.map(([code, name]) => (
+                            <option key={code} value={code}>
+                              {name} ({code})
+                            </option>
+                          ))}
+                      {data[key] &&
+                        !(key === "entity_type"
+                          ? entityTypes.some((value) => value === data[key])
+                          : usStates.some(([code]) => code === data[key])) && (
+                          <option value={data[key]}>
+                            {data[key]} ·{" "}
+                            {t(
+                              locale,
+                              "valor anterior: selecciona una opción",
+                              "previous value: select an option",
+                            )}
+                          </option>
+                        )}
+                    </select>
+                  ) : (
+                    <input
+                      aria-required={requiredBusinessFields.some(
+                        (k) => k === key,
+                      )}
+                      readOnly={key === "commercial_name"}
+                      type={type || "text"}
+                      value={data[key]}
+                      maxLength={key === "ein" ? 10 : 250}
+                      inputMode={key === "ein" ? "numeric" : undefined}
+                      placeholder={key === "ein" ? "12-3456789" : undefined}
+                      disabled={busy}
+                      autoComplete="off"
+                      onChange={(e) =>
+                        changed({
+                          ...data,
+                          [key]:
+                            key === "ein"
+                              ? formatTaxId(e.target.value, "ein")
+                              : e.target.value,
+                        })
+                      }
+                    />
+                  )}
+                </label>
+                {key !== "commercial_name" &&
+                  key !== "commercial_email" &&
+                  key !== "identifier" &&
+                  fieldNotices(key as ExtractionField)}
+              </div>
             ))}
           </div>
           {data.owners.map((owner, i) => (
@@ -350,102 +561,146 @@ export function CompanyApplicationForm({
               </legend>
               <div className="company-application-fields">
                 {ownerFields.map(([key, es, en, type]) => (
-                  <label className="field" key={key}>
-                    {t(locale, es, en)}
-                    {key === "state" ? (
-                      <select
-                        value={owner.state}
-                        onChange={(e) =>
-                          changed({
-                            ...data,
-                            owners: data.owners.map((o, j) =>
-                              j === i ? { ...o, state: e.target.value } : o,
-                            ),
-                          })
-                        }
-                      >
-                        <option value="">
-                          {t(locale, "Seleccionar…", "Select…")}
-                        </option>
-                        {usStates.map(([code, name]) => (
-                          <option key={code} value={code}>
-                            {name} ({code})
+                  <div key={key}>
+                    <label className="field">
+                      <span>
+                        {t(locale, es, en)}
+                        {requiredOwnerFields.some((k) => k === key) && (
+                          <span
+                            className="application-required"
+                            aria-hidden="true"
+                          >
+                            {" "}
+                            *
+                          </span>
+                        )}
+                      </span>
+                      {key === "state" ? (
+                        <select
+                          value={owner.state}
+                          onChange={(e) =>
+                            changed({
+                              ...data,
+                              owners: data.owners.map((o, j) =>
+                                j === i ? { ...o, state: e.target.value } : o,
+                              ),
+                            })
+                          }
+                        >
+                          <option value="">
+                            {t(locale, "Seleccionar…", "Select…")}
                           </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type={type || "text"}
-                        min={type === "number" ? 0 : undefined}
-                        max={
-                          type === "number"
-                            ? 100
-                            : key === "date_of_birth"
-                              ? adultBirthDate()
-                              : undefined
-                        }
-                        step={type === "number" ? "any" : undefined}
-                        inputMode={
-                          key === "ssn"
-                            ? "numeric"
-                            : type === "number"
-                              ? "decimal"
-                              : undefined
-                        }
-                        placeholder={key === "ssn" ? "123-45-6789" : undefined}
-                        autoComplete="off"
-                        value={String(owner[key as keyof typeof owner])}
-                        maxLength={key === "ssn" ? 11 : 250}
-                        onChange={(e) =>
-                          changed({
-                            ...data,
-                            owners: data.owners.map((o, j) =>
-                              j === i
-                                ? {
-                                    ...o,
-                                    [key]:
-                                      type === "number"
-                                        ? e.target.value === ""
-                                          ? ""
-                                          : Number(e.target.value)
-                                        : key === "ssn"
-                                          ? formatTaxId(e.target.value, "ssn")
-                                          : e.target.value,
-                                  }
-                                : o,
-                            ),
-                          })
-                        }
-                      />
-                    )}
-                  </label>
+                          {usStates.map(([code, name]) => (
+                            <option key={code} value={code}>
+                              {name} ({code})
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          aria-required={requiredOwnerFields.some(
+                            (k) => k === key,
+                          )}
+                          type={type || "text"}
+                          min={type === "number" ? 0 : undefined}
+                          max={
+                            type === "number"
+                              ? 100
+                              : key === "date_of_birth"
+                                ? adultBirthDate()
+                                : undefined
+                          }
+                          step={type === "number" ? "any" : undefined}
+                          inputMode={
+                            key === "ssn"
+                              ? "numeric"
+                              : type === "number"
+                                ? "decimal"
+                                : undefined
+                          }
+                          placeholder={
+                            key === "ssn" ? "123-45-6789" : undefined
+                          }
+                          autoComplete="off"
+                          value={String(owner[key as keyof typeof owner])}
+                          maxLength={key === "ssn" ? 11 : 250}
+                          onChange={(e) =>
+                            changed({
+                              ...data,
+                              owners: data.owners.map((o, j) =>
+                                j === i
+                                  ? {
+                                      ...o,
+                                      [key]:
+                                        type === "number"
+                                          ? e.target.value === ""
+                                            ? ""
+                                            : Number(e.target.value)
+                                          : key === "ssn"
+                                            ? formatTaxId(e.target.value, "ssn")
+                                            : e.target.value,
+                                    }
+                                  : o,
+                              ),
+                            })
+                          }
+                        />
+                      )}
+                    </label>
+                    {fieldNotices(`owners.${i}.${key}` as ExtractionField)}
+                  </div>
                 ))}
               </div>
             </fieldset>
           ))}
           <label className="field">
-            {t(
-              locale,
-              "¿Hay un segundo propietario?",
-              "Is there a second owner?",
-            )}
+            <span>
+              {t(
+                locale,
+                "¿Hay un segundo propietario?",
+                "Is there a second owner?",
+              )}
+              <span className="application-required" aria-hidden="true">
+                {" "}
+                *
+              </span>
+            </span>
             <select
               disabled={busy}
-              value={data.owners.length > 1 ? "yes" : "no"}
+              aria-required="true"
+              value={secondOwnerAnswer(data)}
               onChange={(e) =>
                 changed({
                   ...data,
+                  second_owner: e.target.value as "yes" | "no" | "unknown",
                   owners:
                     e.target.value === "yes"
-                      ? [...data.owners, companyOwnerSchema.parse({})]
-                      : data.owners.slice(0, 1),
+                      ? data.owners.length > 1
+                        ? data.owners
+                        : [...data.owners, companyOwnerSchema.parse({})]
+                      : e.target.value === "unknown"
+                        ? data.owners
+                        : data.owners.slice(0, 1),
                 })
               }
             >
+              <option value="unknown">
+                {t(locale, "No identificado", "Not identified")}
+              </option>
               <option value="no">{t(locale, "No", "No")}</option>
               <option value="yes">{t(locale, "Sí", "Yes")}</option>
             </select>
           </label>
+          {fieldNotices("second_owner")}
+          {secondOwnerAnswer(data) === "unknown" && (
+            <p className="muted">
+              {t(
+                locale,
+                "Confirma si hay un segundo propietario antes de generar el PDF.",
+                "Confirm whether there is a second owner before generating the PDF.",
+              )}
+            </p>
+          )}
           <h3>{t(locale, "Firma", "Signature")}</h3>
           {previousSignature && (
             <p>
@@ -548,7 +803,13 @@ export function CompanyApplicationForm({
             </button>
             <button
               className="button primary"
-              disabled={busy || loading || dirty || !revision}
+              disabled={
+                busy ||
+                loading ||
+                dirty ||
+                !revision ||
+                secondOwnerAnswer(data) === "unknown"
+              }
               onClick={() => void generate()}
             >
               {t(locale, "Generar PDF e incorporar", "Generate PDF and attach")}

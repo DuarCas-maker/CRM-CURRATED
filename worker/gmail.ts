@@ -690,8 +690,16 @@ export async function sendNext() {
       const bytes = Buffer.from(await file.arrayBuffer());
       if (doc.content_hash && hash(bytes) !== doc.content_hash)
         throw new Error("ATTACHMENT_HASH_MISMATCH");
+      const { applicationPdfFilename, documentFilename } =
+        await import("../src/lib/server/document-filename");
+      const fallbackName = documentFilename(doc.name, doc.storage_path);
+      const filename =
+        doc.source === "company_application" ||
+        (frozen && /application/i.test(doc.name))
+          ? await applicationPdfFilename(bytes, fallbackName)
+          : fallbackName;
       files.push({
-        name: doc.name + (doc.storage_path.endsWith(".pdf") ? ".pdf" : ""),
+        name: filename,
         mime: file.type,
         bytes,
       });

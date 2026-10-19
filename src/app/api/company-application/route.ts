@@ -16,6 +16,8 @@ import {
   validateCompleteApplication,
   type CompanyApplicationRecord,
   SAMPLE_APPLICATION_DECLARATION,
+  bindApplicationAdvisor,
+  applicationFilename,
 } from "@/lib/company-application";
 import { companyApplicationPdf } from "@/lib/server/company-application-pdf";
 import { uploadDocument } from "@/lib/server/documents";
@@ -83,6 +85,14 @@ export async function GET(request: Request) {
           process.env.FORM_DECLARATION_TEXT || SAMPLE_APPLICATION_DECLARATION,
         ),
         company: c.opportunity.company,
+        advisors:
+          checkDb(
+            await c.service
+              .from("profiles")
+              .select("id,name,email")
+              .eq("active", true)
+              .order("name"),
+          ) || [],
       },
       { headers: { "Cache-Control": "no-store" } },
     );
@@ -111,7 +121,20 @@ export async function POST(request: Request) {
     if ((c.current?.revision || 0) !== p.revision)
       throw new HttpError(409, "Application changed; reload before saving");
     if (p.action === "save") {
-      const data = companyApplicationSchema.parse(p.data);
+      let data = companyApplicationSchema.parse(p.data);
+      try {
+        data = bindApplicationAdvisor(
+          data,
+          checkDb(
+            await c.service
+              .from("profiles")
+              .select("id,name,email")
+              .eq("active", true),
+          ) || [],
+        );
+      } catch (error) {
+        throw new HttpError(400, (error as Error).message);
+      }
       if (p.signature) {
         try {
           validateCompleteApplication(data);
@@ -222,7 +245,7 @@ export async function POST(request: Request) {
         })),
     });
     const uploaded = await uploadDocument(
-      new File([new Uint8Array(bytes)], "Application.pdf", {
+      new File([new Uint8Array(bytes)], applicationFilename(record.data), {
         type: "application/pdf",
       }),
       application.id,

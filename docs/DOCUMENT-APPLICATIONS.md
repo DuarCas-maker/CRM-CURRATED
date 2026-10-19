@@ -28,11 +28,23 @@ La operación es atómica: renumera consecutivamente los bancos afectados sin du
 
 ## Campos de aplicación
 
-La estructura sigue los datos del formulario CF-007: cinco tipos de entidad, estados de EE. UU. y D. C. en desplegables, direcciones separadas (calle, ciudad, estado y ZIP), EIN `12-3456789`, SSN visible `123-45-6789` y segundo propietario Sí/No. Teléfono y ZIP conservan entrada libre; los porcentajes permiten decimales. Los datos nuevos de dirección se incluyen en el PDF. Las direcciones antiguas se conservan en su campo original; no se infieren ciudad, estado ni ZIP.
+La estructura sigue los datos del formulario CF-007: tipos de entidad (incluido Limited Partnership), estados de EE. UU. y D. C. en desplegables, direcciones separadas (calle, ciudad, estado y ZIP), EIN `12-3456789`, SSN visible `123-45-6789` y segundo propietario Sí/No/No identificado. Los nuevos borradores empiezan con No identificado y requieren resolverlo para generar o firmar; los registros antiguos conservan el número de propietarios registrado. Teléfono y ZIP conservan entrada libre; los porcentajes permiten decimales. Las direcciones antiguas se conservan en su campo original; no se infieren ciudad, estado ni ZIP.
 
 Para generar o firmar se exigen nombre legal, entidad, EIN, estado de constitución, fecha de inicio y, para cada propietario, nombre, SSN, nacimiento (18 años mínimo) y participación de 0 a 100. La suma no puede exceder 100. Los correos, si se completan, deben ser válidos; correos, teléfonos y direcciones son opcionales. Se pueden guardar borradores incompletos.
 
-El asesor se precarga con el seller responsable de la oportunidad; los usuarios con permiso de edición pueden corregirlo. Como los perfiles no tienen un código comercial separado, el identificador inicial es el ID estable del perfil y puede sustituirse por su código comercial. Se completan datos de asesor faltantes en borradores antiguos; las versiones firmadas no se modifican automáticamente.
+El asesor se precarga con el seller responsable. El desplegable de correo permite elegir cualquier usuario activo del CRM; el servidor vincula su nombre e ID de perfil y rechaza correos ajenos al catálogo activo. El ID queda interno y no aparece en el formulario ni en el PDF. Las versiones firmadas no se modifican automáticamente.
+
+Los campos obligatorios para generar el PDF llevan asterisco rojo, incluidos los del segundo propietario cuando se agrega. Se puede guardar un borrador incompleto. Al cerrar con X, Escape o clic exterior hay confirmación si quedan cambios o datos de extracción pendientes; cancelar conserva la edición. Al recargar o abandonar la página se usa la protección del navegador.
+
+### Extracción de datos de aplicación
+
+En Documentos → Completar aplicación / PDF → **Completar datos con AI**, seleccionar uno o dos archivos en total: documentos incorporados de esa oportunidad, subidas del equipo o ambos. Se aceptan PDF/JPG/PNG de hasta 20 MB por archivo. El cuadro **Datos confirmados por el usuario** permite añadir hechos como EIN, SSN o fechas. Las subidas se mantienen en memoria para la solicitud y no se incorporan a Documentos.
+
+La extracción reutiliza el modelo de Configuración → Análisis y la clave de OpenAI del servicio web. Envía únicamente los documentos elegidos y los hechos escritos, con `store:false`, sin guardar la respuesta en una tabla ni realizar reintentos automáticos. No requiere una migración nueva. La ruta verifica sesión, MFA, origen, edición y pertenencia de los archivos antes de leerlos mediante el servicio.
+
+Solo completa campos vacíos con datos encontrados y evidencia de fuente/página. Conserva los valores existentes y señala diferencias. Los conflictos dejan el campo vacío; los datos probables se muestran junto al campo y solo se incorporan al confirmarlos. Datos ausentes, SSN censurados y fechas parciales no se reconstruyen. La validación impide incorporar formatos inválidos, fechas futuras, menores de 18 años o participación conjunta superior al 100%. La extracción no cambia el comercial ni incluye inventarios de extractos o declaraciones. El usuario revisa, completa y guarda; no se genera, firma ni aprueba un PDF automáticamente.
+
+El PDF nuevo usa tablas de etiqueta/valor, secciones y paginación. Su nombre de descarga y adjunto es `Application - Empresa - Propietario.pdf`, conservado dentro de los bytes de cada versión. Para obtener el diseño nuevo en una aplicación antigua, generar una nueva versión y revisarla. Los PDF existentes y paquetes ya congelados conservan su contenido.
 
 La aplicación no añade controles para cargar documentos: se gestionan desde Documentos.
 

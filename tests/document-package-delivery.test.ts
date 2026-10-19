@@ -4,6 +4,8 @@ import { randomUUID } from "node:crypto";
 import { OAuth2Client } from "google-auth-library";
 import { encrypt, hash } from "../src/lib/server/crypto";
 import { sendNext } from "../worker/gmail";
+import { companyApplicationSchema } from "../src/lib/company-application";
+import { companyApplicationPdf } from "../src/lib/server/company-application-pdf";
 test("lender packages send the approved queued version even after replacement and never send altered bytes", async (t) => {
   const env = {
     NEXT_PUBLIC_SUPABASE_URL: "https://document-fixture.example.test",
@@ -23,12 +25,28 @@ test("lender packages send the approved queued version even after replacement an
   );
   Object.assign(process.env, env);
   try {
-    const bytes = Buffer.from("%PDF-1.7 approved original only"),
+    const bytes = Buffer.from(
+        await companyApplicationPdf(
+          {
+            data: companyApplicationSchema.parse({
+              legal_name: "Fictional Company LLC",
+              owners: [{ name: "Fictional Owner" }],
+            }),
+            signature: null,
+          },
+          {
+            id: "FIXTURE",
+            revision: 1,
+            declaration: "Fictional fixture only",
+            files: [],
+          },
+        ),
+      ),
       fileId = randomUUID(),
       accountId = randomUUID();
     const original = {
       id: fileId,
-      name: "First Bank - Bank Statement 1",
+      name: "Signed application",
       bucket: "case-documents",
       storage_path: "private/original.pdf",
       content_hash: hash(bytes),
@@ -68,7 +86,13 @@ test("lender packages send the approved queued version even after replacement an
         if (url.hostname === "gmail.googleapis.com") {
           posts++;
           const mime = Buffer.from(body.raw, "base64url").toString();
-          assert.ok(mime.includes(bytes.toString("base64")));
+          assert.ok(mime.replace(/\r\n/g, "").includes(bytes.toString("base64")));
+          assert.ok(
+            mime.includes(
+              'filename="Application - Fictional Company LLC - Fictional Owner.pdf"',
+            ),
+          );
+          assert.ok(!mime.includes(".pdf.pdf"));
           return Response.json({ id: "fixture", threadId: "fixture-thread" });
         }
         assert.equal(url.hostname, "document-fixture.example.test");
@@ -79,6 +103,8 @@ test("lender packages send the approved queued version even after replacement an
           });
         }
         const path = url.pathname.split("/").pop();
+        if (path === "reserve_gmail_api") return Response.json(0);
+        if (path === "recheck_outbox_delivery") return Response.json(true);
         if (path === "claim_outbox") {
           if (msg.status !== "queued") return Response.json([]);
           msg.status = "sending";
