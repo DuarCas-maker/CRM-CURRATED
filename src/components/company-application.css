@@ -2,6 +2,15 @@
   color: #b42318;
   font-weight: 700;
 }
+.application-actions {
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.application-actions > span {
+  margin-right: auto;
+  font-size: 13px;
+}
 .application-extraction {
   border: 1px solid #b6aa98;
   border-radius: 10px;

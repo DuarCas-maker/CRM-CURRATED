@@ -179,7 +179,22 @@ test("company drafts are versioned, shared by company, private and fenced agains
         [first, doc, revision, path, hash, users.seller],
       );
     await assert.rejects(register(1), /changed/);
+    const generations = () =>
+      db.query<{ metadata: { revision: number } }>(
+        "select metadata from audit_log where entity_type='document' and entity_id=$1 and action='company_application_generated' order by created_at desc",
+        [doc],
+      );
+    assert.equal((await generations()).rows.length, 0);
     await register(2);
+    assert.equal((await generations()).rows[0].metadata.revision, 2);
+    const received = (
+      await db.query<{ status: string; source: string }>(
+        "select status,source from documents where id=$1",
+        [doc],
+      )
+    ).rows[0];
+    assert.equal(received.status, "received");
+    assert.equal(received.source, "company_application");
     await asUser(users.seller);
     await assert.rejects(
       db.query("select * from company_applications"),
@@ -209,6 +224,12 @@ test("company drafts are versioned, shared by company, private and fenced agains
       /unsigned draft/,
     );
     await db.exec("reset role");
+    assert.equal((await save(second, 2)).rows[0].result.revision, 3);
+    assert.equal(
+      (await generations()).rows[0].metadata.revision,
+      2,
+      "saving shared company data leaves the incorporated PDF on its older revision",
+    );
     await db.query(
       "update opportunities set handed_off_at=now(),closer_id=$2 where id=$1",
       [first, users.closer],

@@ -20,6 +20,7 @@ import {
 } from "@/lib/company-application";
 import { SignaturePad } from "./signature-pad";
 import { ApplicationExtraction } from "./application-extraction";
+import { CompanyApplicationActions } from "./company-application-actions";
 import {
   applicationFieldValue,
   mergeApplicationExtraction,
@@ -107,6 +108,10 @@ export function CompanyApplicationForm({
       workspace.demo ? SAMPLE_APPLICATION_DECLARATION : null,
     );
   const [declarationHash, setDeclarationHash] = useState<string | null>(null);
+  const [generatedRevision, setGeneratedRevision] = useState<number | null>(
+      null,
+    ),
+    [pdfNotification, setPdfNotification] = useState(false);
   const [advisors, setAdvisors] = useState(
     workspace.profiles.filter((p) => p.active !== false),
   );
@@ -114,6 +119,11 @@ export function CompanyApplicationForm({
     [extractionPending, setExtractionPending] = useState(false);
   const [notices, setNotices] = useState<ExtractionNotice[]>([]),
     [sources, setSources] = useState<string[]>([]);
+  useEffect(() => {
+    if (!pdfNotification) return;
+    const timer = window.setTimeout(() => setPdfNotification(false), 6000);
+    return () => window.clearTimeout(timer);
+  }, [pdfNotification]);
   useEffect(() => {
     if (!dirty && !extractionPending) return;
     const warn = (e: BeforeUnloadEvent) => {
@@ -155,6 +165,7 @@ export function CompanyApplicationForm({
         if (!b.record && b.defaults)
           setData(companyApplicationSchema.parse(b.defaults));
         setRevision(b.revision);
+        setGeneratedRevision(b.generated_revision);
         setDeclaration(b.declaration);
         setDeclarationHash(b.declaration_hash);
         setLoading(false);
@@ -174,6 +185,7 @@ export function CompanyApplicationForm({
     setAuthorized(false);
     setPreviousSignature(null);
     setMessage("");
+    setPdfNotification(false);
   }
   function fieldNotices(field: ExtractionField) {
     return notices
@@ -256,6 +268,7 @@ export function CompanyApplicationForm({
     setBusy(true);
     setError("");
     setMessage("");
+    setPdfNotification(false);
     try {
       if (workspace.demo) {
         setRevision((v) => v + 1);
@@ -283,6 +296,14 @@ export function CompanyApplicationForm({
       });
       const b = await r.json();
       if (!r.ok) throw new Error(b.error);
+      if (b.revision !== revision + 1)
+        throw new Error(
+          t(
+            locale,
+            "No se pudo confirmar el guardado.",
+            "Could not confirm the save.",
+          ),
+        );
       setRevision(b.revision);
       setDirty(false);
       setMessage(
@@ -313,6 +334,7 @@ export function CompanyApplicationForm({
     setBusy(true);
     setError("");
     setMessage("");
+    setPdfNotification(false);
     try {
       if (workspace.demo) {
         setMessage(
@@ -335,7 +357,17 @@ export function CompanyApplicationForm({
       });
       const b = await r.json();
       if (!r.ok) throw new Error(b.error);
+      if (b.revision !== revision || !b.document_id)
+        throw new Error(
+          t(
+            locale,
+            "No se pudo confirmar la incorporación del PDF.",
+            "Could not confirm the PDF attachment.",
+          ),
+        );
       await refresh();
+      setGeneratedRevision(b.revision);
+      setPdfNotification(true);
       setMessage(
         t(
           locale,
@@ -388,6 +420,15 @@ export function CompanyApplicationForm({
         </p>
       )}
       {message && <p role="status">{message}</p>}
+      {pdfNotification && (
+        <div className="toast" role="status">
+          {t(
+            locale,
+            "PDF generado e incorporado correctamente.",
+            "PDF generated and attached successfully.",
+          )}
+        </div>
+      )}
       <p className="muted">
         {t(
           locale,
@@ -727,6 +768,8 @@ export function CompanyApplicationForm({
               onChange={(e) => {
                 setWantSign(e.target.checked);
                 setDirty(true);
+                setMessage("");
+                setPdfNotification(false);
                 setSignature("");
                 setAuthorized(false);
               }}
@@ -788,33 +831,19 @@ export function CompanyApplicationForm({
               </label>
             </>
           )}
-          <div className="modal-footer">
-            <button
-              className="button"
-              disabled={
-                busy ||
-                loading ||
-                (!dirty && revision > 0) ||
-                (wantSign && (!signature || !authorized || !declaration))
-              }
-              onClick={() => void save()}
-            >
-              {t(locale, "Guardar aplicación", "Save application")}
-            </button>
-            <button
-              className="button primary"
-              disabled={
-                busy ||
-                loading ||
-                dirty ||
-                !revision ||
-                secondOwnerAnswer(data) === "unknown"
-              }
-              onClick={() => void generate()}
-            >
-              {t(locale, "Generar PDF e incorporar", "Generate PDF and attach")}
-            </button>
-          </div>
+          <CompanyApplicationActions
+            locale={locale}
+            revision={revision}
+            generatedRevision={generatedRevision}
+            dirty={dirty}
+            busy={busy || loading}
+            saveDisabled={
+              wantSign && (!signature || !authorized || !declaration)
+            }
+            generateDisabled={secondOwnerAnswer(data) === "unknown"}
+            save={() => void save()}
+            generate={() => void generate()}
+          />
         </>
       )}
     </Modal>

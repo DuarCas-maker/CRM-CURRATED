@@ -67,6 +67,31 @@ export async function GET(request: Request) {
         .eq("id", c.opportunity.seller_id)
         .maybeSingle(),
     );
+    const application = checkDb(
+      await c.db
+        .from("documents")
+        .select("id")
+        .eq("opportunity_id", id)
+        .eq("kind", "application")
+        .eq("source", "company_application")
+        .not("storage_path", "is", null)
+        .not("content_hash", "is", null)
+        .maybeSingle(),
+    );
+    // The audit entry is committed with PDF registration, after access is checked.
+    const generation = application
+      ? checkDb(
+          await c.service
+            .from("audit_log")
+            .select("metadata")
+            .eq("entity_type", "document")
+            .eq("entity_id", application.id)
+            .eq("action", "company_application_generated")
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+        )
+      : null;
     return Response.json(
       {
         defaults: {
@@ -76,6 +101,7 @@ export async function GET(request: Request) {
           identifier: advisor?.id || "",
         },
         revision: c.current?.revision || 0,
+        generated_revision: generation?.metadata?.revision ?? null,
         record: c.current
           ? JSON.parse(decrypt(c.current.encrypted_payload))
           : null,
@@ -264,6 +290,7 @@ export async function POST(request: Request) {
     );
     return Response.json({
       document_id: application.id,
+      revision: p.revision,
       url: `/api/documents/${application.id}`,
     });
   } catch (e) {
