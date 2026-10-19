@@ -3088,3 +3088,34 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--charcoal); }
 .operational-panel td { vertical-align: top; }
 .operational-panel td small, .operational-panel td .text-button { display: block; margin: 5px 0; }
 .operational-panel td { overflow-wrap: anywhere; }
+.underwriting-checklist { margin: 20px 0; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.underwriting-checklist h3 { margin: 0; }
+.underwriting-checklist .split-heading { flex-wrap: wrap; gap: 8px; }
+.underwriting-readiness-summary { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+.underwriting-readiness-summary.is-ready { color: #17643a; }
+.underwriting-readiness-summary.is-missing { color: #a52626; }
+.underwriting-checklist-items { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; padding: 0; list-style: none; margin: 16px 0; }
+.underwriting-checklist-items li { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: 8px; min-width: 0; border: 1px solid var(--line); }
+.underwriting-checklist-items li > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.underwriting-checklist-items strong { display: block; font-size: 13px; }
+.underwriting-checklist-items small { display: block; font-size: 12px; margin-top: 4px; }
+.underwriting-check-icon { display: inline-flex; flex: 0 0 27px; width: 27px; height: 27px; align-items: center; justify-content: center; border-radius: 50%; }
+.underwriting-checklist-items .is-ready .underwriting-check-icon { background: #e3f3e9; color: #17643a; }
+.underwriting-checklist-items .is-missing .underwriting-check-icon { background: #fbe5e5; color: #a52626; }
+.underwriting-checklist-details { margin: 18px 0; }
+.underwriting-checklist-details > summary { cursor: pointer; font-weight: 600; font-size: 13px; }
+.underwriting-progress { margin: 18px 0; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.underwriting-progress strong { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.underwriting-progress-track { height: 10px; overflow: hidden; border-radius: 10px; background: var(--line); margin: 12px 0; }
+.underwriting-progress-fill { height: 100%; border-radius: inherit; background: #267849; transition: width .35s ease; }
+.underwriting-progress-fill.is-active { background-image: linear-gradient(110deg, transparent 30%, #ffffff55 50%, transparent 70%); background-size: 160px 100%; animation: underwriting-shimmer 1.8s linear infinite; }
+.underwriting-progress.is-stopped .underwriting-progress-fill { background: #a52626; }
+.underwriting-spinner { animation: underwriting-spin 1.2s linear infinite; flex-shrink: 0; }
+.underwriting-failure { background: #fff1ed; border: 1px solid #d8a69b; border-radius: 8px; padding: 12px; margin: 10px 0; max-width: 750px; overflow-wrap: anywhere; font-size: 13px; }
+.underwriting-failure p { margin: 8px 0; }
+.underwriting-failure small { display: block; }
+.underwriting-failure details { margin-top: 8px; }
+@keyframes underwriting-spin { to { transform: rotate(360deg); } }
+@keyframes underwriting-shimmer { to { background-position: 160px 0; } }
+@media(max-width:650px) { .underwriting-checklist-items { grid-template-columns: 1fr; } .underwriting-checklist { padding: 12px; } }
+@media(prefers-reduced-motion:reduce) { .underwriting-progress-fill.is-active, .underwriting-spinner { animation: none; } .underwriting-progress-fill { transition: none; } }

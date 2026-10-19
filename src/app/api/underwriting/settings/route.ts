@@ -15,7 +15,7 @@ const schema = z.object({
   prompt: z.string().trim().min(100).max(30000),
   model: z.enum(["gpt-6.1-sol", "gpt-6-sol", "gpt-6-luna", "gpt-6-astra"]),
   enabled: z.boolean(),
-  max_output_tokens: z.number().int().min(2000).max(16000),
+  max_output_tokens: z.number().int().min(2000).max(32000),
   daily_run_limit: z.number().int().min(1).max(500),
   rules: underwritingRulesSchema,
 });

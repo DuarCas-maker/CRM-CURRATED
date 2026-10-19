@@ -38,12 +38,31 @@ export async function GET(request: Request) {
         await db
           .from("underwriting_runs")
           .select(
-            "id,opportunity_id,status,requested_by,created_at,model,prompt_version,document_snapshot,report,last_error,input_tokens,output_tokens,analysis_id",
+            "id,opportunity_id,status,requested_by,created_at,model,prompt_version,max_output_tokens,document_snapshot,report,last_error,input_tokens,output_tokens,analysis_id",
           )
           .eq("opportunity_id", caseId)
           .order("created_at", { ascending: false })
           .limit(20),
       ) || [];
+    if (runs.length) {
+      const progress = await db
+        .from("underwriting_runs")
+        .select(
+          "id,progress_stage,progress_percent,documents_processed,progress_updated_at,provider_diagnostics",
+        )
+        .in(
+          "id",
+          runs.map((r) => r.id),
+        );
+      if (
+        progress.error &&
+        !["PGRST204", "PGRST205", "42703"].includes(progress.error.code)
+      )
+        checkDb(progress);
+      if (!progress.error)
+        for (const run of runs)
+          Object.assign(run, progress.data?.find((p) => p.id === run.id) || {});
+    }
     return Response.json(
       { runs, configured: !!process.env.OPENAI_API_KEY },
       { headers: { "Cache-Control": "no-store" } },

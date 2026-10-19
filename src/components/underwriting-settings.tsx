@@ -269,9 +269,16 @@ export function UnderwritingSettingsPanel({
                 settings.max_output_tokens,
                 (v) => update("max_output_tokens", v),
                 2000,
-                16000,
+                32000,
               )}
             </div>
+            <p className="muted">
+              {t(
+                locale,
+                "Este límite incluye el razonamiento y el informe. Si la respuesta queda incompleta por tokens, puedes probar 16.000 o hasta 32.000. Un límite mayor puede aumentar el consumo. Guardar solo afecta a nuevos análisis.",
+                "This limit includes reasoning and the report. If the response runs out of tokens, try 16,000 or up to 32,000. A larger limit may increase usage. Saving only affects new analyses.",
+              )}
+            </p>
             <h3>
               {t(
                 locale,

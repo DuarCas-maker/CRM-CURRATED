@@ -154,6 +154,16 @@ export type UnderwritingDocument = {
   required: boolean;
 };
 export type UnderwritingRun = {
+  max_output_tokens?: number;
+  progress_stage?: string;
+  progress_percent?: number;
+  documents_processed?: number;
+  progress_updated_at?: string;
+  provider_diagnostics?: {
+    status?: string;
+    incomplete_reason?: string | null;
+    max_output_tokens?: number | null;
+  } | null;
   id: string;
   opportunity_id: string;
   status:

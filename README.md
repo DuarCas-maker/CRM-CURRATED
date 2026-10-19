@@ -23,6 +23,8 @@ Abrir [la demostración](http://localhost:3000/demo). Permite recorrer los cinco
 
 Los seis puntos (documentos, análisis IA, configuración, campañas, lenders y seguimiento) y la activación de migraciones 027–031 están descritos en [CRM-FLOW.md](docs/CRM-FLOW.md).
 
+El checklist previo al análisis, el progreso por etapas y el diagnóstico de respuestas incompletas requieren la migración 037 y actualizar web y worker. El recorrido de activación y prueba está en [UNDERWRITING-FEEDBACK.md](docs/UNDERWRITING-FEEDBACK.md).
+
 1. Crear un proyecto dedicado. Aplicar, en orden, los archivos de `supabase/migrations/` sobre una base nueva. Incluyen tablas, funciones, políticas RLS, permisos y buckets privados. No ejecutar sobre una instalación ajena o una base con tablas homónimas. Las instalaciones existentes 001–008 pueden aplicar `supabase/install/gmail-history.sql` para añadir 009–015.
 
    Para la instalación inicial de Daniel, `supabase/install/curated-initial.sql` reúne las migraciones 001–007 en una sola transacción y registra `daniel@curatedfinancial.com` como invitación pendiente de superadmin. Ejecutar el archivo completo en SQL Editor con el rol `postgres`, **en lugar de** ejecutar los siete archivos individuales. Rechaza un esquema `public` que ya tenga tablas. No crea el usuario en Auth ni envía correo; al usar este archivo, omitir el INSERT del paso 5 y continuar con la creación o invitación del usuario en Auth. El archivo es una copia de las migraciones al 6 de octubre de 2026, no una migración adicional.

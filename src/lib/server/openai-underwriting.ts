@@ -9,10 +9,19 @@ export class UnderwritingProviderError extends Error {
   constructor(
     public code: string,
     public uncertain = false,
+    public diagnostics?: ProviderDiagnostics,
   ) {
     super(code);
   }
 }
+export type ProviderDiagnostics = {
+  responseId: string | null;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  status: string;
+  incomplete_reason: string | null;
+  max_output_tokens: number | null;
+};
 export function underwritingRequest(options: {
   model: string;
   prompt: string;
@@ -80,7 +89,7 @@ export function underwritingRequest(options: {
     reasoning: { effort: "low" },
     instructions:
       options.prompt +
-      "\nThe supplied structured screening_rules are the authoritative numerical criteria, overriding any older numerical thresholds in the prompt. They are internal screening rules, not verified lender or SBA eligibility policies. Analyze every supplied bank statement, across every bank. When a manifest period is empty, extract its YYYY-MM period from the file and cite the evidence; never infer it from the numbered filename. Different documents and banks may share the same period. Flag missing periods or insufficient month coverage for the human reviewer.",
+      "\nThe supplied structured screening_rules are the authoritative numerical criteria, overriding any older numerical thresholds in the prompt. They are internal screening rules, not verified lender or SBA eligibility policies. Analyze every supplied bank statement, across every bank. When a manifest period is empty, extract its YYYY-MM period from the file and cite the evidence; never infer it from the numbered filename. Different documents and banks may share the same period. Flag missing periods or insufficient month coverage for the human reviewer. Keep the report concise without omitting any statement, detected position, calculation, material risk or requested section. Use short evidence excerpts (up to 160 characters) and normally 1-3 references per item; avoid repeating full transactions or document text. Recommend only realistically relevant catalog lenders rather than reproducing the whole lender catalog. Return the complete JSON report within the output budget.",
     store: false,
     max_output_tokens: options.maxOutputTokens,
     input: [{ role: "user", content }],
@@ -143,6 +152,8 @@ export async function callUnderwritingProvider(
   let payload: {
     id?: string;
     status?: string;
+    incomplete_details?: { reason?: string } | null;
+    max_output_tokens?: number;
     usage?: { input_tokens: number; output_tokens: number };
     output?: { type: string; content?: { type: string; text?: string }[] }[];
   };
@@ -151,27 +162,107 @@ export async function callUnderwritingProvider(
   } catch {
     throw new UnderwritingProviderError("OPENAI_INVALID_RESPONSE", true);
   }
-  if (payload.status !== "completed")
-    throw new UnderwritingProviderError("OPENAI_INCOMPLETE_RESPONSE");
-  const output = payload.output?.flatMap((o) => o.content || []) || [];
+  if (!payload || typeof payload !== "object" || Array.isArray(payload))
+    throw new UnderwritingProviderError("OPENAI_INVALID_RESPONSE", true);
+  const count = (value: unknown) =>
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= 0 &&
+    value <= 2147483647
+      ? value
+      : null;
+  const diagnostics: ProviderDiagnostics = {
+    responseId:
+      typeof payload.id === "string" &&
+      /^[A-Za-z0-9_-]{1,200}$/.test(payload.id)
+        ? payload.id
+        : null,
+    inputTokens: count(payload.usage?.input_tokens),
+    outputTokens: count(payload.usage?.output_tokens),
+    status: [
+      "completed",
+      "incomplete",
+      "failed",
+      "cancelled",
+      "queued",
+      "in_progress",
+    ].includes(payload.status || "")
+      ? payload.status!
+      : "unknown",
+    incomplete_reason: ["max_output_tokens", "content_filter"].includes(
+      payload.incomplete_details?.reason || "",
+    )
+      ? payload.incomplete_details!.reason!
+      : null,
+    max_output_tokens: count(
+      payload.max_output_tokens ?? body.max_output_tokens,
+    ),
+  };
+  if (payload.status !== "completed") {
+    const code =
+      diagnostics.incomplete_reason === "max_output_tokens"
+        ? "OPENAI_OUTPUT_LIMIT_REACHED"
+        : diagnostics.incomplete_reason === "content_filter"
+          ? "OPENAI_CONTENT_FILTER"
+          : payload.status === "failed"
+            ? "OPENAI_RESPONSE_FAILED"
+            : ["queued", "in_progress"].includes(payload.status || "")
+              ? "OPENAI_RESULT_UNCERTAIN"
+              : "OPENAI_INCOMPLETE_RESPONSE";
+    throw new UnderwritingProviderError(
+      code,
+      ["queued", "in_progress"].includes(payload.status || ""),
+      diagnostics,
+    );
+  }
+  if (
+    !Array.isArray(payload.output) ||
+    payload.output.some(
+      (o) =>
+        !o ||
+        typeof o !== "object" ||
+        (o.content != null && !Array.isArray(o.content)),
+    )
+  )
+    throw new UnderwritingProviderError(
+      "OPENAI_INVALID_RESPONSE",
+      false,
+      diagnostics,
+    );
+  const output = payload.output
+    .flatMap((o) => o.content || [])
+    .filter((c) => c && typeof c === "object");
   if (output.some((c) => c.type === "refusal"))
-    throw new UnderwritingProviderError("OPENAI_RESPONSE_REFUSED");
+    throw new UnderwritingProviderError(
+      "OPENAI_RESPONSE_REFUSED",
+      false,
+      diagnostics,
+    );
   const text = output
     .filter((c) => c.type === "output_text")
-    .map((c) => c.text || "")
+    .map((c) => (typeof c.text === "string" ? c.text : ""))
     .join("");
   if (text.length > 1000000)
-    throw new UnderwritingProviderError("OPENAI_OUTPUT_TOO_LARGE");
+    throw new UnderwritingProviderError(
+      "OPENAI_OUTPUT_TOO_LARGE",
+      false,
+      diagnostics,
+    );
   let value: unknown;
   try {
     value = JSON.parse(text);
   } catch {
-    throw new UnderwritingProviderError("OPENAI_INVALID_REPORT");
+    throw new UnderwritingProviderError(
+      "OPENAI_INVALID_REPORT",
+      false,
+      diagnostics,
+    );
   }
   return {
     value,
-    responseId: payload.id || null,
-    inputTokens: payload.usage?.input_tokens || 0,
-    outputTokens: payload.usage?.output_tokens || 0,
+    responseId: diagnostics.responseId,
+    inputTokens: diagnostics.inputTokens || 0,
+    outputTokens: diagnostics.outputTokens || 0,
+    diagnostics,
   };
 }

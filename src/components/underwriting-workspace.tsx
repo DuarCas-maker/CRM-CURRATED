@@ -5,6 +5,12 @@ import { currency, dateLabel } from "@/lib/domain";
 import type { UnderwritingRun, UnderwritingReport } from "@/lib/underwriting";
 import { calculateUnderwritingMetrics } from "@/lib/underwriting";
 import { Modal, t } from "./ui";
+import { underwritingReadiness } from "@/lib/underwriting-status";
+import {
+  UnderwritingChecklist,
+  UnderwritingProgressBar,
+  UnderwritingFailure,
+} from "./underwriting-readiness";
 const labels: Record<UnderwritingRun["status"], [string, string]> = {
   queued: ["En cola", "Queued"],
   preparing: ["Preparando archivos", "Preparing files"],
@@ -50,12 +56,14 @@ export function UnderwritingWorkspace({
   locale,
   editable,
   refresh,
+  openDocuments,
 }: {
   data: Workspace;
   opportunity: Opportunity;
   locale: Locale;
   editable: boolean;
   refresh: () => Promise<void>;
+  openDocuments?: () => void;
 }) {
   const [runs, setRuns] = useState<UnderwritingRun[]>([]),
     [configured, setConfigured] = useState(false),
@@ -72,13 +80,7 @@ export function UnderwritingWorkspace({
   const docs = data.documents.filter(
     (d) => d.opportunity_id === o.id && d.kind !== "analysis_report",
   );
-  const ready =
-    docs.some((d) => d.kind === "application" && d.status === "approved") &&
-    docs.filter((d) => d.kind === "bank_statement" && d.status === "approved")
-      .length >= 4 &&
-    docs
-      .filter((d) => d.required !== false)
-      .every((d) => d.status === "approved");
+  const ready = underwritingReadiness(docs, !!data.demo).ready;
   const active = runs.some((r) =>
     ["queued", "preparing", "running"].includes(r.status),
   );
@@ -101,17 +103,25 @@ export function UnderwritingWorkspace({
     void load(controller.signal).catch((e) => {
       if (!controller.signal.aborted) setError(e.message);
     });
-    const interval = setInterval(() => {
-      if (document.hidden) return;
-      void load(controller.signal).catch((e) => {
-        if (!controller.signal.aborted) setError(e.message);
-      });
-    }, 5000);
+    return () => controller.abort();
+  }, [o.id, data.demo, data.crm_extensions_ready]);
+  useEffect(() => {
+    if (data.demo || data.crm_extensions_ready === false) return;
+    const controller = new AbortController();
+    const interval = setInterval(
+      () => {
+        if (document.hidden) return;
+        void load(controller.signal).catch((e) => {
+          if (!controller.signal.aborted) setError(e.message);
+        });
+      },
+      active ? 2000 : 10000,
+    );
     return () => {
       controller.abort();
       clearInterval(interval);
     };
-  }, [o.id, data.demo, data.crm_extensions_ready]);
+  }, [o.id, data.demo, data.crm_extensions_ready, active]);
   function openReview(run: UnderwritingRun) {
     setReview(run);
     setSummary(run.report?.summary || "");
@@ -322,6 +332,31 @@ export function UnderwritingWorkspace({
           </button>
         )}
       </div>
+      {runs[0] && <UnderwritingProgressBar run={runs[0]} locale={locale} />}
+      {active ? (
+        <details className="underwriting-checklist-details">
+          <summary>
+            {t(
+              locale,
+              "Ver checklist de documentos",
+              "View document checklist",
+            )}
+          </summary>
+          <UnderwritingChecklist
+            documents={docs}
+            locale={locale}
+            demo={data.demo}
+            openDocuments={openDocuments}
+          />
+        </details>
+      ) : (
+        <UnderwritingChecklist
+          documents={docs}
+          locale={locale}
+          demo={data.demo}
+          openDocuments={openDocuments}
+        />
+      )}
       <p>
         {t(
           locale,
@@ -369,7 +404,7 @@ export function UnderwritingWorkspace({
               {dateLabel(run.created_at, locale, true)} · {run.model} · Prompt v
               {run.prompt_version}
             </small>
-            {run.last_error && <small>{run.last_error}</small>}
+            <UnderwritingFailure run={run} locale={locale} />
           </div>
           {run.report && (
             <button className="button" onClick={() => openReview(run)}>

@@ -623,6 +623,7 @@ export function OpportunityDetail({
                 locale={locale}
                 editable={editable}
                 refresh={refresh}
+                openDocuments={() => setTab("documents")}
               />
               <div className="activity-toolbar">
                 <h2>

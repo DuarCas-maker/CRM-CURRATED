@@ -3,6 +3,7 @@ import {
   callUnderwritingProvider,
   UnderwritingProviderError,
   underwritingRequest,
+  type ProviderDiagnostics,
 } from "../src/lib/server/openai-underwriting";
 import { validateUnderwritingReport } from "../src/lib/underwriting";
 import type { UnderwritingDocument } from "../src/lib/underwriting";
@@ -28,6 +29,28 @@ export async function processUnderwriting(job: {
       .eq("id", job.payload.run_id)
       .single(),
   )!;
+  let diagnostics: ProviderDiagnostics | undefined;
+  async function progress(
+    stage: string,
+    processed?: number,
+    metadata?: ProviderDiagnostics,
+  ) {
+    try {
+      const result = await client.rpc("report_underwriting_progress", {
+        run_id: run.id,
+        job_id: job.id,
+        lease: job.lease_token,
+        stage,
+        processed: processed ?? null,
+        diagnostic: metadata || null,
+      });
+      // A rolling deployment may precede migration 037. Progress must not discard a valid report.
+      return result.error ? true : result.data !== false;
+    } catch {
+      // Progress is best effort; completion still checks the authoritative lease.
+      return true;
+    }
+  }
   try {
     if (!process.env.OPENAI_API_KEY)
       throw new UnderwritingProviderError("OPENAI_NOT_CONFIGURED");
@@ -40,6 +63,7 @@ export async function processUnderwriting(job: {
     )!;
     const documents: { snapshot: UnderwritingDocument; bytes: Buffer }[] = [];
     let totalBytes = 0;
+    if (!(await progress("documents", 0))) return;
     for (const snapshot of run.document_snapshot as UnderwritingDocument[]) {
       const blob = checked(
         await client.storage
@@ -53,6 +77,7 @@ export async function processUnderwriting(job: {
         snapshot,
         bytes: Buffer.from(await blob.arrayBuffer()),
       });
+      if (!(await progress("documents", documents.length))) return;
     }
     const body = underwritingRequest({
       model: run.model,
@@ -71,16 +96,20 @@ export async function processUnderwriting(job: {
       }),
     );
     if (!started) return;
+    if (!(await progress("analyzing", documents.length))) return;
     const result = await callUnderwritingProvider(
       body,
       process.env.OPENAI_API_KEY,
     );
+    diagnostics = result.diagnostics;
+    if (!(await progress("validating", documents.length, diagnostics))) return;
     const report = validateUnderwritingReport(
       result.value,
       run.document_snapshot,
       run.lender_snapshot,
       run.rules,
     );
+    if (!(await progress("saving", documents.length))) return;
     checked(
       await client.rpc("complete_underwriting", {
         run_id: run.id,
@@ -95,6 +124,9 @@ export async function processUnderwriting(job: {
       }),
     );
   } catch (error) {
+    if (error instanceof UnderwritingProviderError && error.diagnostics)
+      diagnostics = error.diagnostics;
+    if (diagnostics) await progress("diagnostics", undefined, diagnostics);
     const code =
       error instanceof UnderwritingProviderError
         ? error.code
@@ -105,9 +137,9 @@ export async function processUnderwriting(job: {
         job_id: job.id,
         lease: job.lease_token,
         value: null,
-        response: null,
-        input_count: null,
-        output_count: null,
+        response: diagnostics?.responseId || null,
+        input_count: diagnostics?.inputTokens ?? null,
+        output_count: diagnostics?.outputTokens ?? null,
         failure: code,
         uncertain:
           error instanceof UnderwritingProviderError && error.uncertain,
