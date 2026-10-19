@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Workspace, Locale } from "@/lib/domain";
 import { renderTemplate } from "@/lib/domain";
 import {
@@ -9,6 +9,7 @@ import {
   type CampaignAsset,
 } from "@/lib/campaign-templates";
 import type { Action } from "./crm";
+import { useUnsavedChanges } from "./unsaved-changes";
 import { Modal, t } from "./ui";
 
 export function CampaignTemplates({
@@ -28,6 +29,12 @@ export function CampaignTemplates({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
+  const changes = useUnsavedChanges(draft, busy);
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (draft && !wasOpen.current) changes.markSaved();
+    wasOpen.current = !!draft;
+  }, [draft]);
   const canEdit =
     data.crm_extensions_ready !== false &&
     ["superadmin", "seller_admin"].includes(data.profile.role);
@@ -203,6 +210,9 @@ export function CampaignTemplates({
       )}
       {draft && (
         <Modal
+          locale={locale}
+          busy={busy}
+          dirty={changes.dirty}
           title={t(locale, "Plantilla y vista previa", "Template and preview")}
           close={() => setDraft(null)}
         >

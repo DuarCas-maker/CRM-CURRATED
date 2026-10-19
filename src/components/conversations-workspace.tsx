@@ -1,5 +1,6 @@
 "use client";
 import "./conversations-workspace.css";
+import { useLeaveConfirmation } from "./unsaved-changes";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Mail,
@@ -129,6 +130,7 @@ export function ConversationsWorkspace({
   const scoped = scopedState?.id === caseId ? scopedState.value : undefined;
   const [tab, setTab] = useState<"all" | ThreadCategory>("all"),
     [filter, setFilter] = useState<"all" | "unread" | "unassigned">("all");
+  const { requestLeave, confirmation } = useLeaveConfirmation(locale);
   const [activeId, setActiveId] = useState("");
   const [process, setProcess] = useState("all"),
     [query, setQuery] = useState(""),
@@ -714,10 +716,14 @@ export function ConversationsWorkspace({
     ).values(),
   ];
   function chooseReply(m: Message, all = false) {
-    if (m.id !== reply?.id) setReplyAccount("");
-    setReply(m);
-    setReplyAll(all);
-    setFocusToken((n) => n + 1);
+    const select = () => {
+      if (m.id !== reply?.id) setReplyAccount("");
+      setReply(m);
+      setReplyAll(all);
+      setFocusToken((n) => n + 1);
+    };
+    if (m.id !== reply?.id) requestLeave(select);
+    else select();
   }
   function forward(m: Message) {
     const c = metadata.conversations.find((c) => c.id === m.conversation_id);
@@ -904,7 +910,9 @@ export function ConversationsWorkspace({
           locale={locale}
           demo={data.demo}
           locked={!!opportunity}
-          onSelect={setChoice}
+          onSelect={(next) => {
+            if (next.id !== choice?.id) requestLeave(() => setChoice(next));
+          }}
         />
         <div className="cw-client-summary">
           <div className="cw-meta">
@@ -1013,7 +1021,9 @@ export function ConversationsWorkspace({
               type="button"
               aria-pressed={casePanel === id}
               className={casePanel === id ? "active" : ""}
-              onClick={() => setCasePanel(id)}
+              onClick={() => {
+                if (id !== casePanel) requestLeave(() => setCasePanel(id));
+              }}
             >
               {t(locale, es, en)}
             </button>
@@ -1088,8 +1098,10 @@ export function ConversationsWorkspace({
                 aria-selected={tab === item.id}
                 className={tab === item.id ? "active" : ""}
                 onClick={() => {
-                  setTab(item.id);
-                  setReaderVisible(false);
+                  requestLeave(() => {
+                    setTab(item.id);
+                    setReaderVisible(false);
+                  });
                 }}
               >
                 <item.icon size={13} />
@@ -1123,17 +1135,23 @@ export function ConversationsWorkspace({
                       )
                     : undefined
                 }
-                onClick={() => {
-                  setFilter(id);
-                  setReaderVisible(false);
-                  if (id === "unassigned")
-                    setChoice({
-                      id: "unassigned",
-                      contact: t(locale, "Sin asociar", "Unassociated"),
-                      company: t(locale, "Correos pendientes", "Pending mail"),
-                      email: "",
-                    });
-                }}
+                onClick={() =>
+                  requestLeave(() => {
+                    setFilter(id);
+                    setReaderVisible(false);
+                    if (id === "unassigned")
+                      setChoice({
+                        id: "unassigned",
+                        contact: t(locale, "Sin asociar", "Unassociated"),
+                        company: t(
+                          locale,
+                          "Correos pendientes",
+                          "Pending mail",
+                        ),
+                        email: "",
+                      });
+                  })
+                }
               >
                 {t(locale, es, en)}
               </button>
@@ -1200,8 +1218,12 @@ export function ConversationsWorkspace({
                 type="button"
                 aria-pressed={s.id === active?.id}
                 onClick={() => {
-                  setActiveId(s.id);
-                  setReaderVisible(true);
+                  if (s.id !== active?.id)
+                    requestLeave(() => {
+                      setActiveId(s.id);
+                      setReaderVisible(true);
+                    });
+                  else setReaderVisible(true);
                 }}
               >
                 <span className="cw-thread-row">
@@ -1608,6 +1630,7 @@ export function ConversationsWorkspace({
       )}
       {showSending && (
         <Modal
+          locale={locale}
           title={t(locale, "Estado de envíos", "Sending status")}
           close={() => setShowSending(false)}
         >
@@ -1625,6 +1648,7 @@ export function ConversationsWorkspace({
       )}
       {originalThread && (
         <Modal
+          locale={locale}
           title={
             metadata.conversations.find((c) => c.id === originalThread)
               ?.subject || t(locale, "Hilo original", "Original thread")
@@ -1694,6 +1718,7 @@ export function ConversationsWorkspace({
           }}
         />
       )}
+      {confirmation}
     </section>
   );
 }

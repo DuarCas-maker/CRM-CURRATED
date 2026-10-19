@@ -60,7 +60,7 @@ function AttachmentPreview({
     };
   }, [file.archive_message_id, file.part_id]);
   return (
-    <Modal title={file.name} wide close={close}>
+    <Modal locale={locale} title={file.name} wide close={close}>
       <p>
         {t(
           locale,
@@ -192,25 +192,14 @@ export function GmailAttachments({
     f.copied ||
     (changes[attachmentKey(f)]?.included ?? f.decision === "included");
   const count = Object.keys(changes).length;
-  const canClose = () => {
-    if (busy) return;
-    if (
-      !count ||
-      confirm(
-        t(
-          locale,
-          "¿Cerrar sin guardar la selección?",
-          "Close without saving your selection?",
-        ),
-      )
-    )
-      close();
-  };
   return (
     <Modal
+      locale={locale}
       title={t(locale, "Seleccionar adjuntos", "Select attachments")}
       wide
-      close={canClose}
+      dirty={count > 0}
+      busy={busy}
+      close={close}
     >
       <p>
         {t(

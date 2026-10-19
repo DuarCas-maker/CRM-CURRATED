@@ -4,6 +4,7 @@ import type { Document, Locale, Workspace } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
 import type { DocumentSelection } from "@/lib/document-review";
 import type { Action } from "./crm";
+import { useUnsavedChanges } from "./unsaved-changes";
 import { Modal, t } from "./ui";
 import { GmailPdfPreview } from "./gmail-pdf-preview";
 import { DocumentIntake } from "./document-intake";
@@ -129,6 +130,12 @@ export function DocumentReview({
         const doc = body.documents.find((d) => d.id === body.document_id);
         setNotes(doc?.review_notes || "");
         setBank(doc?.bank_name || "");
+        changes.markSaved({
+          notes: doc?.review_notes || "",
+          bank: doc?.bank_name || "",
+          status: doc?.status === "correction" ? "correction" : "approved",
+          confirmed: false,
+        });
         setStatus(doc?.status === "correction" ? "correction" : "approved");
       } catch (e) {
         if (!controller.signal.aborted) setError((e as Error).message);
@@ -170,6 +177,11 @@ export function DocumentReview({
   const doc = context?.documents.find(
     (d) => d.id === (context.document_id || target),
   );
+  const changes = useUnsavedChanges(
+    { notes, bank, status, confirmed },
+    busy,
+    !!context?.editable,
+  );
   const incorporated = !!context?.document_id;
   useEffect(() => {
     setBank(doc?.bank_name || "");
@@ -203,6 +215,9 @@ export function DocumentReview({
   }
   return (
     <Modal
+      busy={busy}
+      dirty={changes.dirty}
+      locale={locale}
       wide
       title={t(locale, "Revisión documental", "Document review")}
       close={() => {

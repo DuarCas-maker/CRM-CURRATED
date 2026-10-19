@@ -134,6 +134,9 @@ export function LenderGuidelinesEditor({
   );
   return (
     <Modal
+      busy={busy}
+      trackChanges
+      locale={locale}
       title={`${lender.name} · Guidelines v${lender.guideline_version || 0}`}
       close={close}
     >
@@ -476,6 +479,9 @@ export function LenderImportWizard({
   }
   return (
     <Modal
+      busy={busy}
+      dirty={!done && raw.length > 0}
+      locale={locale}
       title={t(
         locale,
         "Importar empresas y contactos",

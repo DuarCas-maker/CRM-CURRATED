@@ -54,6 +54,7 @@ export function MailThreadEvidence({
   }, [id]);
   return (
     <Modal
+      locale={locale}
       wide
       title={
         messages.at(-1)?.subject ||

@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm, markFormSaved } from "./unsaved-changes";
 import { useEffect, useState, type FormEvent } from "react";
 import type { Locale, Workspace } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
@@ -24,7 +25,8 @@ export function GmailTeamForm({
   const [busy, setBusy] = useState(false);
   async function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const f = new FormData(e.currentTarget);
+    const savedForm = e.currentTarget;
+    const f = new FormData(savedForm);
     setBusy(true);
     setError("");
     try {
@@ -41,6 +43,7 @@ export function GmailTeamForm({
       });
       const body = await r.json();
       if (!r.ok) throw new Error(body.error);
+      markFormSaved(savedForm);
       onSaved();
     } catch (e) {
       setError((e as Error).message);
@@ -49,7 +52,7 @@ export function GmailTeamForm({
     }
   }
   return (
-    <form onSubmit={save}>
+    <ProtectedForm busy={busy} onSubmit={save}>
       <p>
         {t(
           locale,
@@ -132,7 +135,7 @@ export function GmailTeamForm({
           {t(locale, "Guardar miembro del equipo", "Save team member")}
         </button>
       </div>
-    </form>
+    </ProtectedForm>
   );
 }
 export function GmailTeamDirectory({
@@ -176,6 +179,7 @@ export function GmailTeamDirectory({
       </button>
       {editing !== undefined && (
         <Modal
+          locale={locale}
           title={t(locale, "Miembro del equipo", "Team member")}
           close={() => setEditing(undefined)}
         >
@@ -423,6 +427,7 @@ export function GmailTeamThreads({
       </div>
       {target && (
         <Modal
+          locale={locale}
           wide
           title={t(
             locale,
@@ -433,7 +438,7 @@ export function GmailTeamThreads({
             if (!busy) setTarget(null);
           }}
         >
-          <form onSubmit={associate}>
+          <ProtectedForm busy={busy} onSubmit={associate}>
             <h4>{target.subject}</h4>
             <p>
               {t(
@@ -618,7 +623,7 @@ export function GmailTeamThreads({
                 "Confirm this thread's association",
               )}
             </button>
-          </form>
+          </ProtectedForm>
         </Modal>
       )}
     </section>

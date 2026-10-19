@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm, markFormSaved } from "./unsaved-changes";
 import { useState } from "react";
 import type { Document, Locale } from "@/lib/domain";
 import type { Action } from "./crm";
@@ -25,9 +26,11 @@ export function DocumentCreate({
     [error, setError] = useState("");
   const banks = [...new Set(documents.map((d) => d.bank_name).filter(Boolean))];
   return (
-    <form
+    <ProtectedForm
+      busy={busy}
       onSubmit={async (e) => {
         e.preventDefault();
+        const savedForm = e.currentTarget;
         setBusy(true);
         setError("");
         try {
@@ -41,6 +44,7 @@ export function DocumentCreate({
           const created = result as
             { id?: string; document_id?: string } | undefined;
           setName("");
+          markFormSaved(savedForm);
           onCreated?.(created?.document_id || created?.id);
         } catch (e) {
           setError((e as Error).message);
@@ -127,6 +131,6 @@ export function DocumentCreate({
           ? t(locale, "Guardando…", "Saving…")
           : t(locale, "Agregar documento", "Add document")}
       </button>
-    </form>
+    </ProtectedForm>
   );
 }

@@ -29,6 +29,7 @@ import {
   type ExtractionField,
   type ExtractionNotice,
 } from "@/lib/application-extraction";
+import { useUnsavedChanges } from "./unsaved-changes";
 import { Modal, t } from "./ui";
 const fields: [
   keyof Omit<CompanyApplication, "owners" | "second_owner">,
@@ -103,7 +104,6 @@ export function CompanyApplicationForm({
     [authorized, setAuthorized] = useState(false),
     [previousSignature, setPreviousSignature] =
       useState<ApplicationSignature | null>(null),
-    [dirty, setDirty] = useState(false),
     [declaration, setDeclaration] = useState<string | null>(
       workspace.demo ? SAMPLE_APPLICATION_DECLARATION : null,
     );
@@ -115,24 +115,19 @@ export function CompanyApplicationForm({
   const [advisors, setAdvisors] = useState(
     workspace.profiles.filter((p) => p.active !== false),
   );
-  const [confirmExit, setConfirmExit] = useState(false),
-    [extractionPending, setExtractionPending] = useState(false);
+  const [extractionPending, setExtractionPending] = useState(false);
   const [notices, setNotices] = useState<ExtractionNotice[]>([]),
     [sources, setSources] = useState<string[]>([]);
+  const changes = useUnsavedChanges(
+    { data, signature, wantSign, authorized },
+    busy || loading,
+  );
+  const dirty = changes.dirty;
   useEffect(() => {
     if (!pdfNotification) return;
     const timer = window.setTimeout(() => setPdfNotification(false), 6000);
     return () => window.clearTimeout(timer);
   }, [pdfNotification]);
-  useEffect(() => {
-    if (!dirty && !extractionPending) return;
-    const warn = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = "";
-    };
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty, extractionPending]);
   useEffect(() => {
     if (workspace.demo) return;
     const controller = new AbortController();
@@ -147,6 +142,12 @@ export function CompanyApplicationForm({
         if (b.advisors) setAdvisors(b.advisors);
         if (b.record) {
           const loaded = companyApplicationSchema.parse(b.record.data);
+          changes.markSaved({
+            data: structuredClone(loaded),
+            signature: "",
+            wantSign: false,
+            authorized: false,
+          });
           // Preserve signed snapshots; only fill missing advisor details in drafts.
           if (!b.record.signature && b.defaults) {
             for (const key of [
@@ -156,14 +157,21 @@ export function CompanyApplicationForm({
             ] as const)
               if (!loaded[key] && b.defaults[key]) {
                 loaded[key] = b.defaults[key];
-                setDirty(true);
               }
           }
           setData(loaded);
           setPreviousSignature(b.record.signature);
         }
-        if (!b.record && b.defaults)
-          setData(companyApplicationSchema.parse(b.defaults));
+        if (!b.record && b.defaults) {
+          const defaults = companyApplicationSchema.parse(b.defaults);
+          setData(defaults);
+          changes.markSaved({
+            data: defaults,
+            signature: "",
+            wantSign: false,
+            authorized: false,
+          });
+        }
         setRevision(b.revision);
         setGeneratedRevision(b.generated_revision);
         setDeclaration(b.declaration);
@@ -180,7 +188,6 @@ export function CompanyApplicationForm({
   }, [opportunity.id, workspace.demo]);
   function changed(next: CompanyApplication) {
     setData(next);
-    setDirty(true);
     setSignature("");
     setAuthorized(false);
     setPreviousSignature(null);
@@ -272,7 +279,7 @@ export function CompanyApplicationForm({
     try {
       if (workspace.demo) {
         setRevision((v) => v + 1);
-        setDirty(false);
+        changes.markSaved();
         setMessage(
           t(
             locale,
@@ -305,7 +312,12 @@ export function CompanyApplicationForm({
           ),
         );
       setRevision(b.revision);
-      setDirty(false);
+      changes.markSaved({
+        data,
+        signature: "",
+        wantSign: false,
+        authorized: false,
+      });
       setMessage(
         t(
           locale,
@@ -383,37 +395,13 @@ export function CompanyApplicationForm({
   }
   return (
     <Modal
+      locale={locale}
       wide
       title={t(locale, "Aplicación de la empresa", "Company application")}
-      close={() => {
-        if (!busy) {
-          if (dirty || extractionPending) setConfirmExit(true);
-          else close();
-        }
-      }}
+      dirty={dirty || extractionPending}
+      busy={busy || loading}
+      close={close}
     >
-      {confirmExit && (
-        <Modal
-          title={t(locale, "¿Salir sin guardar?", "Leave without saving?")}
-          close={() => setConfirmExit(false)}
-        >
-          <p>
-            {t(
-              locale,
-              "Tienes cambios sin guardar. Si sales, se perderán.",
-              "You have unsaved changes. Leaving will discard them.",
-            )}
-          </p>
-          <div className="modal-footer">
-            <button className="button" onClick={() => setConfirmExit(false)}>
-              {t(locale, "Continuar editando", "Continue editing")}
-            </button>
-            <button className="button primary" onClick={close}>
-              {t(locale, "Salir sin guardar", "Leave without saving")}
-            </button>
-          </div>
-        </Modal>
-      )}
       {error && (
         <p className="error-banner" role="alert">
           {error}
@@ -767,7 +755,6 @@ export function CompanyApplicationForm({
               disabled={busy || loading}
               onChange={(e) => {
                 setWantSign(e.target.checked);
-                setDirty(true);
                 setMessage("");
                 setPdfNotification(false);
                 setSignature("");

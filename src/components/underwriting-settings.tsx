@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm } from "./unsaved-changes";
 import { useEffect, useState } from "react";
 import type { Workspace, Locale } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
@@ -12,6 +13,7 @@ import type {
 } from "@/lib/underwriting";
 import type { Action } from "./crm";
 import { t } from "./ui";
+import { useUnsavedChanges } from "./unsaved-changes";
 const defaults: UnderwritingSettings = {
   id: 1,
   version: 1,
@@ -42,6 +44,7 @@ export function UnderwritingSettingsPanel({
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [saved, setSaved] = useState("");
+  const changes = useUnsavedChanges<HTMLElement>(settings, busy, editable);
   const [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
   useEffect(() => {
     if (data.demo) {
@@ -62,6 +65,7 @@ export function UnderwritingSettingsPanel({
     if (!r.ok) throw new Error(body.error);
     if (signal?.aborted) return;
     setSettings(body.settings);
+    changes.markSaved(body.settings);
     setVersions(body.versions);
     setEditable(body.editable);
     setConfigured(body.configured);
@@ -99,6 +103,7 @@ export function UnderwritingSettingsPanel({
         await act("underwriting_settings", payload);
         const next = { ...settings, version: settings.version + 1 };
         setSettings(next);
+        changes.markSaved(next);
         setVersions([
           {
             version: next.version,
@@ -154,7 +159,11 @@ export function UnderwritingSettingsPanel({
     </label>
   );
   return (
-    <section className="panel settings-panel">
+    <section
+      ref={changes.ref}
+      data-changes-explicit
+      className="panel settings-panel"
+    >
       <h2>
         {t(locale, "Análisis y underwriting", "Analysis and underwriting")}
       </h2>
@@ -203,7 +212,8 @@ export function UnderwritingSettingsPanel({
       ) : (
         <>
           <p>Versión {settings.version}</p>
-          <form
+          <ProtectedForm
+            busy={busy}
             onSubmit={(e) => {
               e.preventDefault();
               void save();
@@ -421,7 +431,7 @@ export function UnderwritingSettingsPanel({
                 )}
               </p>
             )}
-          </form>
+          </ProtectedForm>
           <h3>{t(locale, "Historial de configuración", "Settings history")}</h3>
           {versions.map((v) => (
             <p key={v.version}>

@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm } from "./unsaved-changes";
 import { useState } from "react";
 import type { Workspace, Locale } from "@/lib/domain";
 import { roleLabels, dateLabel } from "@/lib/domain";
@@ -139,6 +140,8 @@ export function Integrations({
       </section>
       {modal && (
         <Modal
+          busy={busy}
+          locale={locale}
           title={t(locale, "Administración", "Administration")}
           close={() => {
             setModal(null);
@@ -147,7 +150,8 @@ export function Integrations({
         >
           {error && <div className="error-banner">{error}</div>}
           {modal === "permissions" && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) => {
                 const form = new FormData(e.currentTarget);
                 submit(e, "mail_permission", {
@@ -186,10 +190,11 @@ export function Integrations({
               <div className="modal-footer">
                 <SaveButton locale={locale} busy={busy} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "role" && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) => {
                 const form = new FormData(e.currentTarget);
                 submit(e, "user_role", {
@@ -222,10 +227,13 @@ export function Integrations({
               <div className="modal-footer">
                 <SaveButton locale={locale} busy={busy} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "account" && (
-            <form onSubmit={(e) => submit(e, "account_settings")}>
+            <ProtectedForm
+              busy={busy}
+              onSubmit={(e) => submit(e, "account_settings")}
+            >
               <Field name="id" label={t(locale, "Cuenta", "Account")}>
                 {data.accounts.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -251,10 +259,11 @@ export function Integrations({
               <div className="modal-footer">
                 <SaveButton locale={locale} busy={busy} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal.startsWith("review:") && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) =>
                 submit(e, "associate_thread", {
                   id: modal.split(":")[1],
@@ -305,7 +314,7 @@ export function Integrations({
               <div className="modal-footer">
                 <SaveButton locale={locale} busy={busy} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
         </Modal>
       )}

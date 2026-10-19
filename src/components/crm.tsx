@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
   LayoutDashboard,
@@ -132,6 +133,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [data, setData] = useState(initial);
   const extensionsReady = data.demo || data.crm_extensions_ready !== false;
   const [locale, setLocale] = useState<Locale>(initial.preferences.locale);
+  const { requestLeave, confirmation } = useLeaveConfirmation(locale);
   const [view, setView] = useState<View>("overview");
   const [settingsSection, setSettingsSection] = useState("general");
   const [attentionFilter, setAttentionFilter] = useState("all");
@@ -457,14 +459,15 @@ export default function CRM({ initial }: { initial: Workspace }) {
       setModal(null);
     } catch {}
   }
-  const navigate = (next: View) => {
-    setView(next);
-    setSelected(null);
-    setMobile(false);
-    setQuery("");
-    setStage("all");
-    setCampaignFilter("all");
-  };
+  const navigate = (next: View) =>
+    requestLeave(() => {
+      setView(next);
+      setSelected(null);
+      setMobile(false);
+      setQuery("");
+      setStage("all");
+      setCampaignFilter("all");
+    });
   const nav: {
     id: View;
     es: string;
@@ -958,7 +961,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
               locale={locale}
               act={act}
               busy={busy}
-              back={() => setSelected(null)}
+              back={() => requestLeave(() => setSelected(null))}
               refresh={refresh}
             />
           ) : (
@@ -2104,7 +2107,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                       aria-selected={settingsSection === id}
                       className={settingsSection === id ? "active" : ""}
                       key={id}
-                      onClick={() => setSettingsSection(id)}
+                      onClick={() => requestLeave(() => setSettingsSection(id))}
                     >
                       {label}
                     </button>
@@ -2441,6 +2444,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
         modal !== "import-lenders" &&
         !modal.startsWith("guidelines:") && (
           <Modal
+            busy={busy}
+            locale={locale}
             title={
               editingLender
                 ? t(locale, "Editar lender", "Edit lender")
@@ -2494,7 +2499,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
               </div>
             )}
             {["opportunity", "lead"].includes(modal) && (
-              <form
+              <ProtectedForm
+                busy={busy}
                 onSubmit={(e) =>
                   submit(
                     e,
@@ -2586,10 +2592,13 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 <div className="modal-footer">
                   <SaveButton locale={locale} busy={busy} />
                 </div>
-              </form>
+              </ProtectedForm>
             )}
             {modal === "task" && (
-              <form onSubmit={(e) => submit(e, "create_task")}>
+              <ProtectedForm
+                busy={busy}
+                onSubmit={(e) => submit(e, "create_task")}
+              >
                 <Field
                   name="title"
                   label={t(locale, "Qué hay que hacer", "What needs to happen")}
@@ -2624,7 +2633,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 <div className="modal-footer">
                   <SaveButton locale={locale} busy={busy} />
                 </div>
-              </form>
+              </ProtectedForm>
             )}
             {modal.startsWith("attachment:") &&
               (() => {
@@ -2638,7 +2647,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   (c) => c.id === message?.conversation_id,
                 );
                 return (
-                  <form
+                  <ProtectedForm
+                    busy={busy}
                     onSubmit={(e) =>
                       submit(e, "import_attachment", { id: attachment?.id })
                     }
@@ -2672,7 +2682,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     <div className="modal-footer">
                       <SaveButton locale={locale} busy={busy} />
                     </div>
-                  </form>
+                  </ProtectedForm>
                 );
               })()}
             {(modal === "lender" || editingLender) && (
@@ -2690,7 +2700,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
               />
             )}
             {modal === "campaign" && (
-              <form
+              <ProtectedForm
+                busy={busy}
                 key={campaignTemplate?.id || "custom"}
                 onSubmit={(e) => {
                   const f = new FormData(e.currentTarget);
@@ -2956,10 +2967,11 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     label={t(locale, "Guardar borrador", "Save draft")}
                   />
                 </div>
-              </form>
+              </ProtectedForm>
             )}
             {modal === "verify" && (
-              <form
+              <ProtectedForm
+                busy={busy}
                 onSubmit={(e) => {
                   if (
                     busy ||
@@ -3014,10 +3026,12 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     )}
                   />
                 </div>
-              </form>
+              </ProtectedForm>
             )}
             {modal === "filters" && (
-              <form
+              <ProtectedForm
+                busy={busy}
+                protect={false}
                 onSubmit={(e) => {
                   e.preventDefault();
                   const f = new FormData(e.currentTarget);
@@ -3075,10 +3089,13 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     label={t(locale, "Aplicar filtros", "Apply filters")}
                   />
                 </div>
-              </form>
+              </ProtectedForm>
             )}
             {modal === "invite" && (
-              <form onSubmit={(e) => submit(e, "invite_user")}>
+              <ProtectedForm
+                busy={busy}
+                onSubmit={(e) => submit(e, "invite_user")}
+              >
                 <Field
                   name="name"
                   label={t(locale, "Nombre", "Name")}
@@ -3099,10 +3116,14 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     label={t(locale, "Enviar invitación", "Send invitation")}
                   />
                 </div>
-              </form>
+              </ProtectedForm>
             )}
             {modal === "google" && (
-              <form action="/api/gmail/connect" method="get">
+              <ProtectedForm
+                busy={busy}
+                action="/api/gmail/connect"
+                method="get"
+              >
                 <p>
                   {t(
                     locale,
@@ -3137,10 +3158,13 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     )}
                   </p>
                 )}
-              </form>
+              </ProtectedForm>
             )}
             {modal === "requirements" && (
-              <form onSubmit={(e) => submit(e, "requirements")}>
+              <ProtectedForm
+                busy={busy}
+                onSubmit={(e) => submit(e, "requirements")}
+              >
                 <Field name="product" label={t(locale, "Producto", "Product")}>
                   {[
                     "Business loan",
@@ -3174,7 +3198,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 <div className="modal-footer">
                   <SaveButton locale={locale} busy={busy} />
                 </div>
-              </form>
+              </ProtectedForm>
             )}
             {modal.startsWith("preview:") &&
               (() => {
@@ -3229,6 +3253,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
               })()}
           </Modal>
         )}
+      {confirmation}
     </div>
   );
 }

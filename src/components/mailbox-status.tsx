@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm } from "./unsaved-changes";
 import {
   useEffect,
   useState,
@@ -469,6 +470,7 @@ export function MailboxStatus({
       </details>
       {review && (
         <Modal
+          locale={locale}
           title={t(
             locale,
             "Asociar hilo recibido",
@@ -489,7 +491,8 @@ export function MailboxStatus({
           >
             {body}
           </p>
-          <form
+          <ProtectedForm
+            busy={busy}
             onSubmit={async (e) => {
               e.preventDefault();
               setBusy(true);
@@ -619,7 +622,7 @@ export function MailboxStatus({
                 "Confirm this thread's association",
               )}
             </button>
-          </form>
+          </ProtectedForm>
         </Modal>
       )}
     </section>

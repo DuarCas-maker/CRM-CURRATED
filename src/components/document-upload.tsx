@@ -5,6 +5,7 @@ import { DocumentIntake } from "./document-intake";
 import { GmailPdfPreview } from "./gmail-pdf-preview";
 import { previewMime } from "@/lib/document-review";
 import { t } from "./ui";
+import { useUnsavedChanges } from "./unsaved-changes";
 import type { Action } from "./crm";
 export function DocumentUpload({
   opportunityId,
@@ -29,6 +30,11 @@ export function DocumentUpload({
     [hash, setHash] = useState(""),
     [error, setError] = useState(""),
     [sourceId, setSourceId] = useState("");
+  const changes = useUnsavedChanges(
+    file
+      ? { name: file.name, size: file.size, modified: file.lastModified }
+      : null,
+  );
   const keys = useRef(new Map<string, string>());
   useEffect(() => {
     if (!file) return;
@@ -59,7 +65,7 @@ export function DocumentUpload({
     return value.result;
   };
   return (
-    <div>
+    <div ref={changes.ref}>
       {error && (
         <p className="error-banner" role="alert">
           {error}

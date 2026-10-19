@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm, markFormSaved } from "./unsaved-changes";
 import { useState, type FormEvent } from "react";
 import { ShieldCheck, Plus, CheckCircle2, Upload } from "lucide-react";
 import { applicationSchema } from "@/lib/application";
@@ -105,7 +106,7 @@ export function ApplicationForm({
               Tell us about your business and financing needs. Fields marked *
               are required.
             </p>
-            <form onSubmit={submit}>
+            <ProtectedForm busy={busy} onSubmit={submit}>
               <h2>Business information</h2>
               <div className="form-grid">
                 <Field name="legal_name" label="Legal business name" required />
@@ -254,7 +255,7 @@ export function ApplicationForm({
                     ? "Preview submission"
                     : "Submit application"}
               </button>
-            </form>
+            </ProtectedForm>
           </>
         )}
         {done && (
@@ -267,7 +268,8 @@ export function ApplicationForm({
             {documents
               .filter((d) => d.kind !== "application")
               .map((d) => (
-                <form
+                <ProtectedForm
+                  busy={busy}
                   key={d.id}
                   className="document-row"
                   onSubmit={async (e) => {
@@ -275,7 +277,8 @@ export function ApplicationForm({
                     setUploadMessage("");
                     setError("");
                     setBusy(true);
-                    const form = new FormData(e.currentTarget);
+                    const savedForm = e.currentTarget;
+                    const form = new FormData(savedForm);
                     form.set("document_id", d.id);
                     try {
                       const res = await fetch(
@@ -284,6 +287,7 @@ export function ApplicationForm({
                       );
                       const body = await res.json();
                       if (!res.ok) throw new Error(body.error);
+                      markFormSaved(savedForm);
                       setUploadMessage(`${d.name}: received. Pending review.`);
                     } catch (e) {
                       setError((e as Error).message);
@@ -309,7 +313,7 @@ export function ApplicationForm({
                     <Upload size={14} />
                     Upload
                   </button>
-                </form>
+                </ProtectedForm>
               ))}
             {uploadMessage && (
               <div className="info-banner" role="status">

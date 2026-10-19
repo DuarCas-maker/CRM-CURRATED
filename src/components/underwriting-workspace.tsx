@@ -1,4 +1,5 @@
 "use client";
+import { useUnsavedChanges } from "./unsaved-changes";
 import { useEffect, useRef, useState } from "react";
 import type { Locale, Opportunity, Workspace } from "@/lib/domain";
 import { currency, dateLabel } from "@/lib/domain";
@@ -91,6 +92,21 @@ export function UnderwritingWorkspace({
     [observations, setObservations] = useState(""),
     [recommendations, setRecommendations] = useState(""),
     [confirmed, setConfirmed] = useState(false);
+  const changes = useUnsavedChanges(
+    {
+      summary,
+      conclusion,
+      observations,
+      recommendations,
+      confirmed,
+      rejectionNote,
+    },
+    busy,
+    !!review && editable,
+  );
+  useEffect(() => {
+    changes.markSaved();
+  }, [review?.id]);
   const docs = data.documents.filter(
     (d) => d.opportunity_id === o.id && d.kind !== "analysis_report",
   );
@@ -538,6 +554,9 @@ export function UnderwritingWorkspace({
       ))}
       {review && report && (
         <Modal
+          busy={busy}
+          dirty={changes.dirty}
+          locale={locale}
           wide
           title={t(locale, "Revisión del análisis", "Analysis review")}
           close={() => {

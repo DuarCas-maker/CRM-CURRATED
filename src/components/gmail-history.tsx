@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm } from "./unsaved-changes";
 import { useEffect, useRef, useState } from "react";
 import type { Workspace, Locale } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
@@ -349,7 +350,8 @@ export function GmailHistory({
               </button>
             </div>
           )}
-          <form
+          <ProtectedForm
+            busy={busy}
             action="/api/gmail/connect"
             method="get"
             className="gmail-connect-form"
@@ -379,7 +381,7 @@ export function GmailHistory({
             >
               {t(locale, "Autorizar con Google", "Authorize with Google")}
             </button>
-          </form>
+          </ProtectedForm>
           {!organizations.length && (
             <p className="muted">
               {t(
@@ -1208,6 +1210,7 @@ export function GmailHistory({
       )}
       {editing && (
         <Modal
+          locale={locale}
           title={t(
             locale,
             "Confirmar participante y expediente",
@@ -1297,7 +1300,8 @@ export function GmailHistory({
               )}
             </>
           ) : (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (await action(selectPayload(editing, true)))
@@ -1526,7 +1530,7 @@ export function GmailHistory({
                   {t(locale, "Guardar y seleccionar", "Save and select")}
                 </button>
               </div>
-            </form>
+            </ProtectedForm>
           )}
         </Modal>
       )}

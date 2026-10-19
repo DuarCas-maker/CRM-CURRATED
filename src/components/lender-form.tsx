@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm } from "./unsaved-changes";
 import { useState, type FormEvent } from "react";
 import type { Lender, Locale } from "@/lib/domain";
 import { lenderDirectorySchema, lenderPortalUrl } from "@/lib/lender-directory";
@@ -21,7 +22,8 @@ export function LenderForm({
   const [channel, setChannel] = useState(lender?.channel || "email");
   const [error, setError] = useState("");
   return (
-    <form
+    <ProtectedForm
+      busy={busy}
       onSubmit={(event) => {
         event.preventDefault();
         if (busy) return;
@@ -104,6 +106,6 @@ export function LenderForm({
       <div className="modal-footer">
         <SaveButton locale={locale} busy={busy} />
       </div>
-    </form>
+    </ProtectedForm>
   );
 }

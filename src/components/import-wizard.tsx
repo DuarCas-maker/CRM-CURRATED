@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm } from "./unsaved-changes";
 import { useState, type FormEvent } from "react";
 import { Upload, FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import { detectMapping, type Mapping } from "@/lib/imports";
@@ -82,6 +83,9 @@ export function ImportWizard({
   }
   return (
     <Modal
+      busy={busy}
+      dirty={!done && !!file}
+      locale={locale}
       title={t(locale, "Importar una base de leads", "Import a lead list")}
       close={close}
       wide
@@ -120,7 +124,7 @@ export function ImportWizard({
           </button>
         </div>
       ) : (
-        <form onSubmit={submit}>
+        <ProtectedForm busy={busy} onSubmit={submit}>
           {!file ? (
             <label className="upload-zone">
               <Upload size={32} />
@@ -245,7 +249,7 @@ export function ImportWizard({
               {t(locale, "Procesando archivo…", "Processing file…")}
             </p>
           )}
-        </form>
+        </ProtectedForm>
       )}
     </Modal>
   );

@@ -11,6 +11,7 @@ import {
 import { documentLabel } from "@/lib/document-labels";
 import type { Action } from "./crm";
 import { t } from "./ui";
+import { useNativeChanges } from "./unsaved-changes";
 export function DocumentIntake({
   selection,
   opportunityId,
@@ -52,6 +53,8 @@ export function DocumentIntake({
     [suggestionError, setSuggestionError] = useState(""),
     [retry, setRetry] = useState(0),
     [replace, setReplace] = useState("");
+  const protection = useRef<HTMLDivElement>(null);
+  useNativeChanges(protection, editable, false, busy);
   const manuallyChosen = useRef(false);
   useEffect(() => {
     if (demo || !editable || !previewHash || selection.source === "document")
@@ -166,7 +169,7 @@ export function DocumentIntake({
     }
   }
   return (
-    <div className="document-intake">
+    <div ref={protection} className="document-intake">
       {error && (
         <p className="error-banner" role="alert">
           {error}

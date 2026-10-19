@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm } from "./unsaved-changes";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { Locale, Opportunity, Workspace } from "@/lib/domain";
 import { canSeeOpportunity } from "@/lib/domain";
@@ -14,6 +15,7 @@ import {
 import { MailLenderRecipients } from "./mail-lender-recipients";
 import type { Action } from "./crm";
 import { Modal, SaveButton, t } from "./ui";
+import { useUnsavedChanges, useLeaveConfirmation } from "./unsaved-changes";
 
 export function MailEditor({
   data,
@@ -147,8 +149,39 @@ export function MailEditor({
   const [working, setWorking] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
+  const [sending, setSending] = useState(false);
   const draftId = useRef(start.id || start.draft_id || crypto.randomUUID());
-  const locked = busy || working;
+  const locked = busy || working || sending;
+  const changes = useUnsavedChanges<HTMLFormElement>(
+    {
+      caseId,
+      accountId,
+      mode,
+      to,
+      cc,
+      bcc,
+      subject,
+      body,
+      process,
+      submission,
+      contactLender,
+      contactName,
+      documents: [...documents].sort(),
+      gmailFiles: [...gmailFiles].sort(),
+      forwardFiles: [...forwardFiles].sort(),
+      uploads: uploads.map((f) => f.id).sort(),
+      targets: Object.entries(targets)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([id, email]) => ({
+          id,
+          email,
+          copies: [...(targetCopies[id] || [])].sort(),
+          evaluation: targetEvaluations[id] || "",
+        })),
+    },
+    locked,
+  );
+  const { requestLeave, confirmation } = useLeaveConfirmation(locale);
   const availableAttachments = availableMailAttachments(data, caseId);
   const submitting = useRef(false);
   const messageInput = useRef<HTMLTextAreaElement>(null);
@@ -233,6 +266,7 @@ export function MailEditor({
     draft_id: draftId.current,
   });
   async function saveDraft() {
+    if (locked || submitting.current) return;
     setWorking(true);
     setError("");
     try {
@@ -247,6 +281,7 @@ export function MailEditor({
       });
       const p = await r.json();
       if (!r.ok) throw Error(p.error);
+      changes.markSaved();
       setNotice(
         t(locale, "Borrador guardado en el CRM.", "Draft saved in the CRM."),
       );
@@ -312,6 +347,8 @@ export function MailEditor({
   ) => set((old) => (checked ? [...old, id] : old.filter((x) => x !== id)));
   return (
     <MailEditorFrame
+      locale={locale}
+      busy={locked}
       inline={inline}
       compact={compact}
       title={t(
@@ -349,11 +386,15 @@ export function MailEditor({
         </div>
       )}
       {notice && <p role="status">{notice}</p>}
-      <form
+      <ProtectedForm
+        busy={locked}
+        changesRef={changes.ref}
+        data-changes-explicit
         onSubmit={async (e) => {
           e.preventDefault();
           if (submitting.current || locked) return;
           submitting.current = true;
+          setSending(true);
           setError("");
           try {
             if ((!data.gmail_history_enabled || data.demo) && mode !== "reply")
@@ -394,6 +435,7 @@ export function MailEditor({
             setError((e as Error).message);
           } finally {
             submitting.current = false;
+            setSending(false);
           }
         }}
       >
@@ -983,7 +1025,7 @@ export function MailEditor({
               className="button"
               type="button"
               disabled={locked}
-              onClick={close}
+              onClick={() => requestLeave(close, changes.ref.current)}
             >
               {t(locale, "Cancelar", "Cancel")}
             </button>
@@ -1018,9 +1060,10 @@ export function MailEditor({
             }
           />
         </div>
-      </form>
+      </ProtectedForm>
       {packagePreview && (
         <Modal
+          locale={locale}
           wide
           title={t(
             locale,
@@ -1086,6 +1129,7 @@ export function MailEditor({
               onClick={async () => {
                 if (submitting.current) return;
                 submitting.current = true;
+                setSending(true);
                 setError("");
                 try {
                   const result = await act("mail_send", packagePreview);
@@ -1099,6 +1143,7 @@ export function MailEditor({
                   setError((e as Error).message);
                 } finally {
                   submitting.current = false;
+                  setSending(false);
                 }
               }}
             >
@@ -1107,17 +1152,22 @@ export function MailEditor({
           </div>
         </Modal>
       )}
+      {confirmation}
     </MailEditorFrame>
   );
 }
 
 function MailEditorFrame({
+  locale,
+  busy,
   inline,
   compact,
   title,
   close,
   children,
 }: {
+  locale: Locale;
+  busy: boolean;
   inline: boolean;
   compact: boolean;
   title: string;
@@ -1126,7 +1176,7 @@ function MailEditorFrame({
 }) {
   if (!inline)
     return (
-      <Modal title={title} close={close}>
+      <Modal locale={locale} busy={busy} title={title} close={close}>
         {children}
       </Modal>
     );

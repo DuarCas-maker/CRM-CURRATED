@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm, markFormSaved } from "./unsaved-changes";
 import { useState } from "react";
 import type { Workspace, Locale } from "@/lib/domain";
 import type { Action } from "./crm";
@@ -52,10 +53,12 @@ export function LenderContacts({
           </p>
         ))}
       {["superadmin", "closer_admin", "closer"].includes(data.profile.role) && (
-        <form
+        <ProtectedForm
+          busy={busy}
           className="gmail-connect-form"
           onSubmit={async (e) => {
             e.preventDefault();
+            const savedForm = e.currentTarget;
             setError("");
             try {
               await act("lender_contact", {
@@ -63,6 +66,7 @@ export function LenderContacts({
                 email: email.trim(),
                 name: name.trim(),
               });
+              markFormSaved(savedForm);
               setEmail("");
               setName("");
             } catch (e) {
@@ -94,7 +98,7 @@ export function LenderContacts({
             disabled={!lender}
             label={t(locale, "Confirmar correo", "Confirm email")}
           />
-        </form>
+        </ProtectedForm>
       )}
     </section>
   );

@@ -4,6 +4,7 @@ import type { Document, Locale } from "@/lib/domain";
 import { planBankMove } from "@/lib/bank-document-management";
 import { documentLabel } from "@/lib/document-labels";
 import type { Action } from "./crm";
+import { useUnsavedChanges } from "./unsaved-changes";
 import { Modal, t } from "./ui";
 export function BankDocumentManagement({
   documents,
@@ -25,6 +26,7 @@ export function BankDocumentManagement({
     [position, setPosition] = useState(1),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const changes = useUnsavedChanges({ ids, bank, position }, busy);
   const banks = [
     ...new Set(
       statements
@@ -81,6 +83,9 @@ export function BankDocumentManagement({
   }
   return (
     <Modal
+      dirty={changes.dirty}
+      busy={busy}
+      locale={locale}
       title={t(
         locale,
         "Cambiar banco y ordenar extractos",

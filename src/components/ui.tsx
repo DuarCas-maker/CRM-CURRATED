@@ -3,6 +3,11 @@ import { useEffect, useRef } from "react";
 import { X, Inbox, LoaderCircle } from "lucide-react";
 import type { Locale, Stage, Verification } from "@/lib/domain";
 import { stageLabels } from "@/lib/domain";
+import {
+  useLeaveConfirmation,
+  useNativeChanges,
+  useProtection,
+} from "./unsaved-changes";
 export const t = (locale: Locale, es: string, en: string) =>
   locale === "es" ? es : en;
 export function Avatar({
@@ -70,13 +75,29 @@ export function Modal({
   children,
   close,
   wide = false,
+  locale = "es",
+  dirty,
+  busy = false,
+  trackChanges = false,
 }: {
   title: string;
   children: React.ReactNode;
   close: () => void;
   wide?: boolean;
+  locale?: Locale;
+  dirty?: boolean;
+  busy?: boolean;
+  trackChanges?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  useNativeChanges(ref, dirty === undefined, !trackChanges);
+  useProtection({
+    element: () => ref.current,
+    dirty: () => !!dirty,
+    busy: () => busy,
+  });
+  const { requestLeave, confirmation } = useLeaveConfirmation(locale);
+  const requestClose = () => requestLeave(close, ref.current);
   useEffect(() => {
     const dialog = ref.current!;
     dialog.showModal();
@@ -88,10 +109,11 @@ export function Modal({
       className={`modal ${wide ? "wide" : ""}`}
       onCancel={(e) => {
         e.preventDefault();
-        close();
+        e.stopPropagation();
+        requestClose();
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) close();
+        if (e.target === e.currentTarget) requestClose();
       }}
     >
       <div className="modal-heading">
@@ -99,13 +121,15 @@ export function Modal({
         <button
           type="button"
           className="icon-button"
-          aria-label="Close"
-          onClick={close}
+          aria-label={t(locale, "Cerrar", "Close")}
+          disabled={busy}
+          onClick={requestClose}
         >
           <X size={20} />
         </button>
       </div>
       {children}
+      {confirmation}
     </dialog>
   );
 }

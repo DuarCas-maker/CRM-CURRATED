@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
 import { CaseActivityTimeline } from "./case-activity-timeline";
@@ -75,6 +76,7 @@ export function OpportunityDetail({
   initialTab?: "activity" | "documents" | "analysis" | "lenders";
   embedded?: boolean;
 }) {
+  const { requestLeave, confirmation } = useLeaveConfirmation(locale);
   const [tab, setTab] = useState<string>(initialTab);
   const [modal, setModal] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
@@ -253,7 +255,7 @@ export function OpportunityDetail({
                 <button
                   key={id}
                   className={tab === id ? "active" : ""}
-                  onClick={() => setTab(id)}
+                  onClick={() => requestLeave(() => setTab(id))}
                 >
                   {t(locale, es, en)}
                   {id === "documents" && <span>{visibleDocs.length}</span>}
@@ -670,7 +672,7 @@ export function OpportunityDetail({
                 locale={locale}
                 editable={editable}
                 refresh={refresh}
-                openDocuments={() => setTab("documents")}
+                openDocuments={() => requestLeave(() => setTab("documents"))}
               />
             </div>
           )}
@@ -946,6 +948,8 @@ export function OpportunityDetail({
       )}
       {modal && modal !== "company-application" && (
         <Modal
+          busy={busy}
+          locale={locale}
           wide={modal === "upload"}
           title={t(
             locale,
@@ -997,7 +1001,10 @@ export function OpportunityDetail({
             </div>
           )}
           {modal === "assign-seller" && (
-            <form onSubmit={(e) => submit(e, "assign_seller")}>
+            <ProtectedForm
+              busy={busy}
+              onSubmit={(e) => submit(e, "assign_seller")}
+            >
               <Field
                 name="seller_id"
                 label={t(
@@ -1020,7 +1027,7 @@ export function OpportunityDetail({
               <div className="modal-footer">
                 <SaveButton locale={locale} busy={busy} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "add-document" && (
             <DocumentCreate
@@ -1032,7 +1039,10 @@ export function OpportunityDetail({
             />
           )}
           {modal === "request-documents" && (
-            <form onSubmit={(e) => submit(e, "request_documents")}>
+            <ProtectedForm
+              busy={busy}
+              onSubmit={(e) => submit(e, "request_documents")}
+            >
               <Field
                 name="account_id"
                 label={t(locale, "Cuenta remitente", "Sender account")}
@@ -1064,10 +1074,13 @@ export function OpportunityDetail({
                   label={t(locale, "Confirmar y enviar", "Confirm and send")}
                 />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {["note", "call"].includes(modal) && (
-            <form onSubmit={(e) => submit(e, "activity", { type: modal })}>
+            <ProtectedForm
+              busy={busy}
+              onSubmit={(e) => submit(e, "activity", { type: modal })}
+            >
               <Field
                 label={
                   modal === "call"
@@ -1096,10 +1109,10 @@ export function OpportunityDetail({
               <div className="modal-footer">
                 <SaveButton busy={busy} locale={locale} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "analysis" && (
-            <form onSubmit={(e) => submit(e, "analysis")}>
+            <ProtectedForm busy={busy} onSubmit={(e) => submit(e, "analysis")}>
               <Field
                 name="summary"
                 label={t(locale, "Resumen", "Summary")}
@@ -1134,10 +1147,13 @@ export function OpportunityDetail({
               <div className="modal-footer">
                 <SaveButton busy={busy} locale={locale} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "stage" && (
-            <form onSubmit={(e) => submit(e, "transition")}>
+            <ProtectedForm
+              busy={busy}
+              onSubmit={(e) => submit(e, "transition")}
+            >
               <Field
                 name="stage"
                 label={t(locale, "Estado", "Stage")}
@@ -1185,10 +1201,13 @@ export function OpportunityDetail({
               <div className="modal-footer">
                 <SaveButton busy={busy} locale={locale} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "next" && (
-            <form onSubmit={(e) => submit(e, "next_action")}>
+            <ProtectedForm
+              busy={busy}
+              onSubmit={(e) => submit(e, "next_action")}
+            >
               <Field
                 name="next_action"
                 label={t(locale, "Acción", "Action")}
@@ -1204,10 +1223,10 @@ export function OpportunityDetail({
               <div className="modal-footer">
                 <SaveButton busy={busy} locale={locale} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "handoff" && (
-            <form onSubmit={(e) => submit(e, "handoff")}>
+            <ProtectedForm busy={busy} onSubmit={(e) => submit(e, "handoff")}>
               <p>
                 {t(
                   locale,
@@ -1258,10 +1277,13 @@ export function OpportunityDetail({
                   {t(locale, "Confirmar traspaso", "Confirm handoff")}
                 </button>
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "assign" && (
-            <form onSubmit={(e) => submit(e, "assign_closer")}>
+            <ProtectedForm
+              busy={busy}
+              onSubmit={(e) => submit(e, "assign_closer")}
+            >
               <Field name="closer_id" label="Closer" required>
                 {data.profiles
                   .filter((p) =>
@@ -1276,10 +1298,13 @@ export function OpportunityDetail({
               <div className="modal-footer">
                 <SaveButton busy={busy} locale={locale} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "submission" && (
-            <form onSubmit={(e) => submit(e, "submission")}>
+            <ProtectedForm
+              busy={busy}
+              onSubmit={(e) => submit(e, "submission")}
+            >
               <Field name="lender_id" label="Lender" required>
                 {data.lenders.map((l) => (
                   <option key={l.id} value={l.id}>
@@ -1313,10 +1338,11 @@ export function OpportunityDetail({
               <div className="modal-footer">
                 <SaveButton busy={busy} locale={locale} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal.startsWith("submission-update:") && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) =>
                 submit(e, "update_submission", { id: modal.split(":")[1] })
               }
@@ -1351,10 +1377,11 @@ export function OpportunityDetail({
               <div className="modal-footer">
                 <SaveButton busy={busy} locale={locale} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal.startsWith("offer:") && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) =>
                 submit(e, "offer", { submission_id: modal.split(":")[1] })
               }
@@ -1397,10 +1424,10 @@ export function OpportunityDetail({
               <div className="modal-footer">
                 <SaveButton busy={busy} locale={locale} />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "fund" && (
-            <form onSubmit={(e) => submit(e, "fund")}>
+            <ProtectedForm busy={busy} onSubmit={(e) => submit(e, "fund")}>
               <p>
                 {t(
                   locale,
@@ -1441,7 +1468,7 @@ export function OpportunityDetail({
                   label={t(locale, "Confirmar desembolso", "Confirm funding")}
                 />
               </div>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "link" && (
             <div>
@@ -1482,7 +1509,8 @@ export function OpportunityDetail({
             />
           )}
           {modal.startsWith("lender-email:") && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) =>
                 submit(e, "lender_email", {
                   submission_id: modal.split(":")[1],
@@ -1527,10 +1555,11 @@ export function OpportunityDetail({
                   label={t(locale, "Confirmar y enviar", "Confirm and send")}
                 />
               </div>
-            </form>
+            </ProtectedForm>
           )}
         </Modal>
       )}
+      {confirmation}
     </>
   );
 }

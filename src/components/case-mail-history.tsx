@@ -1,4 +1,5 @@
 "use client";
+import { ProtectedForm, markFormSaved } from "./unsaved-changes";
 import { useEffect, useState } from "react";
 import type { Locale, Workspace } from "@/lib/domain";
 import { dateLabel, isCloserRole } from "@/lib/domain";
@@ -107,7 +108,10 @@ export function CaseMailHistory({
     data.messages.length,
     data.tasks.length,
   ]);
-  async function action(input: Record<string, unknown>) {
+  async function action(
+    input: Record<string, unknown>,
+    form?: HTMLFormElement,
+  ) {
     setBusy(true);
     setError("");
     try {
@@ -120,6 +124,7 @@ export function CaseMailHistory({
       if (!r.ok) throw new Error(body.error);
       await onChanged();
       await load();
+      if (form) markFormSaved(form);
       setModal(null);
     } catch (e) {
       setError((e as Error).message);
@@ -306,16 +311,20 @@ export function CaseMailHistory({
                     "Confirm only if the team email actually relays the lender's response. This resolves this wait and its task; it does not approve financing or change commercial state.",
                   )}
                 </p>
-                <form
+                <ProtectedForm
+                  busy={busy}
                   onSubmit={(e) => {
                     e.preventDefault();
                     const f = new FormData(e.currentTarget);
-                    action({
-                      operation: "team_response",
-                      wait_id: w.id,
-                      archive_message_id: f.get("evidence"),
-                      note: f.get("note"),
-                    });
+                    return action(
+                      {
+                        operation: "team_response",
+                        wait_id: w.id,
+                        archive_message_id: f.get("evidence"),
+                        note: f.get("note"),
+                      },
+                      e.currentTarget,
+                    );
                   }}
                 >
                   <label>
@@ -351,7 +360,7 @@ export function CaseMailHistory({
                       "Confirm and resolve this wait",
                     )}
                   </button>
-                </form>
+                </ProtectedForm>
               </details>
             )}
           </details>
@@ -504,19 +513,24 @@ export function CaseMailHistory({
       </div>
       {modal && (
         <Modal
+          locale={locale}
           title={t(locale, "Histórico del expediente", "Case history")}
           close={() => setModal(null)}
         >
           {error && <div className="error-banner">{error}</div>}
           {modal === "move" && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) => {
                 e.preventDefault();
-                action({
-                  operation: "move_thread",
-                  archive_message_id: threadSource,
-                  process_id: new FormData(e.currentTarget).get("process"),
-                });
+                return action(
+                  {
+                    operation: "move_thread",
+                    archive_message_id: threadSource,
+                    process_id: new FormData(e.currentTarget).get("process"),
+                  },
+                  e.currentTarget,
+                );
               }}
             >
               <p>
@@ -544,20 +558,24 @@ export function CaseMailHistory({
               >
                 {t(locale, "Confirmar asociación", "Confirm association")}
               </button>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "process" && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) => {
                 e.preventDefault();
                 const f = new FormData(e.currentTarget);
-                action({
-                  operation: "create_process",
-                  label: f.get("label"),
-                  classification: f.get("classification"),
-                  started_at: new Date(String(f.get("date"))).toISOString(),
-                  request_key: crypto.randomUUID(),
-                });
+                return action(
+                  {
+                    operation: "create_process",
+                    label: f.get("label"),
+                    classification: f.get("classification"),
+                    started_at: new Date(String(f.get("date"))).toISOString(),
+                    request_key: crypto.randomUUID(),
+                  },
+                  e.currentTarget,
+                );
               }}
             >
               <label>
@@ -585,18 +603,22 @@ export function CaseMailHistory({
               <button className="button primary" disabled={busy}>
                 {t(locale, "Guardar proceso", "Save process")}
               </button>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "transfer" && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) => {
                 e.preventDefault();
                 const f = new FormData(e.currentTarget);
-                action({
-                  operation: "transfer",
-                  owner_id: f.get("owner"),
-                  account_id: f.get("account"),
-                });
+                return action(
+                  {
+                    operation: "transfer",
+                    owner_id: f.get("owner"),
+                    account_id: f.get("account"),
+                  },
+                  e.currentTarget,
+                );
               }}
             >
               <label>
@@ -633,26 +655,30 @@ export function CaseMailHistory({
               <button className="button primary" disabled={busy}>
                 {t(locale, "Confirmar traspaso", "Confirm transfer")}
               </button>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "event" && (
-            <form
+            <ProtectedForm
+              busy={busy}
               onSubmit={(e) => {
                 e.preventDefault();
                 const f = new FormData(e.currentTarget);
-                action({
-                  operation: "record",
-                  process_id: processId,
-                  state,
-                  archive_message_id: f.get("evidence") || null,
-                  document_id: f.get("document") || null,
-                  body: f.get("body"),
-                  occurred_at: new Date(String(f.get("date"))).toISOString(),
-                  funded_amount: f.get("amount")
-                    ? Number(f.get("amount"))
-                    : null,
-                  lender_id: f.get("lender") || null,
-                });
+                return action(
+                  {
+                    operation: "record",
+                    process_id: processId,
+                    state,
+                    archive_message_id: f.get("evidence") || null,
+                    document_id: f.get("document") || null,
+                    body: f.get("body"),
+                    occurred_at: new Date(String(f.get("date"))).toISOString(),
+                    funded_amount: f.get("amount")
+                      ? Number(f.get("amount"))
+                      : null,
+                    lender_id: f.get("lender") || null,
+                  },
+                  e.currentTarget,
+                );
               }}
             >
               <label>
@@ -754,7 +780,7 @@ export function CaseMailHistory({
               <button className="button primary" disabled={busy}>
                 {t(locale, "Registrar hecho", "Record fact")}
               </button>
-            </form>
+            </ProtectedForm>
           )}
           {modal === "lenders" && (
             <>
@@ -788,16 +814,20 @@ export function CaseMailHistory({
                     </button>
                   </div>
                 ))}
-              <form
+              <ProtectedForm
+                busy={busy}
                 onSubmit={(e) => {
                   e.preventDefault();
                   const f = new FormData(e.currentTarget);
-                  action({
-                    operation: "select_lender",
-                    process_id: processId,
-                    submission_id: f.get("submission"),
-                    archive_message_id: f.get("evidence"),
-                  });
+                  return action(
+                    {
+                      operation: "select_lender",
+                      process_id: processId,
+                      submission_id: f.get("submission"),
+                      archive_message_id: f.get("evidence"),
+                    },
+                    e.currentTarget,
+                  );
                 }}
               >
                 <h3>
@@ -843,7 +873,7 @@ export function CaseMailHistory({
                 <button className="button primary" disabled={busy}>
                   {t(locale, "Confirmar selección", "Confirm selection")}
                 </button>
-              </form>
+              </ProtectedForm>
             </>
           )}
         </Modal>

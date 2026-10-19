@@ -1,4 +1,5 @@
 "use client";
+import { useUnsavedChanges } from "./unsaved-changes";
 import { useEffect, useState } from "react";
 import type { Locale, Workspace } from "@/lib/domain";
 import { dateLabel, stageLabels } from "@/lib/domain";
@@ -285,6 +286,11 @@ export function OperationalSettingsPanel({
     [saved, setSaved] = useState(false),
     [busy, setBusy] = useState(false),
     [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
+  const changes = useUnsavedChanges<HTMLElement>(
+    settings,
+    busy,
+    data.profile.role === "superadmin",
+  );
   useEffect(() => {
     if (data.demo) return;
     const controller = new AbortController();
@@ -293,6 +299,7 @@ export function OperationalSettingsPanel({
         const body = await r.json();
         if (!r.ok) throw new Error(body.error);
         setSettings(body);
+        changes.markSaved(body);
       })
       .catch((e) => {
         if (!controller.signal.aborted) setError(e.message);
@@ -319,7 +326,9 @@ export function OperationalSettingsPanel({
         if (!r.ok) throw new Error(body.error);
         await refresh();
       }
-      setSettings((s) => ({ ...s, version: s.version + 1 }));
+      const next = { ...settings, version: settings.version + 1 };
+      setSettings(next);
+      changes.markSaved(next);
       setSaved(true);
       setRequestKey(crypto.randomUUID());
     } catch (e) {
@@ -329,7 +338,7 @@ export function OperationalSettingsPanel({
     }
   }
   return (
-    <section className="panel">
+    <section ref={changes.ref} data-changes-explicit className="panel">
       <h2>
         {t(locale, "Plazos de seguimiento", "Follow-up deadlines")} · v
         {settings.version}
