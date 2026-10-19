@@ -71,9 +71,9 @@ import {
   demoFinancingControl,
   type ControlSection,
 } from "@/lib/financing-control";
-import { CampaignTemplates } from "./campaign-templates";
 import { CampaignComposer } from "./campaign-composer";
-import { CampaignReview, SendingBudgets } from "./campaign-review";
+import { CampaignReview } from "./campaign-review";
+import { CampaignCenterWorkspace } from "./campaign-center";
 import type { EmailTemplate } from "@/lib/campaign-templates";
 import { teamLabel } from "@/lib/gmail-team";
 import { demoAction } from "@/lib/demo-actions";
@@ -144,6 +144,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [attentionFilter, setAttentionFilter] = useState("all");
   const [processState, setProcessState] = useState("");
   const [stalled, setStalled] = useState("");
+  const [campaignConversation, setCampaignConversation] = useState<
+    string | undefined
+  >(undefined);
   const [controlMailCase, setControlMailCase] = useState<string | null>(null);
   const [detailSection, setDetailSection] = useState<
     "activity" | "documents" | "analysis" | "lenders"
@@ -158,7 +161,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [modal, setModal] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
-  const [campaignSection, setCampaignSection] = useState("campaigns");
+  const [reviewedCampaign, setReviewedCampaign] = useState<
+    Workspace["campaigns"][number] | null
+  >(null);
   const [campaignTemplate, setCampaignTemplate] =
     useState<EmailTemplate | null>(null);
   const editingLender = data.lenders.find((l) => modal === `lender:${l.id}`);
@@ -355,8 +360,13 @@ export default function CRM({ initial }: { initial: Workspace }) {
         stalled,
       )
     : data.financing_control;
-  const openControl = (id: string, section: ControlSection) => {
+  const openControl = (
+    id: string,
+    section: ControlSection,
+    conversation?: string,
+  ) => {
     if (section === "mail") {
+      setCampaignConversation(conversation);
       setControlMailCase(id);
       setQuery("");
       setSelected(null);
@@ -555,8 +565,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
     leads: ["El próximo paso empieza aquí.", "The next step starts here."],
     inbox: ["Conversaciones que avanzan.", "Conversations that move forward."],
     campaigns: [
-      "Conecta con la próxima oportunidad.",
-      "Connect with your next opportunity.",
+      "Campañas que inician conversaciones.",
+      "Campaigns that start conversations.",
     ],
     tasks: ["Enfócate en lo que sigue.", "Focus on what comes next."],
     lenders: ["Las conexiones correctas.", "The right connections."],
@@ -1008,7 +1018,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
           ) : (
             <>
               {view !== "inbox" && (
-                <div className="page-heading">
+                <div
+                  className={`page-heading ${view === "campaigns" ? "campaign-heading" : ""}`}
+                >
                   <div>
                     <div className="eyebrow">
                       {view === "overview"
@@ -1027,11 +1039,17 @@ export default function CRM({ initial }: { initial: Workspace }) {
                             `Tienes ${overdue.length} tareas vencidas y ${unread} respuesta pendiente de atención.`,
                             `You have ${overdue.length} overdue tasks and ${unread} reply awaiting attention.`,
                           )
-                        : t(
-                            locale,
-                            "Cada caso, con un responsable y un próximo paso.",
-                            "Every case, with an owner and a next step.",
-                          )}
+                        : view === "campaigns"
+                          ? t(
+                              locale,
+                              "De leads validados a respuestas reales.",
+                              "From validated leads to real replies.",
+                            )
+                          : t(
+                              locale,
+                              "Cada caso, con un responsable y un próximo paso.",
+                              "Every case, with an owner and a next step.",
+                            )}
                     </p>
                   </div>
                   <div className="heading-actions">
@@ -1088,7 +1106,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                         }}
                       >
                         <Plus size={17} />
-                        {t(locale, "Crear campaña", "Create campaign")}
+                        {t(locale, "Nueva campaña", "New campaign")}
                       </button>
                     )}
                     {view === "lenders" && closerAdmin && (
@@ -1800,6 +1818,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 <MailInbox
                   key={controlMailCase || "inbox"}
                   initialCaseId={controlMailCase || undefined}
+                  initialConversationId={campaignConversation}
                   data={{ ...data, profile }}
                   locale={locale}
                   act={act}
@@ -1812,178 +1831,23 @@ export default function CRM({ initial }: { initial: Workspace }) {
                 />
               )}
               {view === "campaigns" && (
-                <div>
-                  {isAdmin && (
-                    <SendingBudgets
-                      data={{ ...data, profile }}
-                      locale={locale}
-                    />
-                  )}
-                  <div className="card-actions" style={{ marginBottom: 16 }}>
-                    <button
-                      className="button"
-                      onClick={() => setCampaignSection("campaigns")}
-                    >
-                      {t(locale, "Campañas", "Campaigns")}
-                    </button>
-                    <button
-                      className="button"
-                      disabled={!extensionsReady}
-                      onClick={() => setCampaignSection("templates")}
-                    >
-                      {t(locale, "Plantillas", "Templates")}
-                    </button>
-                  </div>
-                  {campaignSection === "templates" ? (
-                    <CampaignTemplates
-                      data={{ ...data, profile }}
-                      locale={locale}
-                      act={act}
-                      changed={refresh}
-                      useTemplate={(template) => {
-                        setCampaignTemplate(template);
-                        setModal("campaign");
-                      }}
-                    />
-                  ) : (
-                    <div className="campaign-grid">
-                      {data.campaigns.map((c) => (
-                        <section className="panel campaign-card" key={c.id}>
-                          <div className="card-top">
-                            <span className="large-icon">
-                              <Send size={22} />
-                            </span>
-                            <span
-                              className={`badge ${c.status === "active" ? "stage-funded" : ""}`}
-                            >
-                              {c.status}
-                            </span>
-                          </div>
-                          <h2>{c.name}</h2>
-                          {c.template_id && (
-                            <small>
-                              {t(locale, "Plantilla", "Template")} v
-                              {c.template_version} ·{" "}
-                              {c.asset_snapshot?.length || 0}{" "}
-                              {t(locale, "adjuntos", "attachments")}
-                            </small>
-                          )}
-                          {c.delivery_stats && (
-                            <p>
-                              {t(
-                                locale,
-                                "Aceptados por Gmail",
-                                "Accepted by Gmail",
-                              )}
-                              : {c.delivery_stats.sent} ·{" "}
-                              {t(locale, "Pendientes", "Pending")}:{" "}
-                              {c.delivery_stats.pending} ·{" "}
-                              {t(locale, "Respuestas", "Replies")}:{" "}
-                              {c.delivery_stats.replied} ·{" "}
-                              {t(
-                                locale,
-                                "Bajas / excluidos",
-                                "Unsubscribed / excluded",
-                              )}
-                              : {c.delivery_stats.suppressed || 0} ·{" "}
-                              {t(locale, "Rebotes", "Bounces")}:{" "}
-                              {c.delivery_stats.bounced || 0} ·{" "}
-                              {t(
-                                locale,
-                                "Fallidos / por revisar",
-                                "Failed / review",
-                              )}
-                              :{" "}
-                              {c.delivery_stats.failed +
-                                c.delivery_stats.uncertain}
-                            </p>
-                          )}
-                          <p>
-                            {
-                              data.accounts.find((a) => a.id === c.account_id)
-                                ?.email
-                            }
-                          </p>
-                          <div className="campaign-meta">
-                            <span>
-                              {t(
-                                locale,
-                                "Seller responsable",
-                                "Responsible seller",
-                              )}
-                              <strong>{name(c.seller_id)}</strong>
-                            </span>
-                            <span>
-                              {t(locale, "Audiencia", "Audience")}
-                              <strong>{c.audience_count} leads</strong>
-                            </span>
-                            <span>
-                              {t(locale, "Máximo por 24 h", "Maximum per 24h")}
-                              <strong>{c.daily_limit}</strong>
-                            </span>
-                            <span>
-                              {t(locale, "Horario", "Schedule")}
-                              <strong>
-                                {c.start_hour}:00–{c.end_hour}:00
-                              </strong>
-                            </span>
-                          </div>
-                          <small>
-                            {c.timezone} · {c.steps.length + 1}{" "}
-                            {t(locale, "paso(s)", "step(s)")}
-                          </small>
-                          <div className="card-actions">
-                            <button
-                              className="button"
-                              onClick={() => setModal(`preview:${c.id}`)}
-                            >
-                              {t(
-                                locale,
-                                "Audiencia y vista previa",
-                                "Audience and preview",
-                              )}
-                            </button>
-                            {isAdmin && c.status !== "completed" && (
-                              <button
-                                disabled={busy}
-                                className="button primary"
-                                onClick={() =>
-                                  c.status === "active"
-                                    ? void act("pause_campaign", {
-                                        id: c.id,
-                                      }).catch(() => {})
-                                    : setModal(`preview:${c.id}`)
-                                }
-                              >
-                                {c.status === "active"
-                                  ? t(locale, "Pausar", "Pause")
-                                  : t(
-                                      locale,
-                                      "Revisar y activar",
-                                      "Review and activate",
-                                    )}
-                              </button>
-                            )}
-                          </div>
-                        </section>
-                      ))}
-                      {!data.campaigns.length && (
-                        <Empty
-                          title={t(
-                            locale,
-                            "Crea tu primera campaña",
-                            "Create your first campaign",
-                          )}
-                          body={t(
-                            locale,
-                            "Selecciona audiencia, cuenta y responsable por separado.",
-                            "Choose an audience, sender account and owner independently.",
-                          )}
-                        />
-                      )}
-                    </div>
-                  )}
-                </div>
+                <CampaignCenterWorkspace
+                  data={{ ...data, profile }}
+                  locale={locale}
+                  act={act}
+                  changed={refresh}
+                  create={(template) => {
+                    setCampaignTemplate(template || null);
+                    setModal("campaign");
+                  }}
+                  review={(c) => {
+                    setReviewedCampaign(c);
+                    setModal(`preview:${c.id}`);
+                  }}
+                  openConversation={(opportunity, conversation) =>
+                    openControl(opportunity, "mail", conversation)
+                  }
+                />
               )}
               {view === "lenders" && (
                 <LenderDirectory
@@ -3040,9 +2904,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
             )}
             {modal.startsWith("preview:") &&
               (() => {
-                const campaign = data.campaigns.find(
-                  (c) => c.id === modal.split(":")[1],
-                );
+                const campaign =
+                  data.campaigns.find((c) => c.id === modal.split(":")[1]) ||
+                  reviewedCampaign;
                 return campaign ? (
                   <CampaignReview
                     campaign={campaign}

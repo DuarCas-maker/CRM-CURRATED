@@ -27,13 +27,30 @@ export async function POST(request: Request) {
   try {
     checkOrigin(request);
     const { db, profile } = await requireUser();
-    if (Number(request.headers.get("content-length") || 0) > 100000)
+    if (Number(request.headers.get("content-length") || 0) > 350000)
       throw new HttpError(413, "Payload too large");
-    const parsed = envelope.safeParse(
-      JSON.parse((await readBounded(request, 100000)).toString("utf8")),
-    );
+    const raw = await readBounded(request, 350000);
+    const parsed = envelope.safeParse(JSON.parse(raw.toString("utf8")));
     if (!parsed.success) throw new HttpError(400, "Invalid request");
     const { kind, payload: p, idempotency_key } = parsed.data;
+    // Fail closed during rollout: an older command function can still copy
+    // follow-up steps from a system template. Never create through that path.
+    if (["create_campaign", "schedule_campaign"].includes(kind)) {
+      const readiness = await db
+        .from("campaigns")
+        .select("first_contact,selected_contact_ids,scheduled_at")
+        .limit(0);
+      if (readiness.error)
+        throw new HttpError(
+          503,
+          "Aplica la migración 043_campaign_first_contact.sql antes de crear o programar campañas. / Apply migration 043_campaign_first_contact.sql before creating or scheduling campaigns.",
+        );
+    }
+    if (
+      !["create_campaign", "campaign_audience_settings"].includes(kind) &&
+      raw.length > 100000
+    )
+      throw new HttpError(413, "Payload too large");
     if (kind === "receive_document")
       return Response.json({
         result: await receiveDocument(p, idempotency_key, db, profile.id),
@@ -110,23 +127,32 @@ export async function POST(request: Request) {
         503,
         "Configure the notification sender account first.",
       );
-    if (JSON.stringify(p).length > 100000)
+    if (
+      JSON.stringify(p).length >
+      (["create_campaign", "campaign_audience_settings"].includes(kind)
+        ? 350000
+        : 100000)
+    )
       throw new HttpError(413, "Payload too large");
-    if (kind === "create_campaign" || kind === "activate_campaign") {
+    if (
+      ["create_campaign", "activate_campaign", "schedule_campaign"].includes(
+        kind,
+      )
+    ) {
       if (kind === "create_campaign") {
         const parsed = campaignTemplateSchema.safeParse(p);
         if (!parsed.success)
           throw new HttpError(400, parsed.error.issues[0].message);
       }
       const c =
-        kind === "activate_campaign"
+        kind !== "create_campaign"
           ? checkDb(
               await db.from("campaigns").select("*").eq("id", p.id).single(),
             )!
           : p;
       if (!c) throw new HttpError(404, "Campaign not found");
       if (
-        kind === "activate_campaign" &&
+        kind !== "create_campaign" &&
         c.requires_application !== false &&
         process.env.PUBLIC_FORM_ENABLED !== "true"
       )

@@ -91,6 +91,7 @@ export function ConversationsWorkspace({
   opportunity,
   onAttachment,
   initialCaseId,
+  initialConversationId,
 }: {
   data: Workspace;
   locale: Locale;
@@ -99,6 +100,7 @@ export function ConversationsWorkspace({
   openCase: (id: string, scope?: Workspace) => void;
   opportunity?: Opportunity;
   initialCaseId?: string;
+  initialConversationId?: string;
   onAttachment?: (
     attachment: NonNullable<Workspace["attachments"]>[number],
     message: Message,
@@ -142,7 +144,7 @@ export function ConversationsWorkspace({
   const [tab, setTab] = useState<"all" | ThreadCategory>("all"),
     [filter, setFilter] = useState<"all" | "unread" | "unassigned">("all");
   const { requestLeave, confirmation } = useLeaveConfirmation(locale);
-  const [activeId, setActiveId] = useState("");
+  const [activeId, setActiveId] = useState(initialConversationId || "");
   const [process, setProcess] = useState("all"),
     [query, setQuery] = useState(""),
     [search, setSearch] = useState("");
@@ -231,16 +233,16 @@ export function ConversationsWorkspace({
   useEffect(() => {
     setCasePanel("messages");
     setTab("all");
-    setActiveId("");
+    setActiveId(initialConversationId || "");
     setProcess("all");
     setPages({});
     setQueuedReplies([]);
     setReply(null);
     setEditing(null);
     setOriginalThread(null);
-    setReaderVisible(false);
+    setReaderVisible(!!initialConversationId);
     if (!pendingMode) setFilter("all");
-  }, [caseId, pendingMode]);
+  }, [caseId, pendingMode, initialConversationId]);
   useEffect(() => {
     const timer = setInterval(() => {
       if (!document.hidden) bump();

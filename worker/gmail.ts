@@ -362,7 +362,7 @@ async function ingestMessage(
           status: outbound ? "sent" : "received",
           internet_message_id: h("Message-ID"),
           ...(gmailHistoryEnabled() ? { nature } : {}),
-          references_header: h("References"),
+          references_header: [h("References"), h("In-Reply-To")].filter(Boolean).join(" "),
         },
         {
           onConflict: "conversation_id,gmail_message_id",

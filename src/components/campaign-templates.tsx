@@ -202,7 +202,13 @@ export function CampaignTemplates({
   return (
     <section className="panel">
       <div className="split-heading">
-        <h2>{t(locale, "Plantillas de campañas", "Campaign templates")}</h2>
+        <h2>
+          {t(
+            locale,
+            "Plantillas de primer contacto",
+            "First-contact templates",
+          )}
+        </h2>
         {canEdit && (
           <button
             className="button"
@@ -247,7 +253,7 @@ export function CampaignTemplates({
                 onClick={() => {
                   setError("");
                   setRequestKey(crypto.randomUUID());
-                  setDraft({ ...preset, id: undefined });
+                  setDraft({ ...preset, id: undefined, steps: [] });
                 }}
               >
                 {preset.name}
@@ -319,6 +325,7 @@ export function CampaignTemplates({
                         setRequestKey(crypto.randomUUID());
                         setDraft({
                           ...template,
+                          steps: [],
                           id: undefined,
                           version: undefined,
                           archived_at: null,
@@ -427,88 +434,15 @@ export function CampaignTemplates({
                 .map((key) => `{{${key}}}`)
                 .join(" · ")}
             </p>
-            {(draft.steps || []).map((step, index) => (
-              <section className="analysis-card" key={index}>
-                <h3>
-                  {t(locale, "Seguimiento", "Follow-up")} {index + 1}
-                </h3>
-                <label className="field">
-                  {t(
-                    locale,
-                    "Días desde el mensaje anterior",
-                    "Days after previous message",
-                  )}
-                  <input
-                    type="number"
-                    min={1}
-                    max={90}
-                    value={step.wait_days}
-                    onChange={(e) =>
-                      update({
-                        steps: draft.steps!.map((s, i) =>
-                          i === index
-                            ? { ...s, wait_days: Number(e.target.value) }
-                            : s,
-                        ),
-                      })
-                    }
-                  />
-                </label>
-                <label className="field">
-                  {t(locale, "Asunto", "Subject")}
-                  <input
-                    value={step.subject}
-                    onChange={(e) =>
-                      update({
-                        steps: draft.steps!.map((s, i) =>
-                          i === index ? { ...s, subject: e.target.value } : s,
-                        ),
-                      })
-                    }
-                  />
-                </label>
-                <CampaignEditor
-                  locale={locale}
-                  value={step.body}
-                  onChange={(body) =>
-                    update({
-                      steps: draft.steps!.map((s, i) =>
-                        i === index ? { ...s, body } : s,
-                      ),
-                    })
-                  }
-                  format={draft.body_format || "plain"}
-                />
-                <button
-                  className="text-button"
-                  onClick={() =>
-                    update({
-                      steps: draft.steps!.filter((_, i) => i !== index),
-                    })
-                  }
-                >
-                  {t(locale, "Quitar", "Remove")}
-                </button>
-              </section>
-            ))}
-            <button
-              className="button"
-              disabled={(draft.steps?.length || 0) >= 20}
-              onClick={() =>
-                update({
-                  steps: [
-                    ...(draft.steps || []),
-                    {
-                      subject: "Following up · {{company}}",
-                      body: "Hi {{name}}, do you have any questions?\nUnsubscribe: {{unsubscribe_url}}",
-                      wait_days: 3,
-                    },
-                  ],
-                })
-              }
-            >
-              {t(locale, "Agregar seguimiento", "Add follow-up")}
-            </button>
+            {!!draft.steps?.length && (
+              <p className="muted">
+                {t(
+                  locale,
+                  "Los seguimientos históricos se conservan en esta plantilla. Las campañas nuevas utilizan únicamente el mensaje inicial.",
+                  "Historical follow-ups are preserved in this template. New campaigns use only the initial message.",
+                )}
+              </p>
+            )}
             <h3>{t(locale, "Adjuntos generales", "General attachments")}</h3>
             <p>
               {t(

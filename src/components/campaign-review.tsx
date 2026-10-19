@@ -166,6 +166,7 @@ export function CampaignReview({
   const [query, setQuery] = useState(""),
     [page, setPage] = useState(0);
   const [testKey, setTestKey] = useState(() => crypto.randomUUID());
+  const [scheduledAt, setScheduledAt] = useState("");
   async function load() {
     if (!canManage) {
       setLoaded(true);
@@ -464,6 +465,59 @@ export function CampaignReview({
             "Correct missing data or explicitly exclude those contacts before activation.",
           )}
         </p>
+      )}
+      {editable && (
+        <p className="campaign-note">
+          {t(
+            locale,
+            "Activar o programar autoriza al worker a enviar correos reales a los leads elegibles revisados, respetando las cuotas y el horario.",
+            "Activating or scheduling authorizes the worker to send real email to reviewed eligible leads, within quotas and sending hours.",
+          )}
+        </p>
+      )}
+      {editable && campaign.first_contact && (
+        <div className="form-grid">
+          <label className="field">
+            {t(
+              locale,
+              "Fecha y hora local (opcional)",
+              "Local date and time (optional)",
+            )}
+            <input
+              type="datetime-local"
+              value={scheduledAt}
+              onChange={(e) => setScheduledAt(e.target.value)}
+            />
+            <small>{Intl.DateTimeFormat().resolvedOptions().timeZone}</small>
+          </label>
+          <button
+            className="button"
+            disabled={
+              busy ||
+              dirty ||
+              !loaded ||
+              !eligible.length ||
+              !!missing.length ||
+              !scheduledAt ||
+              data.demo
+            }
+            onClick={() =>
+              void run(async () => {
+                await act("schedule_campaign", {
+                  id: campaign.id,
+                  scheduled_at: new Date(scheduledAt).toISOString(),
+                });
+                close();
+              })
+            }
+          >
+            {t(
+              locale,
+              "Programar campaña revisada",
+              "Schedule reviewed campaign",
+            )}
+          </button>
+        </div>
       )}
       {editable && (
         <button

@@ -27,6 +27,8 @@ export interface SendingBudget {
   send_retry_at: string | null;
 }
 export const audienceReasons: Record<string, [string, string]> = {
+  advanced_case: ["Expediente avanzado o no disponible", "Advanced or unavailable case"],
+  already_contacted: ["Contacto inicial ya realizado", "Already contacted"],
   eligible: ["Disponible", "Eligible"],
   excluded: ["Excluido manualmente", "Manually excluded"],
   unverified: ["Correo sin verificación válida", "Email not verified"],

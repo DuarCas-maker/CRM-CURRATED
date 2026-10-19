@@ -63,11 +63,15 @@ async function setup() {
         "insert into opportunities(id,contact_id,company,seller_id) values($1,$2,'Client company',$3)",
         [opportunity, id, users.seller],
       );
+    await db.query(
+      "insert into leads(contact_id,company,seller_id,opportunity_id) values($1,'Client company',$2,$3)",
+      [id, users.seller, verification === "valid" ? opportunity : null],
+    );
     return { id, opportunity };
   }
   async function campaign(body = "Hi {{name}} {{unsubscribe_url}}") {
     await asUser(users.admin);
-    return (
+    const id = (
       await command("create_campaign", {
         name: "Campaign",
         account_id: account,
@@ -81,6 +85,11 @@ async function setup() {
         steps: [],
       })
     ).id;
+    // Regression fixture for campaigns created before migration 043.
+    await db.exec("reset role");
+    await db.query("update campaigns set first_contact=false where id=$1", [id]);
+    await asUser(users.admin);
+    return id;
   }
   async function queued(
     campaignId: string,

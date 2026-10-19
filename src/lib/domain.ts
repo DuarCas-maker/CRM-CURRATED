@@ -175,6 +175,10 @@ export interface MailAccount {
   sent_today: number;
 }
 export interface Campaign {
+  first_contact?: boolean;
+  selected_contact_ids?: string[];
+  scheduled_at?: string | null;
+  activated_at?: string | null;
   body_format?: import("./campaign-content").CampaignFormat;
   batch_id?: string | null;
   excluded_contact_ids?: string[];

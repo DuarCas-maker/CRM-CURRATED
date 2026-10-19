@@ -91,6 +91,10 @@ test("template permissions, versions, immutable campaign attachments and generic
     };
     const campaignKey = randomUUID(),
       campaign = await command("create_campaign", campaignInput, campaignKey);
+    // Historical application follow-ups retain their original eligibility.
+    await db.exec("reset role");
+    await db.query("update campaigns set first_contact=false where id=$1", [campaign.id]);
+    await asUser(users.admin);
     await save(
       {
         ...payload,
