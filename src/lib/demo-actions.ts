@@ -19,6 +19,7 @@ import {
 } from "./domain";
 import { normalizeRow, type Mapping } from "./imports";
 import { defaultOperationalSettings } from "./operations";
+import { lenderDirectorySchema } from "./lender-directory";
 import {
   planLenderImport,
   lenderImportRowSchema,
@@ -641,23 +642,44 @@ export function demoAction(
       o.stage = "offers";
       activity("Offer recorded");
       break;
-    case "create_lender":
+    case "create_lender": {
       if (!["superadmin", "closer_admin"].includes(user.role))
         throw new Error("Access denied");
-      required("name");
-      if (text("channel") !== "portal") required("email");
-      d.lenders.push({
+      const parsed = lenderDirectorySchema.safeParse(p);
+      if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+      const input = parsed.data;
+      if (
+        input.email &&
+        (d.lender_contacts?.some(
+          (contact) => contact.email.toLowerCase() === input.email,
+        ) ||
+          d.lenders.some((lender) => lender.email.toLowerCase() === input.email))
+      )
+        throw new Error(
+          "Este correo ya pertenece a otro lender. / This email already belongs to another lender.",
+        );
+      const lender = {
         id: id(),
-        name: text("name"),
-        email: text("email"),
-        products: text("products")
+        name: input.name,
+        email: input.email,
+        products: input.products
           .split(",")
           .map((s) => s.trim())
           .filter(Boolean),
-        channel: text("channel"),
-        notes: text("notes"),
-      });
+        channel: input.channel,
+        notes: input.notes,
+      };
+      d.lenders.push(lender);
+      if (input.email) {
+        d.lender_contacts ||= [];
+        d.lender_contacts.push({
+          email: input.email,
+          lender_id: lender.id,
+          name: "",
+        });
+      }
       break;
+    }
     case "update_lender": {
       if (!["superadmin", "closer_admin"].includes(user.role))
         throw new Error("Access denied");

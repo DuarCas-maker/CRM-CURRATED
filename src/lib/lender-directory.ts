@@ -39,13 +39,15 @@ export const lenderDirectorySchema = z
       ctx.addIssue({
         code: "custom",
         path: ["email"],
-        message: "Correo válido requerido para el canal Email.",
+        message:
+          "Correo válido requerido para el canal Email. / A valid address is required for the Email channel.",
       });
     if (input.email.endsWith("@curatedfinancial.com"))
       ctx.addIssue({
         code: "custom",
         path: ["email"],
-        message: "Los correos internos de Curated no son lenders.",
+        message:
+          "Los correos internos de Curated no son lenders. / Internal Curated addresses cannot be lenders.",
       });
     const portal = input.portal_url || lenderPortalUrl(input.notes);
     if (
@@ -55,7 +57,8 @@ export const lenderDirectorySchema = z
       ctx.addIssue({
         code: "custom",
         path: ["portal_url"],
-        message: "Indica un enlace HTTPS válido al portal.",
+        message:
+          "Indica un enlace HTTPS válido al portal. / Enter a valid HTTPS portal URL.",
       });
   })
   .transform((input) => ({

@@ -1,7 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import type { Lender, Locale } from "@/lib/domain";
-import { lenderPortalNotes, lenderPortalUrl } from "@/lib/lender-directory";
+import { lenderDirectorySchema, lenderPortalUrl } from "@/lib/lender-directory";
 import { Field, SaveButton, t } from "./ui";
 
 export function LenderForm({
@@ -19,25 +19,30 @@ export function LenderForm({
   ) => void;
 }) {
   const [channel, setChannel] = useState(lender?.channel || "email");
+  const [error, setError] = useState("");
   return (
     <form
       onSubmit={(event) => {
+        event.preventDefault();
+        if (busy) return;
+        setError("");
         const values = new FormData(event.currentTarget);
-        submit(event, {
+        const parsed = lenderDirectorySchema.safeParse({
+          ...Object.fromEntries(values),
           channel,
-          email: String(values.get("email") || "")
-            .trim()
-            .toLowerCase(),
-          notes:
-            channel === "portal"
-              ? lenderPortalNotes(
-                  String(values.get("notes") || ""),
-                  String(values.get("portal_url") || ""),
-                )
-              : String(values.get("notes") || ""),
         });
+        if (!parsed.success) {
+          setError(parsed.error.issues[0].message);
+          return;
+        }
+        submit(event, parsed.data);
       }}
     >
+      {error && (
+        <p className="error-banner" role="alert">
+          {error}
+        </p>
+      )}
       <Field
         name="name"
         label={t(locale, "Nombre", "Name")}
