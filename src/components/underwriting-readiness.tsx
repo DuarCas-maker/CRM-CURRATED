@@ -99,16 +99,17 @@ export function UnderwritingChecklist({
       reason: reason(),
     });
   return (
-    <section
+    <details
       className="underwriting-checklist"
+      open
       aria-label={t(
         locale,
         "Checklist para analizar documentos",
         "Analysis document checklist",
       )}
     >
-      <div className="split-heading">
-        <h3>{t(locale, "Antes de analizar", "Before analyzing")}</h3>
+      <summary className="split-heading">
+        <strong>{t(locale, "Antes de analizar", "Before analyzing")}</strong>
         <span
           className={`underwriting-readiness-summary ${state.ready ? "is-ready" : "is-missing"}`}
         >
@@ -121,7 +122,7 @@ export function UnderwritingChecklist({
             ? t(locale, "Documentación lista", "Documents ready")
             : t(locale, "Faltan requisitos", "Missing requirements")}
         </span>
-      </div>
+      </summary>
       <p>
         {t(
           locale,
@@ -174,7 +175,7 @@ export function UnderwritingChecklist({
           )}
         </button>
       )}
-    </section>
+    </details>
   );
 }
 

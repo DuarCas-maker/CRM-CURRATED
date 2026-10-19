@@ -11,11 +11,11 @@ import {
   UnderwritingOriginalOutput,
 } from "./underwriting-observations";
 import { Modal, t } from "./ui";
+import { UnderwritingNotices } from "./underwriting-notices";
 import { underwritingReadiness } from "@/lib/underwriting-status";
 import {
   UnderwritingChecklist,
   UnderwritingProgressBar,
-  UnderwritingFailure,
 } from "./underwriting-readiness";
 const labels: Record<UnderwritingRun["status"], [string, string]> = {
   queued: ["En cola", "Queued"],
@@ -473,30 +473,12 @@ export function UnderwritingWorkspace({
         )}
       </div>
       {runs[0] && <UnderwritingProgressBar run={runs[0]} locale={locale} />}
-      {active ? (
-        <details className="underwriting-checklist-details">
-          <summary>
-            {t(
-              locale,
-              "Ver checklist de documentos",
-              "View document checklist",
-            )}
-          </summary>
-          <UnderwritingChecklist
-            documents={docs}
-            locale={locale}
-            demo={data.demo}
-            openDocuments={openDocuments}
-          />
-        </details>
-      ) : (
-        <UnderwritingChecklist
-          documents={docs}
-          locale={locale}
-          demo={data.demo}
-          openDocuments={openDocuments}
-        />
-      )}
+      <UnderwritingChecklist
+        documents={docs}
+        locale={locale}
+        demo={data.demo}
+        openDocuments={openDocuments}
+      />
       <p>
         {t(
           locale,
@@ -504,24 +486,6 @@ export function UnderwritingWorkspace({
           "Results are drafts. File and prompt versions are preserved and team review is required.",
         )}
       </p>
-      {!ready && (
-        <p>
-          {t(
-            locale,
-            "Aprueba la aplicación y al menos cuatro extractos en total, además de los requisitos obligatorios. Se analizarán todos los extractos aprobados de cada banco.",
-            "Approve the application, at least four statements in total and all required documents. All approved statements from every bank will be analyzed.",
-          )}
-        </p>
-      )}
-      {!data.demo && !configured && (
-        <p>
-          {t(
-            locale,
-            "Conexión de OpenAI pendiente de configuración.",
-            "OpenAI configuration pending.",
-          )}
-        </p>
-      )}
       {data.demo && (
         <p className="muted">
           {t(
@@ -531,11 +495,31 @@ export function UnderwritingWorkspace({
           )}
         </p>
       )}
-      {error && (
-        <div className="error-banner" role="alert">
-          {error}
-        </div>
-      )}
+      <UnderwritingNotices
+        locale={locale}
+        error={error}
+        runs={runs}
+        messages={[
+          ...(!ready
+            ? [
+                t(
+                  locale,
+                  "Aprueba la aplicación y al menos cuatro extractos en total, además de los requisitos obligatorios. Se analizarán todos los extractos aprobados de cada banco.",
+                  "Approve the application, at least four statements in total and all required documents. All approved statements from every bank will be analyzed.",
+                ),
+              ]
+            : []),
+          ...(!data.demo && !configured
+            ? [
+                t(
+                  locale,
+                  "Conexión de OpenAI pendiente de configuración.",
+                  "OpenAI configuration pending.",
+                ),
+              ]
+            : []),
+        ]}
+      />
       {runs.map((run) => (
         <div className="document-row" key={run.id}>
           <div>
@@ -544,16 +528,6 @@ export function UnderwritingWorkspace({
               {dateLabel(run.created_at, locale, true)} · {run.model} · Prompt v
               {run.prompt_version}
             </small>
-            <UnderwritingFailure run={run} locale={locale} />
-            {!!run.report?.validation_warnings?.length && (
-              <small>
-                {t(
-                  locale,
-                  `${run.report.validation_warnings.length} observaciones para revisión humana; informe disponible.`,
-                  `${run.report.validation_warnings.length} observations for human review; report available.`,
-                )}
-              </small>
-            )}
           </div>
           {run.report && (
             <button className="button" onClick={() => openReview(run)}>
@@ -570,11 +544,7 @@ export function UnderwritingWorkspace({
             if (!busy) setReview(null);
           }}
         >
-          {error && (
-            <div className="error-banner" role="alert">
-              {error}
-            </div>
-          )}
+          <UnderwritingNotices locale={locale} error={error} />
           <p>
             <strong>{o.company}</strong> · {t(locale, ...labels[review.status])}{" "}
             · {review.model} · Prompt v{review.prompt_version}
@@ -637,16 +607,7 @@ export function UnderwritingWorkspace({
                   ? t(locale, "Copiado", "Copied")
                   : t(locale, "Copiar notas para CRM", "Copy CRM notes")}
               </button>
-              <details className="underwriting-technical-details">
-                <summary>
-                  {t(
-                    locale,
-                    `Observaciones automáticas (${report.validation_warnings?.length || 0})`,
-                    `Automatic observations (${report.validation_warnings?.length || 0})`,
-                  )}
-                </summary>
-                <UnderwritingObservations report={report} locale={locale} />
-              </details>
+              <UnderwritingObservations report={report} locale={locale} />
             </>
           ) : (
             <>

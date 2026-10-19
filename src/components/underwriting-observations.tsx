@@ -14,7 +14,7 @@ export function UnderwritingObservations({
 }) {
   const warnings = report.validation_warnings || [];
   return (
-    <section
+    <details
       className="underwriting-observations"
       aria-label={t(
         locale,
@@ -22,13 +22,13 @@ export function UnderwritingObservations({
         "Observations for human review",
       )}
     >
-      <h3>
+      <summary>
         {t(
           locale,
           "Observaciones para revisión humana",
           "Observations for human review",
         )}
-      </h3>
+      </summary>
       <p>
         {t(
           locale,
@@ -53,7 +53,7 @@ export function UnderwritingObservations({
           )}
         </p>
       )}
-    </section>
+    </details>
   );
 }
 export function UnderwritingOriginalOutput({

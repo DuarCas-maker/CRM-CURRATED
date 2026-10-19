@@ -1900,6 +1900,42 @@ tr:last-child td {
   margin-top: 10px;
   overflow-wrap: anywhere;
 }
+.timeline-event-group {
+  margin-bottom: 22px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.timeline-event-group > summary,
+.underwriting-checklist > summary,
+.underwriting-notices > summary,
+.underwriting-observations > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.underwriting-checklist > summary.split-heading {
+  display: list-item;
+}
+.underwriting-checklist > summary > strong {
+  margin-right: 16px;
+}
+.timeline-event-group > summary > span {
+  margin-left: 12px;
+  font-size: 12px;
+}
+.timeline-group-time {
+  color: var(--muted);
+}
+.timeline-group-events {
+  padding-top: 18px;
+}
+.underwriting-notices {
+  margin: 18px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
 .side-panel {
   padding: 21px;
   margin-bottom: 18px;

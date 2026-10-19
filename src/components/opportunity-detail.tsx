@@ -1,6 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
+import { CaseActivityTimeline } from "./case-activity-timeline";
 import { DocumentReview } from "./document-review";
 import { BankDocumentManagement } from "./bank-document-management";
 import { DocumentUpload } from "./document-upload";
@@ -97,20 +98,20 @@ export function OpportunityDetail({
   const docs = data.documents.filter((d) => d.opportunity_id === o.id);
   const documentStatus = documentProgress(docs);
   const visibleDocs = docs.filter(hasDocumentFile);
-  const documentGroups = [
-    ...new Set(
-      visibleDocs.map((d) =>
-        d.kind === "bank_statement"
-          ? d.bank_name ||
-            t(locale, "Banco por identificar", "Bank to identify")
-          : t(
-              locale,
-              "Aplicación y otros documentos",
-              "Application and other documents",
-            ),
-      ),
-    ),
-  ];
+  const documentGroupKey = (d: (typeof docs)[number]) =>
+    d.kind === "bank_statement"
+      ? `bank:${d.bank_name || ""}`
+      : d.kind === "application"
+        ? "application"
+        : "other";
+  const documentGroupLabel = (key: string) =>
+    key === "application"
+      ? t(locale, "Aplicación", "Application")
+      : key === "other"
+        ? t(locale, "Otros documentos", "Other documents")
+        : key.slice(5) ||
+          t(locale, "Banco por identificar", "Bank to identify");
+  const documentGroups = [...new Set(visibleDocs.map(documentGroupKey))];
   const analyses = data.analyses.filter((a) => a.opportunity_id === o.id);
   const activities = data.activities.filter(
     (a) => a.opportunity_id === o.id && canSeeArea(profile, o, a.area),
@@ -299,65 +300,65 @@ export function OpportunityDetail({
                   </div>
                 )}
               </div>
-              <div className="timeline">
-                {activities
-                  .sort((a, b) => b.created_at.localeCompare(a.created_at))
-                  .map((a) => (
-                    <article key={a.id}>
-                      <div className="timeline-icon">
-                        {a.type === "call" ? (
-                          <Phone size={15} />
-                        ) : a.type === "email" ? (
-                          <Mail size={15} />
-                        ) : (
-                          <FileText size={15} />
-                        )}
+              <CaseActivityTimeline
+                activities={activities}
+                locale={locale}
+                renderEvent={(a) => (
+                  <article key={a.id}>
+                    <div className="timeline-icon">
+                      {a.type === "call" ? (
+                        <Phone size={15} />
+                      ) : a.type === "email" ? (
+                        <Mail size={15} />
+                      ) : (
+                        <FileText size={15} />
+                      )}
+                    </div>
+                    <div>
+                      <div className="timeline-meta">
+                        <strong>
+                          {a.type === "email" ? a.actor_id : name(a.actor_id)}
+                        </strong>
+                        <span>{dateLabel(a.created_at, locale, true)}</span>
                       </div>
-                      <div>
-                        <div className="timeline-meta">
-                          <strong>
-                            {a.type === "email" ? a.actor_id : name(a.actor_id)}
-                          </strong>
-                          <span>{dateLabel(a.created_at, locale, true)}</span>
-                        </div>
-                        <small>
-                          {a.type} · {a.area}
-                        </small>
-                        {a.type === "email" ? (
-                          <>
-                            <MailBody body={a.body} locale={locale} />
-                            {a.id.startsWith("email:") && (
-                              <MailAttachments
-                                data={data}
-                                locale={locale}
-                                files={(data.mail_files || []).filter(
-                                  (f) => f.message_id === a.id.slice(6),
-                                )}
-                                legacyAttachments={(
-                                  data.attachments || []
-                                ).filter((f) => f.message_id === a.id.slice(6))}
-                                onFileReview={(f) =>
-                                  setReviewAttachment({
-                                    source: "saved",
-                                    id: f.id,
-                                  })
-                                }
-                                onAttachment={(f) =>
-                                  setReviewAttachment({
-                                    source: "legacy",
-                                    id: f.id,
-                                  })
-                                }
-                              />
-                            )}
-                          </>
-                        ) : (
-                          <p>{a.body}</p>
-                        )}
-                      </div>
-                    </article>
-                  ))}
-              </div>
+                      <small>
+                        {a.type} · {a.area}
+                      </small>
+                      {a.type === "email" ? (
+                        <>
+                          <MailBody body={a.body} locale={locale} />
+                          {a.id.startsWith("email:") && (
+                            <MailAttachments
+                              data={data}
+                              locale={locale}
+                              files={(data.mail_files || []).filter(
+                                (f) => f.message_id === a.id.slice(6),
+                              )}
+                              legacyAttachments={(
+                                data.attachments || []
+                              ).filter((f) => f.message_id === a.id.slice(6))}
+                              onFileReview={(f) =>
+                                setReviewAttachment({
+                                  source: "saved",
+                                  id: f.id,
+                                })
+                              }
+                              onAttachment={(f) =>
+                                setReviewAttachment({
+                                  source: "legacy",
+                                  id: f.id,
+                                })
+                              }
+                            />
+                          )}
+                        </>
+                      ) : (
+                        <p>{a.body}</p>
+                      )}
+                    </div>
+                  </article>
+                )}
+              />
               {!activities.length && (
                 <Empty
                   title={t(
@@ -493,23 +494,9 @@ export function OpportunityDetail({
                 )}
               {documentGroups.map((group) => (
                 <section key={group} className="document-bank-group">
-                  <h3>{group}</h3>
+                  <h3>{documentGroupLabel(group)}</h3>
                   {visibleDocs
-                    .filter(
-                      (d) =>
-                        (d.kind === "bank_statement"
-                          ? d.bank_name ||
-                            t(
-                              locale,
-                              "Banco por identificar",
-                              "Bank to identify",
-                            )
-                          : t(
-                              locale,
-                              "Aplicación y otros documentos",
-                              "Application and other documents",
-                            )) === group,
-                    )
+                    .filter((d) => documentGroupKey(d) === group)
                     .sort(
                       (a, b) =>
                         (a.statement_number || 0) - (b.statement_number || 0),
@@ -522,7 +509,7 @@ export function OpportunityDetail({
                             aria-label={
                               t(locale, "Seleccionar", "Select") +
                               " " +
-                              group +
+                              documentGroupLabel(group) +
                               " " +
                               documentLabel(d, locale)
                             }
@@ -617,14 +604,6 @@ export function OpportunityDetail({
           )}
           {tab === "analysis" && (
             <div className="tab-content">
-              <UnderwritingWorkspace
-                data={data}
-                opportunity={o}
-                locale={locale}
-                editable={editable}
-                refresh={refresh}
-                openDocuments={() => setTab("documents")}
-              />
               <div className="activity-toolbar">
                 <h2>
                   {t(
@@ -685,6 +664,14 @@ export function OpportunityDetail({
                   )}
                 />
               )}
+              <UnderwritingWorkspace
+                data={data}
+                opportunity={o}
+                locale={locale}
+                editable={editable}
+                refresh={refresh}
+                openDocuments={() => setTab("documents")}
+              />
             </div>
           )}
           {tab === "lenders" && (
