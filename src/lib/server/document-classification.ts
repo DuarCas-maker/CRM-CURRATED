@@ -2,6 +2,7 @@ import { z } from "zod";
 import { documentSuggestionSchema } from "../document-intake";
 import { previewMime } from "../document-review";
 import { callUnderwritingProvider } from "./openai-underwriting";
+import type { AiUsageContext } from "./ai-usage";
 export function classificationRequest(bytes: Buffer, model: string) {
   const mime = previewMime(bytes);
   if (!mime || !bytes.length || bytes.length > 20 * 1024 * 1024)
@@ -51,11 +52,13 @@ export async function classifyDocument(
   model: string,
   key: string,
   fetcher: typeof fetch = fetch,
+  usage?: AiUsageContext,
 ) {
   const result = await callUnderwritingProvider(
     classificationRequest(bytes, model),
     key,
     fetcher,
+    { usage },
   );
   return documentSuggestionSchema.parse(result.value);
 }

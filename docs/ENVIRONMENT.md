@@ -12,8 +12,10 @@ Copiar `.env.example` a `.env.local` solo para desarrollo. En Coolify, guardar l
 | `APP_ORIGIN` | Origen público del CRM para callbacks, enlaces y comprobación de origen | `https://crm.example.com` | W + T | Obligatoria en producción; sin `/` final ni `:3000` |
 | `INTEGRATION_ENCRYPTION_KEY` | Cifrado de credenciales, aplicaciones, archivo Gmail y adjuntos históricos copiados | `<32 bytes aleatorios en base64>` | W + T | Obligatoria y secreta; conservar la clave existente |
 | `BOUNCER_API_KEY` | Autenticación de verificación de correos | `<clave de Bouncer>` | W + T | Opcional hasta conectar scrub; secreta |
-| `OPENAI_API_KEY` | IA general: clasificación de documentos y extracción de aplicaciones | `<clave existente>` | W | Secreta; solo Runtime, sin `NEXT_PUBLIC_`. Se conserva al separar el análisis de riesgo. |
+| `OPENAI_API_KEY` | Variable general anterior | `<clave existente>` | — | Los tres servicios de IA ya no la usan como respaldo. No es necesario modificarla para activar la separación. |
 | `R_OPENAI_API_KEY` | IA exclusiva del análisis manual / underwriting de riesgo | `<clave independiente>` | W + T | Secreta; solo Runtime de web y worker, sin Build ni `NEXT_PUBLIC_`. No utiliza `OPENAI_API_KEY` como respaldo. |
+| `A_OPENAI_API_KEY` | Extracción de datos para completar la aplicación | `<clave independiente>` | W | Secreta; solo Runtime de la web. Sin respaldo en otra clave. |
+| `D_OPENAI_API_KEY` | Identificación del tipo de documento a partir de su contenido | `<clave independiente>` | W | Secreta; solo Runtime de la web. Sin respaldo en otra clave. |
 | `GMAIL_HISTORY_ENABLED` | Activa análisis/importación Gmail y su sincronización persistente | `false`; después de instalar 009–015, `true` | W + T | Solo Runtime, mismo valor en ambos; activar después de aplicar SQL |
 | `GOOGLE_OAUTH_ORGANIZATIONS` | Configuración OAuth interna por organización | Ver JSON más abajo; inicial `[]` | W + T | Requerida para Gmail; contiene secretos |
 | `GMAIL_SYNC_MODE` | Elige consultas periódicas o notificaciones Pub/Sub | `polling` o `pubsub` | W + T | Solo Runtime; mismo valor en ambos. Ausente/vacía usa `pubsub` para conservar despliegues anteriores; valores distintos producen error |

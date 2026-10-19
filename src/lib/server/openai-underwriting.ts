@@ -5,6 +5,11 @@ import type { UnderwritingDocument } from "../underwriting";
 import { previewMime } from "../document-review";
 import { hash } from "./crypto";
 import {
+  trackAiUsage,
+  AiUsageUnavailable,
+  type AiUsageContext,
+} from "./ai-usage";
+import {
   compactUnderwritingSchema,
   COMPACT_UNDERWRITING_INSTRUCTIONS,
 } from "../underwriting-compact";
@@ -22,6 +27,8 @@ export type ProviderDiagnostics = {
   responseId: string | null;
   inputTokens: number | null;
   outputTokens: number | null;
+  cachedInputTokens?: number | null;
+  reasoningTokens?: number | null;
   status: string;
   incomplete_reason: string | null;
   max_output_tokens: number | null;
@@ -32,7 +39,12 @@ type ProviderResponse = {
   status?: string;
   incomplete_details?: { reason?: string } | null;
   max_output_tokens?: number;
-  usage?: { input_tokens: number; output_tokens: number };
+  usage?: {
+    input_tokens: number;
+    output_tokens: number;
+    input_tokens_details?: { cached_tokens?: number };
+    output_tokens_details?: { reasoning_tokens?: number };
+  };
   output?: { type: string; content?: { type: string; text?: string }[] }[];
 };
 function providerDiagnostics(
@@ -54,6 +66,12 @@ function providerDiagnostics(
         : null,
     inputTokens: count(payload.usage?.input_tokens),
     outputTokens: count(payload.usage?.output_tokens),
+    cachedInputTokens: count(
+      payload.usage?.input_tokens_details?.cached_tokens,
+    ),
+    reasoningTokens: count(
+      payload.usage?.output_tokens_details?.reasoning_tokens,
+    ),
     status: [
       "completed",
       "incomplete",
@@ -251,6 +269,29 @@ export function underwritingRequest(options: {
   };
 }
 export async function callUnderwritingProvider(
+  body: Parameters<typeof executeUnderwritingProvider>[0],
+  apiKey: string,
+  fetcher: typeof fetch = fetch,
+  options: {
+    timeoutMs?: number;
+    retainUnparsed?: boolean;
+    usage?: AiUsageContext;
+  } = {},
+) {
+  if (!apiKey) throw new UnderwritingProviderError("OPENAI_NOT_CONFIGURED");
+  try {
+    return options.usage
+      ? await trackAiUsage(options.usage, body.model, () =>
+          executeUnderwritingProvider(body, apiKey, fetcher, options),
+        )
+      : await executeUnderwritingProvider(body, apiKey, fetcher, options);
+  } catch (error) {
+    if (error instanceof AiUsageUnavailable)
+      throw new UnderwritingProviderError("OPENAI_USAGE_UNAVAILABLE");
+    throw error;
+  }
+}
+async function executeUnderwritingProvider(
   body: {
     model: string;
     input: unknown[];

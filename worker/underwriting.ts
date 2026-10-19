@@ -7,6 +7,7 @@ import {
 } from "../src/lib/server/openai-underwriting";
 import { prepareUnderwritingDraft } from "../src/lib/underwriting";
 import type { UnderwritingDocument } from "../src/lib/underwriting";
+import { aiApiKey } from "../src/lib/server/ai-usage";
 
 export async function processUnderwriting(job: {
   id: string;
@@ -52,9 +53,8 @@ export async function processUnderwriting(job: {
     }
   }
   try {
-    const apiKey = process.env.R_OPENAI_API_KEY?.trim();
-    if (!apiKey)
-      throw new UnderwritingProviderError("OPENAI_NOT_CONFIGURED");
+    const apiKey = aiApiKey("risk_analysis");
+    if (!apiKey) throw new UnderwritingProviderError("OPENAI_NOT_CONFIGURED");
     const company = checked(
       await client
         .from("opportunities")
@@ -98,12 +98,16 @@ export async function processUnderwriting(job: {
     );
     if (!started) return;
     if (!(await progress("analyzing", documents.length))) return;
-    const result = await callUnderwritingProvider(
-      body,
-      apiKey,
-      fetch,
-      { retainUnparsed: true },
-    );
+    const result = await callUnderwritingProvider(body, apiKey, fetch, {
+      retainUnparsed: true,
+      usage: {
+        db: client,
+        service: "risk_analysis",
+        opportunityId: run.opportunity_id,
+        actorId: run.requested_by || null,
+        underwritingRunId: run.id,
+      },
+    });
     diagnostics = result.diagnostics;
     if (!(await progress("validating", documents.length, diagnostics))) return;
     const report = prepareUnderwritingDraft(

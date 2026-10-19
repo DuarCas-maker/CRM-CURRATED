@@ -433,6 +433,9 @@ test("worker persists incomplete-response diagnostics and each downloaded file w
         assert.equal(url.hostname, "underwriting-fixture.example.test");
         if (url.pathname.includes("/storage/v1/")) return new Response(bytes);
         const path = url.pathname.split("/").pop();
+        if (path === "ai_usage_events")
+          return new Response(null, { status: 201 });
+        if (path === "finish_ai_usage_event") return Response.json(true);
         if (path === "begin_underwriting")
           return Response.json({ action: "prepare" });
         if (path === "underwriting_runs") return Response.json(source);

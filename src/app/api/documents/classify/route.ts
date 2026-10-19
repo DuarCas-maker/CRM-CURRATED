@@ -11,10 +11,12 @@ import { readBounded, boundedForm } from "@/lib/server/body";
 import { documentBytes, documentSource } from "@/lib/server/document-review";
 import { hash } from "@/lib/server/crypto";
 import { classifyDocument } from "@/lib/server/document-classification";
+import { aiApiKey } from "@/lib/server/ai-usage";
+import { UnderwritingProviderError } from "@/lib/server/openai-underwriting";
 export async function POST(request: Request) {
   try {
     checkOrigin(request);
-    const { db } = await requireUser();
+    const { db, user } = await requireUser();
     let upload: File | undefined;
     let input: unknown;
     if (
@@ -72,10 +74,11 @@ export async function POST(request: Request) {
         409,
         "La identificación no terminó. Puedes elegir el tipo manualmente o reintentar. / Identification did not complete. Choose the type manually or retry.",
       );
-    if (!process.env.OPENAI_API_KEY)
+    const apiKey = aiApiKey("document_classification");
+    if (!apiKey)
       throw new HttpError(
         503,
-        "Configura OPENAI_API_KEY en el servicio web. / Configure OPENAI_API_KEY in the web service.",
+        "Configura D_OPENAI_API_KEY en Runtime del servicio web. / Configure D_OPENAI_API_KEY at runtime on the web service.",
       );
     const file =
       p.source === "upload"
@@ -139,15 +142,30 @@ export async function POST(request: Request) {
       const suggestion = await classifyDocument(
         file.bytes,
         settings!.model,
-        process.env.OPENAI_API_KEY,
+        apiKey,
+        fetch,
+        {
+          db: service,
+          service: "document_classification",
+          opportunityId: source.opportunityId,
+          actorId: user.id,
+        },
       );
       checkDb(await update({ status: "ready", suggestion }));
       return Response.json(
         { suggestion },
         { headers: { "Cache-Control": "no-store" } },
       );
-    } catch {
+    } catch (error) {
       await update({ status: "failed" });
+      if (
+        error instanceof UnderwritingProviderError &&
+        error.code === "OPENAI_USAGE_UNAVAILABLE"
+      )
+        throw new HttpError(
+          503,
+          "Registro de consumo no disponible. Aplica 041_ai_service_usage.sql o revisa la conexión. / Usage recording unavailable. Apply 041_ai_service_usage.sql or check the connection.",
+        );
       throw new HttpError(
         502,
         "No se pudo identificar el contenido. Elige el tipo manualmente; el archivo no se guardó ni aprobó. / Content identification failed. Choose the type manually; no file was saved or approved.",

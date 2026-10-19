@@ -1,0 +1,15 @@
+.ai-usage-panel table {
+  white-space: normal;
+}
+.ai-usage-panel th,
+.ai-usage-panel td {
+  padding: 12px 8px;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.ai-usage-panel td:first-child {
+  min-width: 160px;
+}
+.ai-usage-panel > .button {
+  margin-bottom: 12px;
+}

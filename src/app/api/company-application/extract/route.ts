@@ -10,6 +10,8 @@ import {
 } from "@/lib/server/supabase";
 import { documentBytes, documentSource } from "@/lib/server/document-review";
 import { previewMime } from "@/lib/document-review";
+import { aiApiKey } from "@/lib/server/ai-usage";
+import { UnderwritingProviderError } from "@/lib/server/openai-underwriting";
 import {
   extractApplication,
   type ExtractionFile,
@@ -19,7 +21,7 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
     checkOrigin(request);
-    const { db } = await requireUser();
+    const { db, user } = await requireUser();
     const form = await boundedForm(request, 41 * 1024 * 1024);
     const p = z
       .object({
@@ -47,10 +49,11 @@ export async function POST(request: Request) {
       if (source.opportunityId !== p.opportunity_id)
         throw new HttpError(403, "Document belongs to another opportunity");
     }
-    if (!process.env.OPENAI_API_KEY)
+    const apiKey = aiApiKey("application_extraction");
+    if (!apiKey)
       throw new HttpError(
         503,
-        "Configura OPENAI_API_KEY en el servicio web / Configure OPENAI_API_KEY in the web service",
+        "Configura A_OPENAI_API_KEY en Runtime del servicio web / Configure A_OPENAI_API_KEY at runtime on the web service",
       );
     const files: ExtractionFile[] = [];
     for (const id of p.document_ids) {
@@ -85,12 +88,27 @@ export async function POST(request: Request) {
         files,
         p.confirmed,
         settings!.model,
-        process.env.OPENAI_API_KEY,
+        apiKey,
+        fetch,
+        {
+          db: serviceClient(),
+          service: "application_extraction",
+          opportunityId: p.opportunity_id,
+          actorId: user.id,
+        },
       );
       return Response.json(result, {
         headers: { "Cache-Control": "no-store" },
       });
-    } catch {
+    } catch (error) {
+      if (
+        error instanceof UnderwritingProviderError &&
+        error.code === "OPENAI_USAGE_UNAVAILABLE"
+      )
+        throw new HttpError(
+          503,
+          "Registro de consumo no disponible. Aplica 041_ai_service_usage.sql o revisa la conexión. / Usage recording unavailable. Apply 041_ai_service_usage.sql or check the connection.",
+        );
       throw new HttpError(
         502,
         "No se pudo completar la extracción. No se modificó ni guardó la aplicación. / Extraction could not complete. No application data was changed or saved.",

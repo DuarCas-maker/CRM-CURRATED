@@ -13,6 +13,7 @@ import type {
 } from "@/lib/underwriting";
 import type { Action } from "./crm";
 import { t } from "./ui";
+import { AiUsagePanel } from "./ai-usage-panel";
 import { useUnsavedChanges } from "./unsaved-changes";
 const defaults: UnderwritingSettings = {
   id: 1,
@@ -443,6 +444,7 @@ export function UnderwritingSettingsPanel({
           ))}
         </>
       )}
+      {data.profile.role === "superadmin" && <AiUsagePanel locale={locale} demo={!!data.demo} />}
     </section>
   );
 }

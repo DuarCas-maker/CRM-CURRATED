@@ -358,7 +358,10 @@ test("worker uses only the risk key, preserves inconsistent drafts and never fal
           body = request.method === "POST" ? await request.json() : null;
         if (url.hostname === "api.openai.com") {
           calls++;
-          assert.equal(request.headers.get("authorization"), "Bearer risk-fixture-only");
+          assert.equal(
+            request.headers.get("authorization"),
+            "Bearer risk-fixture-only",
+          );
           return Response.json({
             status: "completed",
             id: "resp_review",
@@ -373,6 +376,9 @@ test("worker uses only the risk key, preserves inconsistent drafts and never fal
         assert.equal(url.hostname, "human-review-fixture.example.test");
         if (url.pathname.includes("/storage/v1/")) return new Response(bytes);
         const path = url.pathname.split("/").pop();
+        if (path === "ai_usage_events")
+          return new Response(null, { status: 201 });
+        if (path === "finish_ai_usage_event") return Response.json(true);
         if (path === "begin_underwriting")
           return Response.json({ action: "prepare" });
         if (path === "underwriting_runs") return Response.json(source);
@@ -411,8 +417,15 @@ test("worker uses only the risk key, preserves inconsistent drafts and never fal
         lease_token: randomUUID(),
         payload: { run_id: source.id },
       });
-      assert.equal(calls, 1, "A missing risk key must never consume the general key");
-      assert.equal((completion as Record<string, unknown> | null)?.failure, "OPENAI_NOT_CONFIGURED");
+      assert.equal(
+        calls,
+        1,
+        "A missing risk key must never consume the general key",
+      );
+      assert.equal(
+        (completion as Record<string, unknown> | null)?.failure,
+        "OPENAI_NOT_CONFIGURED",
+      );
       assert.equal((completion as Record<string, unknown> | null)?.value, null);
     }
   } finally {

@@ -127,6 +127,12 @@ export function underwritingProgress(run: UnderwritingRun, locale: Locale) {
 }
 
 const errors: Record<string, [string, string, string, string]> = {
+  OPENAI_USAGE_UNAVAILABLE: [
+    "El registro de consumo de IA no está disponible; no se envió la solicitud a OpenAI.",
+    "AI usage recording is unavailable; no request was sent to OpenAI.",
+    "Aplica 041_ai_service_usage.sql y revisa la conexión del worker con Supabase antes de solicitar un nuevo análisis.",
+    "Apply 041_ai_service_usage.sql and check the worker's Supabase connection before requesting another analysis.",
+  ],
   OPENAI_NOT_CONFIGURED: [
     "La clave de análisis de riesgo no está configurada.",
     "The risk analysis key is not configured.",
