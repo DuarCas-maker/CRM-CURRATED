@@ -4,7 +4,7 @@ import { registerHooks } from "node:module";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { Activity, Locale } from "../src/lib/domain";
-import { groupDocumentReviewActivities } from "../src/lib/activity-groups";
+import { groupDocumentActivities } from "../src/lib/activity-groups";
 import { demoWorkspace } from "../src/lib/demo";
 import { UnderwritingChecklist } from "../src/components/underwriting-readiness";
 import { UnderwritingNotices } from "../src/components/underwriting-notices";
@@ -50,7 +50,7 @@ test("document reviews group consecutively up to 20 minutes apart without changi
     review("4", 61),
   ];
   const before = structuredClone(events);
-  const groups = groupDocumentReviewActivities(events);
+  const groups = groupDocumentActivities(events);
   assert.deepEqual(
     groups.map((group) => group.events.map((event) => event.id)),
     [["4"], ["3", "2", "1"]],
@@ -59,20 +59,69 @@ test("document reviews group consecutively up to 20 minutes apart without changi
   assert.deepEqual(events, before);
 });
 
-test("messages, human notes, receipts, applications and unrelated cases interrupt document review groups", () => {
+test("all document event types group regardless of wording, language or recorded actor", () => {
+  for (const extra of [
+    { type: "document", body: "Document received; review required" },
+    { type: "document", body: "Documento recibido; requiere revisión" },
+    { type: "document", body: "Unknown document event", actor_id: "" },
+    { type: "application", body: "Signed application received", actor_id: "" },
+    { type: "review_document" },
+    { type: "receive_document" },
+    { type: "receive_upload_demo" },
+    { type: "incorporate_document" },
+    { type: "upload_demo" },
+    { type: "initialize_document_checklist" },
+    { type: "company_application_generated" },
+  ]) {
+    const events = [
+      review("1", 0),
+      review("middle", 5, extra),
+      review("2", 10),
+    ];
+    const groups = groupDocumentActivities(events);
+    assert.equal(groups.length, 1, JSON.stringify(extra));
+    assert.deepEqual(groups[0].events, [events[2], events[1], events[0]]);
+  }
+});
+
+test("the mixed document receipts and approvals from the reported timeline form collapsed bursts", () => {
+  const events = [
+    review("approval", 27, { body: "Signed application: approved" }),
+    review("receipt", 25, { body: "Document received; review required" }),
+    review("receipt2", 21, { body: "Document received; review required" }),
+    review("tax", 21, { body: "Corporate tax return: approved" }),
+    review("previous1", 0, {
+      created_at: "2026-10-18T21:59:00Z",
+      body: "Document received; review required",
+    }),
+    review("previous2", 0, {
+      created_at: "2026-10-18T21:59:00Z",
+      body: "Bank statement: approved",
+    }),
+  ];
+  assert.deepEqual(
+    groupDocumentActivities(events).map((group) =>
+      group.events.map((event) => event.id),
+    ),
+    [
+      ["approval", "receipt", "receipt2", "tax"],
+      ["previous1", "previous2"],
+    ],
+  );
+});
+
+test("messages, human notes and unrelated actions or cases interrupt document activity groups", () => {
   for (const extra of [
     { type: "email", body: "Human message: approved" },
     { type: "note", body: "Human note: approved" },
     { type: "call" },
     { type: "analysis" },
-    { type: "document", body: "Document received; review required" },
-    { type: "application", body: "Signed application received" },
-    { type: "company_application_generated" },
-    { type: "document", body: "Unknown document event" },
-    { actor_id: "" },
+    { type: "created" },
+    { type: "status" },
+    { type: "task" },
     { opportunity_id: "other-case" },
   ]) {
-    const groups = groupDocumentReviewActivities([
+    const groups = groupDocumentActivities([
       review("1", 0),
       review("middle", 5, extra),
       review("2", 10),
@@ -80,14 +129,14 @@ test("messages, human notes, receipts, applications and unrelated cases interrup
     assert.equal(groups.length, 3, JSON.stringify(extra));
   }
   assert.equal(
-    groupDocumentReviewActivities([
+    groupDocumentActivities([
       review("1", 0),
       review("2", 20, { created_at: "2026-10-19T12:20:00.001Z" }),
     ]).length,
     2,
   );
   assert.equal(
-    groupDocumentReviewActivities([
+    groupDocumentActivities([
       review("1", 0),
       review("2", 0, { created_at: "invalid" }),
     ]).length,
@@ -149,6 +198,10 @@ function caseMarkup(
     review("1", 0, {
       opportunity_id: opportunity.id,
       actor_id: data.profiles[1].id,
+    }),
+    review("receipt", 10, {
+      opportunity_id: opportunity.id,
+      body: "Document received; review required",
     }),
     review("2", 20, {
       opportunity_id: opportunity.id,
@@ -240,7 +293,12 @@ test("review groups start closed, keep original details and leave human notes ou
         /<details class="timeline-event-group">([\s\S]*?)<\/details>/,
       );
       assert(group);
-      assert.match(group[1], locale === "es" ? /2 eventos/ : /2 events/);
+      assert.match(group[1], locale === "es" ? /3 eventos/ : /3 events/);
+      assert.match(
+        group[1],
+        locale === "es" ? /Actividad documental/ : /Document activity/,
+      );
+      assert.match(group[1], /Document received; review required/);
       assert.match(group[1], /Human review details/);
       assert.match(group[1], /Sofia Rivera/);
       assert.match(group[1], /Daniel Brooks/);

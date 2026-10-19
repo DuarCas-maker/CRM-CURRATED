@@ -1,22 +1,23 @@
 import type { Activity } from "./domain";
 
-const DOCUMENT_REVIEW_INTERVAL_MS = 20 * 60 * 1000;
+const DOCUMENT_ACTIVITY_INTERVAL_MS = 20 * 60 * 1000;
+// Production uses `document` for both receipts and reviews, and `application`
+// for public submissions. Demo mode records the corresponding command names.
+// Group by event type so wording, language and missing actors do not split a
+// document workflow into individual rows. Communications retain their own rows.
+const documentActivityTypes = new Set([
+  "document",
+  "application",
+  "review_document",
+  "receive_document",
+  "receive_upload_demo",
+  "incorporate_document",
+  "upload_demo",
+  "initialize_document_checklist",
+  "company_application_generated",
+]);
 
-function isDocumentReview(activity: Activity) {
-  // The current API records reviews as `document`; demo mode uses the command
-  // name. Receipt and application events must remain separate. Unknown formats
-  // stay visible as individual events rather than being guessed from keywords.
-  return (
-    !!activity.actor_id &&
-    (activity.type === "review_document" ||
-      (activity.type === "document" &&
-        /^.+: (?:approved|received|correction)(?: — [\s\S]*)?$/.test(
-          activity.body,
-        )))
-  );
-}
-
-export function groupDocumentReviewActivities(activities: readonly Activity[]) {
+export function groupDocumentActivities(activities: readonly Activity[]) {
   const ordered = [...activities].sort(
     (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
   );
@@ -30,10 +31,10 @@ export function groupDocumentReviewActivities(activities: readonly Activity[]) {
     if (
       adjacent &&
       adjacent.opportunity_id === activity.opportunity_id &&
-      isDocumentReview(adjacent) &&
-      isDocumentReview(activity) &&
+      documentActivityTypes.has(adjacent.type) &&
+      documentActivityTypes.has(activity.type) &&
       gap >= 0 &&
-      gap <= DOCUMENT_REVIEW_INTERVAL_MS
+      gap <= DOCUMENT_ACTIVITY_INTERVAL_MS
     ) {
       previous!.events.push(activity);
     } else {

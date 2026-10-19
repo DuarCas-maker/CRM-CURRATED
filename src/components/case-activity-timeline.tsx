@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Activity, Locale } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
-import { groupDocumentReviewActivities } from "@/lib/activity-groups";
+import { groupDocumentActivities } from "@/lib/activity-groups";
 import { t } from "./ui";
 
 export function CaseActivityTimeline({
@@ -15,18 +15,14 @@ export function CaseActivityTimeline({
 }) {
   return (
     <div className="timeline">
-      {groupDocumentReviewActivities(activities).map(({ id, events }) =>
+      {groupDocumentActivities(activities).map(({ id, events }) =>
         events.length === 1 ? (
           renderEvent(events[0])
         ) : (
           <details className="timeline-event-group" key={id}>
             <summary>
               <strong>
-                {t(
-                  locale,
-                  "Revisión y aprobación de documentos",
-                  "Document review and approval",
-                )}
+                {t(locale, "Actividad documental", "Document activity")}
               </strong>
               <span>
                 {events.length} {t(locale, "eventos", "events")}
