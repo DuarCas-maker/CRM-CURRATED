@@ -173,132 +173,145 @@ export function MailLenderRecipients({
         </p>
       )}
       {notice && <p role="status">{notice}</p>}
-      <fieldset disabled={disabled} style={groupStyle}>
-        <legend>
+      <details style={groupStyle}>
+        <summary style={{ cursor: "pointer" }}>
           {t(
             locale,
             "Selecciones personales de destinatarios",
             "Personal recipient selections",
           )}
-        </legend>
-        <p className="muted">
-          {t(
+        </summary>
+        <fieldset
+          disabled={disabled}
+          style={{ minWidth: 0, border: 0, padding: 0 }}
+          aria-label={t(
             locale,
-            "Solo guardan lenders, destinatarios principales y CC; son distintas de las plantillas de asunto y mensaje. Aplicarlas prepara el formulario y nunca envía correos.",
-            "These save only lenders, primary recipients and CC, separately from subject and message templates. Applying one prepares the form and never sends emails.",
+            "Selecciones personales de destinatarios",
+            "Personal recipient selections",
           )}
-        </p>
-        <label className="field">
-          {t(locale, "Selección guardada", "Saved selection")}
-          <select value={savedId} onChange={(e) => setSavedId(e.target.value)}>
-            <option value="">
-              {t(locale, "Elige una selección", "Choose a selection")}
-            </option>
-            {selections.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
+        >
+          <p className="muted">
+            {t(
+              locale,
+              "Solo guardan lenders, destinatarios principales y CC; son distintas de las plantillas de asunto y mensaje. Aplicarlas prepara el formulario y nunca envía correos.",
+              "These save only lenders, primary recipients and CC, separately from subject and message templates. Applying one prepares the form and never sends emails.",
+            )}
+          </p>
+          <label className="field">
+            {t(locale, "Selección guardada", "Saved selection")}
+            <select
+              value={savedId}
+              onChange={(e) => setSavedId(e.target.value)}
+            >
+              <option value="">
+                {t(locale, "Elige una selección", "Choose a selection")}
               </option>
-            ))}
-          </select>
-        </label>
-        <button
-          type="button"
-          className="button"
-          disabled={!savedId || data.demo}
-          onClick={async () => {
-            setWorking(true);
-            setError("");
-            setNotice("");
-            try {
-              const p = await request({ action: "apply", id: savedId });
-              const selection = p.selection as RecipientSelection;
-              setDirectory(p.directory);
-              setSavedNames(
-                Object.fromEntries(
-                  selection.targets.map((r) => [
-                    r.lender_id,
-                    r.lender_name || r.lender_id,
-                  ]),
-                ),
-              );
-              onTargets(
-                Object.fromEntries(
-                  selection.targets.map((r) => [r.lender_id, r.email]),
-                ),
-              );
-              onCopies(
-                Object.fromEntries(
-                  selection.targets.map((r) => [r.lender_id, r.cc_emails]),
-                ),
-              );
-              onEvaluations({});
-              setNotice(
-                t(
-                  locale,
-                  "Selección aplicada. Revisa los destinatarios antes de enviar.",
-                  "Selection applied. Review recipients before sending.",
-                ),
-              );
-            } catch (e) {
-              setError((e as Error).message);
-            } finally {
-              setWorking(false);
-            }
-          }}
-        >
-          {t(
-            locale,
-            "Aplicar y reemplazar destinatarios",
-            "Apply and replace recipients",
-          )}
-        </button>
-        <label className="field">
-          {t(locale, "Nombre de la nueva selección", "New selection name")}
-          <input
-            value={name}
-            maxLength={100}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </label>
-        <button
-          type="button"
-          className="button"
-          disabled={invalid || !name.trim() || data.demo}
-          onClick={async () => {
-            setWorking(true);
-            setError("");
-            setNotice("");
-            try {
-              const p = await request({
-                action: "save",
-                id: crypto.randomUUID(),
-                name: name.trim(),
-                targets: recipientTargets,
-              });
-              setSelections((old) =>
-                [...old, p.selection].sort((a, b) =>
-                  a.name.localeCompare(b.name, locale),
-                ),
-              );
-              setSavedId(p.selection.id);
-              setName("");
-              setNotice(
-                t(
-                  locale,
-                  "Selección de destinatarios guardada en tu cuenta.",
-                  "Recipient selection saved to your account.",
-                ),
-              );
-            } catch (e) {
-              setError((e as Error).message);
-            } finally {
-              setWorking(false);
-            }
-          }}
-        >
-          {t(locale, "Guardar destinatarios", "Save recipients")}
-        </button>
-      </fieldset>
+              {selections.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="button"
+            disabled={!savedId || data.demo}
+            onClick={async () => {
+              setWorking(true);
+              setError("");
+              setNotice("");
+              try {
+                const p = await request({ action: "apply", id: savedId });
+                const selection = p.selection as RecipientSelection;
+                setDirectory(p.directory);
+                setSavedNames(
+                  Object.fromEntries(
+                    selection.targets.map((r) => [
+                      r.lender_id,
+                      r.lender_name || r.lender_id,
+                    ]),
+                  ),
+                );
+                onTargets(
+                  Object.fromEntries(
+                    selection.targets.map((r) => [r.lender_id, r.email]),
+                  ),
+                );
+                onCopies(
+                  Object.fromEntries(
+                    selection.targets.map((r) => [r.lender_id, r.cc_emails]),
+                  ),
+                );
+                onEvaluations({});
+                setNotice(
+                  t(
+                    locale,
+                    "Selección aplicada. Revisa los destinatarios antes de enviar.",
+                    "Selection applied. Review recipients before sending.",
+                  ),
+                );
+              } catch (e) {
+                setError((e as Error).message);
+              } finally {
+                setWorking(false);
+              }
+            }}
+          >
+            {t(
+              locale,
+              "Aplicar y reemplazar destinatarios",
+              "Apply and replace recipients",
+            )}
+          </button>
+          <label className="field">
+            {t(locale, "Nombre de la nueva selección", "New selection name")}
+            <input
+              value={name}
+              maxLength={100}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </label>
+          <button
+            type="button"
+            className="button"
+            disabled={invalid || !name.trim() || data.demo}
+            onClick={async () => {
+              setWorking(true);
+              setError("");
+              setNotice("");
+              try {
+                const p = await request({
+                  action: "save",
+                  id: crypto.randomUUID(),
+                  name: name.trim(),
+                  targets: recipientTargets,
+                });
+                setSelections((old) =>
+                  [...old, p.selection].sort((a, b) =>
+                    a.name.localeCompare(b.name, locale),
+                  ),
+                );
+                setSavedId(p.selection.id);
+                setName("");
+                setNotice(
+                  t(
+                    locale,
+                    "Selección de destinatarios guardada en tu cuenta.",
+                    "Recipient selection saved to your account.",
+                  ),
+                );
+              } catch (e) {
+                setError((e as Error).message);
+              } finally {
+                setWorking(false);
+              }
+            }}
+          >
+            {t(locale, "Guardar destinatarios", "Save recipients")}
+          </button>
+        </fieldset>
+      </details>
       <fieldset disabled={disabled} style={groupStyle}>
         <legend>{t(locale, "Agregar lenders", "Add lenders")}</legend>
         <div
