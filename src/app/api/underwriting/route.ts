@@ -69,7 +69,7 @@ export async function GET(request: Request) {
           Object.assign(run, progress.data?.find((p) => p.id === run.id) || {});
     }
     return Response.json(
-      { runs, configured: !!process.env.OPENAI_API_KEY },
+      { runs, configured: !!process.env.R_OPENAI_API_KEY?.trim() },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (e) {
@@ -86,10 +86,10 @@ export async function POST(request: Request) {
     const p = inputSchema.parse(
       JSON.parse((await readBounded(request, 90000)).toString("utf8")),
     );
-    if (p.action === "generate" && !process.env.OPENAI_API_KEY)
+    if (p.action === "generate" && !process.env.R_OPENAI_API_KEY?.trim())
       throw new HttpError(
         503,
-        "Configura OPENAI_API_KEY en la web y el trabajador. / Configure OpenAI for the web and worker.",
+        "Configura R_OPENAI_API_KEY para análisis de riesgo en la web y el trabajador. / Configure R_OPENAI_API_KEY for risk analysis on the web and worker.",
       );
     const r =
       p.action === "generate"

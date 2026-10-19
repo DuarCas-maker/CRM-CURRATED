@@ -127,6 +127,12 @@ export function underwritingProgress(run: UnderwritingRun, locale: Locale) {
 }
 
 const errors: Record<string, [string, string, string, string]> = {
+  OPENAI_NOT_CONFIGURED: [
+    "La clave de análisis de riesgo no está configurada.",
+    "The risk analysis key is not configured.",
+    "Configura R_OPENAI_API_KEY en Runtime de la web y el trabajador. El análisis no utiliza la clave general OPENAI_API_KEY.",
+    "Configure R_OPENAI_API_KEY at runtime on the web and worker. Analysis does not use the general OPENAI_API_KEY.",
+  ],
   OPENAI_OUTPUT_LIMIT_REACHED: [
     "OpenAI alcanzó el límite de respuesta antes de terminar el informe.",
     "OpenAI reached the output limit before finishing the report.",
@@ -178,8 +184,8 @@ const errors: Record<string, [string, string, string, string]> = {
   OPENAI_AUTH_FAILED: [
     "OpenAI rechazó la autenticación.",
     "OpenAI rejected authentication.",
-    "El administrador debe revisar la clave de OpenAI del worker.",
-    "The administrator must check the worker's OpenAI key.",
+    "El administrador debe revisar R_OPENAI_API_KEY del worker.",
+    "The administrator must check the worker's R_OPENAI_API_KEY.",
   ],
   OPENAI_RESPONSE_REFUSED: [
     "OpenAI no pudo generar este informe.",

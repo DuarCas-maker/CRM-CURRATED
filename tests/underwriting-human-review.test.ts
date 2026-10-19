@@ -322,11 +322,12 @@ test("a saved draft with warnings remains readable; only an authorized human can
     await db.close();
   }
 });
-test("worker saves an inconsistent response as a viewable draft instead of discarding it", async (t) => {
+test("worker uses only the risk key, preserves inconsistent drafts and never falls back to the general key", async (t) => {
   const env = {
     NEXT_PUBLIC_SUPABASE_URL: "https://human-review-fixture.example.test",
     SUPABASE_SERVICE_ROLE_KEY: "fixture-only",
-    OPENAI_API_KEY: "fixture-only",
+    OPENAI_API_KEY: "general-fixture-not-for-risk",
+    R_OPENAI_API_KEY: "risk-fixture-only",
   };
   const previous = Object.fromEntries(
     Object.keys(env).map((k) => [k, process.env[k]]),
@@ -357,6 +358,7 @@ test("worker saves an inconsistent response as a viewable draft instead of disca
           body = request.method === "POST" ? await request.json() : null;
         if (url.hostname === "api.openai.com") {
           calls++;
+          assert.equal(request.headers.get("authorization"), "Bearer risk-fixture-only");
           return Response.json({
             status: "completed",
             id: "resp_review",
@@ -401,6 +403,18 @@ test("worker saves an inconsistent response as a viewable draft instead of disca
     assert.equal(saved.summary, value.summary);
     assert(saved.validation_warnings?.includes("INCONSISTENT_REVENUE"));
     assert.deepEqual(saved.original_output, value);
+    for (const riskKey of [undefined, "   "]) {
+      if (riskKey === undefined) delete process.env.R_OPENAI_API_KEY;
+      else process.env.R_OPENAI_API_KEY = riskKey;
+      await processUnderwriting({
+        id: randomUUID(),
+        lease_token: randomUUID(),
+        payload: { run_id: source.id },
+      });
+      assert.equal(calls, 1, "A missing risk key must never consume the general key");
+      assert.equal((completion as Record<string, unknown> | null)?.failure, "OPENAI_NOT_CONFIGURED");
+      assert.equal((completion as Record<string, unknown> | null)?.value, null);
+    }
   } finally {
     for (const [key, value] of Object.entries(previous))
       if (value === undefined) delete process.env[key];

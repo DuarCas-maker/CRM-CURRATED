@@ -3,7 +3,7 @@
 ## Activación
 
 1. Aplicar `supabase/migrations/037_underwriting_progress.sql` después de las migraciones 001–036 y luego `038_underwriting_human_review.sql`, desde Supabase SQL Editor o el procedimiento habitual de migraciones. Si ya se aplicó 037, ejecutar solamente 038.
-2. Desplegar tanto la web como el worker con esta versión. El worker conserva la misma variable `OPENAI_API_KEY` ya configurada. No se necesita compartir una clave nueva.
+2. Configurar `R_OPENAI_API_KEY` exclusivamente en Runtime de web y worker y desplegar ambos. Esta variable independiente corresponde al análisis de riesgo; conservar `OPENAI_API_KEY` para la IA general. No compartir la clave en el chat ni guardarla en el repositorio.
 3. Como superadmin, abrir **Configuración → Análisis y underwriting**. Si el límite actual es 8.000, considerar probar 16.000 para el siguiente intento. Se permite hasta 32.000; incluye razonamiento e informe y puede aumentar el consumo. El valor existente no se modifica automáticamente y los análisis anteriores conservan su configuración.
 4. Abrir **Oportunidades → ficha → Análisis manual**. Revisar el checklist y usar **Revisar documentos pendientes** para incorporar/corregir/aprobar archivos en Documentos.
 5. Con la solicitud, al menos cuatro extractos distintos y todos los documentos adicionales obligatorios aprobados, solicitar un nuevo análisis. Al recibir el informe se abre la revisión: leer contenido, fuentes y observaciones, descargar el PDF y registrar la decisión humana. El resultado anterior no se reintenta automáticamente.
@@ -67,7 +67,13 @@ Una sola solicitud genera los textos en ambos idiomas y comparte cifras, identif
 
 El informe compacto es la vista principal y el PDF habitual. **Ver detalle técnico, fuentes y respuesta original** conserva el análisis estructurado completo para inspección. Las inconsistencias o contactos no respaldados por el catálogo se señalan para revisión, sin ocultar el informe. La aprobación o descarte sigue siendo una decisión explícita del usuario. No se realizan consultas judiciales, envíos a lenders ni cambios de pipeline por generar el texto.
 
-**Activación:** desplegar web y worker y generar un análisis nuevo. No requiere otra migración sobre 038, otra clave ni modificar el modelo o el límite configurado. Los informes anteriores conservan su contenido y su idioma original; elegir otro idioma solo traduce sus etiquetas, por lo que hace falta un análisis nuevo para disponer del memo bilingüe.
+**Activación:** configurar `R_OPENAI_API_KEY`, desplegar web y worker y generar un análisis nuevo. No requiere otra migración sobre 038 ni modificar el modelo o el límite configurado. Los informes anteriores conservan su contenido y su idioma original; elegir otro idioma solo traduce sus etiquetas, por lo que hace falta un análisis nuevo para disponer del memo bilingüe.
+
+## Clave independiente para análisis de riesgo
+
+En Coolify, agregar **una variable nueva** `R_OPENAI_API_KEY` en Production / Runtime de **web y worker**, guardar y volver a desplegar ambos recursos. No reemplazar `OPENAI_API_KEY`: sigue sirviendo para clasificar documentos y extraer aplicaciones en la web. El worker utiliza únicamente `R_OPENAI_API_KEY` para underwriting; si falta o solo tiene espacios, el análisis informa que falta configuración sin consumir la clave general. La web comprueba su propia variable para habilitar solicitudes, pero no confirma la configuración del worker: debe agregarse en ambos recursos. No se cambia la clave desde el prompt ni se guarda en Supabase. Para pruebas locales, agregar la variable también en `.env.local` y reiniciar los procesos locales.
+
+No requiere migraciones, cambios de modelo ni otra llamada de IA para configurar la separación. Los informes guardados siguen consultables sin clave de riesgo; solo la generación nueva requiere la credencial. Las ejecuciones que ya estaban procesándose pueden conservar la clave cargada por el proceso anterior, por lo que conviene esperar a que terminen antes de desplegar. Para verificar el cambio, generar un análisis nuevo después del despliegue. Una clave de otro proveedor requiere adaptar la conexión; esta variable sigue usando la API de OpenAI.
 
 Verificación: 165 pruebas automatizadas pasaron, incluyendo seis casos nuevos sobre equivalencia de idiomas/cifras, promedio multibanco, contrato de salida, observaciones sin bloqueo, PDF compacto y clasificación de saldo agotado durante streaming. Se verificaron visualmente la misma demo en ambos idiomas, el selector independiente del PDF y los dos PDF ficticios de dos páginas. Evidencias: `underwriting-compact-es.png` y `underwriting-compact-en.png`.
 

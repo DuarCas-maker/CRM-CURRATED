@@ -4,7 +4,7 @@
 
 El flujo de documentos (025) ya está incorporado. Las migraciones 027–031 añaden análisis, configuración, campañas, lenders y seguimiento. Conservar la migración 026 de adjuntos Gmail y aplicar **solo las pendientes, en orden**. No repetir migraciones instaladas; probar primero sobre una copia de la base.
 
-Configurar `OPENAI_API_KEY` como secreto de Runtime en **web y worker**, sin prefijo `NEXT_PUBLIC_` y sin argumento de build. Desplegar web y worker juntos; el worker incorpora trabajos `underwriting`. La migración 029 crea el bucket privado `campaign-assets`. Conservar la clave de cifrado, OAuth, permisos de remitente y cuotas de correo actuales.
+Configurar `R_OPENAI_API_KEY` como secreto de Runtime en **web y worker** para análisis manual / underwriting de riesgo, sin prefijo `NEXT_PUBLIC_` y sin argumento de build. Conservar `OPENAI_API_KEY` en la web para clasificación de documentos y extracción de aplicaciones; underwriting no utiliza esa clave como respaldo. Desplegar web y worker juntos; el worker incorpora trabajos `underwriting`. La migración 029 crea el bucket privado `campaign-assets`. Conservar la clave de cifrado, OAuth, permisos de remitente y cuotas de correo actuales.
 
 El despliegue conserva los flujos anteriores si aún faltan las migraciones 027–031. La web muestra un aviso de activación y no consulta las tablas nuevas; los endpoints nuevos devuelven 503 y el worker conserva la programación anterior. La fila de configuración de la migración 031 activa el conjunto, por lo que es necesario aplicar todas las migraciones anteriores en orden. Se comprobó por HTTP de solo lectura que la base configurada todavía no tenía estas tablas antes del push.
 

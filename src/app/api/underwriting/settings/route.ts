@@ -38,7 +38,7 @@ export async function GET() {
       {
         settings,
         versions,
-        configured: !!process.env.OPENAI_API_KEY,
+        configured: !!process.env.R_OPENAI_API_KEY?.trim(),
         editable: profile.role === "superadmin",
       },
       { headers: { "Cache-Control": "no-store" } },

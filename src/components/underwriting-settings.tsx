@@ -175,13 +175,13 @@ export function UnderwritingSettingsPanel({
           : configured
             ? t(
                 locale,
-                "OpenAI configurado en la aplicación web. El trabajador necesita la misma configuración.",
-                "OpenAI configured for the web app. The worker needs the same configuration.",
+                "R_OPENAI_API_KEY configurada en la web para análisis de riesgo. Configúrala también en el trabajador.",
+                "R_OPENAI_API_KEY is configured on the web for risk analysis. Configure it on the worker too.",
               )
             : t(
                 locale,
-                "Conexión de OpenAI pendiente. Configura la credencial exclusivamente en el servidor y el trabajador.",
-                "OpenAI connection pending. Configure credentials only on the server and worker.",
+                "Conexión de análisis de riesgo pendiente. Configura R_OPENAI_API_KEY en Runtime de la web y el trabajador.",
+                "Risk analysis connection pending. Configure R_OPENAI_API_KEY at runtime on the web and worker.",
               )}
       </p>
       {error && (

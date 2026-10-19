@@ -52,7 +52,8 @@ export async function processUnderwriting(job: {
     }
   }
   try {
-    if (!process.env.OPENAI_API_KEY)
+    const apiKey = process.env.R_OPENAI_API_KEY?.trim();
+    if (!apiKey)
       throw new UnderwritingProviderError("OPENAI_NOT_CONFIGURED");
     const company = checked(
       await client
@@ -99,7 +100,7 @@ export async function processUnderwriting(job: {
     if (!(await progress("analyzing", documents.length))) return;
     const result = await callUnderwritingProvider(
       body,
-      process.env.OPENAI_API_KEY,
+      apiKey,
       fetch,
       { retainUnparsed: true },
     );

@@ -392,7 +392,7 @@ test("worker persists incomplete-response diagnostics and each downloaded file w
   const env = {
     NEXT_PUBLIC_SUPABASE_URL: "https://underwriting-fixture.example.test",
     SUPABASE_SERVICE_ROLE_KEY: "fixture-only",
-    OPENAI_API_KEY: "fixture-only",
+    R_OPENAI_API_KEY: "fixture-only",
   };
   const previous = Object.fromEntries(
     Object.keys(env).map((k) => [k, process.env[k]]),
