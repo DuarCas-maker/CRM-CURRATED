@@ -143,6 +143,18 @@ const errors: Record<string, [string, string, string, string]> = {
     "Revisa el estado antes de repetirla: OpenAI puede haber procesado la solicitud. No habrá reintento automático.",
     "Check its status before repeating: OpenAI may have processed it. There is no automatic retry.",
   ],
+  OPENAI_RESPONSE_TIMEOUT: [
+    "Se agotó el tiempo de espera de la conexión con OpenAI.",
+    "The connection to OpenAI timed out.",
+    "Esto no indica falta de tokens. Revisa la conexión y los tiempos del worker antes de otro intento. OpenAI pudo procesar la solicitud; no se reenvía automáticamente.",
+    "This is not a token shortage. Check the worker's connection and timings before trying again. OpenAI may have processed the request; it is not automatically resent.",
+  ],
+  OPENAI_STREAM_INTERRUPTED: [
+    "La conexión se interrumpió antes de recibir el informe completo de OpenAI.",
+    "The connection ended before the complete OpenAI report arrived.",
+    "Revisa la conexión del worker. El texto parcial no es un informe válido. OpenAI pudo procesar la solicitud; no se reenvía automáticamente.",
+    "Check the worker's connection. Partial text is not a valid report. OpenAI may have processed the request; it is not automatically resent.",
+  ],
   OPENAI_QUOTA_EXHAUSTED: [
     "La cuenta de OpenAI no tiene cuota disponible.",
     "The OpenAI account has no available quota.",

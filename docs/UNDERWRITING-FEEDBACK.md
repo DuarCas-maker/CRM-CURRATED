@@ -34,3 +34,15 @@ Se verifican requisitos reales, duplicados, mensajes, barra accesible, respuesta
 Comandos: `pnpm exec tsx --test tests/underwriting-feedback.test.ts tests/underwriting.test.ts`, `pnpm test`, `pnpm test:db`, `pnpm typecheck`, `pnpm build`.
 
 La prueba visual de `/demo` comprueba un expediente vacío con botón deshabilitado, el acceso directo a Documentos y un expediente completo con cinco checks verdes y borrador al 100%. No se enviaron documentos reales ni solicitudes de pago a OpenAI en estas pruebas.
+
+## Corrección del corte a los tres minutos
+
+Después de activar 037, el registro del intento de 16.000 tokens confirmó un corte a los 180,03 segundos desde el inicio de la API. El código anterior cancelaba la conexión con `AbortSignal.timeout(180000)`. El intento anterior de 8.000 sí conservó `incomplete_reason=max_output_tokens`, por lo que son dos fallos diferentes: elevar el presupuesto no corregía el tiempo de espera.
+
+El underwriting ahora solicita `stream: true`, recibe los eventos de OpenAI mientras se genera el informe y dispone de un máximo total de quince minutos. Solo se acepta el objeto Response de un evento terminal; nunca se transforma el texto parcial en un informe. Los cortes, tiempos agotados y errores del stream conservan el identificador de respuesta si OpenAI ya lo había enviado y no provocan un segundo envío automático. La solicitud conserva `store: false`, el modelo y el presupuesto configurados. La clasificación breve de documentos mantiene su comportamiento y su tiempo de espera anterior.
+
+**No requiere otra migración.** Desplegar esta corrección en web y, especialmente, en el worker. Se puede mantener el límite de 16.000. Una vez actualizado el worker, solicitar un nuevo análisis desde la ficha; las ejecuciones anteriores permanecen en el historial con su resultado original. Si vuelve a agotarse el presupuesto, se mostrará el error específico de tokens; si la conexión se corta o vence el máximo de espera, se mostrará el motivo de conexión correspondiente.
+
+Las pruebas de `tests/underwriting-stream.test.ts` verifican eventos partidos entre chunks y caracteres UTF-8, uso de la espera de quince minutos, respuestas incompletas, interrupciones, fallos antes/después de los encabezados, preservación del identificador y ausencia de reenvíos o datos sensibles en los errores. Una comprobación real con el mismo modelo recibió correctamente un informe JSON mínimo por streaming en una sola solicitud: 43 tokens de entrada y 14 de salida, sin archivos de clientes. Esta comprobación valida la conexión, no el contenido de un expediente real.
+
+Referencia de implementación: [streaming de Responses](https://developers.openai.com/api/docs/guides/streaming-responses).

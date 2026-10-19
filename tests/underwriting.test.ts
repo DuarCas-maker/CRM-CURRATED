@@ -217,6 +217,7 @@ test("Responses receives approved PDF bytes, strict structure, no stored respons
     company: "Fictional merchant",
   });
   assert.equal(body.store, false);
+  assert.equal(body.stream, true);
   assert.equal(body.text.format.strict, true);
   assert.ok(body.input[0].content.some((c) => c.type === "input_file"));
   assert.throws(

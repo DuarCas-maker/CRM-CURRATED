@@ -22,6 +22,129 @@ export type ProviderDiagnostics = {
   incomplete_reason: string | null;
   max_output_tokens: number | null;
 };
+export const UNDERWRITING_STREAM_TIMEOUT_MS = 15 * 60 * 1000;
+type ProviderResponse = {
+  id?: string;
+  status?: string;
+  incomplete_details?: { reason?: string } | null;
+  max_output_tokens?: number;
+  usage?: { input_tokens: number; output_tokens: number };
+  output?: { type: string; content?: { type: string; text?: string }[] }[];
+};
+function providerDiagnostics(
+  payload: ProviderResponse,
+  limit: unknown,
+): ProviderDiagnostics {
+  const count = (value: unknown) =>
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= 0 &&
+    value <= 2147483647
+      ? value
+      : null;
+  return {
+    responseId:
+      typeof payload.id === "string" &&
+      /^[A-Za-z0-9_-]{1,200}$/.test(payload.id)
+        ? payload.id
+        : null,
+    inputTokens: count(payload.usage?.input_tokens),
+    outputTokens: count(payload.usage?.output_tokens),
+    status: [
+      "completed",
+      "incomplete",
+      "failed",
+      "cancelled",
+      "queued",
+      "in_progress",
+    ].includes(payload.status || "")
+      ? payload.status!
+      : "unknown",
+    incomplete_reason: ["max_output_tokens", "content_filter"].includes(
+      payload.incomplete_details?.reason || "",
+    )
+      ? payload.incomplete_details!.reason!
+      : null,
+    max_output_tokens: count(payload.max_output_tokens ?? limit),
+  };
+}
+async function readProviderStream(
+  response: Response,
+  capture: (value: ProviderResponse) => void,
+) {
+  const reader = response.body?.getReader();
+  if (!reader)
+    throw new UnderwritingProviderError("OPENAI_STREAM_INTERRUPTED", true);
+  const decoder = new TextDecoder();
+  let buffer = "",
+    totalBytes = 0;
+  function event(frame: string): ProviderResponse | undefined {
+    const data = frame
+      .split(/\r?\n/)
+      .filter((line) => line.startsWith("data:"))
+      .map((line) => line.slice(5).trimStart())
+      .join("\n");
+    if (!data || data === "[DONE]") return;
+    let value;
+    try {
+      value = JSON.parse(data);
+    } catch {
+      throw new UnderwritingProviderError("OPENAI_STREAM_INTERRUPTED", true);
+    }
+    if (!value || typeof value !== "object" || Array.isArray(value))
+      throw new UnderwritingProviderError("OPENAI_STREAM_INTERRUPTED", true);
+    if (value.type === "error")
+      throw new UnderwritingProviderError("OPENAI_STREAM_INTERRUPTED", true);
+    if (
+      ![
+        "response.created",
+        "response.in_progress",
+        "response.completed",
+        "response.incomplete",
+        "response.failed",
+      ].includes(value.type)
+    )
+      return;
+    const payload = value.response;
+    if (!payload || typeof payload !== "object" || Array.isArray(payload))
+      throw new UnderwritingProviderError("OPENAI_STREAM_INTERRUPTED", true);
+    capture(payload);
+    // Text deltas can contain partial JSON; only a terminal Response is a report.
+    if (
+      ["response.completed", "response.incomplete", "response.failed"].includes(
+        value.type,
+      )
+    )
+      return payload;
+  }
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      totalBytes += value?.length || 0;
+      if (totalBytes > 16 * 1024 * 1024)
+        throw new UnderwritingProviderError("OPENAI_OUTPUT_TOO_LARGE", true);
+      buffer += decoder.decode(value, { stream: !done });
+      let boundary;
+      while ((boundary = /\r?\n\r?\n/.exec(buffer))) {
+        if (boundary.index > 4 * 1024 * 1024)
+          throw new UnderwritingProviderError("OPENAI_OUTPUT_TOO_LARGE", true);
+        const result = event(buffer.slice(0, boundary.index));
+        buffer = buffer.slice(boundary.index + boundary[0].length);
+        if (result) return result;
+      }
+      if (buffer.length > 4 * 1024 * 1024)
+        throw new UnderwritingProviderError("OPENAI_OUTPUT_TOO_LARGE", true);
+      if (done) {
+        const result = event(buffer);
+        if (result) return result;
+        throw new UnderwritingProviderError("OPENAI_STREAM_INTERRUPTED", true);
+      }
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+    reader.releaseLock();
+  }
+}
 export function underwritingRequest(options: {
   model: string;
   prompt: string;
@@ -91,6 +214,7 @@ export function underwritingRequest(options: {
       options.prompt +
       "\nThe supplied structured screening_rules are the authoritative numerical criteria, overriding any older numerical thresholds in the prompt. They are internal screening rules, not verified lender or SBA eligibility policies. Analyze every supplied bank statement, across every bank. When a manifest period is empty, extract its YYYY-MM period from the file and cite the evidence; never infer it from the numbered filename. Different documents and banks may share the same period. Flag missing periods or insufficient month coverage for the human reviewer. Keep the report concise without omitting any statement, detected position, calculation, material risk or requested section. Use short evidence excerpts (up to 160 characters) and normally 1-3 references per item; avoid repeating full transactions or document text. Recommend only realistically relevant catalog lenders rather than reproducing the whole lender catalog. Return the complete JSON report within the output budget.",
     store: false,
+    stream: true,
     max_output_tokens: options.maxOutputTokens,
     input: [{ role: "user", content }],
     text: {
@@ -113,8 +237,13 @@ export async function callUnderwritingProvider(
   },
   apiKey: string,
   fetcher: typeof fetch = fetch,
+  options: { timeoutMs?: number } = {},
 ) {
   if (!apiKey) throw new UnderwritingProviderError("OPENAI_NOT_CONFIGURED");
+  const signal = AbortSignal.timeout(
+    options.timeoutMs ??
+      (body.stream === true ? UNDERWRITING_STREAM_TIMEOUT_MS : 180000),
+  );
   let response: Response;
   try {
     response = await fetcher("https://api.openai.com/v1/responses", {
@@ -124,10 +253,13 @@ export async function callUnderwritingProvider(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(180000),
+      signal,
     });
   } catch {
-    throw new UnderwritingProviderError("OPENAI_RESULT_UNCERTAIN", true);
+    throw new UnderwritingProviderError(
+      signal.aborted ? "OPENAI_RESPONSE_TIMEOUT" : "OPENAI_RESULT_UNCERTAIN",
+      true,
+    );
   }
   if (!response.ok) {
     const failure = (await response.json().catch(() => null)) as {
@@ -149,55 +281,35 @@ export async function callUnderwritingProvider(
                   : "OPENAI_PROVIDER_FAILED";
     throw new UnderwritingProviderError(code, response.status >= 500);
   }
-  let payload: {
-    id?: string;
-    status?: string;
-    incomplete_details?: { reason?: string } | null;
-    max_output_tokens?: number;
-    usage?: { input_tokens: number; output_tokens: number };
-    output?: { type: string; content?: { type: string; text?: string }[] }[];
-  };
+  let payload: ProviderResponse;
+  let accepted: ProviderDiagnostics | undefined;
+  const streaming =
+    response.headers.get("content-type")?.split(";")[0].trim().toLowerCase() ===
+    "text/event-stream";
   try {
-    payload = await response.json();
-  } catch {
-    throw new UnderwritingProviderError("OPENAI_INVALID_RESPONSE", true);
+    payload = streaming
+      ? await readProviderStream(response, (value) => {
+          accepted = providerDiagnostics(value, body.max_output_tokens);
+        })
+      : await response.json();
+  } catch (error) {
+    if (error instanceof UnderwritingProviderError) {
+      error.diagnostics ??= accepted;
+      throw error;
+    }
+    throw new UnderwritingProviderError(
+      signal.aborted
+        ? "OPENAI_RESPONSE_TIMEOUT"
+        : streaming
+          ? "OPENAI_STREAM_INTERRUPTED"
+          : "OPENAI_INVALID_RESPONSE",
+      true,
+      accepted,
+    );
   }
   if (!payload || typeof payload !== "object" || Array.isArray(payload))
     throw new UnderwritingProviderError("OPENAI_INVALID_RESPONSE", true);
-  const count = (value: unknown) =>
-    typeof value === "number" &&
-    Number.isInteger(value) &&
-    value >= 0 &&
-    value <= 2147483647
-      ? value
-      : null;
-  const diagnostics: ProviderDiagnostics = {
-    responseId:
-      typeof payload.id === "string" &&
-      /^[A-Za-z0-9_-]{1,200}$/.test(payload.id)
-        ? payload.id
-        : null,
-    inputTokens: count(payload.usage?.input_tokens),
-    outputTokens: count(payload.usage?.output_tokens),
-    status: [
-      "completed",
-      "incomplete",
-      "failed",
-      "cancelled",
-      "queued",
-      "in_progress",
-    ].includes(payload.status || "")
-      ? payload.status!
-      : "unknown",
-    incomplete_reason: ["max_output_tokens", "content_filter"].includes(
-      payload.incomplete_details?.reason || "",
-    )
-      ? payload.incomplete_details!.reason!
-      : null,
-    max_output_tokens: count(
-      payload.max_output_tokens ?? body.max_output_tokens,
-    ),
-  };
+  const diagnostics = providerDiagnostics(payload, body.max_output_tokens);
   if (payload.status !== "completed") {
     const code =
       diagnostics.incomplete_reason === "max_output_tokens"
