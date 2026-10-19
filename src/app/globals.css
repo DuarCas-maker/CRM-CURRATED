@@ -1790,8 +1790,31 @@ tr:last-child td {
 }
 .case-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 290px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px;
+}
+.case-main {
+  min-width: 0;
+}
+.button.case-management-toggle {
+  position: fixed;
+  right: 24px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 35;
+  min-height: 46px;
+  border-radius: 24px;
+  padding: 12px 18px;
+  box-shadow: 0 6px 24px #0b0b0b30;
+}
+.side-panel.case-management-popover {
+  position: fixed;
+  inset: auto 24px calc(82px + env(safe-area-inset-bottom, 0px)) auto;
+  width: min(310px, calc(100vw - 48px));
+  max-height: calc(100dvh - 110px - env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  margin: 0;
+  color: var(--ink);
+  box-shadow: 0 12px 36px #0b0b0b26;
 }
 .case-tabs {
   display: flex;
@@ -2343,7 +2366,6 @@ tr:last-child td {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .case-layout {
-    grid-template-columns: minmax(0, 1fr) 250px;
     gap: 18px;
   }
   .case-tabs {

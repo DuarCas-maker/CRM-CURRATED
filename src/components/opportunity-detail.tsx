@@ -1,6 +1,6 @@
 "use client";
 import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
-import { useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
 import { CaseActivityTimeline } from "./case-activity-timeline";
 import { DocumentReview } from "./document-review";
@@ -22,8 +22,7 @@ import {
   Mail,
   FileText,
   Plus,
-  Check,
-  Clock3,
+  Settings2,
   ChevronRight,
   Send,
   Link,
@@ -43,16 +42,7 @@ import {
   isCloserRole,
 } from "@/lib/domain";
 import type { Action } from "./crm";
-import {
-  Avatar,
-  StageBadge,
-  VerificationBadge,
-  Modal,
-  Field,
-  SaveButton,
-  Empty,
-  t,
-} from "./ui";
+import { Avatar, StageBadge, Modal, Field, SaveButton, Empty, t } from "./ui";
 export function OpportunityDetail({
   opportunity: o,
   data,
@@ -78,6 +68,8 @@ export function OpportunityDetail({
 }) {
   const { requestLeave, confirmation } = useLeaveConfirmation(locale);
   const [tab, setTab] = useState<string>(initialTab);
+  const managementId = useId();
+  const managementRef = useRef<HTMLDivElement>(null);
   const [modal, setModal] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
   const [error, setError] = useState("");
@@ -133,9 +125,6 @@ export function OpportunityDetail({
         created_at: message.sent_at,
       });
   }
-  const tasks = data.tasks.filter(
-    (a) => a.opportunity_id === o.id && canSeeArea(profile, o, a.area),
-  );
   const submissions = data.submissions.filter((s) => s.opportunity_id === o.id);
   const problems = handoffErrors(o, docs, data.analyses);
   async function submit(
@@ -772,46 +761,33 @@ export function OpportunityDetail({
             </div>
           )}
         </section>
-        <aside className="case-side">
-          <section className="panel side-panel">
-            <h2>{t(locale, "Última gestión", "Latest update")}</h2>
-            <p>
-              {[...activities].sort((a, b) =>
-                b.created_at.localeCompare(a.created_at),
-              )[0]?.body ||
-                o.summary ||
-                t(locale, "Sin gestión registrada.", "No activity recorded.")}
-            </p>
-            <VerificationBadge locale={locale} status={o.verification} />
-          </section>
-          <section className="panel side-panel">
-            <h2>{t(locale, "Próximos pasos", "Next steps")}</h2>
-            {tasks.map((task) => (
-              <div className="mini-task" key={task.id}>
-                <button
-                  className="task-check"
-                  disabled={!editable || task.status === "done"}
-                  onClick={() =>
-                    act("complete_task", { id: task.id }).catch(() => {})
-                  }
-                  aria-label="Complete task"
-                >
-                  {task.status === "done" && <Check size={14} />}
-                </button>
-                <div>
-                  <strong>{task.title}</strong>
-                  <small>{dateLabel(task.due_at, locale, true)}</small>
-                </div>
-              </div>
-            ))}
-            {editable && (
-              <button className="text-button" onClick={() => setModal("next")}>
-                <Plus size={15} />
-                {t(locale, "Definir próxima acción", "Set next action")}
-              </button>
-            )}
-          </section>
-          <section className="panel side-panel">
+      </div>
+      {((!embedded && tab === "mail_history") ||
+        (embedded && tab === "activity")) && (
+        <>
+          {!embedded && (
+            <button
+              type="button"
+              className="button primary case-management-toggle"
+              popoverTarget={managementId}
+              aria-haspopup="dialog"
+            >
+              <Settings2 size={18} />
+              {t(locale, "Gestión del caso", "Case management")}
+            </button>
+          )}
+          <div
+            ref={managementRef}
+            id={managementId}
+            popover={embedded ? undefined : "auto"}
+            role={embedded ? undefined : "dialog"}
+            aria-label={t(locale, "Gestión del caso", "Case management")}
+            className={`panel side-panel case-management-actions ${embedded ? "" : "case-management-popover"}`}
+            onClick={(event) => {
+              if (!embedded && (event.target as Element).closest("button"))
+                managementRef.current?.hidePopover();
+            }}
+          >
             <h2>{t(locale, "Gestión del caso", "Case management")}</h2>
             {((sellerAccess && profile.role === "seller_admin") ||
               profile.role === "superadmin") && (
@@ -829,6 +805,12 @@ export function OpportunityDetail({
               >
                 <Mail size={15} />
                 {t(locale, "Pedir documentación", "Request documents")}
+              </button>
+            )}
+            {editable && (
+              <button className="button full" onClick={() => setModal("next")}>
+                <Plus size={15} />
+                {t(locale, "Definir próxima acción", "Set next action")}
               </button>
             )}
             {editable && (
@@ -891,9 +873,9 @@ export function OpportunityDetail({
                 <span>{dateLabel(o.funded_at, locale)}</span>
               </div>
             )}
-          </section>
-        </aside>
-      </div>
+          </div>
+        </>
+      )}
       {composing && (
         <MailComposer
           data={data}
