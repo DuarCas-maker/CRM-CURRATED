@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Document, Locale } from "@/lib/domain";
 import {
   extractionSchema,
@@ -30,6 +30,9 @@ export function ApplicationExtraction({
     [error, setError] = useState(""),
     [running, setRunning] = useState(false);
   const count = selected.length + uploads.length;
+  useEffect(() => {
+    onPending(count > 0 || !!confirmed.trim());
+  }, [count, confirmed, onPending]);
   async function extract() {
     setError("");
     setBusy(true);
@@ -64,8 +67,8 @@ export function ApplicationExtraction({
         ...uploads.map((f) => f.name),
       ]);
       setUploads([]);
+      setSelected([]);
       setConfirmed("");
-      onPending(false);
     } catch (error) {
       setError((error as Error).message);
     } finally {
@@ -107,7 +110,6 @@ export function ApplicationExtraction({
                       ? [...selected, doc.id]
                       : selected.filter((id) => id !== doc.id),
                   );
-                  onPending(true);
                 }}
               />
               {doc.bank_name ? `${doc.bank_name} - ` : ""}
@@ -162,7 +164,6 @@ export function ApplicationExtraction({
             }
             setUploads([...uploads, ...files]);
             setError("");
-            onPending(true);
           }}
         />
       </label>
@@ -199,7 +200,6 @@ export function ApplicationExtraction({
           )}
           onChange={(e) => {
             setConfirmed(e.target.value);
-            onPending(true);
           }}
         />
       </label>
