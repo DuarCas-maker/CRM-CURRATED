@@ -88,6 +88,8 @@ test("campaign mail sends the frozen generic attachment and rejects changed byte
           });
         }
         const path = url.pathname.split("/").pop();
+        if (path === "reserve_gmail_api") return Response.json(0);
+        if (path === "recheck_outbox_delivery") return Response.json(true);
         if (path === "claim_outbox") {
           if (msg.status !== "queued") return Response.json([]);
           msg.status = "sending";

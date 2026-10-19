@@ -48,8 +48,13 @@ test("sender retries confirmed quota rejections but never blindly repeats an unc
       message_id_header: "<fixture@example.com>",
     };
     let mode:
-      "quota403" | "quota429" | "ok" | "timeout" | "policy" | "db_failure" =
-      "quota403";
+      | "quota403"
+      | "quota429"
+      | "ok"
+      | "timeout"
+      | "policy"
+      | "db_failure"
+      | "held" = "quota403";
     let posts = 0;
     const deferred: { seconds: number; error_code: string }[] = [],
       marks: unknown[] = [];
@@ -94,6 +99,14 @@ test("sender retries confirmed quota rejections but never blindly repeats an unc
           "Never contact real services",
         );
         const resource = url.pathname.replace("/rest/v1/", "");
+        if (resource === "rpc/reserve_gmail_api") return Response.json(0);
+        if (resource === "rpc/recheck_outbox_delivery") {
+          if (mode === "held") {
+            msg.status = "paused";
+            return Response.json(false);
+          }
+          return Response.json(true);
+        }
         if (resource === "rpc/claim_outbox") {
           if (msg.status !== "queued") return Response.json([]);
           msg.status = "sending";
@@ -158,6 +171,20 @@ test("sender retries confirmed quota rejections but never blindly repeats an unc
         "Uncertain sends cannot be claimed for repeat delivery",
       );
     }
+    mode = "held";
+    msg.status = "queued";
+    const beforeHold = posts;
+    await sendNext();
+    assert.equal(
+      posts,
+      beforeHold,
+      "final delivery gate stops the POST after preparation",
+    );
+    assert.equal(
+      msg.status,
+      "paused",
+      "a deliberate pause is not rewritten as a failure",
+    );
     mode = "policy";
     msg.status = "queued";
     await sendNext();

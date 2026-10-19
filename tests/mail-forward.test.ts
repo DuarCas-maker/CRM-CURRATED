@@ -101,6 +101,8 @@ test("forwarding sends the original encrypted attachment bytes and refuses alter
             { headers: { "Content-Type": "application/octet-stream" } },
           );
         const path = url.pathname.split("/").pop();
+        if (path === "reserve_gmail_api") return Response.json(0);
+        if (path === "recheck_outbox_delivery") return Response.json(true);
         if (path === "claim_outbox") {
           if (msg.status !== "queued") return Response.json([]);
           msg.status = "sending";

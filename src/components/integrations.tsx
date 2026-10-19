@@ -21,6 +21,8 @@ export function Integrations({
 }) {
   const [modal, setModal] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [accountId, setAccountId] = useState(data.accounts[0]?.id || "");
+  const account = data.accounts.find((a) => a.id === accountId);
   const [selectedCase, setSelectedCase] = useState(
     data.opportunities[0]?.id || "",
   );
@@ -232,30 +234,76 @@ export function Integrations({
           {modal === "account" && (
             <ProtectedForm
               busy={busy}
-              onSubmit={(e) => submit(e, "account_settings")}
+              key={accountId}
+              onSubmit={(e) => submit(e, "campaign_account_settings")}
             >
-              <Field name="id" label={t(locale, "Cuenta", "Account")}>
-                {data.accounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.email}
-                  </option>
-                ))}
-              </Field>
+              <label className="field">
+                {t(locale, "Cuenta", "Account")}
+                <select
+                  name="id"
+                  value={accountId}
+                  onChange={(e) => setAccountId(e.target.value)}
+                >
+                  {data.accounts.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.email}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <Field
                 name="daily_limit"
-                label={t(locale, "Límite diario", "Daily limit")}
+                label={t(
+                  locale,
+                  "Límite total por 24 horas",
+                  "Total limit per 24 hours",
+                )}
                 type="number"
-                value={100}
+                value={account?.daily_limit || 100}
                 min={1}
                 max={2000}
                 required
               />
               <Field
-                name="timezone"
-                label={t(locale, "Zona horaria", "Time zone")}
-                value="America/New_York"
+                name="campaign_daily_limit"
+                label={t(
+                  locale,
+                  "Cupo compartido de campañas por 24 h",
+                  "Shared campaign limit per 24h",
+                )}
+                type="number"
+                value={Math.min(
+                  account?.campaign_daily_limit || 100,
+                  Math.max(
+                    1,
+                    (account?.daily_limit || 100) -
+                      (account?.operational_reserve ?? 20),
+                  ),
+                )}
+                min={1}
+                max={2000}
                 required
               />
+              <Field
+                name="operational_reserve"
+                label={t(
+                  locale,
+                  "Reserva para correo operativo",
+                  "Operational email reserve",
+                )}
+                type="number"
+                value={account?.operational_reserve ?? 20}
+                min={0}
+                max={1999}
+                required
+              />
+              <p className="muted">
+                {t(
+                  locale,
+                  "Ventana móvil de 24 horas. El cupo de campañas más la reserva debe caber en el límite total. Los envíos externos también consumen el cupo de Google.",
+                  "Rolling 24-hour window. Campaign limit plus reserve must fit within the total. External email also consumes Google's quota.",
+                )}
+              </p>
               <div className="modal-footer">
                 <SaveButton locale={locale} busy={busy} />
               </div>

@@ -163,6 +163,9 @@ export interface Offer {
   status: string;
 }
 export interface MailAccount {
+  campaign_daily_limit?: number;
+  operational_reserve?: number;
+  external_usage_synced_at?: string | null;
   id: string;
   email: string;
   organization: string;
@@ -172,11 +175,16 @@ export interface MailAccount {
   sent_today: number;
 }
 export interface Campaign {
+  body_format?: import("./campaign-content").CampaignFormat;
+  batch_id?: string | null;
+  excluded_contact_ids?: string[];
   template_id?: string | null;
   template_version?: number | null;
   requires_application?: boolean;
   asset_snapshot?: import("./campaign-templates").CampaignAsset[];
   delivery_stats?: {
+    suppressed?: number;
+    bounced?: number;
     sent: number;
     pending: number;
     failed: number;

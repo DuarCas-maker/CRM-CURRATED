@@ -102,7 +102,7 @@ test("Gmail reads are paced below the new per-user quota, including parallel req
   assert.ok(slots[1] >= 267);
   for (const start of slots) {
     const units =
-      slots.filter((at) => at >= start && at < start + 60000).length * 20;
+      slots.filter((at) => at >= start && at < start + 60000).length * 60;
     assert.ok(units <= 4500, `Minute window has ${units} units`);
   }
   assert.equal(pacer.reserve("account-b", 20, 0), 0);
@@ -111,6 +111,9 @@ test("Gmail reads are paced below the new per-user quota, including parallel req
   assert.equal(gmailRequestCost("messages/id/attachments/part"), 20);
   assert.equal(gmailRequestCost("history?startHistoryId=1"), 2);
   assert.equal(gmailRequestCost("messages/send", "POST"), 100);
+  assert.equal(gmailRequestCost("messages/id?format=full"), 60);
+  assert.equal(gmailRequestCost("messages/id?format=metadata"), 20);
+  assert.equal(gmailRequestCost("threads/id?format=full"), 120);
   assert.throws(() => new GmailQuotaPacer(0));
   assert.throws(() => pacer.reserve("account-a", 0));
 });
@@ -254,6 +257,7 @@ test("archive quota recovery retains its cursor and messages, clears stale error
           "All network calls must stay mocked",
         );
         const resource = url.pathname.replace("/rest/v1/", "");
+        if (resource === "rpc/reserve_gmail_api") return Response.json(0);
         const body =
           request.method === "POST" || request.method === "PATCH"
             ? await request.json()
@@ -272,7 +276,11 @@ test("archive quota recovery retains its cursor and messages, clears stale error
           run.lease_token = randomUUID();
           return Response.json([{ ...run }]);
         }
-        if (resource === "rpc/gmail_record_reply" || resource === "rpc/gmail_associate_continuous") return Response.json(null);
+        if (
+          resource === "rpc/gmail_record_reply" ||
+          resource === "rpc/gmail_associate_continuous"
+        )
+          return Response.json(null);
         if (resource === "rpc/gmail_store_message") {
           assert.equal(body.lease, run.lease_token);
           const id = body.entry.gmail_message_id;

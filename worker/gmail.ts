@@ -616,6 +616,7 @@ export async function sendNext() {
   if (!msg) return;
   let acceptedByGmail = false;
   let sendAttempted = false;
+  let deliveryHeld = false;
   try {
     const account = checked(
       await client
@@ -654,7 +655,10 @@ export async function sendNext() {
       mime_type?: string;
     }[] = [];
     for (const asset of msg.campaign_asset_snapshot || []) {
-      if (!msg.enrollment_id || asset.bucket !== "campaign-assets")
+      if (
+        (!msg.enrollment_id && !msg.campaign_test) ||
+        asset.bucket !== "campaign-assets"
+      )
         throw new Error("INVALID_CAMPAIGN_ATTACHMENT");
       const blob = checked(
         await client.storage
@@ -889,6 +893,7 @@ export async function sendNext() {
       signatureHtml: msg.signature_html || undefined,
       subject: msg.subject,
       body: msg.body,
+      bodyHtml: msg.body_html || undefined,
       messageId: msg.message_id_header,
       inReplyTo: replyTo,
       references,
@@ -896,7 +901,6 @@ export async function sendNext() {
       attachments: files,
     });
     // Gmail has no idempotency key. Never blindly retry this POST, even after a timeout.
-    sendAttempted = true;
     const result = await gmail<{ id: string; threadId: string }>(
       msg.account_id,
       "messages/send",
@@ -906,6 +910,16 @@ export async function sendNext() {
           raw,
           ...(msg.gmail_thread_id ? { threadId: msg.gmail_thread_id } : {}),
         }),
+      },
+      async () => {
+        const permitted = checked(
+          await client.rpc("recheck_outbox_delivery", { message: msg.id }),
+        );
+        if (!permitted) {
+          deliveryHeld = true;
+          throw new Error("DELIVERY_HELD");
+        }
+        sendAttempted = true;
       },
     );
     acceptedByGmail = true;
@@ -917,6 +931,7 @@ export async function sendNext() {
       }),
     );
   } catch (e) {
+    if (deliveryHeld) return;
     // A quota rejection is a known failure, unlike a timeout or a failed DB
     // update after acceptance. Preserve the request and honor Google's wait.
     if (!acceptedByGmail && isGmailQuotaError(e)) {

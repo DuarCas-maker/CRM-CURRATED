@@ -97,6 +97,7 @@ test("a real-time sync path receives a reply without any historical run and neve
           throw Error(`Unexpected Gmail request: ${url.pathname}`);
         }
         const path = url.pathname.split("/").pop();
+        if (path === "reserve_gmail_api") return Response.json(0);
         if (path === "mail_accounts") return Response.json(account);
         if (path === "mail_credentials")
           return Response.json({

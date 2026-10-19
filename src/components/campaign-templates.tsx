@@ -11,17 +11,21 @@ import {
 import type { Action } from "./crm";
 import { useUnsavedChanges } from "./unsaved-changes";
 import { Modal, t } from "./ui";
+import { CampaignEditor } from "./campaign-editor";
+import { renderCampaignContent } from "@/lib/campaign-content";
 
 export function CampaignTemplates({
   data,
   locale,
   act,
   useTemplate,
+  changed,
 }: {
   data: Workspace;
   locale: Locale;
   act: Action;
   useTemplate: (template: EmailTemplate) => void;
+  changed?: () => Promise<void>;
 }) {
   const [templates, setTemplates] = useState(data.email_templates || []);
   const [assets, setAssets] = useState(data.campaign_assets || []);
@@ -29,6 +33,12 @@ export function CampaignTemplates({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
+  const [showArchived, setShowArchived] = useState(false);
+  const [history, setHistory] = useState<EmailTemplate[]>([]);
+  useEffect(() => {
+    setTemplates(data.email_templates || []);
+    setAssets(data.campaign_assets || []);
+  }, [data.email_templates, data.campaign_assets]);
   const changes = useUnsavedChanges(draft, busy);
   const wasOpen = useRef(false);
   useEffect(() => {
@@ -49,6 +59,63 @@ export function CampaignTemplates({
       return (e as Error).message;
     }
   };
+  function previewHtml(body: string) {
+    try {
+      return renderCampaignContent(
+        body,
+        campaignPreviewValues,
+        draft?.body_format,
+      ).html;
+    } catch (e) {
+      return null;
+    }
+  }
+  async function archive(template: EmailTemplate) {
+    setBusy(true);
+    setError("");
+    try {
+      await act("archive_campaign_template", {
+        id: template.id,
+        expected_version: template.version,
+        archived: !template.archived_at,
+      });
+      setTemplates((rows) =>
+        rows.map((row) =>
+          row.id === template.id
+            ? {
+                ...row,
+                version: template.version + 1,
+                archived_at: template.archived_at
+                  ? null
+                  : new Date().toISOString(),
+              }
+            : row,
+        ),
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function loadHistory(template: EmailTemplate) {
+    setError("");
+    setHistory([]);
+    try {
+      if (data.demo) {
+        setHistory([template]);
+        return;
+      }
+      const response = await fetch(`/api/campaign-templates?id=${template.id}`);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      setHistory(
+        result.map((row: { snapshot: EmailTemplate }) => row.snapshot),
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
   async function save() {
     setBusy(true);
     setError("");
@@ -83,6 +150,7 @@ export function CampaignTemplates({
         ...previous.filter((v) => v.id !== saved.id),
       ]);
       setDraft(null);
+      await changed?.();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -160,12 +228,30 @@ export function CampaignTemplates({
           "Personalize each email with client data. Campaigns retain a copy of their template and attachments.",
         )}
       </p>
+      {error && !draft && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          checked={showArchived}
+          onChange={(e) => setShowArchived(e.target.checked)}
+        />
+        {t(locale, "Mostrar archivadas", "Show archived")}
+      </label>
       <div className="campaign-grid">
         {templates
-          .filter((v) => !v.archived_at)
+          .filter((v) => showArchived || !v.archived_at)
           .map((template) => (
             <div className="analysis-card" key={template.id}>
               <h3>{template.name}</h3>
+              {template.archived_at && (
+                <span className="badge">
+                  {t(locale, "Archivada", "Archived")}
+                </span>
+              )}
               <p>{template.subject}</p>
               <small>
                 v{template.version} · {template.steps.length + 1}{" "}
@@ -187,7 +273,7 @@ export function CampaignTemplates({
                     canEdit ? "Edit / preview" : "Preview",
                   )}
                 </button>
-                {canEdit && (
+                {canEdit && !template.archived_at && (
                   <button
                     className="button primary"
                     onClick={() => useTemplate(template)}
@@ -195,10 +281,71 @@ export function CampaignTemplates({
                     {t(locale, "Crear campaña", "Create campaign")}
                   </button>
                 )}
+                {canEdit && (
+                  <>
+                    <button
+                      className="button"
+                      disabled={busy}
+                      onClick={() => {
+                        setError("");
+                        setRequestKey(crypto.randomUUID());
+                        setDraft({
+                          ...template,
+                          id: undefined,
+                          version: undefined,
+                          archived_at: null,
+                          name: `${template.name} (${t(locale, "copia", "copy")})`,
+                        });
+                      }}
+                    >
+                      {t(locale, "Duplicar", "Duplicate")}
+                    </button>
+                    <button
+                      className="button"
+                      disabled={busy}
+                      onClick={() => void archive(template)}
+                    >
+                      {t(
+                        locale,
+                        template.archived_at ? "Restaurar" : "Archivar",
+                        template.archived_at ? "Restore" : "Archive",
+                      )}
+                    </button>
+                  </>
+                )}
+                <button
+                  className="button"
+                  onClick={() => void loadHistory(template)}
+                >
+                  {t(locale, "Historial", "History")}
+                </button>
               </div>
             </div>
           ))}
       </div>
+      {history.length > 0 && (
+        <Modal
+          locale={locale}
+          title={t(locale, "Historial de versiones", "Version history")}
+          close={() => setHistory([])}
+        >
+          {history.map((version) => (
+            <section className="analysis-card" key={version.version}>
+              <h3>
+                {version.name} · v{version.version}
+              </h3>
+              <small>{new Date(version.updated_at).toLocaleString()}</small>
+              <strong style={{ display: "block" }}>{version.subject}</strong>
+              <pre style={{ whiteSpace: "pre-wrap" }}>{version.body}</pre>
+              <small>
+                {version.steps.length} {t(locale, "seguimientos", "follow-ups")}{" "}
+                · {version.asset_ids.length}{" "}
+                {t(locale, "adjuntos", "attachments")}
+              </small>
+            </section>
+          ))}
+        </Modal>
+      )}
       {!templates.length && (
         <p>
           {t(
@@ -222,7 +369,7 @@ export function CampaignTemplates({
             </p>
           )}
           <fieldset
-            disabled={!canEdit || busy}
+            disabled={!canEdit || busy || !!draft.archived_at}
             style={{ border: 0, padding: 0 }}
           >
             <label className="field">
@@ -239,14 +386,14 @@ export function CampaignTemplates({
                 onChange={(e) => update({ subject: e.target.value })}
               />
             </label>
-            <label className="field">
-              {t(locale, "Mensaje", "Message")}
-              <textarea
-                rows={7}
-                value={draft.body || ""}
-                onChange={(e) => update({ body: e.target.value })}
-              />
-            </label>
+            <CampaignEditor
+              locale={locale}
+              label={t(locale, "Mensaje", "Message")}
+              value={draft.body || ""}
+              onChange={(body) => update({ body })}
+              format={draft.body_format || "plain"}
+              onFormat={(body_format) => update({ body_format })}
+            />
             <p className="muted">
               {Object.keys(campaignPreviewValues)
                 .map((key) => `{{${key}}}`)
@@ -292,20 +439,18 @@ export function CampaignTemplates({
                     }
                   />
                 </label>
-                <label className="field">
-                  {t(locale, "Mensaje", "Message")}
-                  <textarea
-                    rows={4}
-                    value={step.body}
-                    onChange={(e) =>
-                      update({
-                        steps: draft.steps!.map((s, i) =>
-                          i === index ? { ...s, body: e.target.value } : s,
-                        ),
-                      })
-                    }
-                  />
-                </label>
+                <CampaignEditor
+                  locale={locale}
+                  value={step.body}
+                  onChange={(body) =>
+                    update({
+                      steps: draft.steps!.map((s, i) =>
+                        i === index ? { ...s, body } : s,
+                      ),
+                    })
+                  }
+                  format={draft.body_format || "plain"}
+                />
                 <button
                   className="text-button"
                   onClick={() =>
@@ -388,15 +533,20 @@ export function CampaignTemplates({
             ].map((message, index) => (
               <div key={index}>
                 <strong>{preview(message.subject)}</strong>
-                <pre
-                  style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}
-                >
-                  {preview(message.body)}
-                </pre>
+                {previewHtml(message.body) !== null ? (
+                  <div
+                    style={{ overflowWrap: "anywhere" }}
+                    dangerouslySetInnerHTML={{
+                      __html: previewHtml(message.body)!,
+                    }}
+                  />
+                ) : (
+                  <p className="error">{preview(message.body)}</p>
+                )}
               </div>
             ))}
           </section>
-          {canEdit && (
+          {canEdit && !draft.archived_at && (
             <button
               className="button primary"
               disabled={busy}

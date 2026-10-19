@@ -1,17 +1,18 @@
 import { db, checked, alertAdmins } from "./db";
 import { renderTemplate } from "../src/lib/domain";
+import { renderCampaignContent } from "../src/lib/campaign-content";
 import { token, hash, encrypt, decrypt } from "../src/lib/server/crypto";
 export async function scheduleCampaigns() {
   const client = db();
+  checked(await client.rpc("complete_finished_campaigns"));
   const due =
     checked(
-      await client
-        .from("campaign_enrollments")
-        .select("*")
-        .eq("status", "active")
-        .lte("next_at", new Date().toISOString())
-        .order("next_at")
-        .limit(100),
+      await client.rpc("due_campaign_enrollments", {
+        application_enabled:
+          process.env.PUBLIC_FORM_ENABLED === "true" &&
+          !!process.env.FORM_DECLARATION_VERSION &&
+          !!process.env.FORM_DECLARATION_TEXT,
+      }),
     ) || [];
   for (const enrollment of due) {
     const campaign = checked(
@@ -36,7 +37,18 @@ export async function scheduleCampaigns() {
         .eq("id", enrollment.contact_id)
         .single(),
     )!;
-    if (contact.verification !== "valid") continue;
+    if (
+      contact.verification !== "valid" ||
+      campaign.excluded_contact_ids?.includes(contact.id)
+    ) {
+      checked(
+        await client.rpc("stop_contact_sequence", {
+          contact: contact.id,
+          why: "suppressed",
+        }),
+      );
+      continue;
+    }
     const opportunity = checked(
       await client
         .from("opportunities")
@@ -46,10 +58,19 @@ export async function scheduleCampaigns() {
     )!;
     if (
       opportunity.handed_off_at ||
+      opportunity.archived_at ||
+      ["lost", "paused", "funded"].includes(opportunity.stage) ||
       (opportunity.application_complete &&
         campaign.requires_application !== false)
-    )
+    ) {
+      checked(
+        await client.rpc("stop_contact_sequence", {
+          contact: contact.id,
+          why: "goal_met",
+        }),
+      );
       continue;
+    }
     const message =
       enrollment.step === 0 ? campaign : campaign.steps[enrollment.step - 1];
     if (!message) continue;
@@ -130,7 +151,12 @@ export async function scheduleCampaigns() {
         unsubscribe_url: `${process.env.APP_ORIGIN}/unsubscribe/${decrypt(unsubscribe.encrypted_token)}`,
       };
       const subject = renderTemplate(message.subject, values);
-      const body = renderTemplate(message.body, values);
+      const content = renderCampaignContent(
+        message.body,
+        values,
+        campaign.body_format,
+      );
+      const body = content.text;
       checked(
         await client.from("outbox").upsert(
           {
@@ -140,6 +166,7 @@ export async function scheduleCampaigns() {
             to_email: contact.email,
             subject,
             body,
+            body_html: content.html,
             area: "seller",
             message_id_header: `<${enrollment.id}.${enrollment.step}@crm.curated.local>`,
             requested_by: campaign.created_by,

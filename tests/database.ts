@@ -415,7 +415,7 @@ console.log(
 );
 const account = randomUUID();
 await db.query(
-  "insert into mail_accounts(id,email,organization,daily_limit) values($1,'sender@example.com','test',100)",
+  "insert into mail_accounts(id,email,organization,daily_limit,external_usage_synced_at) values($1,'sender@example.com','test',100,now())",
   [account],
 );
 await asUser(users.superadmin);
@@ -446,7 +446,10 @@ const campaign2 = await command("create_campaign", {
   body: "Hello {{name}} {{unsubscribe_url}}",
   followup_days: 0,
 });
-await command("activate_campaign", { id: campaign2.id });
+await assert.rejects(
+  command("activate_campaign", { id: campaign2.id }),
+  /No hay destinatarios elegibles/,
+);
 await db.exec("reset role");
 assert.equal(
   (

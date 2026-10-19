@@ -61,6 +61,7 @@ test("team thread worker retries a partial page without advancing its persistent
   }));
   globalThis.fetch = async (url, init) => {
     const path = new URL(String(url)).pathname;
+    if (path.endsWith("/rpc/reserve_gmail_api")) return Response.json(0);
     const body = init?.body ? JSON.parse(String(init.body)) : {};
     if (path.endsWith("/rpc/gmail_team_thread_page"))
       return Response.json(body.cursor_offset === 0 ? archive : []);
@@ -551,6 +552,7 @@ test("live Gmail team mail preserves campaigns and waits, and an unassociated te
           },
         });
       const table = url.pathname.split("/").at(-1);
+      if (table === "reserve_gmail_api") return Response.json(0);
       if (table === "mail_accounts") return Response.json(account);
       if (table === "mail_credentials")
         return Response.json({

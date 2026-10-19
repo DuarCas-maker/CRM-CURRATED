@@ -41,7 +41,6 @@ import {
   roleLabels,
   canSeeOpportunity,
   canSeeArea,
-  renderTemplate,
 } from "@/lib/domain";
 import {
   Avatar,
@@ -68,8 +67,9 @@ import {
 } from "./operational-dashboard";
 import { demoOperationalDashboard } from "@/lib/operations";
 import { CampaignTemplates } from "./campaign-templates";
+import { CampaignComposer } from "./campaign-composer";
+import { CampaignReview, SendingBudgets } from "./campaign-review";
 import type { EmailTemplate } from "@/lib/campaign-templates";
-import { campaignPreviewValues } from "@/lib/campaign-templates";
 import { teamLabel } from "@/lib/gmail-team";
 import { demoAction } from "@/lib/demo-actions";
 import { Integrations } from "./integrations";
@@ -147,17 +147,10 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [modal, setModal] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
-  const [extraSteps, setExtraSteps] = useState<number[]>([]);
   const [campaignSection, setCampaignSection] = useState("campaigns");
   const [campaignTemplate, setCampaignTemplate] =
     useState<EmailTemplate | null>(null);
   const editingLender = data.lenders.find((l) => modal === `lender:${l.id}`);
-  useEffect(() => {
-    if (modal === "campaign")
-      setExtraSteps(
-        campaignTemplate?.steps.slice(1).map((_, i) => i + 1) || [],
-      );
-  }, [modal, campaignTemplate]);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [error, setError] = useState("");
@@ -1740,6 +1733,12 @@ export default function CRM({ initial }: { initial: Workspace }) {
               )}
               {view === "campaigns" && (
                 <div>
+                  {isAdmin && (
+                    <SendingBudgets
+                      data={{ ...data, profile }}
+                      locale={locale}
+                    />
+                  )}
                   <div className="card-actions" style={{ marginBottom: 16 }}>
                     <button
                       className="button"
@@ -1760,6 +1759,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                       data={{ ...data, profile }}
                       locale={locale}
                       act={act}
+                      changed={refresh}
                       useTemplate={(template) => {
                         setCampaignTemplate(template);
                         setModal("campaign");
@@ -1790,12 +1790,24 @@ export default function CRM({ initial }: { initial: Workspace }) {
                           )}
                           {c.delivery_stats && (
                             <p>
-                              {t(locale, "Enviados", "Sent")}:{" "}
-                              {c.delivery_stats.sent} ·{" "}
+                              {t(
+                                locale,
+                                "Aceptados por Gmail",
+                                "Accepted by Gmail",
+                              )}
+                              : {c.delivery_stats.sent} ·{" "}
                               {t(locale, "Pendientes", "Pending")}:{" "}
                               {c.delivery_stats.pending} ·{" "}
                               {t(locale, "Respuestas", "Replies")}:{" "}
                               {c.delivery_stats.replied} ·{" "}
+                              {t(
+                                locale,
+                                "Bajas / excluidos",
+                                "Unsubscribed / excluded",
+                              )}
+                              : {c.delivery_stats.suppressed || 0} ·{" "}
+                              {t(locale, "Rebotes", "Bounces")}:{" "}
+                              {c.delivery_stats.bounced || 0} ·{" "}
                               {t(
                                 locale,
                                 "Fallidos / por revisar",
@@ -1826,7 +1838,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                               <strong>{c.audience_count} leads</strong>
                             </span>
                             <span>
-                              {t(locale, "Límite diario", "Daily limit")}
+                              {t(locale, "Máximo por 24 h", "Maximum per 24h")}
                               <strong>{c.daily_limit}</strong>
                             </span>
                             <span>
@@ -1845,24 +1857,31 @@ export default function CRM({ initial }: { initial: Workspace }) {
                               className="button"
                               onClick={() => setModal(`preview:${c.id}`)}
                             >
-                              {t(locale, "Vista previa", "Preview")}
+                              {t(
+                                locale,
+                                "Audiencia y vista previa",
+                                "Audience and preview",
+                              )}
                             </button>
-                            {isAdmin && (
+                            {isAdmin && c.status !== "completed" && (
                               <button
                                 disabled={busy}
                                 className="button primary"
                                 onClick={() =>
-                                  act(
-                                    c.status === "active"
-                                      ? "pause_campaign"
-                                      : "activate_campaign",
-                                    { id: c.id },
-                                  ).catch(() => {})
+                                  c.status === "active"
+                                    ? void act("pause_campaign", {
+                                        id: c.id,
+                                      }).catch(() => {})
+                                    : setModal(`preview:${c.id}`)
                                 }
                               >
                                 {c.status === "active"
                                   ? t(locale, "Pausar", "Pause")
-                                  : t(locale, "Activar", "Activate")}
+                                  : t(
+                                      locale,
+                                      "Revisar y activar",
+                                      "Review and activate",
+                                    )}
                               </button>
                             )}
                           </div>
@@ -2700,274 +2719,13 @@ export default function CRM({ initial }: { initial: Workspace }) {
               />
             )}
             {modal === "campaign" && (
-              <ProtectedForm
-                busy={busy}
-                key={campaignTemplate?.id || "custom"}
-                onSubmit={(e) => {
-                  const f = new FormData(e.currentTarget);
-                  const steps = [
-                    ...(Number(f.get("followup_days")) > 0
-                      ? [
-                          {
-                            subject: String(f.get("followup_subject")),
-                            body: String(f.get("followup_body")),
-                            wait_days: Number(f.get("followup_days")),
-                          },
-                        ]
-                      : []),
-                    ...extraSteps.map((id) => ({
-                      subject: String(f.get(`step_${id}_subject`)),
-                      body: String(f.get(`step_${id}_body`)),
-                      wait_days: Number(f.get(`step_${id}_days`)),
-                    })),
-                  ];
-                  submit(e, "create_campaign", {
-                    steps,
-                    ...(campaignTemplate
-                      ? {
-                          template_id: campaignTemplate.id,
-                          template_version: campaignTemplate.version,
-                        }
-                      : {}),
-                  });
-                }}
-              >
-                <div className="form-grid">
-                  <Field
-                    name="name"
-                    label={t(locale, "Nombre de campaña", "Campaign name")}
-                    required
-                  />
-                  <Field
-                    name="account_id"
-                    label={t(locale, "Cuenta remitente", "Sender account")}
-                  >
-                    {data.accounts.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.email}
-                      </option>
-                    ))}
-                  </Field>
-                  <Field
-                    name="seller_id"
-                    label={t(
-                      locale,
-                      "Seller responsable",
-                      "Responsible seller",
-                    )}
-                  >
-                    {data.profiles
-                      .filter((p) =>
-                        ["seller", "seller_admin", "superadmin"].includes(
-                          p.role,
-                        ),
-                      )
-                      .map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name}
-                        </option>
-                      ))}
-                  </Field>
-                  <Field
-                    name="batch_id"
-                    label={t(locale, "Lote de leads", "Lead batch")}
-                  >
-                    <option value="">
-                      {t(
-                        locale,
-                        "Leads sin campaña",
-                        "Leads without a campaign",
-                      )}
-                    </option>
-                    {data.imports.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </Field>
-                  <Field
-                    name="daily_limit"
-                    label={t(locale, "Límite diario", "Daily limit")}
-                    type="number"
-                    value={100}
-                    min={1}
-                    max={2000}
-                    required
-                  />
-                  <Field
-                    name="timezone"
-                    label={t(locale, "Zona horaria", "Time zone")}
-                    value="America/New_York"
-                  >
-                    {[
-                      "America/New_York",
-                      "America/Chicago",
-                      "America/Denver",
-                      "America/Los_Angeles",
-                      "America/Bogota",
-                    ].map((z) => (
-                      <option key={z}>{z}</option>
-                    ))}
-                  </Field>
-                  <Field
-                    name="start_hour"
-                    label={t(locale, "Hora de inicio", "Start hour")}
-                    type="number"
-                    min={0}
-                    max={23}
-                    value={9}
-                    required
-                  />
-                  <Field
-                    name="end_hour"
-                    label={t(locale, "Hora de fin", "End hour")}
-                    type="number"
-                    min={1}
-                    max={24}
-                    value={17}
-                    required
-                  />
-                </div>
-                <Field
-                  name="subject"
-                  label="Subject"
-                  value={
-                    campaignTemplate?.subject ||
-                    "Funding options for {{company}}"
-                  }
-                  required
-                />
-                <Field
-                  name="body"
-                  label={t(locale, "Mensaje inicial", "Initial message")}
-                  type="textarea"
-                  value={
-                    campaignTemplate?.body ||
-                    "Hi {{name}},\n\nLet’s explore financing options for {{company}}. Apply here: {{application_url}}\n\nCurated Financial\nUnsubscribe: {{unsubscribe_url}}"
-                  }
-                  required
-                />
-                <div className="form-grid">
-                  <Field
-                    name="followup_days"
-                    label={t(
-                      locale,
-                      "Espera para seguimiento (días, 0 = sin seguimiento)",
-                      "Follow-up delay (days, 0 = no follow-up)",
-                    )}
-                    type="number"
-                    value={
-                      campaignTemplate
-                        ? campaignTemplate.steps[0]?.wait_days || 0
-                        : 3
-                    }
-                    min={0}
-                    max={90}
-                  />
-                  <Field
-                    name="followup_subject"
-                    label="Follow-up subject"
-                    value={
-                      campaignTemplate?.steps[0]?.subject ||
-                      "Following up · {{company}}"
-                    }
-                  />
-                </div>
-                <Field
-                  name="followup_body"
-                  label={t(
-                    locale,
-                    "Mensaje de seguimiento",
-                    "Follow-up message",
-                  )}
-                  type="textarea"
-                  value={
-                    campaignTemplate?.steps[0]?.body ||
-                    "Hi {{name}},\n\nDo you have any questions about your application? {{application_url}}\n\nUnsubscribe: {{unsubscribe_url}}"
-                  }
-                />
-                {extraSteps.map((id, index) => (
-                  <section className="analysis-card" key={id}>
-                    <div className="split-heading">
-                      <h3>
-                        {t(
-                          locale,
-                          "Seguimiento adicional",
-                          "Additional follow-up",
-                        )}{" "}
-                        {index + 1}
-                      </h3>
-                      <button
-                        className="text-button"
-                        type="button"
-                        onClick={() =>
-                          setExtraSteps(extraSteps.filter((s) => s !== id))
-                        }
-                      >
-                        {t(locale, "Quitar", "Remove")}
-                      </button>
-                    </div>
-                    <Field
-                      name={`step_${id}_days`}
-                      type="number"
-                      min={1}
-                      max={90}
-                      value={campaignTemplate?.steps[index + 1]?.wait_days || 3}
-                      label={t(
-                        locale,
-                        "Días desde el mensaje anterior",
-                        "Days after previous message",
-                      )}
-                      required
-                    />
-                    <Field
-                      name={`step_${id}_subject`}
-                      label={t(locale, "Asunto", "Subject")}
-                      value={
-                        campaignTemplate?.steps[index + 1]?.subject ||
-                        "Following up · {{company}}"
-                      }
-                      required
-                    />
-                    <Field
-                      name={`step_${id}_body`}
-                      label={t(locale, "Mensaje", "Message")}
-                      type="textarea"
-                      value={
-                        campaignTemplate?.steps[index + 1]?.body ||
-                        "Hi {{name}},\n\nYour application link is {{application_url}}\n\nUnsubscribe: {{unsubscribe_url}}"
-                      }
-                      required
-                    />
-                  </section>
-                ))}
-                <button
-                  type="button"
-                  className="button"
-                  disabled={extraSteps.length >= 19}
-                  onClick={() => setExtraSteps([...extraSteps, Date.now()])}
-                >
-                  {t(
-                    locale,
-                    "Agregar paso a la secuencia",
-                    "Add sequence step",
-                  )}
-                </button>
-                <p className="muted">
-                  {t(
-                    locale,
-                    "Solo se incluirán correos válidos, sin exclusiones ni otra secuencia activa. Una respuesta detiene el seguimiento.",
-                    "Only valid, unsuppressed contacts without another active sequence are eligible. A reply stops follow-up.",
-                  )}
-                </p>
-                <div className="modal-footer">
-                  <SaveButton
-                    locale={locale}
-                    busy={busy}
-                    label={t(locale, "Guardar borrador", "Save draft")}
-                  />
-                </div>
-              </ProtectedForm>
+              <CampaignComposer
+                data={{ ...data, profile }}
+                locale={locale}
+                initialTemplate={campaignTemplate}
+                act={act}
+                close={() => setModal(null)}
+              />
             )}
             {modal === "verify" && (
               <ProtectedForm
@@ -3202,54 +2960,18 @@ export default function CRM({ initial }: { initial: Workspace }) {
             )}
             {modal.startsWith("preview:") &&
               (() => {
-                const c = data.campaigns.find(
+                const campaign = data.campaigns.find(
                   (c) => c.id === modal.split(":")[1],
-                )!;
-                const replace = (s: string) => {
-                  try {
-                    return renderTemplate(s, campaignPreviewValues);
-                  } catch (e) {
-                    return (e as Error).message;
-                  }
-                };
-                const missing = (
-                  c.subject +
-                  c.body +
-                  c.steps.map((s) => s.subject + s.body).join("")
-                ).match(
-                  /{{\s*(?!(?:name|company|amount|industry|phone|application_url|unsubscribe_url)\s*}})[^}]+}}/g,
                 );
-                return (
-                  <div className="template-preview">
-                    <small>
-                      From:{" "}
-                      {data.accounts.find((a) => a.id === c.account_id)?.email}
-                    </small>
-                    <h3>{replace(c.subject)}</h3>
-                    <p>{replace(c.body)}</p>
-                    {c.steps.map((step, index) => (
-                      <section key={index} className="analysis-card">
-                        <small>
-                          {t(locale, "Seguimiento", "Follow-up")} {index + 1} ·{" "}
-                          {step.wait_days}{" "}
-                          {t(locale, "días después", "days later")}
-                        </small>
-                        <h3>{replace(step.subject)}</h3>
-                        <p>{replace(step.body)}</p>
-                      </section>
-                    ))}
-                    {missing && (
-                      <div className="error-banner">
-                        {t(
-                          locale,
-                          "Variables sin resolver",
-                          "Unresolved variables",
-                        )}
-                        : {missing.join(", ")}
-                      </div>
-                    )}
-                  </div>
-                );
+                return campaign ? (
+                  <CampaignReview
+                    campaign={campaign}
+                    data={{ ...data, profile }}
+                    locale={locale}
+                    act={act}
+                    close={() => setModal(null)}
+                  />
+                ) : null;
               })()}
           </Modal>
         )}

@@ -16,6 +16,7 @@ import { documentAction } from "@/lib/server/document-review";
 import { receiveDocument } from "@/lib/server/document-intake";
 import { initializeDocumentChecklist } from "@/lib/server/document-checklist";
 import { campaignPreviewValues } from "@/lib/campaign-templates";
+import { campaignTemplateSchema } from "@/lib/campaign-templates";
 import { lenderDirectorySchema } from "@/lib/lender-directory";
 const envelope = z.object({
   kind: z.string().max(50),
@@ -112,6 +113,11 @@ export async function POST(request: Request) {
     if (JSON.stringify(p).length > 100000)
       throw new HttpError(413, "Payload too large");
     if (kind === "create_campaign" || kind === "activate_campaign") {
+      if (kind === "create_campaign") {
+        const parsed = campaignTemplateSchema.safeParse(p);
+        if (!parsed.success)
+          throw new HttpError(400, parsed.error.issues[0].message);
+      }
       const c =
         kind === "activate_campaign"
           ? checkDb(

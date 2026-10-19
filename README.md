@@ -152,6 +152,8 @@ Este entorno local no dispone de Docker. La construcción de las imágenes y su 
 
 ## Verificación
 
+Para plantillas internas, revisión de audiencia y presupuestos de envío de campañas, consultar [CAMPAIGNS.md](docs/CAMPAIGNS.md). La actualización requiere la migración `039_campaign_delivery_controls.sql` antes de desplegar web y trabajador.
+
 ```sh
 pnpm typecheck
 pnpm test

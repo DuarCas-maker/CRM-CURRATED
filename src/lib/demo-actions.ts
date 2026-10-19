@@ -158,6 +158,22 @@ export function demoAction(
       ];
       break;
     }
+    case "archive_campaign_template": {
+      if (!admin) throw new Error("Access denied");
+      const template = d.email_templates?.find((t) => t.id === p.id);
+      if (template) {
+        template.archived_at = p.archived ? now : null;
+        template.version += 1;
+      }
+      break;
+    }
+    case "campaign_audience_settings": {
+      if (!admin) throw new Error("Access denied");
+      const campaign = d.campaigns.find((c) => c.id === p.id);
+      if (campaign)
+        campaign.excluded_contact_ids = p.excluded_contact_ids as string[];
+      break;
+    }
     case "create_lead":
     case "create_opportunity": {
       required(
@@ -734,6 +750,7 @@ export function demoAction(
       const template = d.email_templates?.find((t) => t.id === p.template_id);
       c.template_id = template?.id;
       c.template_version = template?.version;
+      c.body_format = template?.body_format || "plain";
       c.asset_snapshot =
         d.campaign_assets?.filter((a) => template?.asset_ids.includes(a.id)) ||
         [];

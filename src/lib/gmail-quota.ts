@@ -1,6 +1,6 @@
 import { setTimeout as sleep } from "node:timers/promises";
 
-// New projects have 6,000 units/user/minute and messages.get costs 20 units.
+// New projects have 6,000 units/user/minute. Full/raw/html reads cost 60.
 // Leave headroom for other clients and distribute requests instead of bursting.
 export class GmailQuotaPacer {
   private slots = new Map<string, number>();
@@ -59,9 +59,19 @@ export function gmailRequestCost(path: string, method = "GET") {
   if (resource === "history") return 2;
   if (resource === "messages" && method === "GET") return 5;
   if (
-    /^messages\/[^/]+(?:\/attachments\/[^/]+)?$/.test(resource) &&
+    /^messages\/[^/]+\/attachments\/[^/]+$/.test(resource) &&
     method === "GET"
   )
     return 20;
+  if (/^threads\/[^/]+$/.test(resource) && method === "GET") {
+    const format =
+      new URLSearchParams(path.split("?")[1] || "").get("format") || "full";
+    return ["full", "raw", "html"].includes(format) ? 120 : 40;
+  }
+  if (/^(?:messages|drafts)\/[^/]+$/.test(resource) && method === "GET") {
+    const format =
+      new URLSearchParams(path.split("?")[1] || "").get("format") || "full";
+    return ["full", "raw", "html"].includes(format) ? 60 : 20;
+  }
   return 100;
 }

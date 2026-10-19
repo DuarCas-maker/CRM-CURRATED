@@ -40,7 +40,7 @@ test("template permissions, versions, immutable campaign attachments and generic
       contact = randomUUID(),
       caseId = randomUUID();
     await db.query(
-      "insert into mail_accounts(id,email,organization,status,daily_limit,timezone) values($1,'sender@team.test','Test','connected',100,'UTC')",
+      "insert into mail_accounts(id,email,organization,status,daily_limit,timezone,external_usage_synced_at) values($1,'sender@team.test','Test','connected',100,'UTC',now())",
       [account],
     );
     await db.query(

@@ -25,6 +25,7 @@ import { gmailSyncMode } from "../src/lib/gmail-sync";
 import { scheduleMailboxJobs } from "./gmail-schedule";
 import { reconcileEngagement, linkEngagementThread } from "./gmail-engagement";
 import { reconcileImportAttachments } from "./gmail-import-scope";
+import { scheduleSendingUsage, syncSendingUsage } from "./gmail-sending-usage";
 import { setTimeout as delay } from "node:timers/promises";
 import { writeFile } from "node:fs/promises";
 let stopping = false;
@@ -70,6 +71,11 @@ async function schedule() {
   if (gmailHistoryEnabled())
     connectedQuery = connectedQuery.eq("live_enabled", true);
   const connected = checked(await connectedQuery) || [];
+  await scheduleSendingUsage(
+    checked(
+      await client.from("mail_accounts").select("id").eq("status", "connected"),
+    ) || [],
+  );
   const verifications =
     checked(
       await client
@@ -193,6 +199,9 @@ while (!stopping) {
     }, 60000);
     try {
       switch (job.kind) {
+        case "gmail_sending_usage":
+          await syncSendingUsage(job.payload);
+          break;
         case "underwriting":
           await processUnderwriting(job);
           break;

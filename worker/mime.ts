@@ -35,6 +35,7 @@ export function buildMime(input: {
   signatureHtml?: string;
   subject: string;
   body: string;
+  bodyHtml?: string;
   messageId: string;
   inReplyTo?: string;
   references?: string;
@@ -78,8 +79,8 @@ export function buildMime(input: {
     .replace(/\r?\n/g, "<br>");
   const textPart = `Content-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${base64(Buffer.from(plain))}`;
   const parts = [
-    input.signatureHtml
-      ? `--${boundary}\r\nContent-Type: multipart/alternative; boundary="${alternative}"\r\n\r\n--${alternative}\r\n${textPart}\r\n--${alternative}\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${base64(Buffer.from(`<div>${escapedBody}</div><br><div>${input.signatureHtml}</div>`))}\r\n--${alternative}--`
+    input.signatureHtml || input.bodyHtml
+      ? `--${boundary}\r\nContent-Type: multipart/alternative; boundary="${alternative}"\r\n\r\n--${alternative}\r\n${textPart}\r\n--${alternative}\r\nContent-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n${base64(Buffer.from(`<div>${input.bodyHtml || escapedBody}</div>${input.signatureHtml ? `<br><div>${input.signatureHtml}</div>` : ""}`))}\r\n--${alternative}--`
       : `--${boundary}\r\n${textPart}`,
   ];
   for (const attachment of input.attachments || [])

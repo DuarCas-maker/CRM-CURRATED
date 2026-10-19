@@ -6,8 +6,27 @@ import {
   checkOrigin,
   HttpError,
   jsonError,
+  checkDb,
 } from "@/lib/server/supabase";
 import { readBounded } from "@/lib/server/body";
+export async function GET(request: Request) {
+  try {
+    const { db } = await requireUser();
+    const id = z.uuid().parse(new URL(request.url).searchParams.get("id"));
+    return Response.json(
+      checkDb(
+        await db
+          .from("email_template_versions")
+          .select("*")
+          .eq("template_id", id)
+          .order("version", { ascending: false })
+          .limit(100),
+      ),
+    );
+  } catch (e) {
+    return jsonError(e);
+  }
+}
 export async function POST(request: Request) {
   try {
     checkOrigin(request);

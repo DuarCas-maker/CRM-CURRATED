@@ -1,5 +1,6 @@
 import { OAuth2Client } from "google-auth-library";
 import { z } from "zod";
+import { setTimeout as delay } from "node:timers/promises";
 import { decrypt } from "./crypto";
 import { serviceClient, checkDb, HttpError } from "./supabase";
 import {
@@ -14,6 +15,7 @@ import {
 } from "../gmail-quota";
 export { GmailError } from "../gmail-errors";
 const quotaPacer = new GmailQuotaPacer();
+const quotaProjects = new Map<string, string>();
 const organizationSchema = z.array(
   z.object({
     id: z.string(),
@@ -21,6 +23,7 @@ const organizationSchema = z.array(
     clientId: z.string(),
     clientSecret: z.string(),
     pubsubTopic: z.string().optional(),
+    projectId: z.string().optional(),
   }),
 );
 export function configuredOrganizations() {
@@ -54,6 +57,8 @@ export async function gmailToken(accountId: string) {
     tokenClients.delete(accountId);
     throw new GmailError(401);
   }
+  const org = organization(account.organization);
+  quotaProjects.set(accountId, org.projectId || org.clientId.split("-")[0]);
   const credentials = checkDb(
     await db
       .from("mail_credentials")
@@ -103,9 +108,26 @@ export async function gmail<T>(
   accountId: string,
   path: string,
   init: RequestInit = {},
+  beforeRequest?: () => Promise<void>,
 ): Promise<T> {
   const access = await gmailToken(accountId);
   await quotaPacer.wait(accountId, gmailRequestCost(path, init.method));
+  const reserved = checkDb(
+    await serviceClient().rpc("reserve_gmail_api", {
+      account: accountId,
+      project: quotaProjects.get(accountId),
+      units: gmailRequestCost(path, init.method),
+    }),
+  );
+  if (reserved === -1) throw new GmailError(403, "dailyLimitExceeded", 3600);
+  if (
+    typeof reserved !== "number" ||
+    !Number.isFinite(reserved) ||
+    reserved < 0
+  )
+    throw new Error("GMAIL_QUOTA_RESERVATION_FAILED");
+  if (reserved > 0) await delay(reserved);
+  await beforeRequest?.();
   const res = await fetch(
     `https://gmail.googleapis.com/gmail/v1/users/me/${path}`,
     {

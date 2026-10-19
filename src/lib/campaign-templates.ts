@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { renderTemplate, templateVariables } from "./domain";
+import { renderCampaignContent, type CampaignFormat } from "./campaign-content";
 export const campaignPreviewValues = {
   name: "Alex",
   company: "Example Business",
@@ -21,6 +22,7 @@ export const campaignTemplateSchema = z
       .max(200)
       .refine((v) => !/[\r\n]/.test(v)),
     body: z.string().trim().min(1).max(20000),
+    body_format: z.enum(["plain", "markdown"]).default("plain"),
     steps: z
       .array(
         z.object({
@@ -47,6 +49,11 @@ export const campaignTemplateSchema = z
         });
       try {
         renderTemplate(message.subject + message.body, campaignPreviewValues);
+        renderCampaignContent(
+          message.body,
+          campaignPreviewValues,
+          p.body_format,
+        );
       } catch {
         ctx.addIssue({
           code: "custom",
@@ -70,6 +77,7 @@ export interface CampaignAsset {
   created_at: string;
 }
 export interface EmailTemplate {
+  body_format?: CampaignFormat;
   id: string;
   name: string;
   subject: string;
