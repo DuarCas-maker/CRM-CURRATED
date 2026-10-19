@@ -11,16 +11,17 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Locale } from "@/lib/domain";
-import { currency, dateLabel, stageLabels } from "@/lib/domain";
+import { currency, dateLabel } from "@/lib/domain";
 import { processStates } from "@/lib/financing-history";
 import type {
   ControlRow,
   ControlSection,
   FinancingControlData,
 } from "@/lib/financing-control";
-import { controlAction, stageDuration } from "@/lib/financing-control";
+import { controlAction } from "@/lib/financing-control";
 import { t } from "./ui";
 import "./financing-control-dashboard.css";
+import { FinancingTrackingTable } from "./financing-tracking-table";
 
 const statusLabels: Record<string, [string, string]> = {
   pending: ["Pendiente", "Pending"],
@@ -56,13 +57,6 @@ function InfoNote({ label, children }: { label: string; children: ReactNode }) {
       </summary>
       <div className="control-explanation">{children}</div>
     </details>
-  );
-}
-function Status({ value, locale }: { value: string; locale: Locale }) {
-  return (
-    <span className={`control-status control-status-${value}`}>
-      {statusLabels[value] ? t(locale, ...statusLabels[value]) : value}
-    </span>
   );
 }
 const filters: [string, string, string][] = [
@@ -399,12 +393,14 @@ export function FinancingControlDashboard({
                 onClick={() => open(r.id, a.section)}
               >
                 <span>
-                  <strong>{r.company}</strong>
-                  <small>{a.reason}</small>
+                  <span className="control-alert-heading">
+                    <strong>{r.company}</strong>
+                    {a.due && <small>{dateLabel(a.due, locale)}</small>}
+                  </span>
                   <span>{a.label}</span>
                   <small>
+                    {a.reason} ·{" "}
                     {a.owner || t(locale, "Sin responsable", "Unassigned")}
-                    {a.due ? ` · ${dateLabel(a.due, locale, true)}` : ""}
                   </small>
                 </span>
                 <ArrowUpRight size={17} />
@@ -422,402 +418,22 @@ export function FinancingControlDashboard({
           )}
         </section>
       </div>
-      <section className="panel control-tracking">
-        <div className="section-heading">
-          <div>
-            <h2>
-              {t(locale, "Seguimiento de financiación", "Financing follow-up")}
-            </h2>
-            <p className="muted">
-              {t(
-                locale,
-                "Documentos, aplicación y riesgo: estado compartido del expediente. No certifican vigencia para cada renovación.",
-                "Documents, application and risk: shared case status. They do not certify currency for each renewal.",
-              )}
-            </p>
-          </div>
-          <span>
-            {data.total}{" "}
-            {t(locale, "filas · total filtrado", "rows · filtered total")}
-          </span>
-        </div>
-        <div className="control-mini">
-          <span>
-            {t(locale, "Aplicaciones", "Applications")}:{" "}
-            {Object.entries(s.application_counts).map(([k, n]) => (
-              <span key={k}>
-                {statusLabels[k] ? t(locale, ...statusLabels[k]) : k} <b>{n}</b>{" "}
-                ·{" "}
-              </span>
-            ))}
-            <small>
-              {t(
-                locale,
-                "Incluidas en paquete confirmado",
-                "In confirmed package",
-              )}
-              : {number(s.application_sent_cases)} / {s.active_opportunities}
-            </small>
-          </span>
-          <span>
-            {t(locale, "Riesgo", "Risk")}:{" "}
-            {Object.entries(s.risk_counts).map(([k, n]) => (
-              <span key={k}>
-                {statusLabels[k] ? t(locale, ...statusLabels[k]) : k} <b>{n}</b>{" "}
-                ·{" "}
-              </span>
-            ))}
-          </span>
-          <span>
-            {t(locale, "Documentos por revisar", "Documents to review")}:{" "}
-            <b>{s.review_documents}</b> ·{" "}
-            {t(
-              locale,
-              "Ofertas activas / próximas a vencer",
-              "Active / expiring offers",
-            )}
-            :{" "}
-            <b>
-              {number(s.active_offers)} / {number(s.expiring_offers)}
-            </b>
-          </span>
-        </div>
-        <div
-          className="control-filters"
-          role="group"
-          aria-label={t(locale, "Filtros operativos", "Operational filters")}
-        >
-          {filters.map(([key, es, eng]) => (
-            <button
-              key={key}
-              className={`button ${key === filter ? "primary" : ""}`}
-              aria-pressed={key === filter}
-              onClick={() => {
-                setFilter(key);
-                setPage(0);
-              }}
-            >
-              {t(locale, es, eng)}
-            </button>
-          ))}
-        </div>
-        <div className="control-selects">
-          <label>
-            {t(locale, "Etapa del proceso", "Process stage")}
-            <select
-              value={processState}
-              onChange={(e) => {
-                setProcessState(e.target.value);
-                setPage(0);
-              }}
-            >
-              <option value="">{t(locale, "Todas", "All")}</option>
-              <option value="no_process">
-                {t(locale, "Sin proceso asociado", "No linked process")}
-              </option>
-              <option value="restricted">
-                {t(locale, "Etapa restringida", "Restricted stage")}
-              </option>
-              {Object.entries(processStates).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v[en ? 1 : 0]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            {t(locale, "Permanencia comprobada", "Verified time in stage")}
-            <select
-              value={stalled}
-              onChange={(e) => {
-                setStalled(e.target.value);
-                setPage(0);
-              }}
-            >
-              <option value="">
-                {t(locale, "Cualquier duración", "Any duration")}
-              </option>
-              {[3, 5, 7, 14].map((n) => (
-                <option key={n} value={n}>
-                  ≥ {n} {t(locale, "días", "days")}
-                </option>
-              ))}
-            </select>
-          </label>
-          {(processState || stalled) && (
-            <button
-              className="text-button"
-              onClick={() => {
-                setProcessState("");
-                setStalled("");
-              }}
-            >
-              {t(
-                locale,
-                "Limpiar etapa y permanencia",
-                "Clear stage and duration",
-              )}
-            </button>
-          )}
-        </div>
-        <div className="table-wrap">
-          <table className="control-table">
-            <thead>
-              <tr>
-                {[
-                  t(locale, "Empresa / proceso", "Company / process"),
-                  t(
-                    locale,
-                    "Documentación y aplicación",
-                    "Documents and application",
-                  ),
-                  t(locale, "Análisis de riesgo", "Risk analysis"),
-                  t(locale, "Envíos y ofertas", "Submissions and offers"),
-                  t(
-                    locale,
-                    "Permanencia / comunicación",
-                    "Time in stage / communication",
-                  ),
-                  t(locale, "Próxima acción", "Next action"),
-                ].map((h) => (
-                  <th key={h}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {data.rows.map((r) => {
-                const a = next(r);
-                return (
-                  <tr key={r.row_key}>
-                    <td>
-                      <button
-                        className="text-button"
-                        onClick={() => open(r.id, "activity")}
-                      >
-                        <strong>{r.company}</strong>
-                      </button>
-                      <small>{r.contact}</small>
-                      <small>
-                        {r.process_id
-                          ? `#${r.sequence_number} · ${r.process_label}`
-                          : t(
-                              locale,
-                              "Sin proceso asociado",
-                              "No linked process",
-                            )}
-                      </small>
-                      <span className="badge">
-                        {stageName(r.process_state || "no_process")}
-                      </span>
-                      <small>
-                        {t(locale, "Oportunidad", "Opportunity")}:{" "}
-                        {stageLabels[locale][r.stage]}
-                      </small>
-                      <small>
-                        {r.owner_name ||
-                          t(locale, "Sin responsable", "Unassigned")}
-                      </small>
-                    </td>
-                    <td>
-                      <button
-                        className="text-button"
-                        onClick={() => open(r.id, "documents")}
-                      >
-                        {r.approved_count} / {r.required_count}{" "}
-                        {t(locale, "aprobados", "approved")}
-                      </button>
-                      <small>
-                        {r.received_count} / {r.required_count}{" "}
-                        {t(locale, "recibidos", "received")} · {r.review_count}{" "}
-                        {t(locale, "por revisar", "to review")}
-                      </small>
-                      <small>
-                        {r.missing_count} {t(locale, "faltantes", "missing")} ·{" "}
-                        {r.correction_count}{" "}
-                        {t(locale, "por corregir", "to correct")}
-                      </small>
-                      <Status value={r.application_status} locale={locale} />
-                      <small>
-                        {t(
-                          locale,
-                          "Aplicación · expediente",
-                          "Application · case",
-                        )}
-                      </small>
-                    </td>
-                    <td>
-                      <button
-                        className="text-button"
-                        onClick={() => open(r.id, "analysis")}
-                      >
-                        <Status value={r.risk_status} locale={locale} />
-                      </button>
-                      <small>
-                        {t(locale, "Revisión del expediente", "Case review")}
-                      </small>
-                    </td>
-                    <td>
-                      {s.confirmed_submissions === null ? (
-                        <span>{na}</span>
-                      ) : (
-                        <>
-                          <button
-                            className="text-button"
-                            onClick={() => open(r.id, "lenders")}
-                          >
-                            {r.confirmed_count}{" "}
-                            {t(
-                              locale,
-                              "solicitudes confirmadas",
-                              "confirmed submissions",
-                            )}
-                          </button>
-                          <small>
-                            {r.response_count} / {r.confirmed_count}{" "}
-                            {t(locale, "con respuesta", "with replies")}
-                          </small>
-                          <small>
-                            {r.application_sent_count}{" "}
-                            {t(
-                              locale,
-                              "con aplicación enviada",
-                              "with sent application",
-                            )}
-                          </small>
-                          {r.lenders.map((l) => (
-                            <small key={l.id}>
-                              {l.name} ·{" "}
-                              <Status value={l.status} locale={locale} />
-                              {l.responded
-                                ? ` · ${t(locale, "respondió", "replied")}`
-                                : ""}
-                            </small>
-                          ))}
-                          <small>
-                            {r.active_offers}{" "}
-                            {t(locale, "ofertas activas", "active offers")} ·{" "}
-                            {r.expiring_offers}{" "}
-                            {t(locale, "por vencer", "expiring")} ·{" "}
-                            {r.expired_offers}{" "}
-                            {t(locale, "vencidas", "expired")}
-                          </small>
-                        </>
-                      )}
-                    </td>
-                    <td>
-                      <strong>
-                        {stageDuration(r.stage_entered_at, data.as_of, locale)}
-                      </strong>
-                      <small>
-                        {t(
-                          locale,
-                          "Entrada auditada a la etapa del proceso",
-                          "Audited entry into process stage",
-                        )}
-                      </small>
-                      <small>
-                        {t(locale, "Recibido", "Received")}:{" "}
-                        {r.last_inbound_at
-                          ? dateLabel(r.last_inbound_at, locale, true)
-                          : na}
-                      </small>
-                      <small>
-                        {t(locale, "Enviado", "Sent")}:{" "}
-                        {r.last_outbound_at
-                          ? dateLabel(r.last_outbound_at, locale, true)
-                          : na}
-                      </small>
-                      <small>
-                        {r.reply_count > 0
-                          ? t(
-                              locale,
-                              "Debe responder: equipo",
-                              "Reply due: team",
-                            )
-                          : r.waiting_for
-                            ? t(locale, "Espera de", "Waiting for") +
-                              ": " +
-                              ({
-                                client: t(locale, "cliente", "client"),
-                                lender: "lender",
-                                team: t(locale, "equipo", "team"),
-                              }[r.waiting_for] || na)
-                            : t(
-                                locale,
-                                "Sin espera registrada",
-                                "No recorded wait",
-                              )}
-                      </small>
-                      {(r.reply_due_at || r.followup_due_at) && (
-                        <small>
-                          SLA:{" "}
-                          {dateLabel(
-                            r.reply_due_at || r.followup_due_at!,
-                            locale,
-                            true,
-                          )}
-                        </small>
-                      )}
-                    </td>
-                    <td>
-                      <button
-                        className="text-button"
-                        onClick={() => open(r.id, a.section)}
-                      >
-                        {a.label} <ArrowUpRight size={13} />
-                      </button>
-                      <small>{a.reason}</small>
-                      <small>
-                        {a.owner || t(locale, "Sin responsable", "Unassigned")}
-                      </small>
-                      <small>
-                        {a.due
-                          ? dateLabel(a.due, locale, true)
-                          : t(
-                              locale,
-                              "Sin plazo registrado",
-                              "No recorded deadline",
-                            )}
-                      </small>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {!data.rows.length && (
-          <p className="muted">
-            {t(
-              locale,
-              "No hay expedientes con estos filtros.",
-              "No cases match these filters.",
-            )}
-          </p>
-        )}
-        <div className="table-footer">
-          <span>
-            {data.rows.length ? page * 50 + 1 : 0}–
-            {data.rows.length ? page * 50 + data.rows.length : 0} / {data.total}
-          </span>
-          <div className="card-actions">
-            <button
-              className="button"
-              disabled={!page || loading}
-              onClick={() => setPage(page - 1)}
-            >
-              {t(locale, "Anterior", "Previous")}
-            </button>
-            <button
-              className="button"
-              disabled={(page + 1) * 50 >= data.total || loading}
-              onClick={() => setPage(page + 1)}
-            >
-              {t(locale, "Siguiente", "Next")}
-            </button>
-          </div>
-        </div>
-      </section>
+      <FinancingTrackingTable
+        data={data}
+        locale={locale}
+        filter={filter}
+        setFilter={setFilter}
+        page={page}
+        setPage={setPage}
+        processState={processState}
+        setProcessState={setProcessState}
+        stalled={stalled}
+        setStalled={setStalled}
+        open={open}
+        loading={loading}
+        filters={filters}
+        stageName={stageName}
+      />
       {s.lender_counts && s.lender_counts.length > 0 && (
         <section className="panel control-lenders">
           <div className="section-heading">

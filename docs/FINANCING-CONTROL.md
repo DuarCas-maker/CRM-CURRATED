@@ -56,6 +56,14 @@ Requiere todas las migraciones previas 001–041. Preparar 042 y su revisión so
 - Los iconos de ayuda son disclosures nativos (`details`/`summary`), accesibles por teclado y toque, no solamente por hover.
 - La demo conserva datos ficticios y presenta como no disponibles los envíos para los que no tiene evidencia de reconciliación. No certifica producción.
 
+## Presentación compacta
+
+El seguimiento toma como referencia `curated-dashboard-prototipo.html`: barra de requisitos aprobados, columnas independientes para documentación y aplicación, estados breves de riesgo y comunicación resumida desde mensajes con fecha real. El filtro de atención es un único selector junto a etapa y permanencia. Encabezados, controles y contenido de gráficas tienen espacio interior consistente.
+
+Cada fila permite abrir **Detalle / Details** para consultar los conteos documentales, las fechas entrantes/salientes, SLA, versiones enviadas, ofertas y motivo de la acción. **Ver desglose / View breakdown** conserva los subtotales del expediente sin ocupar la vista inicial. El cambio es de presentación: conserva RPC, filtros de servidor, permisos y significado de las métricas. No requiere otra migración. En móvil, la tabla se desplaza dentro del panel y no ensancha la página.
+
+Verificación del ajuste: 15 pruebas existentes de financiación y seguimiento aprobadas, typecheck y build webpack con Node 22 en una copia aislada de los cambios de campañas en curso. Revisión de navegador en ES/EN, selector, apertura/cierre de detalle por teclado, barras y márgenes de escritorio, y ausencia de desbordamiento de página en móvil. Evidencias: `.local/control-visual-desktop.png` y `.local/control-visual-mobile.png`.
+
 ## Verificación
 
 `tests/financing-control.test.ts`: unidades independientes, deduplicación de importes/requisitos, recepción/aprobación, extractos repetidos, borrador y cambio de fuentes, cola/incertidumbre/confirmación, varios lenders y correos, paquete congelado, vencimiento real de oferta, transición auditada, permisos/MFA, período de desembolso, paginación y reversión/reinstalación. Las suites existentes de DB y seguimiento se mantienen.
