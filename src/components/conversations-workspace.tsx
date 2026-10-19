@@ -90,6 +90,7 @@ export function ConversationsWorkspace({
   openCase,
   opportunity,
   onAttachment,
+  initialCaseId,
 }: {
   data: Workspace;
   locale: Locale;
@@ -97,6 +98,7 @@ export function ConversationsWorkspace({
   busy: boolean;
   openCase: (id: string, scope?: Workspace) => void;
   opportunity?: Opportunity;
+  initialCaseId?: string;
   onAttachment?: (
     attachment: NonNullable<Workspace["attachments"]>[number],
     message: Message,
@@ -114,7 +116,16 @@ export function ConversationsWorkspace({
     [data.opportunities, data.profile],
   );
   const [choice, setChoice] = useState<MailClientChoice | undefined>(
-    opportunity || initial[0],
+    opportunity ||
+      initial.find((o) => o.id === initialCaseId) ||
+      (initialCaseId
+        ? ({
+            id: initialCaseId,
+            company: "",
+            contact: "",
+            email: "",
+          } as MailClientChoice)
+        : initial[0]),
   );
   const caseId = choice?.id || "";
   const pendingMode = caseId === "unassigned";

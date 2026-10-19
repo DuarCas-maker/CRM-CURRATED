@@ -66,6 +66,11 @@ import {
   OperationalSettingsPanel,
 } from "./operational-dashboard";
 import { demoOperationalDashboard } from "@/lib/operations";
+import { FinancingControlDashboard } from "./financing-control-dashboard";
+import {
+  demoFinancingControl,
+  type ControlSection,
+} from "@/lib/financing-control";
 import { CampaignTemplates } from "./campaign-templates";
 import { CampaignComposer } from "./campaign-composer";
 import { CampaignReview, SendingBudgets } from "./campaign-review";
@@ -137,6 +142,12 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [view, setView] = useState<View>("overview");
   const [settingsSection, setSettingsSection] = useState("general");
   const [attentionFilter, setAttentionFilter] = useState("all");
+  const [processState, setProcessState] = useState("");
+  const [stalled, setStalled] = useState("");
+  const [controlMailCase, setControlMailCase] = useState<string | null>(null);
+  const [detailSection, setDetailSection] = useState<
+    "activity" | "documents" | "analysis" | "lenders"
+  >("activity");
   const [query, setQuery] = useState("");
   const [stage, setStage] = useState("all");
   const [owner, setOwner] = useState("all");
@@ -170,6 +181,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
     lead_status: leadStatus,
     page: String(selected ? 0 : page),
     attention: attentionFilter,
+    process_state: processState,
+    stalled,
     ...(selected ? { case: selected } : {}),
   }).toString();
   useEffect(() => {
@@ -206,6 +219,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
     view,
     leadStatus,
     attentionFilter,
+    processState,
+    stalled,
   ]);
   useEffect(() => {
     if (initial.demo) return;
@@ -330,6 +345,37 @@ export default function CRM({ initial }: { initial: Workspace }) {
       )
     : data.operational;
   const canVerifyLeads = isAdmin && leadStatus !== "converted";
+  const control = data.demo
+    ? demoFinancingControl(
+        { ...data, profile },
+        filtered,
+        attentionFilter,
+        page,
+        processState,
+        stalled,
+      )
+    : data.financing_control;
+  const openControl = (id: string, section: ControlSection) => {
+    if (section === "mail") {
+      setControlMailCase(id);
+      setQuery("");
+      setSelected(null);
+      setView("inbox");
+      if (!data.demo && !data.opportunities.some((o) => o.id === id))
+        void fetch(
+          `/api/workspace?${new URLSearchParams({ case: id, view: "inbox" })}`,
+        )
+          .then(async (response) => {
+            const scope = await response.json();
+            if (!response.ok) throw new Error(scope.error);
+            cacheMailCase(scope);
+          })
+          .catch((e) => setError(e.message));
+      return;
+    }
+    setDetailSection(section);
+    setSelected(id);
+  };
   const closerAdmin = ["superadmin", "closer_admin"].includes(profile.role);
   const ownerStats =
     data.stats?.owners ||
@@ -948,6 +994,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
           )}
           {activeOpportunity ? (
             <OpportunityDetail
+              key={`${activeOpportunity.id}:${detailSection}`}
+              initialTab={detailSection}
               opportunity={activeOpportunity}
               data={data}
               profile={profile}
@@ -1073,7 +1121,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   </div>
                 </div>
               )}
-              {["overview", "reports"].includes(view) && (
+              {(view === "reports" || (view === "overview" && !control)) && (
                 <div className="metrics">
                   <Metric
                     label={t(locale, "Pipeline activo", "Active pipeline")}
@@ -1132,7 +1180,37 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   />
                 </div>
               )}
-              {view === "overview" && operational && (
+              {view === "overview" && (
+                <>
+                  {filters}
+                  {control ? (
+                    <FinancingControlDashboard
+                      data={control}
+                      locale={locale}
+                      filter={attentionFilter}
+                      setFilter={setAttentionFilter}
+                      page={page}
+                      setPage={setPage}
+                      processState={processState}
+                      setProcessState={setProcessState}
+                      stalled={stalled}
+                      setStalled={setStalled}
+                      open={openControl}
+                      period={period}
+                      loading={loading}
+                    />
+                  ) : (
+                    <p className="muted" role="status">
+                      {t(
+                        locale,
+                        "Centro de control pendiente de activación. Se conserva el seguimiento disponible; las métricas nuevas no están disponibles.",
+                        "Control center activation pending. Existing follow-up remains available; new metrics are unavailable.",
+                      )}
+                    </p>
+                  )}
+                </>
+              )}
+              {view === "overview" && !control && operational && (
                 <OperationalDashboard
                   data={operational}
                   locale={locale}
@@ -1143,7 +1221,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   open={(id) => setSelected(id)}
                 />
               )}
-              {view === "overview" && (
+              {view === "overview" && !control && (
                 <div className="overview-middle">
                   <section className="panel pipeline-summary">
                     <div className="section-heading">
@@ -1259,7 +1337,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   </section>
                 </div>
               )}
-              {["overview", "pipeline"].includes(view) && (
+              {(view === "pipeline" || (view === "overview" && !control)) && (
                 <section className="panel">
                   <div className="section-heading">
                     <div className="section-tabs">
@@ -1720,6 +1798,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
               )}
               {view === "inbox" && (
                 <MailInbox
+                  key={controlMailCase || "inbox"}
+                  initialCaseId={controlMailCase || undefined}
                   data={{ ...data, profile }}
                   locale={locale}
                   act={act}

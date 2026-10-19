@@ -33,6 +33,25 @@ export async function loadWorkspace(
     days > 0
       ? new Date(Date.now() - Math.min(days, 36500) * 86400000).toISOString()
       : null;
+  let financingControl: Workspace["financing_control"];
+  if (extensionsReady && (params.get("view") || "overview") === "overview") {
+    const control = await db.rpc("financing_control_dashboard", {
+      search_text: search,
+      owner_filter: owner,
+      stage_filter: stage,
+      campaign_filter: campaign,
+      since_filter: since,
+      attention_filter: params.get("attention") || "all",
+      cursor_offset: page * 50,
+      process_state_filter: params.get("process_state") || null,
+      stalled_days: [3, 5, 7, 14].includes(Number(params.get("stalled")))
+        ? Number(params.get("stalled"))
+        : null,
+    });
+    // A missing v2 migration preserves the original overview. Other failures surface.
+    if (!control.error || !["PGRST202", "42883"].includes(control.error.code))
+      financingControl = checkDb(control, "financing_control_dashboard");
+  }
   const preparing = !caseId && params.get("view") === "leads";
   let leadResponse: { data: Workspace["leads"] | null; count: number | null } =
     { data: [], count: 0 };
@@ -272,6 +291,7 @@ export async function loadWorkspace(
       (page + 1) * 100,
     stats,
     crm_extensions_ready: extensionsReady,
+    financing_control: financingControl,
     ...(extensionsReady && (params.get("view") || "overview") === "overview"
       ? {
           operational: checkDb(
@@ -281,7 +301,21 @@ export async function loadWorkspace(
               stage_filter: stage,
               campaign_filter: campaign,
               since_filter: since,
-              attention_filter: params.get("attention") || "all",
+              attention_filter:
+                financingControl ||
+                ![
+                  "all",
+                  "attention",
+                  "reply",
+                  "overdue",
+                  "documents",
+                  "analysis",
+                  "lender",
+                  "negotiation",
+                  "offers",
+                ].includes(params.get("attention") || "all")
+                  ? "all"
+                  : params.get("attention") || "all",
               cursor_offset: page * 50,
             }),
             "operational_dashboard",

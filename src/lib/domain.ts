@@ -267,6 +267,7 @@ export interface Workspace {
   mail_files?: import("./mail-files").MailVisibleFile[];
   crm_extensions_ready?: boolean;
   operational?: import("./operations").OperationalData;
+  financing_control?: import("./financing-control").FinancingControlData;
   email_templates?: import("./campaign-templates").EmailTemplate[];
   campaign_assets?: import("./campaign-templates").CampaignAsset[];
   underwriting_settings?: import("./underwriting").UnderwritingSettings;
