@@ -5,7 +5,7 @@ import {
   underwritingRequest,
   type ProviderDiagnostics,
 } from "../src/lib/server/openai-underwriting";
-import { validateUnderwritingReport } from "../src/lib/underwriting";
+import { prepareUnderwritingDraft } from "../src/lib/underwriting";
 import type { UnderwritingDocument } from "../src/lib/underwriting";
 
 export async function processUnderwriting(job: {
@@ -100,10 +100,12 @@ export async function processUnderwriting(job: {
     const result = await callUnderwritingProvider(
       body,
       process.env.OPENAI_API_KEY,
+      fetch,
+      { retainUnparsed: true },
     );
     diagnostics = result.diagnostics;
     if (!(await progress("validating", documents.length, diagnostics))) return;
-    const report = validateUnderwritingReport(
+    const report = prepareUnderwritingDraft(
       result.value,
       run.document_snapshot,
       run.lender_snapshot,
@@ -130,7 +132,7 @@ export async function processUnderwriting(job: {
     const code =
       error instanceof UnderwritingProviderError
         ? error.code
-        : "UNDERWRITING_REPORT_REQUIRES_REVIEW";
+        : "UNDERWRITING_PROCESSING_FAILED";
     checked(
       await client.rpc("complete_underwriting", {
         run_id: run.id,

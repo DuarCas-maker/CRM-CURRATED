@@ -2,11 +2,23 @@
 
 ## Activación
 
-1. Aplicar `supabase/migrations/037_underwriting_progress.sql` después de las migraciones 001–036, desde Supabase SQL Editor o el procedimiento habitual de migraciones.
+1. Aplicar `supabase/migrations/037_underwriting_progress.sql` después de las migraciones 001–036 y luego `038_underwriting_human_review.sql`, desde Supabase SQL Editor o el procedimiento habitual de migraciones. Si ya se aplicó 037, ejecutar solamente 038.
 2. Desplegar tanto la web como el worker con esta versión. El worker conserva la misma variable `OPENAI_API_KEY` ya configurada. No se necesita compartir una clave nueva.
 3. Como superadmin, abrir **Configuración → Análisis y underwriting**. Si el límite actual es 8.000, considerar probar 16.000 para el siguiente intento. Se permite hasta 32.000; incluye razonamiento e informe y puede aumentar el consumo. El valor existente no se modifica automáticamente y los análisis anteriores conservan su configuración.
 4. Abrir **Oportunidades → ficha → Análisis manual**. Revisar el checklist y usar **Revisar documentos pendientes** para incorporar/corregir/aprobar archivos en Documentos.
-5. Con la solicitud, al menos cuatro extractos distintos y todos los documentos adicionales obligatorios aprobados, solicitar un nuevo análisis. El resultado anterior no se reintenta ni se convierte en un informe válido.
+5. Con la solicitud, al menos cuatro extractos distintos y todos los documentos adicionales obligatorios aprobados, solicitar un nuevo análisis. Al recibir el informe se abre la revisión: leer contenido, fuentes y observaciones, descargar el PDF y registrar la decisión humana. El resultado anterior no se reintenta automáticamente.
+
+## Informe disponible y decisión humana (038)
+
+Un informe recibido de la IA se guarda como borrador consultable aun cuando una comprobación de cifras, evidencias, períodos, lenders o criterios encuentre inconsistencias. Se conserva el contenido original y se muestran las observaciones específicas; no son una aprobación ni un rechazo de la solicitud. La versión estructurada facilita la lectura y los cálculos auxiliares. Si una exclusión supera los depósitos, el cálculo auxiliar queda sin confirmar; los valores originales siguen visibles. Si la respuesta completa viene con formato inesperado o texto en lugar de JSON, se ofrece su contenido original para lectura, sin inventar un análisis sustitutivo.
+
+**Ver análisis** permite reabrir el informe en cualquier estado, incluyendo descartado o desactualizado. **Descargar informe PDF** incluye el contenido original, los archivos enviados, observaciones, cálculos auxiliares y el estado de revisión. Los archivos y PDFs conservan los permisos del expediente; las referencias desconocidas no conceden acceso a otros archivos.
+
+El usuario confirma que revisó el contenido y puede **Aprobar informe y guardar revisión**, completando su resumen, conclusión, observaciones y recomendaciones; o **Descartar informe y guardar observación**, indicando un motivo. Descartar no elimina el informe ni crea un análisis aprobado. Se registran usuario, fecha y actividad. Cerrar deja la decisión pendiente. Los documentos modificados impiden aprobar una versión desactualizada, pero se conserva su consulta. El 100% significa que el documento se guardó, no que una solicitud de financiación fue aprobada.
+
+Los intentos antiguos que fallaron con `UNDERWRITING_REPORT_REQUIRES_REVIEW` descartaron el contenido: no es posible reconstruirlo desde ese registro. Hace falta generar un nuevo informe después de actualizar el worker. Un error de conexión sin respuesta utilizable sigue mostrando un fallo técnico; el CRM no fabrica un documento de análisis que OpenAI no haya entregado.
+
+Pruebas: `tests/underwriting-human-review.test.ts` verifica conservación íntegra del contenido, avisos múltiples, cálculos inconsistentes, formatos inesperados, PDF, permisos/MFA, rechazo idempotente, aprobación explícita, historial y el recorrido real del worker con OpenAI simulado. La prueba visual en `/demo` abre un informe con observaciones, comprueba el bloqueo de las decisiones sin confirmación, descarta y reabre el informe con su motivo, descarga el PDF y verifica una aprobación humana independiente. No se enviaron documentos reales a OpenAI para estas pruebas.
 
 La web y el worker admiten un despliegue gradual previo a 037: el checklist y los errores siguen disponibles; el progreso detallado y el límite de 32.000 requieren la migración. Se recomienda aplicar la migración primero. Reiniciar también el worker: actualizar solo la web no activa la captura del motivo ni los avances por archivo.
 

@@ -15,6 +15,11 @@ const inputSchema = z.discriminatedUnion("action", [
     request_key: z.uuid(),
   }),
   z.object({
+    action: z.literal("reject"),
+    run_id: z.uuid(),
+    notes: z.string().trim().min(1).max(20000),
+  }),
+  z.object({
     action: z.literal("approve"),
     run_id: z.uuid(),
     summary: z.string().trim().min(1).max(20000),
@@ -48,7 +53,7 @@ export async function GET(request: Request) {
       const progress = await db
         .from("underwriting_runs")
         .select(
-          "id,progress_stage,progress_percent,documents_processed,progress_updated_at,provider_diagnostics",
+          "id,progress_stage,progress_percent,documents_processed,progress_updated_at,provider_diagnostics,reviewed_by,reviewed_at,review_notes",
         )
         .in(
           "id",
@@ -92,13 +97,18 @@ export async function POST(request: Request) {
             case_id: p.opportunity_id,
             request: p.request_key,
           })
-        : await db.rpc("approve_underwriting", {
-            run_id: p.run_id,
-            summary_value: p.summary,
-            conclusion_value: p.conclusion,
-            observations_value: p.observations,
-            recommendations_value: p.recommendations,
-          });
+        : p.action === "reject"
+          ? await db.rpc("reject_underwriting", {
+              run_id: p.run_id,
+              notes: p.notes,
+            })
+          : await db.rpc("approve_underwriting", {
+              run_id: p.run_id,
+              summary_value: p.summary,
+              conclusion_value: p.conclusion,
+              observations_value: p.observations,
+              recommendations_value: p.recommendations,
+            });
     if (r.error) {
       const message = r.error.message;
       const known = [
@@ -111,6 +121,7 @@ export async function POST(request: Request) {
         "Documents changed",
         "Analysis draft",
         "Complete the analysis",
+        "Review note required",
         "ten approved",
       ];
       throw new HttpError(

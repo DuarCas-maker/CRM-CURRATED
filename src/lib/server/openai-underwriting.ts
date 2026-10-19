@@ -237,7 +237,7 @@ export async function callUnderwritingProvider(
   },
   apiKey: string,
   fetcher: typeof fetch = fetch,
-  options: { timeoutMs?: number } = {},
+  options: { timeoutMs?: number; retainUnparsed?: boolean } = {},
 ) {
   if (!apiKey) throw new UnderwritingProviderError("OPENAI_NOT_CONFIGURED");
   const signal = AbortSignal.timeout(
@@ -364,11 +364,13 @@ export async function callUnderwritingProvider(
   try {
     value = JSON.parse(text);
   } catch {
-    throw new UnderwritingProviderError(
-      "OPENAI_INVALID_REPORT",
-      false,
-      diagnostics,
-    );
+    if (options.retainUnparsed && text.trim()) value = text;
+    else
+      throw new UnderwritingProviderError(
+        "OPENAI_INVALID_REPORT",
+        false,
+        diagnostics,
+      );
   }
   return {
     value,

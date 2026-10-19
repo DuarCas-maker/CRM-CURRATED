@@ -236,7 +236,7 @@ export function UnderwritingProgressBar({
           )}
         </p>
       )}
-      {state.complete && (
+      {state.complete && run.status === "draft" && (
         <p>
           {t(
             locale,

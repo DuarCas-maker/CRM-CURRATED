@@ -1,9 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Locale, Opportunity, Workspace } from "@/lib/domain";
 import { currency, dateLabel } from "@/lib/domain";
 import type { UnderwritingRun, UnderwritingReport } from "@/lib/underwriting";
-import { calculateUnderwritingMetrics } from "@/lib/underwriting";
+import { prepareUnderwritingDraft } from "@/lib/underwriting";
+import {
+  UnderwritingObservations,
+  UnderwritingOriginalOutput,
+} from "./underwriting-observations";
 import { Modal, t } from "./ui";
 import { underwritingReadiness } from "@/lib/underwriting-status";
 import {
@@ -15,8 +19,12 @@ const labels: Record<UnderwritingRun["status"], [string, string]> = {
   queued: ["En cola", "Queued"],
   preparing: ["Preparando archivos", "Preparing files"],
   running: ["Analizando con IA", "Analyzing with AI"],
-  draft: ["Borrador por revisar", "Draft for review"],
-  approved: ["Revisado por el equipo", "Reviewed by team"],
+  draft: [
+    "Informe disponible · Pendiente de revisión humana",
+    "Report available · Awaiting human review",
+  ],
+  approved: ["Aprobado por el usuario", "Approved by user"],
+  rejected: ["Descartado por el usuario", "Discarded by user"],
   failed: ["Requiere atención", "Needs attention"],
   uncertain: [
     "Resultado incierto: no se reintenta automáticamente",
@@ -71,7 +79,9 @@ export function UnderwritingWorkspace({
     [error, setError] = useState("");
   const [review, setReview] = useState<UnderwritingRun | null>(null),
     [copied, setCopied] = useState(false);
+  const [rejectionNote, setRejectionNote] = useState("");
   const [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
+  const requestedRun = useRef<string | null>(null);
   const [summary, setSummary] = useState(""),
     [conclusion, setConclusion] = useState(""),
     [observations, setObservations] = useState(""),
@@ -95,10 +105,18 @@ export function UnderwritingWorkspace({
     if (signal?.aborted) return;
     setRuns(value.runs);
     setConfigured(value.configured);
+    const completed = value.runs.find(
+      (run: UnderwritingRun) => run.id === requestedRun.current && run.report,
+    );
+    if (completed) {
+      requestedRun.current = null;
+      openReview(completed);
+    }
   }
   useEffect(() => {
     const controller = new AbortController();
     setRuns([]);
+    requestedRun.current = null;
     setError("");
     void load(controller.signal).catch((e) => {
       if (!controller.signal.aborted) setError(e.message);
@@ -143,6 +161,7 @@ export function UnderwritingWorkspace({
         ),
     );
     setConfirmed(false);
+    setRejectionNote("");
     setCopied(false);
   }
   function demoGenerate() {
@@ -198,8 +217,9 @@ export function UnderwritingWorkspace({
           "Historial de doce meses",
         ],
       },
-      suggested_tier: "not_confirmed",
-      tier_reason: "Faltan datos comprobados.",
+      suggested_tier: "1",
+      tier_reason:
+        "Ejemplo ficticio de una sugerencia de tier 1 sin crédito confirmado, para mostrar la revisión humana.",
       lender_matches: [],
       reverse_consolidation: {
         consider: false,
@@ -214,33 +234,37 @@ export function UnderwritingWorkspace({
       next_action: "Revisión del equipo",
       missing_information: ["Este ejemplo no realiza llamadas a OpenAI."],
     };
-    setRuns([
-      {
-        id: crypto.randomUUID(),
-        opportunity_id: o.id,
-        status: "draft",
-        requested_by: data.profile.id,
-        created_at: new Date().toISOString(),
-        model: "demo",
-        prompt_version: data.underwriting_settings?.version || 1,
-        document_snapshot: docs.map((d) => ({
+    const generated: UnderwritingRun = {
+      id: crypto.randomUUID(),
+      opportunity_id: o.id,
+      status: "draft",
+      requested_by: data.profile.id,
+      created_at: new Date().toISOString(),
+      model: "demo",
+      prompt_version: data.underwriting_settings?.version || 1,
+      document_snapshot: docs.map((d) => ({
+        ...d,
+        content_hash: d.content_hash || "demo",
+        storage_path: d.storage_path || "demo",
+        required: d.required !== false,
+      })),
+      report: prepareUnderwritingDraft(
+        report,
+        docs.map((d) => ({
           ...d,
           content_hash: d.content_hash || "demo",
           storage_path: d.storage_path || "demo",
           required: d.required !== false,
         })),
-        report: {
-          ...report,
-          calculated_metrics: calculateUnderwritingMetrics(report),
-          judicial_check: "pending_manual_review",
-        },
-        last_error: null,
-        input_tokens: null,
-        output_tokens: null,
-        analysis_id: null,
-      },
-      ...runs,
-    ]);
+        [],
+      ),
+      last_error: null,
+      input_tokens: null,
+      output_tokens: null,
+      analysis_id: null,
+    };
+    setRuns([generated, ...runs]);
+    openReview(generated);
   }
   async function generate() {
     setBusy(true);
@@ -261,6 +285,7 @@ export function UnderwritingWorkspace({
       });
       const value = await r.json();
       if (!r.ok) throw new Error(value.error);
+      requestedRun.current = value.id;
       setRequestKey(crypto.randomUUID());
       await load();
     } catch (e) {
@@ -270,7 +295,23 @@ export function UnderwritingWorkspace({
     }
   }
   async function approve() {
-    if (!review || data.demo) return;
+    if (!review) return;
+    if (data.demo) {
+      setRuns((previous) =>
+        previous.map((run) =>
+          run.id === review.id
+            ? {
+                ...run,
+                status: "approved",
+                reviewed_by: data.profile.id,
+                reviewed_at: new Date().toISOString(),
+              }
+            : run,
+        ),
+      );
+      setReview(null);
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -293,6 +334,74 @@ export function UnderwritingWorkspace({
       setReview(null);
     } catch (e) {
       setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function reject() {
+    if (!review || !rejectionNote.trim() || !confirmed) return;
+    if (data.demo) {
+      setRuns((previous) =>
+        previous.map((run) =>
+          run.id === review.id
+            ? {
+                ...run,
+                status: "rejected",
+                review_notes: rejectionNote.trim(),
+                reviewed_by: data.profile.id,
+                reviewed_at: new Date().toISOString(),
+              }
+            : run,
+        ),
+      );
+      setReview(null);
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      const response = await fetch("/api/underwriting", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "reject",
+          run_id: review.id,
+          notes: rejectionNote,
+        }),
+      });
+      const value = await response.json();
+      if (!response.ok) throw new Error(value.error);
+      await refresh();
+      await load();
+      setReview(null);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function downloadDemo(run: UnderwritingRun) {
+    setBusy(true);
+    setError("");
+    try {
+      const { underwritingPdf } = await import("@/lib/underwriting-pdf");
+      const bytes = await underwritingPdf(run, o.company, locale);
+      const url = URL.createObjectURL(
+        new Blob([new Uint8Array(bytes)], { type: "application/pdf" }),
+      );
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "analisis-demo.pdf";
+      anchor.click();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch {
+      setError(
+        t(
+          locale,
+          "No se pudo generar el PDF.",
+          "The PDF could not be generated.",
+        ),
+      );
     } finally {
       setBusy(false);
     }
@@ -405,6 +514,15 @@ export function UnderwritingWorkspace({
               {run.prompt_version}
             </small>
             <UnderwritingFailure run={run} locale={locale} />
+            {!!run.report?.validation_warnings?.length && (
+              <small>
+                {t(
+                  locale,
+                  `${run.report.validation_warnings.length} observaciones para revisión humana; informe disponible.`,
+                  `${run.report.validation_warnings.length} observations for human review; report available.`,
+                )}
+              </small>
+            )}
           </div>
           {run.report && (
             <button className="button" onClick={() => openReview(run)}>
@@ -430,257 +548,337 @@ export function UnderwritingWorkspace({
             <strong>{o.company}</strong> · {t(locale, ...labels[review.status])}{" "}
             · {review.model} · Prompt v{review.prompt_version}
           </p>
-          <h3>{t(locale, "Resumen", "Summary")}</h3>
-          <p>{report.summary}</p>
-          <h3>{t(locale, "Posiciones MCA", "MCA positions")}</h3>
-          {!report.positions.length && (
+          {data.demo ? (
+            <button
+              className="button"
+              disabled={busy}
+              onClick={() => void downloadDemo(review)}
+            >
+              {t(locale, "Descargar informe PDF", "Download PDF report")}
+            </button>
+          ) : (
+            <a
+              className="button"
+              href={`/api/underwriting/report?${new URLSearchParams({ run: review.id, locale })}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t(locale, "Descargar informe PDF", "Download PDF report")}
+            </a>
+          )}
+          <UnderwritingObservations report={report} locale={locale} />
+          {review.review_notes && (
             <p>
-              {t(
-                locale,
-                "No se identificaron posiciones confirmadas; revisa los archivos y los datos faltantes.",
-                "No confirmed positions identified; review files and missing information.",
-              )}
+              <strong>
+                {t(locale, "Observación del usuario", "User review note")}:
+              </strong>{" "}
+              {review.review_notes}
             </p>
           )}
-          {report.positions.map((p, i) => (
-            <div className="analysis-card" key={i}>
-              <strong>{p.name}</strong>
-              <p>
-                {amount(p.funded_amount)} ·{" "}
-                {p.funding_date ||
-                  t(locale, "Fecha no confirmada", "Date unconfirmed")}{" "}
-                · {factLabel(p.payment_frequency, locale)} ·{" "}
-                {amount(p.payment_amount)} ·{" "}
-                {factLabel(p.payment_status, locale)} ·{" "}
-                {factLabel(p.confidence, locale)}
-              </p>
-              <p>{p.notes}</p>
-              <Evidence refs={p.evidence} run={review} locale={locale} />
-            </div>
-          ))}
-          <h3>{t(locale, "Flujo de caja mensual", "Monthly cash flow")}</h3>
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  {[
-                    "Período",
-                    "Depósitos",
-                    "Fondeos excluidos",
-                    "Ingresos reales",
-                    "Deuda",
-                    "Flujo disponible",
-                    "Deuda / ingresos",
-                    "Ingresos / deuda",
-                    "Saldo diario mínimo / promedio",
-                    "Días de saldo negativo",
-                    "Días con débitos > depósitos",
-                  ].map((h) => (
-                    <th key={h}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {report.monthly_financials.map((m) => {
-                  const calculated =
-                    report.calculated_metrics?.find(
-                      (c) => c.document_id === m.document_id,
-                    ) ||
-                    report.calculated_metrics?.find(
-                      (c) => !c.document_id && c.period === m.period,
-                    );
-                  return (
-                    <tr key={m.document_id}>
-                      <td>
-                        {
-                          review.document_snapshot.find(
-                            (d) => d.id === m.document_id,
-                          )?.bank_name
-                        }{" "}
-                        ·{" "}
-                        {m.period ||
-                          t(
-                            locale,
-                            "Período sin confirmar",
-                            "Period unconfirmed",
-                          )}{" "}
-                        · {factLabel(m.confidence, locale)}
-                      </td>
-                      <td>{amount(m.deposits)}</td>
-                      <td>{amount(m.funding_deposits)}</td>
-                      <td>{amount(calculated?.true_revenue)}</td>
-                      <td>{amount(m.debt_debits)}</td>
-                      <td>{amount(calculated?.available_cash_flow)}</td>
-                      <td>
-                        {calculated?.debt_to_revenue == null
-                          ? "—"
-                          : `${(calculated.debt_to_revenue * 100).toFixed(1)}%`}
-                      </td>
-                      <td>
-                        {calculated?.revenue_to_debt == null
-                          ? "—"
-                          : `${calculated.revenue_to_debt.toFixed(2)}×`}
-                      </td>
-                      <td>
-                        {amount(m.minimum_balance)} /{" "}
-                        {amount(m.average_balance)}
-                      </td>
-                      <td>{m.negative_balance_days ?? "—"}</td>
-                      <td>{m.net_debit_days ?? "—"}</td>
+          {report.unstructured ? (
+            <>
+              <h3>
+                {t(
+                  locale,
+                  "Contenido original de la IA",
+                  "Original AI content",
+                )}
+              </h3>
+              <UnderwritingOriginalOutput
+                output={report.original_output}
+                locale={locale}
+              />
+            </>
+          ) : (
+            <>
+              <h3>{t(locale, "Resumen", "Summary")}</h3>
+              <p>{report.summary}</p>
+              <h3>{t(locale, "Posiciones MCA", "MCA positions")}</h3>
+              {!report.positions.length && (
+                <p>
+                  {t(
+                    locale,
+                    "No se identificaron posiciones confirmadas; revisa los archivos y los datos faltantes.",
+                    "No confirmed positions identified; review files and missing information.",
+                  )}
+                </p>
+              )}
+              {report.positions.map((p, i) => (
+                <div className="analysis-card" key={i}>
+                  <strong>{p.name}</strong>
+                  <p>
+                    {amount(p.funded_amount)} ·{" "}
+                    {p.funding_date ||
+                      t(locale, "Fecha no confirmada", "Date unconfirmed")}{" "}
+                    · {factLabel(p.payment_frequency, locale)} ·{" "}
+                    {amount(p.payment_amount)} ·{" "}
+                    {factLabel(p.payment_status, locale)} ·{" "}
+                    {factLabel(p.confidence, locale)}
+                  </p>
+                  <p>{p.notes}</p>
+                  <Evidence refs={p.evidence} run={review} locale={locale} />
+                </div>
+              ))}
+              <h3>{t(locale, "Flujo de caja mensual", "Monthly cash flow")}</h3>
+              <div className="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      {[
+                        "Período",
+                        "Depósitos",
+                        "Fondeos excluidos",
+                        "Ingresos reales",
+                        "Deuda",
+                        "Flujo disponible",
+                        "Deuda / ingresos",
+                        "Ingresos / deuda",
+                        "Saldo diario mínimo / promedio",
+                        "Días de saldo negativo",
+                        "Días con débitos > depósitos",
+                      ].map((h) => (
+                        <th key={h}>{h}</th>
+                      ))}
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <p className="muted">
-            {t(
-              locale,
-              "Ingresos reales = depósitos − fondeos − transferencias internas − otros ingresos no operativos. Flujo disponible = ingresos reales − débitos operativos − deuda. Las estimaciones y datos incompletos permanecen identificados.",
-              "True revenue excludes funding, internal transfers and non-operating deposits. Available cash flow subtracts operating debits and debt. Estimates and missing data remain identified.",
-            )}
-          </p>
-          {report.monthly_financials.map((m) => (
-            <details key={m.document_id}>
-              <summary>
-                {
-                  review.document_snapshot.find((d) => d.id === m.document_id)
-                    ?.bank_name
-                }{" "}
-                ·{" "}
-                {m.period ||
-                  t(locale, "Período sin confirmar", "Period unconfirmed")}{" "}
-                · {t(locale, "Ver evidencia", "View evidence")}
-              </summary>
-              <Evidence refs={m.evidence} run={review} locale={locale} />
+                  </thead>
+                  <tbody>
+                    {report.monthly_financials.map((m) => {
+                      const calculated =
+                        report.calculated_metrics?.find(
+                          (c) => c.document_id === m.document_id,
+                        ) ||
+                        report.calculated_metrics?.find(
+                          (c) => !c.document_id && c.period === m.period,
+                        );
+                      return (
+                        <tr key={m.document_id}>
+                          <td>
+                            {
+                              review.document_snapshot.find(
+                                (d) => d.id === m.document_id,
+                              )?.bank_name
+                            }{" "}
+                            ·{" "}
+                            {m.period ||
+                              t(
+                                locale,
+                                "Período sin confirmar",
+                                "Period unconfirmed",
+                              )}{" "}
+                            · {factLabel(m.confidence, locale)}
+                          </td>
+                          <td>{amount(m.deposits)}</td>
+                          <td>{amount(m.funding_deposits)}</td>
+                          <td>{amount(calculated?.true_revenue)}</td>
+                          <td>{amount(m.debt_debits)}</td>
+                          <td>{amount(calculated?.available_cash_flow)}</td>
+                          <td>
+                            {calculated?.debt_to_revenue == null
+                              ? "—"
+                              : `${(calculated.debt_to_revenue * 100).toFixed(1)}%`}
+                          </td>
+                          <td>
+                            {calculated?.revenue_to_debt == null
+                              ? "—"
+                              : `${calculated.revenue_to_debt.toFixed(2)}×`}
+                          </td>
+                          <td>
+                            {amount(m.minimum_balance)} /{" "}
+                            {amount(m.average_balance)}
+                          </td>
+                          <td>{m.negative_balance_days ?? "—"}</td>
+                          <td>{m.net_debit_days ?? "—"}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <p className="muted">
+                {t(
+                  locale,
+                  "Ingresos reales = depósitos − fondeos − transferencias internas − otros ingresos no operativos. Flujo disponible = ingresos reales − débitos operativos − deuda. Las estimaciones y datos incompletos permanecen identificados.",
+                  "True revenue excludes funding, internal transfers and non-operating deposits. Available cash flow subtracts operating debits and debt. Estimates and missing data remain identified.",
+                )}
+              </p>
+              {report.monthly_financials.map((m) => (
+                <details key={m.document_id}>
+                  <summary>
+                    {
+                      review.document_snapshot.find(
+                        (d) => d.id === m.document_id,
+                      )?.bank_name
+                    }{" "}
+                    ·{" "}
+                    {m.period ||
+                      t(
+                        locale,
+                        "Período sin confirmar",
+                        "Period unconfirmed",
+                      )}{" "}
+                    · {t(locale, "Ver evidencia", "View evidence")}
+                  </summary>
+                  <Evidence refs={m.evidence} run={review} locale={locale} />
+                  <p>
+                    {t(
+                      locale,
+                      "Saldo final / mínimo / promedio",
+                      "Ending / minimum / average balance",
+                    )}
+                    : {amount(m.ending_balance)} / {amount(m.minimum_balance)} /{" "}
+                    {amount(m.average_balance)}
+                  </p>
+                </details>
+              ))}
+              <h3>{t(locale, "Riesgos", "Risks")}</h3>
+              {report.risks.map((r, i) => (
+                <div key={i}>
+                  <strong>
+                    {r.title} · {factLabel(r.severity, locale)} ·{" "}
+                    {factLabel(r.confidence, locale)}
+                  </strong>
+                  <p>{r.details}</p>
+                  <Evidence refs={r.evidence} run={review} locale={locale} />
+                </div>
+              ))}
+              <h3>
+                {t(
+                  locale,
+                  "Potencial SBA y datos del cliente",
+                  "SBA screening and client data",
+                )}
+              </h3>
               <p>
                 {t(
                   locale,
-                  "Saldo final / mínimo / promedio",
-                  "Ending / minimum / average balance",
+                  "Nombre identificado por la IA",
+                  "AI-identified name",
                 )}
-                : {amount(m.ending_balance)} / {amount(m.minimum_balance)} /{" "}
-                {amount(m.average_balance)}
+                : {report.merchant.name} · {t(locale, "Industria", "Industry")}:{" "}
+                {report.merchant.industry ||
+                  t(locale, "Sin confirmar", "Not confirmed")}
               </p>
+              <p>
+                {factLabel(report.sba.status, locale)} ·{" "}
+                {t(locale, "Crédito", "Credit")}:{" "}
+                {report.merchant.credit_score ?? "—"} ·{" "}
+                {t(locale, "Años en operación", "Years in business")}:{" "}
+                {report.merchant.years_in_business ?? "—"}
+              </p>
+              <p>
+                {t(locale, "Rentabilidad fiscal", "Tax profitability")}:{" "}
+                {report.merchant.profitable_on_taxes === null
+                  ? t(locale, "Sin confirmar", "Not confirmed")
+                  : report.merchant.profitable_on_taxes
+                    ? t(locale, "Sí", "Yes")
+                    : "No"}{" "}
+                ·{" "}
+                {t(
+                  locale,
+                  "Posiciones en los últimos 12 meses",
+                  "Positions in last 12 months",
+                )}
+                :{" "}
+                {report.merchant.positions_last_12_months ??
+                  t(locale, "Sin confirmar", "Not confirmed")}
+              </p>
+              <p>
+                {[...report.sba.reasons, ...report.sba.missing_evidence].join(
+                  " · ",
+                )}
+              </p>
+              <Evidence
+                refs={report.merchant.evidence}
+                run={review}
+                locale={locale}
+              />
+              <h3>{t(locale, "Revisión judicial", "Court review")}</h3>
+              <p>
+                {t(
+                  locale,
+                  "Pendiente de comprobación manual. Este análisis no afirma haber consultado NYSCEF.",
+                  "Pending manual verification. This analysis does not claim a NYSCEF search.",
+                )}
+              </p>
+              <a
+                href="https://iapps.courts.state.ny.us/nyscef/CaseSearch?TAB=name"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {t(
+                  locale,
+                  "Abrir búsqueda oficial NYSCEF",
+                  "Open official NYSCEF search",
+                )}
+              </a>
+              <h3>
+                {t(locale, "Tier sugerido por la IA", "AI-suggested tier")}:{" "}
+                {factLabel(report.suggested_tier, locale)}
+              </h3>
+              <p>{report.tier_reason}</p>
+              {report.lender_matches.map((l) => (
+                <p key={l.lender_id}>
+                  <strong>{l.name}</strong>: {l.reason}
+                  <br />
+                  {l.missing_requirements.join(" · ")}
+                </p>
+              ))}
+              <h3>
+                {t(locale, "Reverse consolidation", "Reverse consolidation")}
+              </h3>
+              <p>{report.reverse_consolidation.reason}</p>
+              <h3>{t(locale, "Estrategia y pitch", "Strategy and pitch")}</h3>
+              <p>{report.strategy}</p>
+              <p>{report.client_pitch}</p>
+              <h3>{t(locale, "Notas para CRM", "CRM notes")}</h3>
+              <p style={{ whiteSpace: "pre-wrap" }}>{report.crm_notes}</p>
+              <button
+                className="button"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(report.crm_notes);
+                    setCopied(true);
+                  } catch {
+                    setError(
+                      t(
+                        locale,
+                        "Selecciona y copia el texto de las notas.",
+                        "Select and copy the notes text.",
+                      ),
+                    );
+                  }
+                }}
+              >
+                {copied
+                  ? t(locale, "Copiado", "Copied")
+                  : t(locale, "Copiar notas", "Copy notes")}
+              </button>
+              <h3>
+                {t(
+                  locale,
+                  "Información pendiente y siguiente acción",
+                  "Missing information and next action",
+                )}
+              </h3>
+              <p>{report.missing_information.join(" · ")}</p>
+              <p>{report.next_action}</p>
+            </>
+          )}
+          {!report.unstructured && report.original_output !== undefined && (
+            <details>
+              <summary>
+                {t(
+                  locale,
+                  "Ver contenido original completo de la IA",
+                  "View complete original AI content",
+                )}
+              </summary>
+              <UnderwritingOriginalOutput
+                output={report.original_output}
+                locale={locale}
+              />
             </details>
-          ))}
-          <h3>{t(locale, "Riesgos", "Risks")}</h3>
-          {report.risks.map((r, i) => (
-            <div key={i}>
-              <strong>
-                {r.title} · {factLabel(r.severity, locale)} ·{" "}
-                {factLabel(r.confidence, locale)}
-              </strong>
-              <p>{r.details}</p>
-              <Evidence refs={r.evidence} run={review} locale={locale} />
-            </div>
-          ))}
-          <h3>
-            {t(
-              locale,
-              "Potencial SBA y datos del cliente",
-              "SBA screening and client data",
-            )}
-          </h3>
-          <p>
-            {factLabel(report.sba.status, locale)} ·{" "}
-            {t(locale, "Crédito", "Credit")}:{" "}
-            {report.merchant.credit_score ?? "—"} ·{" "}
-            {t(locale, "Años en operación", "Years in business")}:{" "}
-            {report.merchant.years_in_business ?? "—"}
-          </p>
-          <p>
-            {t(locale, "Rentabilidad fiscal", "Tax profitability")}:{" "}
-            {report.merchant.profitable_on_taxes === null
-              ? t(locale, "Sin confirmar", "Not confirmed")
-              : report.merchant.profitable_on_taxes
-                ? t(locale, "Sí", "Yes")
-                : "No"}{" "}
-            ·{" "}
-            {t(
-              locale,
-              "Posiciones en los últimos 12 meses",
-              "Positions in last 12 months",
-            )}
-            :{" "}
-            {report.merchant.positions_last_12_months ??
-              t(locale, "Sin confirmar", "Not confirmed")}
-          </p>
-          <p>
-            {[...report.sba.reasons, ...report.sba.missing_evidence].join(
-              " · ",
-            )}
-          </p>
-          <Evidence
-            refs={report.merchant.evidence}
-            run={review}
-            locale={locale}
-          />
-          <h3>{t(locale, "Revisión judicial", "Court review")}</h3>
-          <p>
-            {t(
-              locale,
-              "Pendiente de comprobación manual. Este análisis no afirma haber consultado NYSCEF.",
-              "Pending manual verification. This analysis does not claim a NYSCEF search.",
-            )}
-          </p>
-          <a
-            href="https://iapps.courts.state.ny.us/nyscef/CaseSearch?TAB=name"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t(
-              locale,
-              "Abrir búsqueda oficial NYSCEF",
-              "Open official NYSCEF search",
-            )}
-          </a>
-          <h3>Tier {factLabel(report.suggested_tier, locale)}</h3>
-          <p>{report.tier_reason}</p>
-          {report.lender_matches.map((l) => (
-            <p key={l.lender_id}>
-              <strong>{l.name}</strong>: {l.reason}
-              <br />
-              {l.missing_requirements.join(" · ")}
-            </p>
-          ))}
-          <h3>{t(locale, "Reverse consolidation", "Reverse consolidation")}</h3>
-          <p>{report.reverse_consolidation.reason}</p>
-          <h3>{t(locale, "Estrategia y pitch", "Strategy and pitch")}</h3>
-          <p>{report.strategy}</p>
-          <p>{report.client_pitch}</p>
-          <h3>{t(locale, "Notas para CRM", "CRM notes")}</h3>
-          <p style={{ whiteSpace: "pre-wrap" }}>{report.crm_notes}</p>
-          <button
-            className="button"
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(report.crm_notes);
-                setCopied(true);
-              } catch {
-                setError(
-                  t(
-                    locale,
-                    "Selecciona y copia el texto de las notas.",
-                    "Select and copy the notes text.",
-                  ),
-                );
-              }
-            }}
-          >
-            {copied
-              ? t(locale, "Copiado", "Copied")
-              : t(locale, "Copiar notas", "Copy notes")}
-          </button>
-          <h3>
-            {t(
-              locale,
-              "Información pendiente y siguiente acción",
-              "Missing information and next action",
-            )}
-          </h3>
-          <p>{report.missing_information.join(" · ")}</p>
-          <p>{report.next_action}</p>
+          )}
           <details>
             <summary>
               {t(locale, "Archivos utilizados", "Source files")}
@@ -729,7 +927,6 @@ export function UnderwritingWorkspace({
                 <button
                   className="button primary"
                   disabled={
-                    data.demo ||
                     busy ||
                     !confirmed ||
                     !summary.trim() ||
@@ -738,19 +935,52 @@ export function UnderwritingWorkspace({
                   }
                   onClick={() => void approve()}
                 >
-                  {data.demo
-                    ? t(
-                        locale,
-                        "Aprobación persistente disponible en el CRM real",
-                        "Persistent approval available in the real CRM",
-                      )
-                    : t(
-                        locale,
-                        "Aprobar y guardar análisis",
-                        "Approve and save analysis",
-                      )}
+                  {t(
+                    locale,
+                    "Aprobar informe y guardar revisión",
+                    "Approve report and save review",
+                  )}
                 </button>
               </div>
+              <label className="field">
+                {t(
+                  locale,
+                  "Motivo para descartar el informe",
+                  "Reason for discarding the report",
+                )}
+                <textarea
+                  value={rejectionNote}
+                  maxLength={20000}
+                  onChange={(e) => setRejectionNote(e.target.value)}
+                />
+              </label>
+              <button
+                className="button"
+                disabled={busy || !confirmed || !rejectionNote.trim()}
+                onClick={() => void reject()}
+              >
+                {t(
+                  locale,
+                  "Descartar informe y guardar observación",
+                  "Discard report and save note",
+                )}
+              </button>
+              <p className="muted">
+                {t(
+                  locale,
+                  "Descartar conserva el informe para consulta. Puedes cerrar esta ventana y dejar la revisión pendiente.",
+                  "Discarding keeps the report available. You can close this window and leave the review pending.",
+                )}
+              </p>
+              {data.demo && (
+                <p className="muted">
+                  {t(
+                    locale,
+                    "Las decisiones de esta demostración se reinician al recargar.",
+                    "Decisions in this demo reset on reload.",
+                  )}
+                </p>
+              )}
             </>
           )}
         </Modal>
@@ -771,13 +1001,24 @@ function Evidence({
     <>
       {refs.map((e, i) => (
         <p className="muted" key={i}>
-          <a
-            href={`/api/underwriting/files?${new URLSearchParams({ run: run.id, document: e.document_id })}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {run.document_snapshot.find((d) => d.id === e.document_id)?.name}
-          </a>{" "}
+          {run.document_snapshot.some((d) => d.id === e.document_id) ? (
+            <a
+              href={`/api/underwriting/files?${new URLSearchParams({ run: run.id, document: e.document_id })}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {run.document_snapshot.find((d) => d.id === e.document_id)?.name}
+            </a>
+          ) : (
+            <span>
+              {t(
+                locale,
+                "Referencia sin archivo coincidente",
+                "Reference without a matching file",
+              )}
+              : {e.document_id}
+            </span>
+          )}{" "}
           · {t(locale, "Página", "Page")} {e.page}: “{e.excerpt}”
         </p>
       ))}
