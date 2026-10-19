@@ -2,6 +2,10 @@ import type { Locale } from "./domain";
 import type { UnderwritingRun } from "./underwriting";
 
 const warnings: Record<string, [string, string]> = {
+  UNVERIFIED_LENDER_CONTACT: [
+    "El contacto de un lender no se pudo respaldar con el catálogo guardado.",
+    "A lender contact could not be backed by the saved catalog.",
+  ],
   UNKNOWN_EVIDENCE: [
     "Hay referencias que no coinciden con los archivos de este análisis.",
     "Some references do not match this analysis's source files.",

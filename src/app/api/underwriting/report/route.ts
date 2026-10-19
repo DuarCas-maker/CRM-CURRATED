@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     return new Response(new Uint8Array(bytes), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="analisis-${runId}.pdf"`,
+        "Content-Disposition": `attachment; filename="analysis-${runId}-${query.get("locale") === "en" ? "en" : "es"}.pdf"`,
         "Cache-Control": "private, no-store",
         "X-Content-Type-Options": "nosniff",
       },

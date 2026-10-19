@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { compactUnderwritingSchema } from "./underwriting-compact";
 
 export const underwritingRulesSchema = z.object({
   sba: z.object({
@@ -46,6 +47,7 @@ export const underwritingEvidenceSchema = z.object({
 const evidence = z.array(underwritingEvidenceSchema).max(30);
 const money = z.number().min(0).max(1e12).nullable();
 export const underwritingReportSchema = z.object({
+  compact_report: compactUnderwritingSchema.optional(),
   merchant: z.object({
     name: z.string(),
     industry: z.string().nullable(),
@@ -281,6 +283,32 @@ export function validateUnderwritingReport(
     if (!warnings.includes(code)) warnings.push(code);
   };
   const report = underwritingReportSchema.parse(value);
+  if (report.compact_report) {
+    if (
+      report.compact_report.bank_details.some(
+        (d) =>
+          !documents.some(
+            (source) =>
+              source.kind === "bank_statement" && source.id === d.document_id,
+          ),
+      )
+    )
+      flag("UNKNOWN_EVIDENCE");
+    for (const option of report.compact_report.lenders) {
+      const lender = lenders.find(
+        (l) => l.id === option.lender_id && l.name === option.name,
+      );
+      if (!lender) flag("UNKNOWN_LENDER");
+      if (
+        option.contact &&
+        (!lender ||
+          !JSON.stringify(lender)
+            .toLowerCase()
+            .includes(option.contact.trim().toLowerCase()))
+      )
+        flag("UNVERIFIED_LENDER_CONTACT");
+    }
+  }
   const documentIds = new Set(documents.map((d) => d.id));
   const banks = documents.filter((d) => d.kind === "bank_statement");
   const refs = [

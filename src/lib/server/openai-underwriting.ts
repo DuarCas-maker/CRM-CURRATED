@@ -4,6 +4,10 @@ import { DEFAULT_UNDERWRITING_RULES } from "../underwriting";
 import type { UnderwritingDocument } from "../underwriting";
 import { previewMime } from "../document-review";
 import { hash } from "./crypto";
+import {
+  compactUnderwritingSchema,
+  COMPACT_UNDERWRITING_INSTRUCTIONS,
+} from "../underwriting-compact";
 
 export class UnderwritingProviderError extends Error {
   constructor(
@@ -93,8 +97,24 @@ async function readProviderStream(
     }
     if (!value || typeof value !== "object" || Array.isArray(value))
       throw new UnderwritingProviderError("OPENAI_STREAM_INTERRUPTED", true);
-    if (value.type === "error")
+    if (value.type === "error") {
+      const failure = value.error || value;
+      if (
+        failure.type === "insufficient_quota" ||
+        ["insufficient_quota", "credit_balance_exhausted"].includes(
+          failure.code,
+        )
+      )
+        throw new UnderwritingProviderError("OPENAI_QUOTA_EXHAUSTED", false);
+      if (failure.code === "billing_hard_limit_reached")
+        throw new UnderwritingProviderError(
+          "OPENAI_SPEND_LIMIT_REACHED",
+          false,
+        );
+      if (failure.code === "rate_limit_exceeded")
+        throw new UnderwritingProviderError("OPENAI_LIMIT_REACHED", false);
       throw new UnderwritingProviderError("OPENAI_STREAM_INTERRUPTED", true);
+    }
     if (
       ![
         "response.created",
@@ -155,7 +175,9 @@ export function underwritingRequest(options: {
   rules?: unknown;
 }) {
   const { $schema: _schema, ...schema } = z.toJSONSchema(
-    underwritingReportSchema,
+    underwritingReportSchema.extend({
+      compact_report: compactUnderwritingSchema,
+    }),
   );
   const content: Record<string, unknown>[] = [
     {
@@ -212,7 +234,8 @@ export function underwritingRequest(options: {
     reasoning: { effort: "low" },
     instructions:
       options.prompt +
-      "\nThe supplied structured screening_rules are the authoritative numerical criteria, overriding any older numerical thresholds in the prompt. They are internal screening rules, not verified lender or SBA eligibility policies. Analyze every supplied bank statement, across every bank. When a manifest period is empty, extract its YYYY-MM period from the file and cite the evidence; never infer it from the numbered filename. Different documents and banks may share the same period. Flag missing periods or insufficient month coverage for the human reviewer. Keep the report concise without omitting any statement, detected position, calculation, material risk or requested section. Use short evidence excerpts (up to 160 characters) and normally 1-3 references per item; avoid repeating full transactions or document text. Recommend only realistically relevant catalog lenders rather than reproducing the whole lender catalog. Return the complete JSON report within the output budget.",
+      "\nThe supplied structured screening_rules are the authoritative numerical criteria, overriding any older numerical thresholds in the prompt. They are internal screening rules, not verified lender or SBA eligibility policies. Analyze every supplied bank statement, across every bank. When a manifest period is empty, extract its YYYY-MM period from the file and cite the evidence; never infer it from the numbered filename. Different documents and banks may share the same period. Flag missing periods or insufficient month coverage for the human reviewer. Keep the report concise without omitting any statement, detected position, calculation, material risk or requested section. Use short evidence excerpts (up to 160 characters) and normally 1-3 references per item; avoid repeating full transactions or document text. Recommend only realistically relevant catalog lenders rather than reproducing the whole lender catalog. Return the complete JSON report within the output budget." +
+      COMPACT_UNDERWRITING_INSTRUCTIONS,
     store: false,
     stream: true,
     max_output_tokens: options.maxOutputTokens,
@@ -265,20 +288,21 @@ export async function callUnderwritingProvider(
     const failure = (await response.json().catch(() => null)) as {
       error?: { code?: string };
     } | null;
-    const code =
-      failure?.error?.code === "insufficient_quota"
-        ? "OPENAI_QUOTA_EXHAUSTED"
-        : failure?.error?.code === "billing_hard_limit_reached"
-          ? "OPENAI_SPEND_LIMIT_REACHED"
-          : response.status === 401
-            ? "OPENAI_AUTH_FAILED"
-            : response.status === 429
-              ? "OPENAI_LIMIT_REACHED"
-              : response.status === 403 || response.status === 404
-                ? "OPENAI_ACCESS_DENIED"
-                : response.status === 400
-                  ? "OPENAI_REQUEST_REJECTED"
-                  : "OPENAI_PROVIDER_FAILED";
+    const code = ["insufficient_quota", "credit_balance_exhausted"].includes(
+      failure?.error?.code || "",
+    )
+      ? "OPENAI_QUOTA_EXHAUSTED"
+      : failure?.error?.code === "billing_hard_limit_reached"
+        ? "OPENAI_SPEND_LIMIT_REACHED"
+        : response.status === 401
+          ? "OPENAI_AUTH_FAILED"
+          : response.status === 429
+            ? "OPENAI_LIMIT_REACHED"
+            : response.status === 403 || response.status === 404
+              ? "OPENAI_ACCESS_DENIED"
+              : response.status === 400
+                ? "OPENAI_REQUEST_REJECTED"
+                : "OPENAI_PROVIDER_FAILED";
     throw new UnderwritingProviderError(code, response.status >= 500);
   }
   let payload: ProviderResponse;
