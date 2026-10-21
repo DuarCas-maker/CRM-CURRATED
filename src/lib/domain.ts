@@ -74,6 +74,10 @@ export interface Lead {
   next_action_at: string | null;
   verification: Verification;
   verification_state?: string | null;
+  analysis_started_at?: string | null;
+  analysis_completed_at?: string | null;
+  campaign_enrolled?: boolean;
+  campaign_sent?: boolean;
   suppressed: boolean;
   opportunity_id: string | null;
   created_at: string;
@@ -307,6 +311,7 @@ export interface Workspace {
   profiles: Profile[];
   opportunities: Opportunity[];
   leads: Lead[];
+  lead_preparation?: import("./lead-preparation").LeadPreparationOverview;
   tasks: Task[];
   activities: Activity[];
   documents: Document[];

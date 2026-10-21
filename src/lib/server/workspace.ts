@@ -53,9 +53,30 @@ export async function loadWorkspace(
       financingControl = checkDb(control, "financing_control_dashboard");
   }
   const preparing = !caseId && params.get("view") === "leads";
+  const leadSection = params.get("lead_section") || "preparing";
+  let leadPreparation: Workspace["lead_preparation"];
+  if (preparing) {
+    const result = await db.rpc("lead_preparation_overview", {
+      search_text: search,
+      owner_filter: owner,
+      since_filter: since,
+      verification_filter: [
+        "pending",
+        "valid",
+        "invalid",
+        "uncertain",
+      ].includes(params.get("stage") || "")
+        ? params.get("stage")
+        : null,
+      cursor_offset: leadSection === "verifications" ? page * 50 : 0,
+    });
+    // Preserve the existing inbox while migration 044 awaits activation.
+    if (!result.error || !["PGRST202", "42883"].includes(result.error.code))
+      leadPreparation = checkDb(result, "lead_preparation_overview");
+  }
   let leadResponse: { data: Workspace["leads"] | null; count: number | null } =
     { data: [], count: 0 };
-  if (preparing) {
+  if (preparing && !["verifications", "imports"].includes(leadSection)) {
     let leadQuery = db
       .from("lead_workspace")
       .select("*", { count: "exact" })
@@ -196,6 +217,11 @@ export async function loadWorkspace(
         .order(sort, { ascending: false })
         .limit(related.has(key) ? 3000 : 500);
       if (related.has(key)) q = q.in("opportunity_id", caseIds);
+      if (key === "imports" && preparing)
+        q = q.range(
+          leadSection === "imports" ? page * 100 : 0,
+          leadSection === "imports" ? page * 100 + 99 : 99,
+        );
       if (key === "lenders") q = q.is("archived_at", null);
       return [key, checkDb(await q, table) || []] as const;
     }),
@@ -277,6 +303,7 @@ export async function loadWorkspace(
     profile,
     opportunities,
     leads: leadResponse.data || [],
+    lead_preparation: leadPreparation,
     messages: messages.reverse(),
     attachments: mailFiles.attachments,
     mail_files: mailFiles.files,
@@ -285,10 +312,23 @@ export async function loadWorkspace(
     demo: false,
     gmail_history_enabled: gmailHistoryEnabled(),
     page,
-    listTotal: (preparing ? leadResponse.count : response.count) || 0,
+    listTotal:
+      (preparing
+        ? leadSection === "verifications"
+          ? leadPreparation?.verification_total
+          : leadSection === "imports"
+            ? leadPreparation?.imports_total
+            : leadResponse.count
+        : response.count) || 0,
     hasMore:
-      ((preparing ? leadResponse.count : response.count) || 0) >
-      (page + 1) * 100,
+      ((preparing
+        ? leadSection === "verifications"
+          ? leadPreparation?.verification_total
+          : leadSection === "imports"
+            ? leadPreparation?.imports_total
+            : leadResponse.count
+        : response.count) || 0) >
+      (page + 1) * (preparing && leadSection === "verifications" ? 50 : 100),
     stats,
     crm_extensions_ready: extensionsReady,
     financing_control: financingControl,

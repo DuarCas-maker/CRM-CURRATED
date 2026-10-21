@@ -81,6 +81,8 @@ import { Integrations } from "./integrations";
 import { MailComposer } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
 import { LenderContacts } from "./lender-contacts";
+import { LeadDate, LeadVerifications } from "./lead-preparation-tracking";
+import { countLeadTabs, type LeadSection } from "@/lib/lead-preparation";
 import {
   getLeadTab,
   leadTabs,
@@ -157,6 +159,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [campaignFilter, setCampaignFilter] = useState("all");
   const [period, setPeriod] = useState("all");
   const [leadStatus, setLeadStatus] = useState<LeadTab>("preparing");
+  const [leadSection, setLeadSection] = useState<LeadSection>("preparing");
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [modal, setModal] = useState<string | null>(null);
@@ -184,6 +187,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     period,
     view,
     lead_status: leadStatus,
+    lead_section: leadSection,
     page: String(selected ? 0 : page),
     attention: attentionFilter,
     process_state: processState,
@@ -223,6 +227,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     period,
     view,
     leadStatus,
+    leadSection,
     attentionFilter,
     processState,
     stalled,
@@ -271,7 +276,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
         new Date(o.created_at).getTime() >=
           Date.now() - Number(period) * 86400000),
   );
-  const filteredLeads = data.leads.filter(
+  const scopedLeads = data.leads.filter(
     (l) =>
       (profile.role === "superadmin" ||
         profile.role === "seller_admin" ||
@@ -281,11 +286,15 @@ export default function CRM({ initial }: { initial: Workspace }) {
         .includes(query.toLowerCase()) &&
       (stage === "all" || l.verification === stage) &&
       (owner === "all" || l.seller_id === owner) &&
-      getLeadTab(l) === leadStatus &&
       (period === "all" ||
         new Date(l.created_at).getTime() >=
           Date.now() - Number(period) * 86400000),
   );
+  const filteredLeads = scopedLeads.filter((l) => getLeadTab(l) === leadStatus);
+  const leadCounts = data.demo
+    ? countLeadTabs(scopedLeads)
+    : data.lead_preparation?.counts;
+  const isLeadInbox = leadTabs.includes(leadSection as LeadTab);
   const verificationCandidates = filteredLeads.filter(
     (l) =>
       !l.suppressed &&
@@ -349,7 +358,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
         page,
       )
     : data.operational;
-  const canVerifyLeads = isAdmin && leadStatus !== "converted";
+  const canVerifyLeads = isAdmin && isLeadInbox && leadStatus !== "converted";
   const control = data.demo
     ? demoFinancingControl(
         { ...data, profile },
@@ -463,7 +472,17 @@ export default function CRM({ initial }: { initial: Workspace }) {
         await refresh();
         requestKeys.current.delete(fingerprint);
       }
-      if (kind === "verify_contacts") setSelectedLeadIds([]);
+      if (kind === "verify_contacts") {
+        setSelectedLeadIds([]);
+        if (Number((result as { queued?: number } | undefined)?.queued) > 0) {
+          setLeadSection("verifications");
+          setStage("all");
+          setQuery("");
+          setOwner("all");
+          setPeriod("all");
+          setPage(0);
+        }
+      }
       setToast(
         data.demo
           ? t(
@@ -1426,18 +1445,46 @@ export default function CRM({ initial }: { initial: Workspace }) {
                         "Lead inboxes",
                       )}
                     >
-                      {leadTabs.map((tab) => (
+                      {(
+                        [
+                          ...leadTabs,
+                          "verifications",
+                          "imports",
+                        ] as LeadSection[]
+                      ).map((tab) => (
                         <button
                           key={tab}
-                          className={leadStatus === tab ? "active" : ""}
-                          aria-pressed={leadStatus === tab}
+                          className={leadSection === tab ? "active" : ""}
+                          aria-pressed={leadSection === tab}
                           onClick={() => {
-                            setLeadStatus(tab);
+                            setLeadSection(tab);
+                            if (leadTabs.includes(tab as LeadTab))
+                              setLeadStatus(tab as LeadTab);
                             setStage("all");
                             setPage(0);
                           }}
                         >
-                          {t(locale, ...leadTabLabels[tab])}
+                          {tab === "verifications"
+                            ? t(locale, "Verificaciones", "Verifications")
+                            : tab === "imports"
+                              ? t(
+                                  locale,
+                                  "Lotes de importación",
+                                  "Import batches",
+                                )
+                              : t(locale, ...leadTabLabels[tab])}
+                          <span className="lead-tab-count">
+                            {(tab === "verifications"
+                              ? data.demo
+                                ? 0
+                                : data.lead_preparation?.verification_total
+                              : tab === "imports"
+                                ? data.demo
+                                  ? data.imports.length
+                                  : data.lead_preparation?.imports_total
+                                : leadCounts?.[tab]
+                            )?.toLocaleString() ?? "—"}
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -1461,291 +1508,397 @@ export default function CRM({ initial }: { initial: Workspace }) {
                       </button>
                     )}
                   </div>
-                  <section className="panel">
-                    <p className="muted">
-                      {t(locale, ...leadTabDescriptions[leadStatus])}
+                  {!data.demo && !data.lead_preparation && (
+                    <p className="lead-tracking-notice" role="status">
+                      {t(
+                        locale,
+                        "El seguimiento estará disponible cuando se complete la actualización del sistema.",
+                        "Tracking will be available once the system update is complete.",
+                      )}
                     </p>
-                    {filters}
-                    {canVerifyLeads && (
-                      <div className="lead-selection-bar">
-                        <div>
-                          <strong aria-live="polite">
-                            {t(
-                              locale,
-                              `${selectedVerificationCandidates.length} seleccionados · ${verificationCandidates.length} verificables en esta página`,
-                              `${selectedVerificationCandidates.length} selected · ${verificationCandidates.length} verifiable on this page`,
-                            )}
-                          </strong>
-                          <p className="muted">
-                            {t(
-                              locale,
-                              "Marca algunos leads o usa la casilla del encabezado para seleccionar todos los verificables de esta página.",
-                              "Choose individual leads or use the header checkbox to select all verifiable leads on this page.",
-                            )}
-                          </p>
+                  )}
+                  {leadSection === "verifications" && (
+                    <>
+                      <div className="lead-tracking-filters">{filters}</div>
+                      <LeadVerifications
+                        batches={data.lead_preparation?.verifications || []}
+                        locale={locale}
+                        loading={loading}
+                        refresh={() =>
+                          refresh().catch((e) => setError(e.message))
+                        }
+                      />
+                    </>
+                  )}
+                  {isLeadInbox && (
+                    <section className="panel lead-panel" aria-busy={loading}>
+                      <p className="muted lead-panel-description">
+                        {t(locale, ...leadTabDescriptions[leadStatus])}
+                      </p>
+                      {filters}
+                      {canVerifyLeads && (
+                        <div className="lead-selection-bar">
+                          <div>
+                            <strong aria-live="polite">
+                              {t(
+                                locale,
+                                `${selectedVerificationCandidates.length} seleccionados · ${verificationCandidates.length} verificables en esta página`,
+                                `${selectedVerificationCandidates.length} selected · ${verificationCandidates.length} verifiable on this page`,
+                              )}
+                            </strong>
+                            <p className="muted">
+                              {t(
+                                locale,
+                                "Marca algunos leads o usa la casilla del encabezado para seleccionar todos los verificables de esta página.",
+                                "Choose individual leads or use the header checkbox to select all verifiable leads on this page.",
+                              )}
+                            </p>
+                          </div>
+                          <button
+                            className="text-button"
+                            disabled={
+                              busy ||
+                              selectedVerificationCandidates.length === 0
+                            }
+                            onClick={() => setSelectedLeadIds([])}
+                          >
+                            {t(locale, "Limpiar selección", "Clear selection")}
+                          </button>
                         </div>
-                        <button
-                          className="text-button"
-                          disabled={
-                            busy || selectedVerificationCandidates.length === 0
-                          }
-                          onClick={() => setSelectedLeadIds([])}
-                        >
-                          {t(locale, "Limpiar selección", "Clear selection")}
-                        </button>
-                      </div>
-                    )}
-                    <div className="table-scroll">
-                      <table>
-                        <thead>
-                          <tr>
-                            {canVerifyLeads && (
-                              <th className="lead-selection-cell">
-                                <input
-                                  type="checkbox"
-                                  className="lead-checkbox"
-                                  aria-label={t(
-                                    locale,
-                                    "Seleccionar todos los leads verificables de esta página",
-                                    "Select all verifiable leads on this page",
-                                  )}
-                                  title={t(
-                                    locale,
-                                    "Seleccionar todos los leads verificables de esta página",
-                                    "Select all verifiable leads on this page",
-                                  )}
-                                  checked={allVerifiableLeadsSelected}
-                                  ref={(input) => {
-                                    if (input)
-                                      input.indeterminate =
-                                        selectedVerificationCandidates.length >
-                                          0 && !allVerifiableLeadsSelected;
-                                  }}
-                                  disabled={
-                                    busy ||
-                                    loading ||
-                                    verificationCandidates.length === 0
-                                  }
-                                  onChange={(event) =>
-                                    setSelectedLeadIds(
-                                      event.target.checked
-                                        ? verificationCandidates.map(
-                                            (l) => l.contact_id,
-                                          )
-                                        : [],
-                                    )
-                                  }
-                                />
-                              </th>
-                            )}
-                            <th>{t(locale, "Contacto", "Contact")}</th>
-                            <th>{t(locale, "Empresa", "Business")}</th>
-                            <th>Email</th>
-                            <th>{t(locale, "Verificación", "Verification")}</th>
-                            <th>{t(locale, "Responsable", "Owner")}</th>
-                            <th>{t(locale, "Resultado", "Result")}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredLeads.map((o) => (
-                            <tr key={o.id}>
+                      )}
+                      <div className="table-scroll">
+                        <table>
+                          <thead>
+                            <tr>
                               {canVerifyLeads && (
-                                <td className="lead-selection-cell">
+                                <th className="lead-selection-cell">
                                   <input
                                     type="checkbox"
                                     className="lead-checkbox"
                                     aria-label={t(
                                       locale,
-                                      `Seleccionar ${o.contact || o.company}`,
-                                      `Select ${o.contact || o.company}`,
+                                      "Seleccionar todos los leads verificables de esta página",
+                                      "Select all verifiable leads on this page",
                                     )}
-                                    checked={selectedVerificationCandidates.some(
-                                      (l) => l.contact_id === o.contact_id,
+                                    title={t(
+                                      locale,
+                                      "Seleccionar todos los leads verificables de esta página",
+                                      "Select all verifiable leads on this page",
                                     )}
+                                    checked={allVerifiableLeadsSelected}
+                                    ref={(input) => {
+                                      if (input)
+                                        input.indeterminate =
+                                          selectedVerificationCandidates.length >
+                                            0 && !allVerifiableLeadsSelected;
+                                    }}
                                     disabled={
                                       busy ||
                                       loading ||
-                                      !verificationCandidates.some(
-                                        (l) => l.contact_id === o.contact_id,
-                                      )
-                                    }
-                                    title={
-                                      !verificationCandidates.some(
-                                        (l) => l.contact_id === o.contact_id,
-                                      )
-                                        ? t(
-                                            locale,
-                                            "Este lead ya fue verificado, está bloqueado o tiene una verificación en proceso o pendiente de revisión.",
-                                            "This lead is already verified, suppressed, or has a verification in progress or awaiting review.",
-                                          )
-                                        : undefined
+                                      verificationCandidates.length === 0
                                     }
                                     onChange={(event) =>
-                                      toggleLeadSelection(
-                                        o.contact_id,
-                                        event.target.checked,
+                                      setSelectedLeadIds(
+                                        event.target.checked
+                                          ? verificationCandidates.map(
+                                              (l) => l.contact_id,
+                                            )
+                                          : [],
                                       )
                                     }
                                   />
-                                </td>
+                                </th>
                               )}
-                              <td>{o.contact}</td>
-                              <td>{o.company}</td>
-                              <td>{o.email}</td>
-                              <td>
-                                <VerificationBadge
-                                  status={o.verification}
-                                  locale={locale}
-                                />
-                              </td>
-                              <td>{name(o.seller_id)}</td>
-                              <td>
-                                {o.opportunity_id ? (
-                                  <button
-                                    className="text-button"
-                                    onClick={() => {
-                                      setSelected(o.opportunity_id);
-                                      setView("pipeline");
-                                    }}
-                                  >
-                                    {t(
-                                      locale,
-                                      "Ver oportunidad",
-                                      "View opportunity",
-                                    )}
-                                  </button>
-                                ) : o.suppressed ? (
-                                  t(locale, "Bloqueado", "Suppressed")
-                                ) : ["queued", "submitted"].includes(
-                                    o.verification_state || "",
-                                  ) ? (
-                                  t(
+                              <th>{t(locale, "Contacto", "Contact")}</th>
+                              <th>{t(locale, "Empresa", "Business")}</th>
+                              <th>Email</th>
+                              <th>
+                                {t(locale, "Fecha de ingreso", "Date added")}
+                              </th>
+                              {leadStatus !== "preparing" && (
+                                <th>
+                                  {t(
                                     locale,
-                                    "Verificación en proceso",
-                                    "Verification in progress",
-                                  )
-                                ) : o.verification_state ===
-                                  "uncertain_request" ? (
-                                  t(
-                                    locale,
-                                    "Verificación requiere revisión",
-                                    "Verification needs review",
-                                  )
-                                ) : o.verification_state ===
-                                  "technical_error" ? (
-                                  t(
-                                    locale,
-                                    "Error técnico; revisar",
-                                    "Technical error; review",
-                                  )
-                                ) : o.verification === "invalid" ? (
-                                  t(
-                                    locale,
-                                    "Correo inválido; excluido",
-                                    "Invalid email; excluded",
-                                  )
-                                ) : o.verification === "uncertain" ? (
-                                  t(locale, "Requiere revisión", "Needs review")
-                                ) : (
-                                  t(locale, "En preparación", "In preparation")
-                                )}
-                              </td>
+                                    "Inicio del análisis",
+                                    "Analysis started",
+                                  )}
+                                </th>
+                              )}
+                              {leadStatus === "converted" && (
+                                <th>{t(locale, "Campaña", "Campaign")}</th>
+                              )}
+                              <th>
+                                {t(locale, "Verificación", "Verification")}
+                              </th>
+                              <th>{t(locale, "Responsable", "Owner")}</th>
+                              <th>{t(locale, "Resultado", "Result")}</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
-                  {!filteredLeads.length && (
+                          </thead>
+                          <tbody>
+                            {filteredLeads.map((o) => (
+                              <tr key={o.id}>
+                                {canVerifyLeads && (
+                                  <td className="lead-selection-cell">
+                                    <input
+                                      type="checkbox"
+                                      className="lead-checkbox"
+                                      aria-label={t(
+                                        locale,
+                                        `Seleccionar ${o.contact || o.company}`,
+                                        `Select ${o.contact || o.company}`,
+                                      )}
+                                      checked={selectedVerificationCandidates.some(
+                                        (l) => l.contact_id === o.contact_id,
+                                      )}
+                                      disabled={
+                                        busy ||
+                                        loading ||
+                                        !verificationCandidates.some(
+                                          (l) => l.contact_id === o.contact_id,
+                                        )
+                                      }
+                                      title={
+                                        !verificationCandidates.some(
+                                          (l) => l.contact_id === o.contact_id,
+                                        )
+                                          ? t(
+                                              locale,
+                                              "Este lead ya fue verificado, está bloqueado o tiene una verificación en proceso o pendiente de revisión.",
+                                              "This lead is already verified, suppressed, or has a verification in progress or awaiting review.",
+                                            )
+                                          : undefined
+                                      }
+                                      onChange={(event) =>
+                                        toggleLeadSelection(
+                                          o.contact_id,
+                                          event.target.checked,
+                                        )
+                                      }
+                                    />
+                                  </td>
+                                )}
+                                <td>{o.contact}</td>
+                                <td>{o.company}</td>
+                                <td>{o.email}</td>
+                                <td>
+                                  <LeadDate
+                                    value={o.created_at}
+                                    locale={locale}
+                                  />
+                                </td>
+                                {leadStatus !== "preparing" && (
+                                  <td>
+                                    <LeadDate
+                                      value={o.analysis_started_at}
+                                      locale={locale}
+                                      elapsed
+                                    />
+                                  </td>
+                                )}
+                                {leadStatus === "converted" && (
+                                  <td>
+                                    <span
+                                      className={`lead-campaign-indicator ${o.campaign_enrolled ? "enrolled" : ""}`}
+                                    >
+                                      {o.campaign_enrolled ? (
+                                        <CircleCheck
+                                          size={17}
+                                          aria-hidden="true"
+                                        />
+                                      ) : (
+                                        <Clock3 size={17} aria-hidden="true" />
+                                      )}
+                                      {o.campaign_enrolled === undefined
+                                        ? t(
+                                            locale,
+                                            "Sin registro",
+                                            "Not recorded",
+                                          )
+                                        : o.campaign_sent
+                                          ? t(
+                                              locale,
+                                              "Correo enviado",
+                                              "Email sent",
+                                            )
+                                          : o.campaign_enrolled
+                                            ? t(
+                                                locale,
+                                                "En campaña · sin envío",
+                                                "Enrolled · not sent",
+                                              )
+                                            : t(
+                                                locale,
+                                                "Sin campaña",
+                                                "No campaign",
+                                              )}
+                                    </span>
+                                  </td>
+                                )}
+                                <td>
+                                  <VerificationBadge
+                                    status={o.verification}
+                                    locale={locale}
+                                  />
+                                </td>
+                                <td>{name(o.seller_id)}</td>
+                                <td>
+                                  {o.opportunity_id ? (
+                                    <button
+                                      className="text-button"
+                                      onClick={() => {
+                                        setSelected(o.opportunity_id);
+                                        setView("pipeline");
+                                      }}
+                                    >
+                                      {t(
+                                        locale,
+                                        "Ver oportunidad",
+                                        "View opportunity",
+                                      )}
+                                    </button>
+                                  ) : o.suppressed ? (
+                                    t(locale, "Bloqueado", "Suppressed")
+                                  ) : ["queued", "submitted"].includes(
+                                      o.verification_state || "",
+                                    ) ? (
+                                    t(
+                                      locale,
+                                      "Verificación en proceso",
+                                      "Verification in progress",
+                                    )
+                                  ) : o.verification_state ===
+                                    "uncertain_request" ? (
+                                    t(
+                                      locale,
+                                      "Verificación requiere revisión",
+                                      "Verification needs review",
+                                    )
+                                  ) : o.verification_state ===
+                                    "technical_error" ? (
+                                    t(
+                                      locale,
+                                      "Error técnico; revisar",
+                                      "Technical error; review",
+                                    )
+                                  ) : o.verification === "invalid" ? (
+                                    t(
+                                      locale,
+                                      "Correo inválido; excluido",
+                                      "Invalid email; excluded",
+                                    )
+                                  ) : o.verification === "uncertain" ? (
+                                    t(
+                                      locale,
+                                      "Requiere revisión",
+                                      "Needs review",
+                                    )
+                                  ) : (
+                                    t(
+                                      locale,
+                                      "En preparación",
+                                      "In preparation",
+                                    )
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  )}
+                  {isLeadInbox && !filteredLeads.length && (
                     <Empty title={t(locale, ...leadTabEmpty[leadStatus])} />
                   )}
-                  <section className="panel spaced">
-                    <div className="section-heading">
-                      <h2>
-                        {t(locale, "Lotes de importación", "Import batches")}
-                      </h2>
-                      <button
-                        className="icon-button"
-                        aria-label="Refresh imports"
-                        onClick={() =>
-                          refresh().catch((e) => setError(e.message))
-                        }
-                      >
-                        <RefreshCw size={17} />
-                      </button>
-                    </div>
-                    <div className="table-scroll">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>{t(locale, "Archivo", "File")}</th>
-                            <th>{t(locale, "Progreso", "Progress")}</th>
-                            <th>{t(locale, "Importados", "Imported")}</th>
-                            <th>{t(locale, "Duplicados", "Duplicates")}</th>
-                            <th>
-                              {t(
-                                locale,
-                                "Omitidos / errores",
-                                "Skipped / errors",
-                              )}
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {data.imports.map((batch) => (
-                            <tr key={batch.id}>
-                              <td>
-                                <strong>{batch.name}</strong>
-                                <small className="block">
-                                  {dateLabel(batch.created_at, locale)}
-                                </small>
-                                {!data.demo && (
-                                  <a
-                                    className="text-button"
-                                    href={`/api/import/${batch.id}/report`}
-                                  >
-                                    {t(
-                                      locale,
-                                      "Descargar informe",
-                                      "Download report",
-                                    )}
-                                  </a>
+                  {leadSection === "imports" && (
+                    <section className="panel lead-panel">
+                      <div className="section-heading">
+                        <h2>
+                          {t(locale, "Lotes de importación", "Import batches")}
+                        </h2>
+                        <button
+                          className="icon-button"
+                          aria-label="Refresh imports"
+                          onClick={() =>
+                            refresh().catch((e) => setError(e.message))
+                          }
+                        >
+                          <RefreshCw size={17} />
+                        </button>
+                      </div>
+                      <div className="table-scroll">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>{t(locale, "Archivo", "File")}</th>
+                              <th>{t(locale, "Progreso", "Progress")}</th>
+                              <th>{t(locale, "Importados", "Imported")}</th>
+                              <th>{t(locale, "Duplicados", "Duplicates")}</th>
+                              <th>
+                                {t(
+                                  locale,
+                                  "Omitidos / errores",
+                                  "Skipped / errors",
                                 )}
-                              </td>
-                              <td>
-                                <div className="progress">
-                                  <i
-                                    style={{
-                                      width: `${batch.total ? (batch.processed / batch.total) * 100 : 0}%`,
-                                    }}
-                                  />
-                                </div>
-                                <small>
-                                  {batch.processed.toLocaleString()} /{" "}
-                                  {batch.total.toLocaleString()} ·{" "}
-                                  {batch.status}
-                                </small>
-                              </td>
-                              <td>{batch.imported.toLocaleString()}</td>
-                              <td>{batch.duplicates}</td>
-                              <td>
-                                {batch.skipped} / {batch.errors}
-                              </td>
+                              </th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {!data.imports.length && (
-                      <Empty
-                        title={t(
-                          locale,
-                          "Todavía no hay importaciones",
-                          "No imports yet",
-                        )}
-                      />
-                    )}
-                  </section>
+                          </thead>
+                          <tbody>
+                            {data.imports.map((batch) => (
+                              <tr key={batch.id}>
+                                <td>
+                                  <strong>{batch.name}</strong>
+                                  <small className="block">
+                                    {dateLabel(batch.created_at, locale)}
+                                  </small>
+                                  {!data.demo && (
+                                    <a
+                                      className="text-button"
+                                      href={`/api/import/${batch.id}/report`}
+                                    >
+                                      {t(
+                                        locale,
+                                        "Descargar informe",
+                                        "Download report",
+                                      )}
+                                    </a>
+                                  )}
+                                </td>
+                                <td>
+                                  <div className="progress">
+                                    <i
+                                      style={{
+                                        width: `${batch.total ? (batch.processed / batch.total) * 100 : 0}%`,
+                                      }}
+                                    />
+                                  </div>
+                                  <small>
+                                    {batch.processed.toLocaleString()} /{" "}
+                                    {batch.total.toLocaleString()} ·{" "}
+                                    {batch.status}
+                                  </small>
+                                </td>
+                                <td>{batch.imported.toLocaleString()}</td>
+                                <td>{batch.duplicates}</td>
+                                <td>
+                                  {batch.skipped} / {batch.errors}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      {!data.imports.length && (
+                        <Empty
+                          title={t(
+                            locale,
+                            "Todavía no hay importaciones",
+                            "No imports yet",
+                          )}
+                        />
+                      )}
+                    </section>
+                  )}
                 </>
               )}
               {view === "tasks" && (
@@ -2318,8 +2471,8 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     ? t(locale, "Cargando…", "Loading…")
                     : t(
                         locale,
-                        `Página ${page + 1} · ${data.listTotal ?? (view === "leads" ? filteredLeads.length : visible.length)} ${view === "leads" ? "leads" : "oportunidades"} con estos filtros`,
-                        `Page ${page + 1} · ${data.listTotal ?? (view === "leads" ? filteredLeads.length : visible.length)} ${view === "leads" ? "leads" : "opportunities"} matching these filters`,
+                        `Página ${page + 1} · ${data.listTotal ?? (view === "leads" ? filteredLeads.length : visible.length)} ${view === "leads" ? (leadSection === "verifications" ? "solicitudes" : leadSection === "imports" ? "lotes" : "leads") : "oportunidades"} con estos filtros`,
+                        `Page ${page + 1} · ${data.listTotal ?? (view === "leads" ? filteredLeads.length : visible.length)} ${view === "leads" ? (leadSection === "verifications" ? "requests" : leadSection === "imports" ? "batches" : "leads") : "opportunities"} matching these filters`,
                       )}
                 </span>
                 <div className="card-actions">
