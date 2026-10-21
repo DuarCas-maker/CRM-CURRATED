@@ -9,7 +9,7 @@ export async function GET(request: Request) {
       throw new HttpError(403, "Seller access required");
     const params = new URL(request.url).searchParams;
     const mode = z
-      .enum(["list", "details", "activity", "leads", "csv"])
+      .enum(["list", "details", "activity", "leads", "csv", "readiness"])
       .parse(params.get("mode") || "list");
     const page = z.coerce
       .number()
@@ -21,6 +21,37 @@ export async function GET(request: Request) {
       .string()
       .max(200)
       .parse(params.get("search") || "");
+    if (mode === "readiness") {
+      const filter = z
+        .enum([
+          "all",
+          "eligible",
+          "sent",
+          "reserved",
+          "excluded",
+          "preparing",
+          "converted",
+        ])
+        .parse(params.get("filter") || "eligible");
+      const result = await db.rpc("campaign_readiness_page", {
+        search_text: search,
+        state_filter: filter,
+        page_number: page,
+      });
+      if (result.error) {
+        if (["PGRST202", "42883"].includes(result.error.code))
+          throw new HttpError(
+            503,
+            "Aplica 045_campaign_readiness.sql para consultar los contactos disponibles. / Apply 045_campaign_readiness.sql to view available contacts.",
+          );
+        if (/access|MFA/i.test(result.error.message))
+          throw new HttpError(403, "Seller access required");
+        throw new HttpError(400, result.error.message);
+      }
+      return Response.json(result.data, {
+        headers: { "Cache-Control": "no-store" },
+      });
+    }
     const filter = z
       .enum(["all", "replied", "unanswered", "pending", "attention", "errors"])
       .parse(params.get("filter") || "all");

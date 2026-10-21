@@ -36,6 +36,38 @@ export interface CampaignCenter {
   total: number;
   campaigns: CenterCampaign[];
 }
+export type CampaignReadinessFilter =
+  | "all"
+  | "eligible"
+  | "sent"
+  | "reserved"
+  | "excluded"
+  | "preparing"
+  | "converted";
+export interface CampaignReadiness {
+  summary: {
+    total: number;
+    preparing: number;
+    converted: number;
+    eligible: number;
+    sent: number;
+    reserved: number;
+    excluded: number;
+    authorized_senders: number;
+    reasons: Record<string, number>;
+  };
+  total: number;
+  rows: {
+    contact_id: string;
+    opportunity_id: string | null;
+    company: string;
+    name: string;
+    email: string;
+    reason: string;
+    sent: boolean;
+    reserved: boolean;
+  }[];
+}
 export const emptyMetrics: CampaignMetrics = {
   enrolled: 0,
   sent: 0,

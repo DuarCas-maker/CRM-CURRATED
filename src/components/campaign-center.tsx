@@ -23,6 +23,7 @@ import type { SendingBudget } from "@/lib/campaign-delivery";
 import type { EmailTemplate } from "@/lib/campaign-templates";
 import type { Action } from "./crm";
 import { CampaignTemplates } from "./campaign-templates";
+import { CampaignReadinessPanel } from "./campaign-readiness";
 import { Empty, t } from "./ui";
 import "./campaign-center.css";
 
@@ -324,7 +325,7 @@ export function CampaignCenterWorkspace({
             ? budgets
                 .map(
                   (b) =>
-                    `${data.accounts.find((a) => a.id === b.account_id)?.email || "Gmail"} · ${b.campaign_remaining}/${b.campaign_limit} ${t(locale, "disponibles", "available")}`,
+                    `${data.accounts.find((a) => a.id === b.account_id)?.email || "Gmail"} · ${b.campaign_remaining}/${b.campaign_limit} ${t(locale, "de cupo Gmail", "Gmail budget remaining")}`,
                 )
                 .join(" · ")
             : t(
@@ -367,6 +368,11 @@ export function CampaignCenterWorkspace({
       >
         {tab === "campaigns" && (
           <>
+            <CampaignReadinessPanel
+              locale={locale}
+              demo={data.demo}
+              revision={center}
+            />
             <div className="campaign-section-head">
               <div>
                 <h2>

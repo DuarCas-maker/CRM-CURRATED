@@ -5,6 +5,130 @@
   color: #1c1b19;
   font-size: 12px;
 }
+.campaign-readiness {
+  margin: 0 0 22px;
+}
+.campaign-readiness-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 17px 0;
+}
+.campaign-readiness-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  margin: 5px 0 0;
+}
+.campaign-readiness-heading .button {
+  flex-shrink: 0;
+}
+.campaign-readiness-counts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px 17px 0;
+}
+.campaign-readiness-counts > button {
+  text-align: left;
+  border: 1px solid #d9cbb8;
+  background: #fbf9f4;
+  border-radius: 7px;
+  padding: 10px 12px;
+  color: inherit;
+  cursor: pointer;
+}
+.campaign-readiness-counts > button:hover {
+  border-color: #a48a66;
+}
+.campaign-readiness-counts > button.highlight {
+  background: #e8ddcc;
+  border-color: #b7a181;
+}
+.campaign-readiness-counts strong {
+  display: block;
+  font-size: 25px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+.campaign-readiness-counts span {
+  display: block;
+  font-size: 10px;
+  color: #796d60;
+  margin-top: 5px;
+}
+.campaign-readiness-note {
+  font-size: 10px;
+  color: #796d60;
+  margin: 10px 17px 12px;
+  line-height: 1.6;
+}
+.campaign-readiness-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 17px 13px;
+  font-size: 10px;
+  color: #796d60;
+}
+.campaign-readiness-meta button {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: #80674a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.campaign-readiness-body {
+  border-top: 1px solid #d9cbb8;
+  padding: 14px 17px 0;
+}
+.campaign-readiness-table {
+  min-width: 650px;
+}
+.campaign-readiness .error {
+  margin: 10px 17px;
+}
+@media (max-width: 900px) {
+  .campaign-readiness-counts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 540px) {
+  .campaign-readiness-counts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 12px;
+  }
+  .campaign-readiness-heading {
+    padding: 12px 12px 0;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .campaign-readiness-heading h2 {
+    font-size: 14px;
+  }
+  .campaign-readiness-heading .campaign-eyebrow {
+    font-size: 8px;
+  }
+  .campaign-readiness-note {
+    margin: 10px 12px;
+  }
+  .campaign-readiness-meta {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .campaign-readiness-body {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
 .campaign-center h2 {
   font-size: 18px;
   letter-spacing: -0.45px;
