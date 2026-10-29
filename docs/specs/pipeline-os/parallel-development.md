@@ -49,10 +49,22 @@ La numeración y aplicación de migraciones finales tienen un único coordinador
 | P-T01 | Solicitud y plan S00–S13. | Inventario, lectura de instrucciones, ausencia de secretos candidatos e índice previo comprobados. | Completado.                  |
 | P-T02 | T01.                      | Matriz, AGENTS y encargo S01 coherentes y sin concesión de permisos externos.                      | Completado.                  |
 | P-T03 | T02.                      | Checks locales relevantes y preservación de cambios anteriores comprobados.                        | Completado; evidencia abajo. |
-| P-T04 | T03.                      | Commit base local, sin push, con fuentes esperadas y sin privados.                                 | Pendiente.                   |
-| P-T05 | T04.                      | Segundo chat en proyecto CRM correcto y worktree aislado desde esa base.                           | Pendiente.                   |
-| P-T06 | T05.                      | Comparación de base, exclusión de secretos, lectura de estado del nuevo chat y entrega.            | Pendiente.                   |
+| P-T04 | T03.                      | Commit base local, sin push, con fuentes esperadas y sin privados.                                 | Completado.                  |
+| P-T05 | T04.                      | Segundo chat en proyecto CRM correcto y worktree aislado desde esa base.                           | Completado.                  |
+| P-T06 | T05.                      | Comparación de base, exclusión de secretos, lectura de estado del nuevo chat y entrega.            | Completado.                  |
 
 Este documento describe la preparación autorizada; el identificador del segundo chat y el resultado de sus contratos se comunicarán únicamente cuando existan. El diagnóstico Instantly real está autorizado por el usuario (máximo2 nuevas/20 acumuladas), pero esta preparación no lo ejecuta ni revoca ese permiso. Estado al iniciar: B failed18, diagnóstico no iniciado y sin locks/tmp.
 
 QA local de base: TypeScript `tsc --noEmit --incremental false` correcto;8/8 tests relacionados con señales de oportunidades, compatibilidad de migración043 y paquetes documentales, con fetch global bloqueado y transportes ficticios/in-memory. La regresión S00 previa284/284 se conserva como evidencia previa, sin repetirla por documentación y snapshot. No build/Next typegen, producción o env reales. Formato aplicado únicamente a instrucciones/documentos nuevos, sin reformatear los cambios anteriores del usuario. Antes de registrar Git se cotejan los hashes originales y se permite solo la modificación intencional de AGENTS raíz más documentos nuevos.
+
+## Separación comprobada y puesta en marcha
+
+Base común local: `ae0c42cdb36f24b2710cbe363df584f08f839f05`, commit WIP de 481 archivos. Se conservaron sin cambios los 478 archivos previos distintos de AGENTS; AGENTS recibió únicamente las reglas de coordinación y se añadieron los dos documentos de coordinación. Ninguna ruta privada entró en el índice. No se realizó push.
+
+- Coordinador: `C:/Users/Usuario/Desktop/Projects/CRM Currated`, rama `codex/s00-auto-receive`.
+- Segundo chat: **Pipeline OS — S01: identidad y estados**, ID `01a18602-a8f8-7141-9fc9-0fdf580a8224`, proyecto local `4ff4a957-7163-4795-81db-73c073907566`.
+- Worktree S01: `C:/Users/Usuario/.codex/worktrees/9349/CRM Currated`, rama `codex/s01-foundations`, partiendo del mismo commit base.
+
+Comparación previa a los cambios S01: 481 archivos comprobados, 480 idénticos byte a byte y uno con diferencia exclusiva de terminación de línea; cero diferencias de contenido. Se comprobó por existencia que no se copiaron `.env`, `.env.local`, `.env.production`, `.env.development` ni `.local/pipeline-os`. Los ocho archivos privados de Instantly permanecieron intactos en el coordinador: 18 peticiones consumidas y cero nuevas durante esta preparación.
+
+El segundo chat está activo y empezó el discovery T01-01, leyendo las instrucciones y contratos existentes. La falta de node_modules en su checkout fue identificada, sin inventar pruebas ni iniciar servicios externos. Esto no da por finalizado T01-01 ni autoriza implementación funcional. La documentación del coordinador puede avanzar tras la bifurcación; el commit común conserva la referencia inmutable para revisar e integrar posteriormente.
