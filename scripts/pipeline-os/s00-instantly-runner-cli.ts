@@ -1,3 +1,5 @@
+import { runInstantlyC, cReport, validateCInputs } from "./s00-instantly-c";
+import { createCReceiver, cReceiptFiles } from "./s00-instantly-c-receiver";
 // No env autoload. Default status never reads process.env, creates files or calls HTTP.
 import { parseArgs } from "node:util";
 import {
@@ -16,10 +18,29 @@ import {
   runInstantlyBDiagnostic,
   validateBDInputs,
 } from "./s00-instantly-b-diagnostic";
+import {
+  brReport,
+  runInstantlyBRecovery,
+  validateBRInputs,
+} from "./s00-instantly-b-recovery";
+import {
+  cfdReport,
+  runInstantlyConfigDiagnostic,
+  validateCFDInputs,
+} from "./s00-instantly-config-diagnostic";
+
+import {
+  br28Report,
+  runInstantlyBRecoveryFrom28,
+  validateBR28Inputs,
+} from "./s00-instantly-b-recovery-from-28";
 
 async function main() {
   const { values } = parseArgs({
     options: {
+      "check-c-manifest": { type: "boolean", default: false },
+      "receiver-ready": { type: "boolean", default: false },
+      "webhooks-included-confirmed": { type: "boolean", default: false },
       execute: { type: "boolean", default: false },
       "check-config": { type: "boolean", default: false },
       phase: { type: "string" },
@@ -30,10 +51,335 @@ async function main() {
       "check-b-manifest": { type: "boolean", default: false },
       "manifest-reviewed": { type: "boolean", default: false },
       "check-b-diagnostic": { type: "boolean", default: false },
+      "check-b-recovery-from-28": { type: "boolean", default: false },
+      "check-b-recovery": { type: "boolean", default: false },
+      "check-b-config-diagnostic": { type: "boolean", default: false },
     },
     strict: true,
     allowPositionals: false,
   });
+  if (values.phase === "C" || values["check-c-manifest"]) {
+    if (
+      values["check-config"] ||
+      values["recover-pagination"] ||
+      values["check-b-manifest"] ||
+      values["check-b-diagnostic"] ||
+      values["check-b-recovery"] ||
+      values["check-b-config-diagnostic"] ||
+      values["check-b-recovery-from-28"] ||
+      (values.phase && values.phase !== "C")
+    )
+      throw new S00RunError("INVALID_INSTANTLY_CLI_MODE");
+    const files = instantlyFiles(process.cwd());
+    if (!values.execute) {
+      if (
+        values["authorized-new"] ||
+        values["authorized-total"] ||
+        values["included-calls-confirmed"] ||
+        values["manifest-reviewed"] ||
+        values["receiver-ready"] ||
+        values["webhooks-included-confirmed"]
+      )
+        throw new S00RunError("INVALID_INSTANTLY_CLI_MODE");
+      if (values["check-c-manifest"]) {
+        const v = validateCInputs(await files.cInputs());
+        console.log(
+          JSON.stringify({
+            mode: "offline_c_manifest",
+            sourceCalls: v.source.calls,
+            apiCalls: 0,
+            bindingsValid: true,
+          }),
+        );
+      } else
+        console.log(
+          JSON.stringify(
+            await runInstantlyC({}, files.cStore, undefined),
+            null,
+            2,
+          ),
+        );
+      return;
+    }
+    if (
+      values["check-c-manifest"] ||
+      values["authorized-new"] !== "19" ||
+      values["authorized-total"] !== "62" ||
+      !values["included-calls-confirmed"] ||
+      !values["manifest-reviewed"] ||
+      !values["receiver-ready"] ||
+      !values["webhooks-included-confirmed"]
+    )
+      throw new S00RunError("C_AUTHORIZATION_REQUIRED");
+    const existing = await files.cStore.load();
+    if (existing?.version === 8) {
+      console.log(JSON.stringify(cReport(existing), null, 2));
+      if (existing.status !== "completed") process.exitCode = 2;
+      return;
+    }
+    const controller = new AbortController(),
+      stop = () => controller.abort();
+    process.on("SIGTERM", stop);
+    process.on("SIGINT", stop);
+    try {
+      const r = await files.locked(async () =>
+        runInstantlyC(process.env, files.cStore, await files.cInputs(), {
+          execute: true,
+          authorizedNew: 19,
+          authorizedTotal: 62,
+          includedCallsConfirmed: true,
+          webhooksIncludedConfirmed: true,
+          manifestReviewed: true,
+          receiverReady: true,
+          signal: controller.signal,
+          receiverFactory: (input) =>
+            createCReceiver({ ...input, store: cReceiptFiles(process.cwd()) }),
+        }),
+      );
+      console.log(JSON.stringify(r, null, 2));
+      if (r.status !== "completed") process.exitCode = 2;
+    } finally {
+      process.off("SIGTERM", stop);
+      process.off("SIGINT", stop);
+    }
+    return;
+  }
+  if (values["receiver-ready"] || values["webhooks-included-confirmed"])
+    throw new S00RunError("INVALID_INSTANTLY_CLI_MODE");
+  if (
+    values.phase === "B_RECOVERY_FROM_28" ||
+    values["check-b-recovery-from-28"]
+  ) {
+    if (
+      values["check-b-recovery"] ||
+      values["check-b-config-diagnostic"] ||
+      values["check-config"] ||
+      values["recover-pagination"] ||
+      values["check-b-manifest"] ||
+      values["check-b-diagnostic"] ||
+      (values.phase && values.phase !== "B_RECOVERY_FROM_28")
+    )
+      throw new S00RunError("INVALID_INSTANTLY_CLI_MODE");
+    if (!values.execute) {
+      if (
+        values["authorized-new"] ||
+        values["authorized-total"] ||
+        values["included-calls-confirmed"] ||
+        values["manifest-reviewed"]
+      )
+        throw new S00RunError("INVALID_INSTANTLY_CLI_MODE");
+      const files = instantlyFiles(process.cwd());
+      if (values["check-b-recovery-from-28"]) {
+        const v = validateBR28Inputs(await files.br28Inputs());
+        console.log(
+          JSON.stringify({
+            mode: "offline_b_recovery_from_28",
+            sourceCalls: v.source.calls,
+            apiCalls: 0,
+            bindingsValid: true,
+          }),
+        );
+      } else
+        console.log(
+          JSON.stringify(
+            await runInstantlyBRecoveryFrom28({}, files.br28Store, undefined),
+            null,
+            2,
+          ),
+        );
+      return;
+    }
+    if (
+      values["check-b-recovery-from-28"] ||
+      values["authorized-new"] !== "20" ||
+      values["authorized-total"] !== "48" ||
+      !values["included-calls-confirmed"] ||
+      !values["manifest-reviewed"]
+    )
+      throw new S00RunError("BR28_AUTHORIZATION_REQUIRED");
+    const files = instantlyFiles(process.cwd()),
+      controller = new AbortController(),
+      stop = () => controller.abort();
+    process.on("SIGTERM", stop);
+    process.on("SIGINT", stop);
+    try {
+      const r = await files.locked(async () =>
+        runInstantlyBRecoveryFrom28(
+          process.env,
+          files.br28Store,
+          await files.br28Inputs(),
+          {
+            execute: true,
+            authorizedNew: 20,
+            authorizedTotal: 48,
+            includedCallsConfirmed: true,
+            manifestReviewed: true,
+            signal: controller.signal,
+          },
+        ),
+      );
+      console.log(JSON.stringify(r, null, 2));
+      if (r.status !== "completed") process.exitCode = 2;
+    } finally {
+      process.off("SIGTERM", stop);
+      process.off("SIGINT", stop);
+    }
+    return;
+  }
+  if (
+    values.phase === "B_CONFIG_DIAGNOSTIC" ||
+    values["check-b-config-diagnostic"]
+  ) {
+    if (
+      values["check-config"] ||
+      values["recover-pagination"] ||
+      values["check-b-manifest"] ||
+      values["check-b-diagnostic"] ||
+      values["check-b-recovery"] ||
+      (values.phase && values.phase !== "B_CONFIG_DIAGNOSTIC")
+    )
+      throw new S00RunError("INVALID_INSTANTLY_CLI_MODE");
+    if (!values.execute) {
+      if (
+        values["authorized-new"] ||
+        values["authorized-total"] ||
+        values["included-calls-confirmed"] ||
+        values["manifest-reviewed"]
+      )
+        throw new S00RunError("INVALID_INSTANTLY_CLI_MODE");
+      const files = instantlyFiles(process.cwd());
+      if (values["check-b-config-diagnostic"]) {
+        const v = validateCFDInputs(await files.cfdInputs());
+        console.log(
+          JSON.stringify({
+            mode: "offline_b_config_diagnostic",
+            sourceCalls: v.source.calls,
+            apiCalls: 0,
+            bindingsValid: true,
+          }),
+        );
+      } else
+        console.log(
+          JSON.stringify(
+            await runInstantlyConfigDiagnostic({}, files.cfdStore, undefined),
+            null,
+            2,
+          ),
+        );
+      return;
+    }
+    if (
+      values["check-b-config-diagnostic"] ||
+      values["authorized-new"] !== "2" ||
+      values["authorized-total"] !== "29" ||
+      !values["included-calls-confirmed"] ||
+      !values["manifest-reviewed"]
+    )
+      throw new S00RunError("CFD_AUTHORIZATION_REQUIRED");
+    const files = instantlyFiles(process.cwd()),
+      controller = new AbortController(),
+      stop = () => controller.abort();
+    process.on("SIGTERM", stop);
+    process.on("SIGINT", stop);
+    try {
+      const r = await files.locked(async () =>
+        runInstantlyConfigDiagnostic(
+          process.env,
+          files.cfdStore,
+          await files.cfdInputs(),
+          {
+            execute: true,
+            authorizedNew: 2,
+            authorizedTotal: 29,
+            includedCallsConfirmed: true,
+            manifestReviewed: true,
+            signal: controller.signal,
+          },
+        ),
+      );
+      console.log(JSON.stringify(r, null, 2));
+      if (r.status !== "completed") process.exitCode = 2;
+    } finally {
+      process.off("SIGTERM", stop);
+      process.off("SIGINT", stop);
+    }
+    return;
+  }
+  if (values.phase === "B_RECOVERY" || values["check-b-recovery"]) {
+    if (
+      values["check-config"] ||
+      values["recover-pagination"] ||
+      values["check-b-manifest"] ||
+      values["check-b-diagnostic"] ||
+      (values.phase && values.phase !== "B_RECOVERY")
+    )
+      throw new S00RunError("INVALID_INSTANTLY_CLI_MODE");
+    if (!values.execute) {
+      if (
+        values["authorized-new"] ||
+        values["authorized-total"] ||
+        values["included-calls-confirmed"] ||
+        values["manifest-reviewed"]
+      )
+        throw new S00RunError("INVALID_INSTANTLY_CLI_MODE");
+      const files = instantlyFiles(process.cwd());
+      if (values["check-b-recovery"]) {
+        const v = validateBRInputs(await files.brInputs());
+        console.log(
+          JSON.stringify({
+            mode: "offline_b_recovery",
+            sourceCalls: v.source.calls,
+            apiCalls: 0,
+            bindingsValid: true,
+          }),
+        );
+      } else
+        console.log(
+          JSON.stringify(
+            await runInstantlyBRecovery({}, files.brStore, undefined),
+            null,
+            2,
+          ),
+        );
+      return;
+    }
+    if (
+      values["check-b-recovery"] ||
+      values["authorized-new"] !== "22" ||
+      values["authorized-total"] !== "41" ||
+      !values["included-calls-confirmed"] ||
+      !values["manifest-reviewed"]
+    )
+      throw new S00RunError("BR_AUTHORIZATION_REQUIRED");
+    const files = instantlyFiles(process.cwd()),
+      controller = new AbortController(),
+      stop = () => controller.abort();
+    process.on("SIGTERM", stop);
+    process.on("SIGINT", stop);
+    try {
+      const r = await files.locked(async () =>
+        runInstantlyBRecovery(
+          process.env,
+          files.brStore,
+          await files.brInputs(),
+          {
+            execute: true,
+            authorizedNew: 22,
+            authorizedTotal: 41,
+            includedCallsConfirmed: true,
+            manifestReviewed: true,
+            signal: controller.signal,
+          },
+        ),
+      );
+      console.log(JSON.stringify(r, null, 2));
+      if (r.status !== "completed") process.exitCode = 2;
+    } finally {
+      process.off("SIGTERM", stop);
+      process.off("SIGINT", stop);
+    }
+    return;
+  }
   if (values.phase === "B_DIAGNOSTIC" || values["check-b-diagnostic"]) {
     if (
       values["check-config"] ||
@@ -215,11 +561,19 @@ async function main() {
       JSON.stringify(
         await (async () => {
           const s = await files.allStore.load();
-          return s?.version === 4
-            ? bdReport(s)
-            : s?.version === 3
-              ? bReport(s)
-              : instantlyLedgerReport(s);
+          return s?.version === 8
+            ? cReport(s)
+            : s?.version === 7
+              ? br28Report(s)
+              : s?.version === 6
+                ? cfdReport(s)
+                : s?.version === 5
+                  ? brReport(s)
+                  : s?.version === 4
+                    ? bdReport(s)
+                    : s?.version === 3
+                      ? bReport(s)
+                      : instantlyLedgerReport(s);
         })(),
         null,
         2,

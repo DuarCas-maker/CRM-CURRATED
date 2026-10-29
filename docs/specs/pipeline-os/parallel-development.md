@@ -1,8 +1,38 @@
 # Pipeline OS: coordinación de dos chats
 
+INS-APP posterior29/10 por coordinador: nuevo src/lib/server/instantly, dos rutas API, migración046, test app y extracción compatible wrapper S00; actualización local de continuidad y .env.example.19 nuevos/423 regresión/DB/TS, source43/12 privados/410 previos protegidos intactos. S01 no edita esas rutas/migración ni recibe acceso a privados; no cambia su checkout o permisos. Ningún despliegue/push/merge/Supabase remoto/API.046 reservada por coordinador; no transferencias implícitas de ownership.
+
+Implementación C posterior29/10 por coordinador: core/handler/fixtures/tests y extensiones files/CLI/runner propios,28 C/400 S00/TS correctos.32 protegidos intactos (12 JSON operativos y20 archivos anteriores distintos de los tres compartidos), v7/completed43 sin migrar, sin credenciales/APIs/endpoint/envíos. T05/T06 pendientes; no se transfiere propiedad, permiso o acceso a S01. El frente S01 conserva su checkout/tareas y no recibe claves/contadores.
+
+Preparación C29/10/2026 por coordinador: [protocolo/AC/presupuesto](s00/instantly-phase-c.md) preparado desde43,12–14 normales/máximo19 nuevas/62 acumuladas propuestos. Usuario confirma ausencia de receptor público, a preparar sin publicación actual. Solo documentos S00/raíz propios; contador43/privados/código/propiedad S01 intactos, cero APIs/envíos/infra. Implementación/QA C y permiso real pendientes; no se reutiliza remanente5 de B ni se reabre su terminal.
+
 28/10/2026. SDD STRICT por aislamiento de trabajo existente, credenciales y límites externos. El usuario eligió S01 en un segundo chat/worktree y autorizó preparar una base común conservando los cambios actuales. No autoriza producción, nuevas llamadas a proveedores, push, merge o migraciones remotas durante esta preparación.
 
 ## Objetivo, alcance y aceptación
+
+Actualización29/10/2026 del coordinador: diagnóstico BD completado, un GET propio/19 acumuladas, campaña pausada y cero escrituras/envíos. Próximo incremento pendiente de contrato de opcionales/compatibilidad/reconciliación offline. B no reanudada y reparto sin cambios; las cifras18 y permiso pendiente de la preparación siguiente son evidencia histórica del28/10.
+
+Continuación29/10: corrección OC de opcionales completada offline (293/293 S00 y TS); contrato/reconciliación automática de recuperación B aún pendientes. Calls19 y ocho archivos privados intactos. No se transfieren archivos compartidos o permisos al frente S01.
+
+Plan posterior29/10: protocolo BR preparado, implementación pendiente; misma campaña/v4/19, máximo22 nuevas/41 acumuladas propuesto. Solo documentos del coordinador, sin código/APIs/permiso remoto nuevo o cambios de propiedad S01.
+
+Actualización posterior29/10: BR-T02/03 implementadas/probadas offline por solicitud explícita:23 BR/316 S00 y TS correctos; source real19 intacto, estado de recuperación not_started y cero llamadas/escrituras reales. Se modifican solo scripts/tests/docs S00 propios; sin transferencias o cambios en S01. BR-T04 real continúa pendiente de permiso22/41.
+
+Resultado posterior29/10: BR-T04 autorizada22/41 y ejecutada una vez:8 nuevas/27 acumuladas,failed/stage5/B_UNSAFE_CAMPAIGN, emergencia verified_paused,0 leads/envíos. Source19 intacto,7 archivos privados restantes iguales, sin replay HTTP; diagnóstico de lectura configurada por preparar antes de más APIs. Mantener ownership S00 y no heredar permisos en S01.
+
+Plan CFD posterior29/10: protocolo de lectura configurada preparado, hasta2 nuevas/29 acumuladas propuesto; todavía sin implementar/ejecutar.27 reales y campaña intactas. Solo documentos S00 del coordinador, sin cambios de propiedad o acceso S01.
+
+Incremento CFD posterior29/10: implementación/QA offline autorizadas y completadas en núcleo nuevo CFD, files/CLI, fixture/test y documentación S00 del coordinador.23 CFD/339 S00 y TS correctos. Preview real not_started27/new0 sin env/red/save; ocho archivos privados conservados, sin v6 real o campaña modificada. CFD-T04 remoto pendiente de permiso propio2/29. No cambia ownership, worktree o tareas de S01.
+
+Resultado CFD posterior29/10: permiso específico2/29 ejecutado con1 GET, completed28; identidad/pausa correctas, proyección configurada con extras en secuencia y guarda false. Snapshot27/7 archivos restantes intactos,0 mutaciones/envíos. Próximo bloque S00 propuesto: contrato de secuencia y corrección offline, sin permisos heredados o cambios de ownership S01. No reabrir CFD para gastar el segundo intento.
+
+Incremento SC posterior29/10: corrección de defaults de secuencia autorizada e implementada offline por coordinador en B/CFD, fixture CFD/test SC y docs propias.10 nuevos/349 S00/TS correctos, contador28/10 archivos privados intactos, sin APIs/credenciales/campaña modificada. Comparación histórica CFD estable; propuesta de recuperación desde28 requiere protocolo propio. Sin transferencias de ownership, checkout compartido o tareas S01 modificadas.
+
+Plan BR28 posterior29/10: protocolo desde28 preparado, v7/B_RECOVERY_FROM_28 propuesto con configuración conservada y sin PATCH campaña normal;14–15 nuevas normales, máximo N15/R3/H2=20 nuevas/48 acumuladas. Solo documentos S00 del coordinador, source28/diez archivos privados intactos y sin código/APIs/credenciales/campaña modificada. Implementación/QA y permiso real propios pendientes; sin cambios de propiedad o acceso S01.
+
+Implementación BR28 posterior29/10: T02/03 autorizadas y completadas offline en núcleo nuevo, files/CLI, fixture/test y docs S00.23 BR28/372 S00 y TS correctos; origen real28/diez privados intactos,25 archivos anteriores de scripts/tests ajenos a files/CLI conservados, preview0/0/0 y ninguna v7 real. Nuevo cursor inconsistente se rechaza; sin helpers históricos/DB/worker/S01/dependencias o campaña modificados. T04 remoto pendiente de permiso propio20/48/cupo incluido; sin transferencia de ownership o acceso S01.
+
+BR28-T04 real posterior29/10: permiso20/48 y acceso incluido acreditado, ejecución única completed43/stage13 con15 nuevas/N15/R0/H0. Dos leads propios/aislamiento A/B/cierre pausado, sin reconfigurar campaña/envíos/operaciones pagas. Snapshot28 y9 privados restantes iguales, replay offline0/0/0 sin más llamadas. B recuperada operativamente; C/D/S00 pendientes. No cambia ownership S00/S01 ni autoriza otras APIs, limpieza de leads o gasto del remanente5.
 
 | FR     | Requisito                                                            | Aceptación                                                                                                                                                            |
 | ------ | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

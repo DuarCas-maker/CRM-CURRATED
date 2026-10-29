@@ -1,6 +1,54 @@
 # Plan de sprints y tareas de Pipeline OS
 
+## RC: versión conjunta local — 29/10/2026
+
+Respuesta5→B amplía REL-T02 a todos los cambios públicos pendientes, incluidas señales de oportunidades y herramientas S00. [RC-T01–04](s00/release-candidate.md): inventario/preservación, revisión conjunta, QA/build aislado y commit local. Sin push/merge/despliegue/Supabase remoto/APIs o transferencia S01; contador43 intacto. La publicación apagada y ficha de destino/imagen previa siguen siendo gates posteriores del runbook REL.
+
+## INS-REL: guía de046 y despliegue existente — 29/10/2026
+
+[REL-T01](s00/instantly-046-release-runbook.md) preparada: aclaración main/autodeploy cerrada, protocolo/catalogación/rollback/presupuesto y validación local. REL-T02 candidato/ficha/build, T03 aplicación SQL, T04 publicación apagada y T05 smoke permanecen pendientes de sus verificaciones/autorizaciones. No reabrir C/B o consumir remanentes;43/12 privados intactos, sin Git mutante/SQL remoto/deploy/API. No cambia ownership S01.
+
+## INS-APP: integración offline completada — 29/10/2026
+
+[IA-T01–04](s00/instantly-app-integration.md) completadas: contrato/ADR, extracción C/rutas/puerto, migración046/RPC/CAS/RLS, QA19 nuevos/423 regresión más aceptación general DB/TS. Recibos técnicos en la app actual con featurefalse, sin UI/negocio/worker nuevo. Source43/12 privados y410 archivos previos protegidos intactos; no despliegue, aplicación046 remota, APIs reales o credenciales cargadas. Pendientes posteriores: manifiesto/control/puente del ensayo y presupuesto actualizado, publicación/aplicación remota solo autorizadas explícitamente, C real/D/S00. S01 conserva propiedad y contratos.
+
+## INS-C: preparación desde43 — 29/10/2026
+
+**Actualización de implementación:** INS-C-T02 núcleo/v8/files/CLI, T03 handler/store/fixtures y T04 QA/revisión completadas offline:28 C/400 S00 y TS correctos.43 reales,12 JSON privados y20 archivos anteriores ajenos a los tres compartidos conservados; preview not_started43/new0 sin credenciales/APIs/locks. T05 endpoint HTTPS/manifiesto/control/costos y T06 ejecución real siguen pendientes, sin publicar/activar/envíos. La lista de tareas original siguiente queda como cronología de planificación.
+
+[Paquete C](s00/instantly-phase-c.md), dentro de INS-T02/03/05 y T00-04: INS-C-T01 protocolo/ADR/12AC/presupuesto preparada; T02 core/files/CLI, T03 handler offline, T04 QA/revisión, T05 receptor HTTPS/manifiesto/control/costos y T06 ejecución/limpieza pendientes. Usuario1→A confirma ausencia de receptor público; prepararlo no autoriza publicarlo.12–14 normales, N14/R3/H2 hasta19 nuevas/62 acumuladas propuestos; las43 permanecen intactas. Solo documentación, sin código/credenciales/APIs/envíos o transferencia S01; no cerrar C/D/S00 por preparar contratos.
+
+## INS-BR28: ejecutor desde28 implementado offline — 29/10/2026
+
+**BR28-T04 completada:** usuario autoriza20/48 y credenciales guardadas, API incluida confirmada documentalmente y plan/capacidad reales válidos. Ejecución única **completed43**,15 nuevas/N15/R0/H0, dos leads exactos, aislamiento A/B y cierre pausado; sin envíos/verificaciones/operaciones pagas/reconfiguración de campaña. Snapshot28 y9 privados restantes preservados; auditoría/replay offline0/0/0, sin otra llamada. [Aceptación operativa B](s00/instantly-b-recovery-from-28.md). No gastar remanente5 ni limpiar leads/reiniciar automáticamente; C/D/S00 siguen abiertos. Lo siguiente conserva cierre offline anterior.
+
+[BR28-T01/02/03](s00/instantly-b-recovery-from-28.md) completadas: contrato STRICT8 FR/AC, núcleo/estado/builder v7, files/CLI/preview,23 casos nuevos/regresión372/372/TS y preservación real28. Camino14–15, extremo N15/R3/H2=20/48 probados con mocks; cero v7 real/env/red/escrituras en preview y diez privados idénticos. T04 real pendiente de cupo incluido/confirmaciones y autorización propia20/48. No reutilizar permisos41/29 o transformar fuente para ejecutar BR antiguo; B/C/D/S00 abiertos.
+
+## INS-SC: corrección del contrato de secuencia — 29/10/2026
+
+[SC-T01–04](s00/instantly-sequence-contract-correction.md) completadas: revisión de esquema público/repro fallando, corrección acotada B/BR y política histórica CFD,10 casos nuevos/regresión349/349/TS, auditoría de10 archivos privados sin cambios/replay0/0/0/calls28. SC-AC01–05 cubiertos offline. No recuperación real, nuevas peticiones o cambios de campaña. Protocolo posterior de recuperación desde28 pendiente de solicitud/alcance propios; B/BR/C/D/S00 abiertos y terminal CFD no se reabre.
+
+## INS-CFD: diagnóstico configurado implementado offline — 29/10/2026
+
+**CFD-T04 completada:** autorización2 nuevas/29, evidencia de acceso API incluido confirmada,1 GET propio y **28 acumuladas**. Snapshot27/7 archivos privados restantes intactos; identidad/pausa válidas, proyección completada con guarda configurada false por extras en secuencia, sin reparar. Sin retry o nuevas operaciones. [Aceptación y evidencia](s00/instantly-config-diagnostic.md). Próximo bloque propuesto: revisar contrato de secuencias y probar corrección offline; B/BR/C/D/S00 siguen abiertos. La nota siguiente conserva el cierre offline anterior.
+
+[CFD-T01/02/03](s00/instantly-config-diagnostic.md) completadas: protocolo STRICT7 FR/AC, núcleo/proyección/estado v6, files/CLI/preview y QA23 CFD/339 S00/TS. Fuente real BR failed27, ocho archivos privados y campaña intactos;0 nuevas/credenciales/APIs. CFD-T04 real pendiente de cupo incluido vigente y permiso específico de1 lectura+1 retry máximo2 nuevas/29 acumuladas. No reusar BD antiguo o saldo BR, reiniciar o migrar el ledger real por implementar offline. B/BR/C/D y S00 abiertos.
+
+## INS-BR: recuperación B planificada — 29/10/2026
+
+**BR-T04 ejecutada, aceptación pendiente:** permiso22/41 con fuente19, una ejecución real y8 nuevas/**27 acumuladas**,N6/R0/H2. Preflight identidad/plan/cupo/pausa/audiencia vacía correcto; PATCH propio OK, GET configured rechazado por B_UNSAFE_CAMPAIGN en stage5. Emergencia verified_paused,0 leads/envíos/verificaciones pagas. Fuente19 reconstruida idéntica,7 archivos privados restantes intactos y replay sin env/HTTP/save. [Incidente](s00/instantly-b-recovery-incident.md). Próximo incremento propuesto: diagnóstico acotado de lectura configurada con fuente27, sin ejecutar más peticiones o reabrir BR. B/C/D/S00 continúan abiertos.
+
+**BR-T02/03 completadas offline:** usuario autorizó implementar y probar, sin APIs/cambio de campaña y preservando19. Núcleo/estado v5, helpers B compartidos, files/CLI y23 casos BR; regresión316/316 S00 y TS correctos. Preview real not_started/calls19/newCalls0, bindings válidos, env/fetch/save0/0/0 y ocho archivos operativos idénticos. BR-T04 real pendiente de permiso específico hasta22 nuevas/41 acumuladas; no reusar permisos previos ni degradar v4 para reiniciar. [Evidencia](s00/instantly-b-recovery.md). El párrafo siguiente conserva el estado anterior de planificación.
+
+[BR-T01: protocolo/AC/ADR/presupuesto](s00/instantly-b-recovery.md) completado en planificación documental, BR-FR01–08/AC01–08. Fuente exacta19, misma campaña, preflight pausa/audiencia vacía, normal16–17 y máximo N17/R3/H2=22 nuevas/41 acumuladas propuesto. BR-T02 núcleo/estado y BR-T03 files/CLI/QA requieren solicitud posterior de implementación offline; BR-T04 real exige QA previo y permiso propio22/41. Sin llamadas/credenciales/cambio de campaña/código o migración de ledger durante planificación. No se declaran B/C/D o S00 cerrados ni se afecta S01.
+
+## INS-OC: corrección de opcionales completada offline — 29/10/2026
+
+[OC-T01–04](s00/instantly-optional-fields-correction.md) completadas para OC-FR01–06/AC01–06: contrato oficial, reproducción fallo→pasa, inspección sin defaults, guardas del ensayo, create/PATCH y negativos/regresión.293/293 S00 (nueve pruebas nuevas), TypeScript correcto; ocho archivos privados intactos, calls19, env/fetch/save=0 en replay real offline. El ajuste no reanuda B ni modifica la campaña. Próximo bloque: protocolo de recuperación del mismo recurso desde v4/19 y presupuesto propio, sin reutilizar techo o permisos antiguos. B/C/D y S00 continúan abiertos. Evidencia cronológica siguiente conservada.
+
 ## INS-BD: preparación, implementación y QA offline completadas — 28/10/2026
+
+**Actualización29/10/2026 — BD-T04 completado:** autorización2/20 conservando18, un GET propio exitoso, **19 acumuladas**, sin retry/escrituras/envíos/operaciones pagas. Identidad/pausa verificadas; `ai_sdr_id`, `is_evergreen`, `stop_for_company` ausentes; resto coincide. Ledger v4 preserva failed18 e historia11/4, B sin reanudar y causa histórica no demostrada.28/28 tests BD correctos. [Resultado](s00/instantly-b-diagnostic.md). B-T04/C/D y S00 abiertos; próximo bloque propuesto: contrato de opcionales y compatibilidad/reconciliación offline, sin permiso implícito de nuevas APIs/mutaciones. El párrafo siguiente es antecedente del28/10.
 
 [BD-T01–03](s00/instantly-b-diagnostic.md) completadas con BD-FR01–07/AC01–07: contrato/ADR, core de lectura, files/CLI/proyección y28 pruebas nuevas dentro de284/284 S00; TypeScript correcto. Preview real offline sin env/save/HTTP conserva8 archivos idénticos, fuente v3 failed18,0 nuevas y sin migración o reinicio. **BD-T04 real pendiente** de autorización específica hasta2 nuevas/20 acumuladas; B-T04/S00 siguen incompletos y causa original no demostrada. No reutilizar permiso anterior B25 o convertir una observación actual en prueba histórica.
 

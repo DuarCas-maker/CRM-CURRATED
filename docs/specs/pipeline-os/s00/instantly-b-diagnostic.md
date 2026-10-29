@@ -4,6 +4,8 @@
 
 ## Especificación y aceptación
 
+Estado vigente29/10/2026: diagnóstico real BD-T04 completado; el desarrollo y la evidencia offline siguientes se conservan como antecedentes. Ver resultado operativo al final.
+
 | FR      | Requisito                                                                                                              | AC Given/When/Then                                                                                                                             |
 | ------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | BD-FR01 | Preservar exactamente B18 y toda su historia; mismo ledger, sin resets o downgrade.                                    | BD-AC01: dado B18 exacto, solo una futura ejecución autorizada puede extender a v4; fuentes reales siguen idénticas hoy.                       |
@@ -26,12 +28,12 @@ Informe solo lista rutas de una enumeración fija, observedType, tamaño para ob
 
 ## Tareas, validación y rollout
 
-| T      | Objetivo / FR                                  | Dependencias                                                     | Terminado / pruebas                                                                                                   |
-| ------ | ---------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| BD-T01 | Contrato/AC/ADR/presupuesto, FR01–07.          | Incidente B18 y solicitud.                                       | Completado: este documento antes de código,7 FR/AC y ADR01/02.                                                        |
-| BD-T02 | Núcleo/proyección/estado/lectura, FR01/03–07.  | T01.                                                             | Completado offline:28 casos BD con fetch/reloj/store ficticios dentro de regresión284/284.                            |
-| BD-T03 | Files/CLI/QA/preview real offline, FR01/02/06. | T02.                                                             | Completado: migración ficticia/legacy/CLI, TypeScript correcto;8 archivos reales idénticos, contador18 sin migración. |
-| BD-T04 | Diagnóstico real y análisis de diferencias.    | T03, autorización específica futura2/20 y credenciales internas. | Pendiente; no autorizado por implementar/probar offline.                                                              |
+| T      | Objetivo / FR                                  | Dependencias                                              | Terminado / pruebas                                                                                                   |
+| ------ | ---------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| BD-T01 | Contrato/AC/ADR/presupuesto, FR01–07.          | Incidente B18 y solicitud.                                | Completado: este documento antes de código,7 FR/AC y ADR01/02.                                                        |
+| BD-T02 | Núcleo/proyección/estado/lectura, FR01/03–07.  | T01.                                                      | Completado offline:28 casos BD con fetch/reloj/store ficticios dentro de regresión284/284.                            |
+| BD-T03 | Files/CLI/QA/preview real offline, FR01/02/06. | T02.                                                      | Completado: migración ficticia/legacy/CLI, TypeScript correcto;8 archivos reales idénticos, contador18 sin migración. |
+| BD-T04 | Diagnóstico real y análisis de diferencias.    | T03, autorización específica2/20 y credenciales internas. | Completado29/10/2026: un GET,19 acumuladas; campaña pausada, tres omisiones; B no reanudada.                          |
 
 Plan ejecutado: contrato → core → adaptadores → negativos y fallos → regresión/TypeScript/revisión → preview real sin env/save/HTTP. G0–G3 resueltos con incidente/código/alcance; G4/G5 completados con la evidencia final siguiente. G6 no aplica: no hay despliegue. Release remoto, DB y cleanup no aplican; riesgos de drift de proveedor, fuente cambiada y fallos de disco se manejan deteniendo, no normalizando o reiniciando.
 
@@ -46,3 +48,25 @@ Preview sobre fuentes reales: `--check-b-diagnostic` → sourceCalls18/apiCalls0
 Revisión de seguridad/compatibilidad: rutas construidas desde UUID validado, fuente auditada exacta, estados y resultados durables coherentes, errores de disco propagados como código fijo, datos proyectados mediante enums/rutas fijas y consumidores legacy bloqueados tras una futura v4. Se corrigieron dos errores TS de inferencia durante desarrollo y se protegieron casos de resultado duradero inconsistente/preview sin fuente; suites finales correctas. No se ejecutaron build/Next typegen, DB, lint (sin script) o APIs reales: este incremento modifica CLI/artefactos y evita autoload de credenciales. [Evidencia general](../verification.md).
 
 Uso actual sin env-file: `--phase B_DIAGNOSTIC` para status y `--check-b-diagnostic` para validar bindings locales. El futuro execute requiere fase B_DIAGNOSTIC/new2/total20/included/reviewed y autorización humana posterior. Este desarrollo no utiliza el permiso B25 para realizar lecturas después del terminal. Incluso tras completarse el diagnóstico, la campaña/B quedan sin cambios y la causa histórica no se declara probada automáticamente. BD-T04, B-T04 y S00 operativos siguen pendientes.
+
+## BD-T04: diagnóstico real autorizado — 29/10/2026
+
+El usuario reiteró la autorización: credenciales guardadas, conservar18, hasta2 nuevas/máximo20 acumuladas, sin costos adicionales o modificaciones. API incluida respaldada por Hyper Growth y renovación06/11/2026 ya documentados; no se cambió plan ni compró cupo. Preflight offline `--check-b-diagnostic`: sourceCalls18/apiCalls0/bindingsValid=true. Suite BD reejecutada:28/28 correctas. Sin cambios de código.
+
+CLI ejecutada una vez con phase=B_DIAGNOSTIC/execute/new2/total20/included/reviewed, carga interna de s00.env y sin cargar .env.local. Resultado completed: un GET propio, sin retry, **18 históricas +1 nueva =19 acumuladas**. Ledger v4 conserva snapshot v3 failed18 y antecedentes11/4; misma configuración/manifiesto/scope y sourceHash validado. Solo proyección fija, sin cuerpo remoto, claves, IDs o valores personales publicados.
+
+| Observación actual                       | Resultado                                             |
+| ---------------------------------------- | ----------------------------------------------------- |
+| ID, nombre y workspace                   | Coinciden con el ensayo propio.                       |
+| Estado                                   | Pausado confirmado.                                   |
+| Listas de remitentes/tags/CC/BCC/routing | Vacías, coinciden.                                    |
+| `ai_sdr_id`                              | Ausente; B exige null explícito.                      |
+| `is_evergreen`                           | Ausente; B exige false explícito.                     |
+| `stop_for_company`                       | Ausente; B exige false explícito.                     |
+| `stop_on_reply`, schedule y sequences    | Coinciden; sequences vacío, schedule sin diferencias. |
+
+Estas tres omisiones explican el rechazo actual de las guardas (`originalGuardPassesNow=false`). No prueban qué campo provocó el fallo histórico: la respuesta initial no se conservó (`historicalFailureCauseProven=false`). No interpretar ausente como false/null ni garantía de seguridad. B continúa failed, con cero leads registrados y sin reanudarse. Cero envíos, mutaciones, compras o verificaciones pagas por el ejecutor; facturación global no medida. No se gastó el segundo intento en una comprobación redundante.
+
+BD-FR01–07/AC01–07 cubiertos en alcance combinado real/offline: identidad/pausa/continuidad/proyección reales, negativos mediante28 tests. Terminal completed no permite repetir para consumir saldo. BD-T04 completado; B-T04, C/D y S00 siguen abiertos. Siguiente incremento propuesto: revisar contrato oficial de opcionales y preparar compatibilidad/reconciliación offline del mismo recurso, conservando19; no relajar guardas o reiniciar con este permiso. Rollback conserva v4/historia, sin downgrade o devolución de peticiones.
+
+Cierre local sin env/red: replay de status completed19/previous18/new1, hash del journal antes/después idéntico, sin lock/tmp y sin B reanudada. Formato documental y git diff --check correctos. No hubo más solicitudes a proveedores tras el GET exitoso.

@@ -241,6 +241,27 @@ test("BD-AC03/07 success is one own GET,19 cumulative, not a B repair or histori
   assert.ok(bPublicSafe(r));
   assert.deepEqual(validateBDState(h.store.value).prior, source);
 });
+test("OC-AC04 diagnostic remains a strict historical comparison after trial compatibility fix", async () => {
+  const h = await harness(),
+    source = structuredClone(h.inputs.source);
+  for (const key of ["ai_sdr_id", "is_evergreen", "stop_for_company"])
+    delete h.body[key];
+  const r = await h.run();
+  assert.equal(r.status, "completed");
+  assert.equal(r.calls, 19);
+  assert.equal(r.projection?.originalGuardPassesNow, false);
+  assert.equal(r.historicalFailureCauseProven, false);
+  assert.equal(r.bResumed, false);
+  assert.equal(r.mutations, 0);
+  for (const key of ["ai_sdr_id", "is_evergreen", "stop_for_company"])
+    assert.equal(
+      r.projection?.fields.find((row) => row.field === key)?.reason,
+      "missing",
+    );
+  assert.deepEqual(validateBDState(h.store.value).prior, source);
+  assert.ok(bPublicSafe(r));
+});
+
 test("BD-AC04 omissions, nulls, types and nonempty safety arrays stay distinct without defaults", async () => {
   for (const [field, value, reason] of [
     ["cc_list", undefined, "missing"],

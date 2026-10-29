@@ -1,5 +1,11 @@
 # Variables de entorno
 
+## Webhook técnico Instantly: preparación offline046
+
+Las rutas nuevas se incluyen en la app actual; no necesitan otro servicio o puerto. `INSTANTLY_WEBHOOK_ENABLED=false` por defecto; apagado responde404 sin acceso a DB. Solo Runtime web: `INSTANTLY_S00_WEBHOOK_SECRET` y `INSTANTLY_S00_WEBHOOK_DEDUP_KEY`, dos valores distintos de32 bytes codificados como64 caracteres hexadecimales minúsculos, independientes de la API key. No incluir en Build/NEXT_PUBLIC. Reutiliza APP_ORIGIN y Supabase existentes, sin pedir/copiar sus credenciales de nuevo.
+
+La migración046 y el código solo se probaron en local. Antes de activar se requieren aplicación remota/deploy autorizados, claves revisadas, trial/manifiesto preparado y ventana armada con superadmin/MFA. Las credenciales existentes, Coolify/DNS/infra y env reales no cambian por documentar estos nombres. No añadir la API key Instantly a la web para recibir callbacks. [Contrato, pruebas y runbook](specs/pipeline-os/s00/instantly-app-integration.md).
+
 Copiar `.env.example` a `.env.local` solo para desarrollo. En Coolify, guardar los valores en **Environment Variables** de cada recurso. Nunca subir el archivo local ni incluir claves privadas en argumentos de build.
 
 **B** = build de la web; **W** = ejecución de la web; **T** = ejecución del trabajador. Los ejemplos son ficticios. «Opcional» indica que puede omitirse mientras esa integración no se utilice.

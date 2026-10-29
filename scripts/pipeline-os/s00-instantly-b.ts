@@ -1,5 +1,6 @@
 // Phase B standalone trial. No env autoload, HTTP, filesystem writes or sends at import.
 import { z } from "zod";
+import { isDeepStrictEqual } from "node:util";
 import { hash, S00RunError } from "./s00-composio-common";
 import {
   instantlyA as a,
@@ -418,6 +419,7 @@ export function assertBTransition(
   }
 }
 const root = "https://api.instantly.ai/api/v2/";
+export type BTrialContext = Pick<BState, "prior" | "campaignId" | "leads">;
 const record = (x: unknown): Obj =>
   x !== null && typeof x === "object" && !Array.isArray(x)
     ? (x as Obj)
@@ -445,26 +447,31 @@ const safety = {
   cc_list: [],
   bcc_list: [],
   provider_routing_rules: [],
-  ai_sdr_id: null,
   is_evergreen: false,
   stop_on_reply: true,
   stop_for_company: false,
 };
-function name(s: BState) {
+function name(s: BTrialContext) {
   return "S00-INSTANTLY-" + s.prior.predecessor.nonce;
 }
-function variables(s: BState, alias: "A" | "B", hold = false) {
+function variables(s: BTrialContext, alias: "A" | "B", hold = false) {
   return {
     s00_run: s.prior.predecessor.nonce,
     s00_alias: alias,
     s00_hold: hold,
   };
 }
-export function bCampaignPayload(s: BState, m: BManifest, configured: boolean) {
+export function bCampaignPayload(
+  s: BTrialContext,
+  m: BManifest,
+  configured: boolean,
+) {
   return {
     name: name(s),
     campaign_schedule: m.schedule,
     ...structuredClone(safety),
+    // Creator metadata is supported on create, not in the documented PATCH body.
+    ...(configured ? {} : { ai_sdr_id: null }),
     sequences: configured
       ? [
           {
@@ -480,7 +487,7 @@ export function bCampaignPayload(s: BState, m: BManifest, configured: boolean) {
       : [],
   };
 }
-export function bLeadPayload(s: BState, m: BManifest, alias: "A" | "B") {
+export function bLeadPayload(s: BTrialContext, m: BManifest, alias: "A" | "B") {
   if (!s.campaignId) return fail("B_RESOURCE_MISMATCH");
   return {
     campaign: s.campaignId,
@@ -492,20 +499,93 @@ export function bLeadPayload(s: BState, m: BManifest, alias: "A" | "B") {
     custom_variables: variables(s, alias),
   };
 }
-function campaignIdentity(s: BState, x: Obj) {
+function campaignIdentity(s: BTrialContext, x: Obj) {
   if (x.id !== s.campaignId || x.name !== name(s)) fail("B_RESOURCE_MISMATCH");
 }
+type OptionalObservation =
+  "omitted" | "null" | "explicit" | "conflict" | "invalid";
+// Optional/nullable does not establish a default or certify sending safety.
+// This projection retains uncertainty without retaining field values or mutating input.
+export function bTrialOptionalFields(input: unknown) {
+  const x = record(input);
+  const inspect = (
+    key: "ai_sdr_id" | "is_evergreen" | "stop_for_company",
+  ): OptionalObservation => {
+    if (!Object.hasOwn(x, key)) return key in x ? "invalid" : "omitted";
+    const value = x[key];
+    if (value === null) return "null";
+    if (key === "ai_sdr_id")
+      return uuid.safeParse(value).success ? "conflict" : "invalid";
+    if (typeof value !== "boolean") return "invalid";
+    return value === false ? "explicit" : "conflict";
+  };
+  return {
+    ai_sdr_id: inspect("ai_sdr_id"),
+    is_evergreen: inspect("is_evergreen"),
+    stop_for_company: inspect("stop_for_company"),
+  };
+}
+// Only the documented "days" defaults may supplement our single zero-delay email step.
+// Raw diagnostics opt out; requests and provider objects are never normalized in place.
+function trialSequencesMatch(actual: unknown, expected: unknown): boolean {
+  const plain = (x: unknown): x is Obj =>
+    x !== null &&
+    typeof x === "object" &&
+    Object.getPrototypeOf(x) === Object.prototype;
+  if (
+    !Array.isArray(actual) ||
+    actual.length !== 1 ||
+    !Array.isArray(expected) ||
+    expected.length !== 1
+  )
+    return false;
+  const sequence = actual[0],
+    wanted = expected[0];
+  if (
+    !plain(sequence) ||
+    !plain(wanted) ||
+    !Object.hasOwn(sequence, "steps") ||
+    !Array.isArray(sequence.steps) ||
+    sequence.steps.length !== 1 ||
+    !Array.isArray(wanted.steps) ||
+    wanted.steps.length !== 1
+  )
+    return false;
+  const step = sequence.steps[0],
+    target = wanted.steps[0];
+  if (
+    !plain(step) ||
+    !plain(target) ||
+    target.type !== "email" ||
+    target.delay !== 0 ||
+    Object.keys(target).sort().join(",") !== "delay,type,variants"
+  )
+    return false;
+  const comparable = { ...step };
+  for (const key of ["delay_unit", "pre_delay_unit"] as const) {
+    if (key in step && !Object.hasOwn(step, key)) return false;
+    if (Object.hasOwn(step, key)) {
+      if (step[key] !== "days") return false;
+      delete comparable[key];
+    }
+  }
+  return isDeepStrictEqual([{ ...sequence, steps: [comparable] }], expected);
+}
 function assertCampaign(
-  s: BState,
+  s: BTrialContext,
   m: BManifest,
   x: Obj,
   workspace: string,
   configured: boolean,
   paused: boolean,
+  sequencePolicy:
+    "documented_defaults" | "request_exact" = "documented_defaults",
 ) {
   campaignIdentity(s, x);
   if (x.organization !== workspace) fail("WORKSPACE_MISMATCH");
   if (
+    // Independent non-sending gate even if a manifest maps an active status incorrectly.
+    (x.status !== 0 && x.status !== 2) ||
     !(
       [m.statusMapping.draftStatus, m.statusMapping.pausedStatus] as number[]
     ).includes(x.status as number) ||
@@ -521,17 +601,19 @@ function assertCampaign(
   ])
     if (!empty(x[k])) fail("B_UNSAFE_CAMPAIGN");
   if (
-    x.ai_sdr_id !== null ||
-    x.is_evergreen !== false ||
+    Object.values(bTrialOptionalFields(x)).some(
+      (state) => state === "conflict" || state === "invalid",
+    ) ||
     x.stop_on_reply !== true ||
-    x.stop_for_company !== false ||
     !eq(x.campaign_schedule, m.schedule) ||
-    !eq(x.sequences, bCampaignPayload(s, m, configured).sequences)
+    !(configured && sequencePolicy === "documented_defaults"
+      ? trialSequencesMatch(x.sequences, bCampaignPayload(s, m, true).sequences)
+      : eq(x.sequences, bCampaignPayload(s, m, configured).sequences))
   )
     fail("B_UNSAFE_CAMPAIGN");
 }
 function leadSnapshot(
-  s: BState,
+  s: BTrialContext,
   m: BManifest,
   x: Obj,
   workspace: string,
@@ -574,7 +656,7 @@ type Request = {
   write: boolean;
 };
 export function bRequest(
-  s: BState,
+  s: BTrialContext,
   m: BManifest,
   step: Step | "emergency_pause" | "emergency_check",
   options: { cursor?: string; reconcile?: boolean } = {},
@@ -673,6 +755,13 @@ export function bRequest(
     };
   return { url: lead(), method: "GET", write: false };
 }
+export const instantlyB = {
+  assertCampaign,
+  leadSnapshot,
+  createdId,
+  campaignIdentity,
+  errors,
+};
 export function bReport(s?: BState, priorCalls = 11) {
   if (!s)
     return {
@@ -693,6 +782,7 @@ export function bReport(s?: BState, priorCalls = 11) {
       blockers: ["B_NOT_RUN"],
       sends: 0,
       paidOperations: 0,
+      sendingSafetyCertified: false,
     };
   validateBState(s);
   return {
@@ -721,6 +811,7 @@ export function bReport(s?: BState, priorCalls = 11) {
     blockers: s.status === "completed" ? [] : ["B_NOT_COMPLETE"],
     sends: 0,
     paidOperations: 0,
+    sendingSafetyCertified: false,
     providerBillingMeasured: false,
   };
 }

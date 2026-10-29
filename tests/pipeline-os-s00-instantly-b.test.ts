@@ -19,6 +19,7 @@ import {
   validateBManifest,
   assertBTransition,
   bRequest,
+  bTrialOptionalFields,
   type BState,
   type BStore,
 } from "../scripts/pipeline-os/s00-instantly-b";
@@ -153,6 +154,7 @@ test("B-AC01/02 default is offline and preserves source11 without env/save", asy
   assert.equal(h.store.writes, 0);
   assert.equal(h.calls.length, 0);
   assert.equal(h.store.value.version, 2);
+  assert.equal(r.sendingSafetyCertified, false);
 });
 test("B-AC02 gates, confirmation, same recipients and invalid schedule block before writes/HTTP", async () => {
   for (const opts of [
@@ -323,6 +325,256 @@ test("B-AC03 missing sender guard, attached sender or unsupported status stops b
     assert.equal(validateBState(h.store.value).hold, 2);
   }
 });
+test("OC-AC01/02 optional omissions do not block a protected non-sending trial", async () => {
+  const h = await harness();
+  h.after = (body, step) => {
+    if (["initial", "paused", "configured", "final"].includes(step))
+      for (const key of ["ai_sdr_id", "is_evergreen", "stop_for_company"])
+        delete body[key];
+    return undefined;
+  };
+  const r = await h.run();
+  assert.equal(r.status, "completed");
+  assert.equal(r.calls, 30);
+  assert.equal(r.sends, 0);
+  assert.equal(h.provider.campaign!.status, 2);
+  assert.deepEqual(h.provider.campaign!.email_list, []);
+  assert.equal(r.sendingSafetyCertified, false);
+});
+
+const optionalFields = [
+  "ai_sdr_id",
+  "is_evergreen",
+  "stop_for_company",
+] as const;
+function withoutOptionals(body: any) {
+  for (const key of optionalFields) delete body[key];
+}
+
+test("OC-AC01 pure inspection preserves omitted/null/explicit without defaults or values", () => {
+  assert.deepEqual(bTrialOptionalFields(Object.freeze({})), {
+    ai_sdr_id: "omitted",
+    is_evergreen: "omitted",
+    stop_for_company: "omitted",
+  });
+  const input = Object.freeze({
+    ai_sdr_id: null,
+    is_evergreen: null,
+    stop_for_company: false,
+  });
+  assert.deepEqual(bTrialOptionalFields(input), {
+    ai_sdr_id: "null",
+    is_evergreen: "null",
+    stop_for_company: "explicit",
+  });
+  assert.deepEqual(input, {
+    ai_sdr_id: null,
+    is_evergreen: null,
+    stop_for_company: false,
+  });
+  for (const key of optionalFields) {
+    const inherited = Object.create({
+      [key]: key === "ai_sdr_id" ? null : false,
+    });
+    assert.equal(bTrialOptionalFields(inherited)[key], "invalid");
+    for (const value of [undefined, 0, 1, "false", "", [], {}, false]) {
+      if (value === false && key !== "ai_sdr_id") continue;
+      assert.equal(bTrialOptionalFields({ [key]: value })[key], "invalid");
+    }
+  }
+  assert.equal(
+    bTrialOptionalFields({ ai_sdr_id: bId(81) }).ai_sdr_id,
+    "conflict",
+  );
+  assert.equal(
+    bTrialOptionalFields({ is_evergreen: true }).is_evergreen,
+    "conflict",
+  );
+  assert.equal(
+    bTrialOptionalFields({ stop_for_company: true }).stop_for_company,
+    "conflict",
+  );
+  assert.ok(bPublicSafe(bTrialOptionalFields({ ai_sdr_id: bSecret })));
+  for (const root of [null, [], false, bSecret])
+    assert.throws(
+      () => bTrialOptionalFields(root),
+      /B_INVALID_PROVIDER_SCHEMA/,
+    );
+});
+
+test("OC-AC01/02 all nullable/omitted combinations remain limited to inactive trial", async () => {
+  for (const agent of ["omitted", "null"])
+    for (const evergreen of ["omitted", "null", "explicit"])
+      for (const company of ["omitted", "null", "explicit"]) {
+        const h = await harness();
+        h.after = (body, step) => {
+          if (["initial", "paused", "configured", "final"].includes(step)) {
+            const variants = [agent, evergreen, company];
+            optionalFields.forEach((key, i) => {
+              if (variants[i] === "omitted") delete body[key];
+              else body[key] = variants[i] === "null" ? null : false;
+            });
+          }
+          return undefined;
+        };
+        const r = await h.run();
+        assert.equal(r.status, "completed");
+        assert.equal(r.sendingSafetyCertified, false);
+        assert.equal(h.provider.campaign!.status, 2);
+        assert.equal(r.newCalls, 19);
+      }
+});
+
+test("OC-AC01/02 explicit conflicts and invalid optional types stop every campaign checkpoint", async () => {
+  for (const step of ["initial", "configured", "final"])
+    for (const [key, value] of [
+      ["ai_sdr_id", bId(81)],
+      ["ai_sdr_id", ""],
+      ["is_evergreen", true],
+      ["is_evergreen", "false"],
+      ["stop_for_company", true],
+      ["stop_for_company", 0],
+    ] as const) {
+      const h = await harness();
+      h.after = (body, current) => {
+        if (current === step) {
+          withoutOptionals(body);
+          body[key] = value;
+        }
+        return undefined;
+      };
+      const r = await h.run();
+      assert.equal(r.status, "failed");
+      assert.equal(r.error, "B_UNSAFE_CAMPAIGN");
+      assert.equal(r.emergency, "verified_paused");
+      assert.equal(r.sends, 0);
+      assert.equal(r.sendingSafetyCertified, false);
+    }
+});
+
+test("OC-AC02 omissions cannot weaken sender/reply/identity/schedule/sequence/status guards", async () => {
+  const changes: ((body: any) => void)[] = [];
+  for (const key of [
+    "email_list",
+    "email_tag_list",
+    "cc_list",
+    "bcc_list",
+    "provider_routing_rules",
+  ]) {
+    changes.push((body) => {
+      delete body[key];
+    });
+    changes.push((body) => {
+      body[key] = null;
+    });
+    changes.push((body) => {
+      body[key] = ["FICTIONAL_UNSAFE"];
+    });
+  }
+  for (const value of [undefined, null, false, "true"])
+    changes.push((body) => {
+      body.stop_on_reply = value;
+    });
+  changes.push(
+    (body) => {
+      body.status = 1;
+    },
+    (body) => {
+      body.status = "2";
+    },
+  );
+  changes.push(
+    (body) => {
+      body.campaign_schedule = {};
+    },
+    (body) => {
+      body.sequences = [{}];
+    },
+  );
+  for (const key of ["id", "organization", "name"])
+    changes.push((body) => {
+      body[key] = bOther;
+    });
+  for (const change of changes) {
+    const h = await harness();
+    h.after = (body, step) => {
+      if (step === "initial") {
+        withoutOptionals(body);
+        change(body);
+      }
+      return undefined;
+    };
+    const r = await h.run();
+    assert.equal(r.status, "failed");
+    assert.ok(!h.calls.some((c) => c.step === "createA"));
+    assert.equal(r.sends, 0);
+  }
+});
+
+test("OC-AC02 a confirmed but incorrect active mapping cannot bypass inactive guard", async () => {
+  const h = await harness();
+  h.inputs.manifest.statusMapping.draftStatus = 1;
+  h.after = (body, step) => {
+    if (step === "initial") {
+      withoutOptionals(body);
+      body.status = 1;
+    }
+    return undefined;
+  };
+  const r = await h.run();
+  assert.equal(r.error, "B_UNSAFE_CAMPAIGN");
+  assert.ok(!h.calls.some((c) => c.step === "createA"));
+});
+
+test("OC-AC03 requests retain explicit flags and creator metadata only on create", async () => {
+  const h = await harness(),
+    r = await h.run();
+  assert.equal(r.status, "completed");
+  const create = h.calls.find((c) => c.step === "create")!.body;
+  const patch = h.calls.find((c) => c.step === "configure")!.body;
+  assert.equal(create.ai_sdr_id, null);
+  assert.equal(Object.hasOwn(patch, "ai_sdr_id"), false);
+  for (const body of [create, patch]) {
+    assert.equal(body.is_evergreen, false);
+    assert.equal(body.stop_for_company, false);
+    assert.equal(body.stop_on_reply, true);
+    for (const key of [
+      "email_list",
+      "email_tag_list",
+      "cc_list",
+      "bcc_list",
+      "provider_routing_rules",
+    ])
+      assert.deepEqual(body[key], []);
+  }
+});
+
+test("OC-AC02/03 optional-compatible reconciliation never repeats uncertain writes", async () => {
+  const h = await harness();
+  h.after = (body, step, count) => {
+    if (["create", "configure"].includes(step) && count === 1)
+      return Error(bSecret);
+    if (body.id === bId(30)) withoutOptionals(body);
+    for (const campaign of body.items ?? [])
+      if (campaign.id === bId(30)) withoutOptionals(campaign);
+    return undefined;
+  };
+  const r = await h.run();
+  assert.equal(r.status, "completed");
+  assert.equal(r.sends, 0);
+  assert.equal(r.sendingSafetyCertified, false);
+  assert.equal(
+    h.calls.filter((c) => c.step === "create" && c.method === "POST").length,
+    1,
+  );
+  assert.equal(
+    h.calls.filter((c) => c.step === "configure" && c.method === "PATCH")
+      .length,
+    1,
+  );
+  assert.equal(h.provider.leads.length, 2);
+});
+
 test("B-AC03 pause rejected never triggers activation or blind emergency retry", async () => {
   const h = await harness();
   h.before = (step) =>
@@ -719,7 +971,7 @@ test("B-AC02 CLI status/check-manifest/invalid gates are offline and preserve so
       0,
     );
   }));
-test("B-AC03/07 CLI full fixture-only run creates paused trial, replay adds zero HTTP", () =>
+test("OC-AC02/05 CLI optional-omission fixture creates paused trial, replay adds zero HTTP", () =>
   temporary(async (dir) => {
     const f = await fixtureFiles(dir),
       guard = resolve(dir, "provider.mjs"),
@@ -728,7 +980,7 @@ test("B-AC03/07 CLI full fixture-only run creates paused trial, replay adds zero
       ).href;
     await writeFile(
       guard,
-      `import {BProvider} from '${fixture}';import {appendFileSync} from 'node:fs';const p=new BProvider();globalThis.fetch=async(raw,init)=>{appendFileSync('calls.txt','HTTP\\n');return new Response(JSON.stringify(p.handle(String(raw),init)),{headers:{'content-type':'application/json'}});};`,
+      `import {BProvider,bId} from '${fixture}';import {appendFileSync} from 'node:fs';const p=new BProvider();globalThis.fetch=async(raw,init)=>{appendFileSync('calls.txt','HTTP\\n');const body=p.handle(String(raw),init);for(const item of [body,...(body.items??[])])if(item.id===bId(30))for(const k of ['ai_sdr_id','is_evergreen','stop_for_company'])delete item[k];return new Response(JSON.stringify(body),{headers:{'content-type':'application/json'}});};`,
     );
     const loader = pathToFileURL(
         resolve("node_modules/tsx/dist/loader.mjs"),
@@ -773,6 +1025,7 @@ test("B-AC03/07 CLI full fixture-only run creates paused trial, replay adds zero
     const r = JSON.parse(first.stdout);
     assert.equal(r.calls, 30);
     assert.equal(r.status, "completed");
+    assert.equal(r.sendingSafetyCertified, false);
     assert.ok(bPublicSafe(r));
     const before = await readFile(f.path, "utf8");
     assert.equal(run([]).status, 0);

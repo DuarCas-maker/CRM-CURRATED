@@ -524,6 +524,7 @@ class ReadError extends Error {
   constructor(
     public code: Exclude<ResultCode, "OK" | "IN_FLIGHT">,
     public wait = 0,
+    public httpStatus = 0,
   ) {
     super(code);
   }
@@ -533,7 +534,9 @@ async function boundedJson(
   url: string,
   key: string,
   signal?: AbortSignal,
-  request: { method: "GET" | "POST" | "PATCH"; body?: Obj } = { method: "GET" },
+  request: { method: "GET" | "POST" | "PATCH" | "DELETE"; body?: Obj } = {
+    method: "GET",
+  },
 ) {
   let response: Response | undefined;
   const controller = new AbortController(),
@@ -602,6 +605,7 @@ async function boundedJson(
           response.headers.get("retry-after") ?? "",
           response.headers.get("date") ?? "",
         ),
+        status,
       );
     }
     if (
@@ -693,6 +697,65 @@ export async function instantlyTrialJson(
       return fail("BLOCKED_ROUTE");
   } else if (u.search) return fail("BLOCKED_ROUTE");
   return boundedJson(fetchImpl, url, key, signal, { method, body });
+}
+
+// C has a separate transport allowlist. A/B never gain webhook or DELETE access.
+export async function instantlyWebhookJson(
+  fetchImpl: typeof fetch,
+  key: string,
+  url: string,
+  method: "GET" | "POST" | "DELETE",
+  body?: Obj,
+  signal?: AbortSignal,
+) {
+  const u = new URL(url),
+    id = "[0-9a-fA-F-]{36}",
+    p = u.pathname;
+  const allowed =
+    method === "GET"
+      ? /^\/api\/v2\/(?:workspaces\/current|workspace-billing\/plan-details|webhooks|webhook-events)$/.test(
+          p,
+        ) ||
+        new RegExp(
+          `^/api/v2/(?:campaigns|webhooks|webhook-events)/${id}$`,
+        ).test(p)
+      : method === "POST"
+        ? p === "/api/v2/webhooks" ||
+          new RegExp(`^/api/v2/webhooks/${id}/test$`).test(p)
+        : method === "DELETE" && new RegExp(`^/api/v2/webhooks/${id}$`).test(p);
+  if (
+    !allowed ||
+    u.origin !== "https://api.instantly.ai" ||
+    u.username ||
+    u.password ||
+    u.hash ||
+    url.split("?")[0] !== u.origin + p
+  )
+    fail("BLOCKED_ROUTE");
+  const keys = [...u.searchParams.keys()];
+  const permitted =
+    p === "/api/v2/webhooks" && method === "GET"
+      ? ["campaign", "event_type", "limit", "starting_after"]
+      : p === "/api/v2/webhook-events" && method === "GET"
+        ? ["search", "from", "to", "limit", "starting_after"]
+        : [];
+  if (
+    new Set(keys).size !== keys.length ||
+    keys.some((k) => !permitted.includes(k))
+  )
+    fail("BLOCKED_ROUTE");
+  try {
+    return await boundedJson(fetchImpl, url, key, signal, { method, body });
+  } catch (e) {
+    if (
+      e instanceof ReadError &&
+      e.httpStatus === 404 &&
+      method === "GET" &&
+      new RegExp(`^/api/v2/webhooks/${id}$`).test(p)
+    )
+      return null;
+    throw e;
+  }
 }
 
 function list(body: Obj) {

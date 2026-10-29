@@ -445,10 +445,10 @@ test("database metadata inventory runs against all local migrations without cust
   const files = (await readdir("supabase/migrations"))
     .filter((file) => /^\d{3}_.*\.sql$/.test(file))
     .sort();
-  assert.equal(files.length, 45);
+  assert.equal(files.length, 46);
   assert.deepEqual(
     files.map((file) => Number(file.slice(0, 3))),
-    Array.from({ length: 45 }, (_, index) => index + 1),
+    Array.from({ length: 46 }, (_, index) => index + 1),
   );
   const { db } = await featureDatabase();
   try {

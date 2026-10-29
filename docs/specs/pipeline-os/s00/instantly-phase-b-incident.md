@@ -4,6 +4,8 @@
 
 ## Síntoma y evidencia
 
+Actualización29/10/2026: [diagnóstico BD completado](instantly-b-diagnostic.md), un GET nuevo y19 acumuladas. Campaña propia pausada; `ai_sdr_id`, `is_evergreen` y `stop_for_company` ausentes, resto de comparaciones coincide. Se demuestra desacuerdo actual con presencia exigida por B, sin probar el campo que falló históricamente. B sigue failed, sin reanudación/escrituras/envíos. El resto del documento conserva evidencia anterior.
+
 El CLI termina con status=failed, B_UNSAFE_CAMPAIGN, stage4. Siete intentos nuevos,18 acumulados: workspace/plan/search/create/initial en N5, emergency_pause/emergency_check en H2, R0. Cada respuesta HTTP terminó OK; la validación semántica posterior a initial rechazó la campaña. Identidad/nombre/workspace habían sido comprobados antes de las guardas, por lo que la pausa se dirigió a la campaña propia. No se llamó a createA/createB/configure/activate/send/verify ni se modificaron campañas ajenas.
 
 Emergency=verified_paused: el POST de emergencia y su GET verificaron identidad/workspace/estado pausado. Esta prueba no acredita todos los campos que fallaron ni el recorrido completo B. closedNonSending=false indica fase sin completar; no contradice la pausa de emergencia verificada. Leads registrados0, envíos del ejecutor0 y operaciones pagas0; facturación global del proveedor no medida.
