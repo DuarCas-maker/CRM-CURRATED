@@ -1,0 +1,112 @@
+.opportunity-last-send {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  white-space: nowrap;
+  line-height: 1.6;
+}
+.control-opportunity-signals {
+  display: grid;
+  gap: 7px;
+  margin: 8px 0;
+}
+.control-opportunity-signals > small {
+  font-size: 10px;
+}
+.control-opportunity-signals .opportunity-last-send {
+  font-size: 11px;
+}
+.control-opportunity-signals .opportunity-last-send + .opportunity-last-send {
+  margin-top: 0;
+}
+.opportunity-last-send + .opportunity-last-send {
+  margin-top: 7px;
+}
+.opportunity-last-send svg {
+  color: var(--bronze);
+  flex-shrink: 0;
+}
+.opportunity-send-label {
+  min-width: 43px;
+  color: var(--muted);
+}
+.opportunity-last-send time {
+  font-weight: 600;
+  text-decoration: underline dotted var(--bronze);
+  text-underline-offset: 3px;
+}
+.opportunity-last-send.no-send {
+  color: var(--muted);
+}
+.opportunity-documents,
+.opportunity-lender-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.opportunity-documents {
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--muted);
+}
+.opportunity-documents.has-documents {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--bronze);
+}
+.opportunity-lender-count > strong {
+  display: inline-grid;
+  place-items: center;
+  min-width: 27px;
+  min-height: 27px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--charcoal);
+  color: var(--ivory);
+  font-variant-numeric: tabular-nums;
+}
+.opportunity-lender-count > span {
+  color: var(--muted);
+}
+.opportunity-signal-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 22px;
+}
+.opportunity-signal-summary > div {
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  min-width: 0;
+}
+.opportunity-signal-summary > div > span:first-child {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.opportunity-signal-summary .opportunity-last-send {
+  flex-wrap: wrap;
+}
+.opportunity-signal-summary .opportunity-send-label {
+  display: none;
+}
+.opportunity-signal-summary time {
+  font-size: 15px;
+}
+@media (max-width: 1100px) {
+  .opportunity-signal-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 420px) {
+  .opportunity-signal-summary {
+    grid-template-columns: 1fr;
+  }
+}

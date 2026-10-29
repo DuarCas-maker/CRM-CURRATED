@@ -1,7 +1,9 @@
 import { PGlite } from "@electric-sql/pglite";
 import { readFile, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
-export async function featureDatabase() {
+export async function featureDatabase(
+  options: { beforeMigration?: string } = {},
+) {
   const db = new PGlite();
   await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
     create schema auth;create schema storage;create table auth.users(id uuid primary key,email text);
@@ -11,7 +13,11 @@ export async function featureDatabase() {
     create table storage.objects(id uuid default gen_random_uuid(),bucket_id text,name text);alter table storage.objects enable row level security;
     grant usage on schema public,auth,storage to authenticated,anon,service_role;grant select on storage.objects to authenticated;`);
   for (const file of (await readdir("supabase/migrations"))
-    .filter((f) => f.endsWith(".sql"))
+    .filter(
+      (f) =>
+        f.endsWith(".sql") &&
+        (!options.beforeMigration || f < options.beforeMigration),
+    )
     .sort())
     await db.exec(await readFile(`supabase/migrations/${file}`, "utf8"));
   const users = {

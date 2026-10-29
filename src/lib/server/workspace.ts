@@ -8,6 +8,7 @@ import { teamLabels } from "./gmail-team";
 import { crmExtensionsReady } from "./crm-readiness";
 import { loadWorkspaceMail } from "./workspace-mail";
 import { loadWorkspaceMailFiles } from "./workspace-mail-files";
+import { loadOpportunitySignals } from "./opportunity-signals";
 export async function loadWorkspace(
   params = new URLSearchParams(),
 ): Promise<Workspace> {
@@ -233,6 +234,15 @@ export async function loadWorkspace(
   ]);
   data.lenders = lenders as Workspace["lenders"];
   data.lender_contacts = lenderContacts as Workspace["lender_contacts"];
+  // Dashboard rows have their own ordering and can include cases outside the
+  // main opportunity page. Read only the missing visible cases under RLS.
+  const missingSignalIds = [...new Set((financingControl?.rows || []).map((row) => row.id))]
+    .filter((id) => !caseIds.includes(id));
+  const extraSignalCases = missingSignalIds.length
+    ? checkDb(await db.from("opportunity_workspace").select("id,email").in("id", missingSignalIds), "opportunity_signals.cases") || []
+    : [];
+  if (caseId || ["overview", "pipeline"].includes(params.get("view") || "overview"))
+    data.opportunity_signals = await loadOpportunitySignals(db, [...opportunities, ...extraSignalCases], data);
   async function readDirectory(table: string, sort: string) {
     const rows: unknown[] = [];
     for (let offset = 0; ; offset += 1000) {

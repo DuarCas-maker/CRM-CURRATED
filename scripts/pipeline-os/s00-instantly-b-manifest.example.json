@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "controlledRecipientsConfirmed": false,
+  "exclusiveTrialControlConfirmed": false,
+  "recipients": ["s00-a@example.invalid", "s00-b@example.invalid"],
+  "schedule": {
+    "schedules": [
+      {
+        "name": "S00 fictional schedule",
+        "timing": { "from": "09:00", "to": "09:05" },
+        "days": {
+          "0": false,
+          "1": true,
+          "2": false,
+          "3": false,
+          "4": false,
+          "5": false,
+          "6": false
+        },
+        "timezone": "America/Bogota"
+      }
+    ],
+    "start_date": "2026-11-02",
+    "end_date": "2026-11-02"
+  },
+  "subject": "S00 fictional draft",
+  "body": "Fictional draft used only to validate campaign configuration. No sending is authorized.",
+  "statusMapping": {
+    "confirmed": false,
+    "source": "operator_panel",
+    "evidenceRef": "REPLACE_WITH_REVIEWED_EVIDENCE",
+    "draftStatus": 0,
+    "pausedStatus": 2
+  }
+}

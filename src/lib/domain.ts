@@ -272,6 +272,10 @@ export interface Preferences {
   locale: Locale;
 }
 export interface Workspace {
+  opportunity_signals?: Record<
+    string,
+    import("./opportunity-signals").OpportunitySignals
+  >;
   mail_files?: import("./mail-files").MailVisibleFile[];
   crm_extensions_ready?: boolean;
   operational?: import("./operations").OperationalData;

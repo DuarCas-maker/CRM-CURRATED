@@ -10,7 +10,7 @@ import {
   Send,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import type { Locale } from "@/lib/domain";
+import type { Locale, Workspace } from "@/lib/domain";
 import { currency, dateLabel } from "@/lib/domain";
 import { processStates } from "@/lib/financing-history";
 import type {
@@ -89,6 +89,7 @@ export function FinancingControlDashboard({
   open,
   period,
   loading = false,
+  opportunitySignals,
 }: {
   data: FinancingControlData;
   locale: Locale;
@@ -103,6 +104,7 @@ export function FinancingControlDashboard({
   open: (id: string, section: ControlSection) => void;
   period: string;
   loading?: boolean;
+  opportunitySignals?: Workspace["opportunity_signals"];
 }) {
   const s = data.summary,
     en = locale === "en",
@@ -419,6 +421,7 @@ export function FinancingControlDashboard({
         </section>
       </div>
       <FinancingTrackingTable
+        opportunitySignals={opportunitySignals}
         data={data}
         locale={locale}
         filter={filter}

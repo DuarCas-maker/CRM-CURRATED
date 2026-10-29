@@ -81,6 +81,12 @@ import { Integrations } from "./integrations";
 import { MailComposer } from "./mail-composer";
 import { MailInbox } from "./mail-inbox";
 import { LenderContacts } from "./lender-contacts";
+import {
+  LastOpportunitySend,
+  OpportunityDocuments,
+  OpportunityLenders,
+} from "./opportunity-signals";
+import { summarizeOpportunities } from "@/lib/opportunity-signals";
 import { LeadDate, LeadVerifications } from "./lead-preparation-tracking";
 import { countLeadTabs, type LeadSection } from "@/lib/lead-preparation";
 import {
@@ -138,6 +144,12 @@ const leadTabEmpty: Record<LeadTab, [string, string]> = {
 };
 export default function CRM({ initial }: { initial: Workspace }) {
   const [data, setData] = useState(initial);
+  const opportunitySignals = useMemo(
+    () =>
+      data.opportunity_signals ??
+      summarizeOpportunities(data.opportunities, data),
+    [data],
+  );
   const extensionsReady = data.demo || data.crm_extensions_ready !== false;
   const [locale, setLocale] = useState<Locale>(initial.preferences.locale);
   const { requestLeave, confirmation } = useLeaveConfirmation(locale);
@@ -603,6 +615,11 @@ export default function CRM({ initial }: { initial: Workspace }) {
   ) {
     setData((previous) => {
       const result = { ...previous };
+      if (scope?.opportunity_signals)
+        result.opportunity_signals = {
+          ...previous.opportunity_signals,
+          ...scope.opportunity_signals,
+        };
       const keys = [
         "opportunities",
         "documents",
@@ -667,6 +684,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
           <tr>
             <th>{t(locale, "Empresa / contacto", "Business / contact")}</th>
             <th>{t(locale, "Estado", "Stage")}</th>
+            <th>{t(locale, "Último mensaje enviado", "Last message sent")}</th>
+            <th>{t(locale, "Documentos", "Documents")}</th>
+            <th>Lenders</th>
             <th>{t(locale, "Monto solicitado", "Requested")}</th>
             <th>{t(locale, "Responsable", "Owner")}</th>
             <th>{t(locale, "Próxima acción", "Next action")}</th>
@@ -698,6 +718,31 @@ export default function CRM({ initial }: { initial: Workspace }) {
               </td>
               <td>
                 <StageBadge stage={o.stage} locale={locale} />
+              </td>
+              <td>
+                <LastOpportunitySend
+                  value={opportunitySignals[o.id]?.lastClientSentAt ?? null}
+                  locale={locale}
+                  label={t(locale, "Cliente", "Client")}
+                />
+                <LastOpportunitySend
+                  value={opportunitySignals[o.id]?.lastLenderSentAt ?? null}
+                  locale={locale}
+                  label="Lender"
+                  lender
+                />
+              </td>
+              <td>
+                <OpportunityDocuments
+                  count={opportunitySignals[o.id]?.documentCount ?? 0}
+                  locale={locale}
+                />
+              </td>
+              <td>
+                <OpportunityLenders
+                  count={opportunitySignals[o.id]?.lenderCount ?? 0}
+                  locale={locale}
+                />
               </td>
               <td className="money">{currency(o.amount, locale)}</td>
               <td>
@@ -1222,6 +1267,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   {filters}
                   {control ? (
                     <FinancingControlDashboard
+                      opportunitySignals={opportunitySignals}
                       data={control}
                       locale={locale}
                       filter={attentionFilter}

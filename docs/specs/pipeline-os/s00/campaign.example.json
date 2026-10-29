@@ -1,0 +1,40 @@
+{
+  "environment": "local",
+  "pilot": {
+    "brandIds": ["fictional-brand"],
+    "mailboxIds": ["fictional-mailbox-a", "fictional-mailbox-b"],
+    "smsLineIds": ["fictional-sms-line"],
+    "leadLimit": 500
+  },
+  "distribution": {
+    "mode": "percentages",
+    "emailPercent": 60,
+    "smsPercent": 40
+  },
+  "prospecting": {
+    "intervalHours": 48,
+    "maxTotalAttempts": 4,
+    "includesInitial": true,
+    "onExhaustion": "pause"
+  },
+  "interested": {
+    "intervalHours": 24,
+    "maxReminders": 3,
+    "onExhaustion": "human_task"
+  },
+  "schedule": {
+    "timezone": "America/New_York",
+    "weekdays": [1, 2, 3, 4, 5],
+    "startHour": 9,
+    "endHour": 17
+  },
+  "budgets": {
+    "dailyEmailRecipients": 10,
+    "dailySmsSegments": 10,
+    "dailyAiUsd": 1
+  },
+  "optOut": "group_global",
+  "initialAssistantMode": "human_approval",
+  "attribution": "last_significant_interaction",
+  "loyalty": "internal_tasks_manual_payments"
+}

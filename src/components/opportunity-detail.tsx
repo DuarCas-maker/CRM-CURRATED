@@ -1,5 +1,7 @@
 "use client";
 import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
+import { OpportunitySignalSummary } from "./opportunity-signals";
+import { summarizeOpportunities } from "@/lib/opportunity-signals";
 import { useId, useRef, useState, type FormEvent } from "react";
 import { CaseMailHistory } from "./case-mail-history";
 import { CaseActivityTimeline } from "./case-activity-timeline";
@@ -91,6 +93,7 @@ export function OpportunityDetail({
   const editable = sellerAccess || closerAccess;
   const docs = data.documents.filter((d) => d.opportunity_id === o.id);
   const documentStatus = documentProgress(docs);
+  const signals = data.opportunity_signals?.[o.id] ?? summarizeOpportunities([o], data)[o.id];
   const visibleDocs = docs.filter(hasDocumentFile);
   const documentGroupKey = (d: (typeof docs)[number]) =>
     d.kind === "bank_statement"
@@ -228,6 +231,7 @@ export function OpportunityDetail({
           <small>{dateLabel(o.next_action_at, locale, true)}</small>
         </div>
       </div>
+      <OpportunitySignalSummary signals={signals} locale={locale} />
       <div className="case-layout">
         <section className="panel case-main">
           {!embedded && (

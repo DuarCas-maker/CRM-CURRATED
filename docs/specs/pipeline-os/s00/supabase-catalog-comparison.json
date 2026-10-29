@@ -1,0 +1,35 @@
+{
+  "comparedOn": "2026-10-25",
+  "localSource": "PGlite featureDatabase with repository migrations 001-045",
+  "remoteSource": "User-provided SQL Editor metadata; not a direct agent query",
+  "localTableCount": 82,
+  "remoteTableCount": 81,
+  "allReportedRemoteTablesRlsEnabled": true,
+  "remoteZeroPolicyTables": [
+    "application_links",
+    "applications",
+    "command_receipts",
+    "company_application_versions",
+    "company_applications",
+    "document_classifications",
+    "gmail_api_slots",
+    "gmail_api_usage",
+    "gmail_known_emails",
+    "gmail_sent_usage",
+    "invitations",
+    "mail_credentials",
+    "notification_deliveries",
+    "oauth_states",
+    "push_subscriptions",
+    "unsubscribe_links"
+  ],
+  "matchingMarkers": true,
+  "migrationLedgerAvailable": false,
+  "differences": [
+    {
+      "table": "lender_guideline_versions",
+      "kind": "missing_in_remote_report"
+    }
+  ],
+  "scope": "Table names, RLS booleans, policy counts and six markers only; no definitions, grants, data or migration history comparison"
+}

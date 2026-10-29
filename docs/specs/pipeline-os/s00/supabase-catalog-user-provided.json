@@ -1,0 +1,423 @@
+{
+  "provenance": "User-provided SQL Editor result in this chat; no direct agent connection",
+  "receivedOn": "2026-10-25",
+  "s00_metadata_inventory": {
+    "markers": {
+      "core_contacts_table": true,
+      "lead_workspace_view": true,
+      "migration_031_settings_table": true,
+      "migration_044_tracking_function": true,
+      "migration_045_readiness_function": true,
+      "migration_043_first_contact_column": true
+    },
+    "public_tables": [
+      {
+        "table_name": "activities",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "ai_usage_events",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "analyses",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "application_links",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "applications",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "audit_log",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "campaign_assets",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "campaign_enrollments",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "campaign_events",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "campaigns",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "case_events",
+        "rls_enabled": true,
+        "policy_count": 2
+      },
+      {
+        "table_name": "command_receipts",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "companies",
+        "rls_enabled": true,
+        "policy_count": 2
+      },
+      {
+        "table_name": "company_application_versions",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "company_applications",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "company_contacts",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "company_primary_cases",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "contacts",
+        "rls_enabled": true,
+        "policy_count": 3
+      },
+      {
+        "table_name": "conversation_lenders",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "conversations",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "document_classifications",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "document_reviews",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "document_versions",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "documents",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "email_template_versions",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "email_templates",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "financing_processes",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_api_slots",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "gmail_api_usage",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "gmail_archive_messages",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_attachment_choices",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_candidates",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_import_effects",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_known_emails",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "gmail_pending_associations",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_run_messages",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_runs",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_saved_attachments",
+        "rls_enabled": true,
+        "policy_count": 2
+      },
+      {
+        "table_name": "gmail_sent_usage",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "gmail_sync_state",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_team_members",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "gmail_thread_links",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "import_batches",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "import_rows",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "invitations",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "jobs",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "leads",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "lender_contacts",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "lenders",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "mail_accounts",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "mail_credentials",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "mail_drafts",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "mail_permissions",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "mail_recipient_selections",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "mail_review",
+        "rls_enabled": true,
+        "policy_count": 2
+      },
+      {
+        "table_name": "mail_uploads",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "mail_waits",
+        "rls_enabled": true,
+        "policy_count": 2
+      },
+      {
+        "table_name": "message_attachments",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "messages",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "notification_deliveries",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "notification_preferences",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "notifications",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "oauth_states",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "offers",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "operational_settings",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "opportunities",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "outbox",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "process_state_history",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "product_requirements",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "profiles",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "push_subscriptions",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "stage_history",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "submission_documents",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "submissions",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "suppressions",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "tasks",
+        "rls_enabled": true,
+        "policy_count": 2
+      },
+      {
+        "table_name": "underwriting_runs",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "underwriting_setting_versions",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "underwriting_settings",
+        "rls_enabled": true,
+        "policy_count": 1
+      },
+      {
+        "table_name": "unsubscribe_links",
+        "rls_enabled": true,
+        "policy_count": 0
+      },
+      {
+        "table_name": "verifications",
+        "rls_enabled": true,
+        "policy_count": 1
+      }
+    ],
+    "inventory_kind": "catalog_only_not_migration_history",
+    "migration_ledger_available": false
+  }
+}

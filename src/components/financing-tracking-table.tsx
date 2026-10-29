@@ -9,7 +9,12 @@ import {
   FileWarning,
   Info,
 } from "lucide-react";
-import type { Locale } from "@/lib/domain";
+import type { Locale, Workspace } from "@/lib/domain";
+import {
+  LastOpportunitySend,
+  OpportunityDocuments,
+  OpportunityLenders,
+} from "./opportunity-signals";
 import { dateLabel, stageLabels } from "@/lib/domain";
 import { processStates } from "@/lib/financing-history";
 import {
@@ -180,6 +185,7 @@ function RowDetails({
 }
 
 export function FinancingTrackingTable({
+  opportunitySignals,
   data,
   locale,
   filter,
@@ -196,6 +202,7 @@ export function FinancingTrackingTable({
   stageName,
 }: {
   data: FinancingControlData;
+  opportunitySignals?: Workspace["opportunity_signals"];
   locale: Locale;
   filter: string;
   setFilter: (value: string) => void;
@@ -457,6 +464,14 @@ export function FinancingTrackingTable({
                       </div>
                     </td>
                     <td className="control-documents">
+                      {opportunitySignals?.[r.id] && (
+                        <div className="control-opportunity-signals">
+                          <OpportunityDocuments
+                            count={opportunitySignals[r.id].documentCount}
+                            locale={locale}
+                          />
+                        </div>
+                      )}
                       <button
                         className="text-button control-doc-main"
                         onClick={() => open(r.id, "documents")}
@@ -573,6 +588,21 @@ export function FinancingTrackingTable({
                           )}
                         </>
                       )}
+                      {opportunitySignals?.[r.id] && (
+                        <div className="control-opportunity-signals">
+                          <small>
+                            {t(
+                              locale,
+                              "Total de la oportunidad",
+                              "Opportunity total",
+                            )}
+                          </small>
+                          <OpportunityLenders
+                            count={opportunitySignals[r.id].lenderCount}
+                            locale={locale}
+                          />
+                        </div>
+                      )}
                     </td>
                     <td>
                       <strong className="control-duration" title={noDate}>
@@ -619,6 +649,28 @@ export function FinancingTrackingTable({
                         <small className="control-waiting">
                           {t(locale, "Espera", "Waiting")}: {waitingLabel}
                         </small>
+                      )}
+                      {opportunitySignals?.[r.id] && (
+                        <div className="control-opportunity-signals">
+                          <small>
+                            {t(
+                              locale,
+                              "Último envío · oportunidad",
+                              "Last send · opportunity",
+                            )}
+                          </small>
+                          <LastOpportunitySend
+                            value={opportunitySignals[r.id].lastClientSentAt}
+                            label={t(locale, "Cliente", "Client")}
+                            locale={locale}
+                          />
+                          <LastOpportunitySend
+                            value={opportunitySignals[r.id].lastLenderSentAt}
+                            label="Lender"
+                            locale={locale}
+                            lender
+                          />
+                        </div>
                       )}
                     </td>
                     <td className="control-next">

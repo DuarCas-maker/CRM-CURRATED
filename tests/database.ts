@@ -761,8 +761,8 @@ console.log(
   "PASS uncertain sends are never blindly retried; submitted file versions and filtered stage metrics persist",
 );
 await asUser(users.superadmin);
-const multiStepInput = {
-  name: "Multi-step test",
+const firstContactInput = {
+  name: "First contact discards supplied followups",
   account_id: account,
   seller_id: users.seller,
   daily_limit: 25,
@@ -784,19 +784,19 @@ const multiStepInput = {
     },
   ],
 };
-const multiStep = await command("create_campaign", multiStepInput);
-assert.equal(
+const firstContact = await command("create_campaign", firstContactInput);
+assert.deepEqual(
   (
-    await db.query<{ steps: unknown[] }>(
-      "select steps from campaigns where id=$1",
-      [multiStep.id],
+    await db.query<{ steps: unknown[]; first_contact: boolean }>(
+      "select steps,first_contact from campaigns where id=$1",
+      [firstContact.id],
     )
-  ).rows[0].steps.length,
-  2,
+  ).rows[0],
+  { steps: [], first_contact: true },
 );
 await assert.rejects(
   command("create_campaign", {
-    ...multiStepInput,
+    ...firstContactInput,
     steps: [{ subject: "Bad step", body: "No unsubscribe", wait_days: 2 }],
   }),
   /Each follow-up/,
@@ -807,7 +807,7 @@ await assert.rejects(
   /administrator/,
 );
 console.log(
-  "PASS multi-step sequences preserve delays and require unsubscribe; sellers cannot change lenders",
+  "PASS new campaigns are first-contact only and still validate supplied steps; sellers cannot change lenders",
 );
 // No validation outcome other than valid can open a commercial case.
 await asUser(users.seller_admin);

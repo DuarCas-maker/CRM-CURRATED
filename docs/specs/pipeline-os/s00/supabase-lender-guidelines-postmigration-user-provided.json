@@ -1,0 +1,31 @@
+{
+  "provenance": "User-provided post-migration SQL Editor result in this chat; no direct agent connection",
+  "receivedOn": "2026-10-25",
+  "matchesLocalTargetedCatalog": true,
+  "s00_lender_guidelines_inventory": {
+    "objects": [
+      {
+        "columns": [
+          "lender_id",
+          "version",
+          "guidelines",
+          "created_by",
+          "created_at"
+        ],
+        "object_name": "lender_guideline_versions",
+        "rls_enabled": true,
+        "schema_name": "public",
+        "policy_count": 1,
+        "relation_kind": "r"
+      }
+    ],
+    "functions": {
+      "save_lender_guidelines": true,
+      "import_lender_directory": true,
+      "snapshot_underwriting_lender_guidelines": true
+    },
+    "inventory_kind": "lender_guidelines_catalog_only",
+    "lenders_columns": ["guideline_version", "guidelines"],
+    "underwriting_snapshot_trigger": true
+  }
+}

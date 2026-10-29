@@ -1,0 +1,188 @@
+{
+  "generatedOn": "2026-10-25",
+  "source": "repository_only_not_remote_installation",
+  "count": 45,
+  "contiguous001Through045": true,
+  "files": [
+    {
+      "name": "001_core.sql",
+      "sha256": "d289f241a98ed4faa5430df044c2256c913f9dcbe38d478ee500722ebc8a10da"
+    },
+    {
+      "name": "002_commands.sql",
+      "sha256": "c82248d334efddd9f405f68138dba4c02020fe18699a9fbe8b7fd7cd6bcdef56"
+    },
+    {
+      "name": "003_service_workflows.sql",
+      "sha256": "0ecb45220e2b203bfc1272809802c08392bc497f3f2ed6207d3928e9c3f96cbc"
+    },
+    {
+      "name": "004_integrations.sql",
+      "sha256": "e2f4f9b6b92ff3abf17ee8adad9bff993257b0a508acd6f17d6b3886aa40478a"
+    },
+    {
+      "name": "005_mail_visibility.sql",
+      "sha256": "46b8c322564b2631ff7500b260a78c60f6b089b93fc942f0d2487d4e1981d790"
+    },
+    {
+      "name": "006_metrics.sql",
+      "sha256": "1277bfb3b2da187d28ccebd4bdab51f1b469f164c58ee78c4d58e79e88746b10"
+    },
+    {
+      "name": "007_history.sql",
+      "sha256": "fcb453683cd9c25f26021d189bb950f03233e2fb2cc95ec30e74d7f878d19709"
+    },
+    {
+      "name": "008_lead_preparation.sql",
+      "sha256": "96f1ea110e3b8aab0b4b896d82c3fc988ba1a29e3a6639cfbd5fb36cadf0e167"
+    },
+    {
+      "name": "009_gmail_archive.sql",
+      "sha256": "215986597240c9cd472cd96ea2cb534dcb7cc784e0f784d6a6952adbd281b2f9"
+    },
+    {
+      "name": "010_gmail_history_cases.sql",
+      "sha256": "02937e6f0e104696bd8c61758260e63033a80012a3ffd4addfef83c1e8c587cb"
+    },
+    {
+      "name": "011_gmail_evidence.sql",
+      "sha256": "d489a8275494274d4d55680cb3bf0502d6e3ef17de09d424cbad0eaafe54f0a6"
+    },
+    {
+      "name": "012_gmail_preview.sql",
+      "sha256": "a8882c1bb43b5b035399d8764b2c4d7aa8ea4c47fdef520dd36a6373ffc74110"
+    },
+    {
+      "name": "013_financing_history.sql",
+      "sha256": "17fb8c6d424a699ffab7a4edb080becdee02a097d9437c86f8fb604874309452"
+    },
+    {
+      "name": "014_gmail_reply_files.sql",
+      "sha256": "18188bddb4e0928ed42760231d45c19128c2631e75721e5c43d34b13b2cbc960"
+    },
+    {
+      "name": "015_gmail_continuous.sql",
+      "sha256": "156958cf5619d1f0b030f1a52c46fc5906688dc0bc303d5669823546f34f427c"
+    },
+    {
+      "name": "016_manual_email.sql",
+      "sha256": "62f5fdfaca8f02e99df26ff847035ae2d1cfc2ce833cbcd235f372e8d00b654f"
+    },
+    {
+      "name": "017_gmail_team.sql",
+      "sha256": "c2b16fb4cdc9de7edb4f9466d88d441cd6b2f75d3540029211ebaea0174ba5a7"
+    },
+    {
+      "name": "018_gmail_attachment_selection.sql",
+      "sha256": "03a806b7cd0e28afd8d20fc1013f64fd20ad9ac194f586b6de85a1e47acedf6b"
+    },
+    {
+      "name": "019_incremental_gmail.sql",
+      "sha256": "53c7e87f0a5f1fb8fbfc5408ea257bc84a6953abbd0db5f2103ab25fe337d5fc"
+    },
+    {
+      "name": "020_mail_channels.sql",
+      "sha256": "3b4f6ecb7310f665cc9d6b84a30f0cf2709756019daff627faf7d113eb319cf9"
+    },
+    {
+      "name": "021_mail_manager.sql",
+      "sha256": "0774fbebfd4c3c01e79dd3764ced73a15ef0af5d6adc4e2c83e8c637f708eceb"
+    },
+    {
+      "name": "022_lender_company_conversations.sql",
+      "sha256": "2a50c5761176ea286b4aa2236ddbdaf31e2ce3d4a983e6d5f82e5054f0bd1d35"
+    },
+    {
+      "name": "023_lender_directory_portals.sql",
+      "sha256": "f982d4cd05d6de7f1249ebe74708049611d01f5db9c7ae7b3776931a5a187cb3"
+    },
+    {
+      "name": "024_reply_engagement.sql",
+      "sha256": "d06a9a21ef91263e9e3d65e4b644640fc7493709dd3bfa16127dad1943a28df1"
+    },
+    {
+      "name": "025_document_review.sql",
+      "sha256": "e177b2e7a118f2e6e7e87cb079da0ffe592ffb8ff09bb17d21de727dbea6f170"
+    },
+    {
+      "name": "026_gmail_import_thread_attachments.sql",
+      "sha256": "266d68431e93a65fcc56adb07e5480499e3b67f973c9ed3b9f5377b20e14e446"
+    },
+    {
+      "name": "027_underwriting.sql",
+      "sha256": "6eb85b64cce8793b0a731bdee27face886bb01cc7ac7c3d8b68ed9c2858ca2d9"
+    },
+    {
+      "name": "028_underwriting_settings.sql",
+      "sha256": "56c6a3fb644e5ac37afb7a5c5a84ca9ffd7d0427ff0150a30f9c832d537eb139"
+    },
+    {
+      "name": "029_campaign_templates.sql",
+      "sha256": "5b41062cda8c643a65235845bdba081af001fb6e4f9319c2a10367fd5a0573f5"
+    },
+    {
+      "name": "030_lender_management.sql",
+      "sha256": "1a2c917d128a7c61bedf6f85e529eeaaf6ff4ddfa99165158ec696aeccfeef3d"
+    },
+    {
+      "name": "031_operational_dashboard.sql",
+      "sha256": "b0a7a8afbcd9b31c61a1b89862c90d7d2da4170bcf2d55ebb550194949dbeef8"
+    },
+    {
+      "name": "032_bank_documents.sql",
+      "sha256": "fc5f6ec77ee153d398cd07d0fe51db15724f15ccf0a7b7759004810a5ef8d4dd"
+    },
+    {
+      "name": "033_company_applications.sql",
+      "sha256": "546d0e99ef24db795d6a22d8962609c7a693d0a9200b6e9f6b44bcacb8c2dfc1"
+    },
+    {
+      "name": "034_lender_document_packages.sql",
+      "sha256": "836e3b92cbe5f376d6b8614e5f1248b21210b6179bcceb17732ea74c9d343a00"
+    },
+    {
+      "name": "035_bank_document_management.sql",
+      "sha256": "f996444c75b2e9b350f87d35ca34e3232b478953b948bbfffbcaa060e7109f8b"
+    },
+    {
+      "name": "036_document_intake.sql",
+      "sha256": "2d131f806f8c01bbe95a73f4530ef3f814067bd5f1d148f91aa9add862e01977"
+    },
+    {
+      "name": "037_underwriting_progress.sql",
+      "sha256": "07e5bf51541c32e4a34d332051ca3768b58fdd64bcea62bb5d0268238640f72c"
+    },
+    {
+      "name": "038_underwriting_human_review.sql",
+      "sha256": "60a91689e3847973cca2de594d3b9ee010cb82ac1045e8895eba8a01986deebf"
+    },
+    {
+      "name": "039_campaign_delivery_controls.sql",
+      "sha256": "5e39c7ce4a71df5dd43d4ddad70e69ad5e1cadd8e0e092e4aec22f11937bd8d1"
+    },
+    {
+      "name": "040_mail_recipient_selections.sql",
+      "sha256": "0482fbdb10c75796c8e4e1cc05bf9f96644c75b6bb65bbc8ea03079ebfc0f4ee"
+    },
+    {
+      "name": "041_ai_service_usage.sql",
+      "sha256": "f8c13ba16407b269107e7e9d40eec1fe614c98fc157e2461193fc45aa87df108"
+    },
+    {
+      "name": "042_financing_control_dashboard.sql",
+      "sha256": "640a1f6a4a04e21af3fdc9346446d0146a3d140c6b1c7c73480af4569cdb8e08"
+    },
+    {
+      "name": "043_campaign_first_contact.sql",
+      "sha256": "7008a4a6488f62b61d34aae8f819debb4a0714d2f16aaf37aeab332ff41462d0"
+    },
+    {
+      "name": "044_lead_preparation_tracking.sql",
+      "sha256": "489db7d36d46f8dbdd74f5ce4779e61fa4d2b1c7fec1637e34499ef46748b033"
+    },
+    {
+      "name": "045_campaign_readiness.sql",
+      "sha256": "a6bc0238184188ad2ff583f802b95759190119a18a482d488f6f77bf25b5f1bc"
+    }
+  ]
+}

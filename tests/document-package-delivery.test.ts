@@ -86,7 +86,9 @@ test("lender packages send the approved queued version even after replacement an
         if (url.hostname === "gmail.googleapis.com") {
           posts++;
           const mime = Buffer.from(body.raw, "base64url").toString();
-          assert.ok(mime.replace(/\r\n/g, "").includes(bytes.toString("base64")));
+          assert.ok(
+            mime.replace(/\r\n/g, "").includes(bytes.toString("base64")),
+          );
           assert.ok(
             mime.includes(
               'filename="Application - Fictional Company LLC - Fictional Owner.pdf"',

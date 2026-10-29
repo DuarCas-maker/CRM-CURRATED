@@ -1,0 +1,15 @@
+{
+  "provenance": "User-provided SQL Editor follow-up result in this chat; no direct agent connection",
+  "receivedOn": "2026-10-25",
+  "s00_lender_guidelines_inventory": {
+    "objects": [],
+    "functions": {
+      "save_lender_guidelines": false,
+      "import_lender_directory": false,
+      "snapshot_underwriting_lender_guidelines": false
+    },
+    "inventory_kind": "lender_guidelines_catalog_only",
+    "lenders_columns": [],
+    "underwriting_snapshot_trigger": false
+  }
+}
