@@ -1,6 +1,6 @@
 # Sprint S00 validaciones locales y preparación de APIs
 
-**Versión conjunta en revisión29/10:** [RC](release-candidate.md), respuesta5→B incluye también señales de oportunidades y herramientas/documentos S00 anteriores. Preparación de commit local y QA en copia aislada sin env reales/red; no publicar main/autodeploy ni aplicar046 remotamente.43 y12 JSON operativos preservados. Resultados de cierre y límites en RC; no equivale a autorización de release o cierre de C/D/S00.
+**Versión conjunta revisada localmente29/10:** [RC](release-candidate.md), respuesta5→B incluye también señales de oportunidades y herramientas/documentos S00 anteriores. Código63686c6 registrado localmente,656/656/DB/TS/build aislado correctos y constancia posterior, sin env reales/red de proveedores; no publicar main/autodeploy ni aplicar046 remotamente.43 y12 JSON operativos preservados. Resultados de cierre y límites en RC; no equivale a autorización de release o cierre de C/D/S00.
 
 **Preparación de publicación29/10:** [guía046/Coolify](instantly-046-release-runbook.md), REL-FR01–05/AC01–05/T01–05. Usuario confirma main con despliegue automático; un push/merge puede publicar. Solo runbook y validación local, sin aplicar046 remotamente, Git mutante, build/deploy/HTTP o variables en vivo.43/12 privados preservados. Próximo: completar ficha del recurso y candidato revisado, antes de autorizar migración/publicación apagada; C integrada conserva su presupuesto/permiso pendientes.
 
