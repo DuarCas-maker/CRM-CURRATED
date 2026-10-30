@@ -6,6 +6,7 @@ import { roleLabels, dateLabel } from "@/lib/domain";
 import type { Action } from "./crm";
 import { Modal, Field, SaveButton, t, Empty } from "./ui";
 import { GmailHistory } from "./gmail-history";
+import { InstantlyTrialControl } from "./instantly-trial-control";
 export function Integrations({
   data,
   locale,
@@ -45,6 +46,11 @@ export function Integrations({
   }
   return (
     <>
+      <InstantlyTrialControl
+        allowed={
+          data.profile.role === "superadmin" && data.profile.active === true
+        }
+      />
       <GmailHistory workspace={data} locale={locale} openCase={openCase} />
       <section className="panel settings-panel">
         <h2>

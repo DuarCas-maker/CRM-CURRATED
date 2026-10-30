@@ -1,5 +1,17 @@
 # Diseño técnico de la reestructuración Pipeline OS
 
+## CAPP-R47: rollout aditivo y candidato por contenido — 29/10/2026
+
+[Runbook](s00/instantly-047-release-runbook.md): 047 primero, comprobación de catálogo, publicación de la app existente con flagfalse y smoke de seis HTTP sin credenciales; no ejecutar RPC para probar la instalación apagada. Conserva046/047 al recuperar la revisión/imagen saludable identificada. El [manifiesto](s00/instantly-047-release-manifest.json) fija SHA de20 archivos de código/SQL/tests y de la migración, ligados a la copia QA681; documentación enumerada aparte para evitar autorreferencia. HEAD/índice y remoto no cambian; el commit se registrará cuando se autorice publicar el contenido concreto.
+
+## CAPP-ADR01 implementada localmente — 29/10/2026
+
+[Diseño/contratos](s00/instantly-c-app-bridge.md) y [evidencia de implementación](s00/instantly-c-app-validation.md). 047 añade lease y cuotas técnicas con RPC de backend y snapshot mínimo; invoca 046 dentro de la transacción. Dos rutas nuevas con flag false, UI en Integraciones y v9 en el mismo journal; el estado proveedor reutiliza C/v8. El cierre precede al snapshot final y a la revocación. Un fallo durable detiene nuevas peticiones y requiere recuperación explícita. Sin dependencias, infraestructura, worker o secretos de servidor nuevos; no desplegado.
+
+## CAPP-ADR01: lease temporal y control transaccional — 29/10/2026
+
+[Diseño integrado C_APP](s00/instantly-c-app-bridge.md), respuesta9→A. La CLI actual observa archivos y el control publicado solo ofrece summary; planificar ticket opaco hash-only emitido tras superadmin/MFA/origen, limitado a nonce/source/manifiesto/actor/TTL10min. Futura047 (sin editar046) añade lease/cuotas/RPC de control que invoca046 en una transacción, una petición DB por API de control, sin API key Instantly en servidor o cookie en CLI. Snapshot final tras close, polling≥10s/≤12 y revocación; v9 integrado propuesto conserva v7/43 y lectores históricos. Presupuestos19 proveedor/62 total y25 control, entregas/admisiones/backend aparte. Solo documentos/borrador, sin implementar/permisos/SQL/env/red/activación o nueva infraestructura; ver AC y tareas CAPP.
+
 ## IA-ADR01: mismo despliegue y persistencia DB — 29/10/2026
 
 [Integración app](s00/instantly-app-integration.md) implementada offline: receptor puro en src/lib/server/instantly, wrapper S00 compatible, puerto RPC con CAS/retry de conflicto único y migración046 con dos tablas técnicas/RLS/grants backend. Ruta webhook nodejs usa APP_ORIGIN canónico y secreto antes de DB, sin confiar en forwarded host; control interno requiere superadmin/MFA/checkOrigin. Ningún job/evento comercial o API key Instantly en la entrada. Docker/worker originales no cambian; featurefalse no abre cliente DB.19 nuevos/423 regresión/DB/TS, sin entorno remoto o source43 modificados. Runbook y presupuesto real pendientes de autorización/comprobación; no conmutar CLI local al VPS automáticamente.

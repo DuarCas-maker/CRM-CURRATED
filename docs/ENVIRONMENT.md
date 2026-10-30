@@ -1,10 +1,12 @@
 # Variables de entorno
 
-## Webhook técnico Instantly: preparación offline046
+## Webhook técnico Instantly: publicación apagada y puente047
 
 Las rutas nuevas se incluyen en la app actual; no necesitan otro servicio o puerto. `INSTANTLY_WEBHOOK_ENABLED=false` por defecto; apagado responde404 sin acceso a DB. Solo Runtime web: `INSTANTLY_S00_WEBHOOK_SECRET` y `INSTANTLY_S00_WEBHOOK_DEDUP_KEY`, dos valores distintos de32 bytes codificados como64 caracteres hexadecimales minúsculos, independientes de la API key. No incluir en Build/NEXT_PUBLIC. Reutiliza APP_ORIGIN y Supabase existentes, sin pedir/copiar sus credenciales de nuevo.
 
-La migración046 y el código solo se probaron en local. Antes de activar se requieren aplicación remota/deploy autorizados, claves revisadas, trial/manifiesto preparado y ventana armada con superadmin/MFA. Las credenciales existentes, Coolify/DNS/infra y env reales no cambian por documentar estos nombres. No añadir la API key Instantly a la web para recibir callbacks. [Contrato, pruebas y runbook](specs/pipeline-os/s00/instantly-app-integration.md).
+046 fue aplicada por el usuario y su app publicada como0af77b7, con entrada apagada y evidencia posterior de catálogo/smoke. El usuario aplicó después047 bajo autorización SQL específica y aportó postflight conforme, conservando046; [evidencia](specs/pipeline-os/verification.md). El código del puente sigue local, con [publicación apagada preparada](specs/pipeline-os/s00/instantly-047-release-runbook.md), sin nuevo despliegue. Antes de activar C se requieren publicación/configuración autorizadas, secretos revisados y manifiesto/ventana/permiso superadmin-MFA vigentes. Las credenciales existentes, Coolify/DNS/infra y env reales no cambian por documentar estos nombres. No añadir la API key Instantly a la web para recibir callbacks. [Contrato de recepción](specs/pipeline-os/s00/instantly-app-integration.md).
+
+`INSTANTLY_S00_CONTROL_TOKEN` es exclusivamente una credencial temporal futura del ejecutor local, emitida por el grant con MFA y almacenada solo como hash en Supabase. **No configurar en Coolify, worker, Build o NEXT_PUBLIC**, ni reutilizar una API key/secreto webhook como ticket. No se genera ningún token por preparar el despliegue; con flagfalse no se necesitan variables nuevas. [Control y entrega privada](specs/pipeline-os/s00/instantly-c-app-bridge.md).
 
 Copiar `.env.example` a `.env.local` solo para desarrollo. En Coolify, guardar los valores en **Environment Variables** de cada recurso. Nunca subir el archivo local ni incluir claves privadas en argumentos de build.
 

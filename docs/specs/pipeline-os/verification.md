@@ -1,5 +1,49 @@
 # Verificación de Pipeline OS
 
+## R47-T04a: cierre del commit local autorizado
+
+[Registro y criterios](s00/instantly-047-local-commit.md). Verificación previa:20 archivos idénticos al candidato/copia QA681,12 JSON operativos idénticos y43; no más SQL remoto, APIs, env reales o cambios de aplicación. El empaquetado respeta `* text=auto eol=lf`; los20 archivos ya están en LF y sus huellas se conservan. El manifiesto Git-LF permite comprobar cada blob staged contra el contenido probado, preservando las huellas originales. El commit que contiene ese cierre identifica el incremento; su padre debe ser0af77b7 y sus rutas la selección pública explícita. La entrega/recibo local consignan el resultado real de staging/commit, sin inventar su SHA antes de crearlo. No se repiten681/DB/build por documentación; publicación/smoke/RPC vivo y C/D/S00 pendientes.
+
+## CAPP-R47: aplicación047 reportada y postflight conforme
+
+El usuario autorizó únicamente047 y repetición del catálogo, reportó Success y compartió el postflight. Resultado revisado: tabla `instantly_webhook_control_leases` presente,17 columnas y16 constraints previstas (PK/únicos/FK RESTRICT/hash/cuotas/plazo/array); RLS=true, policies=0 intencional, owner supabase_admin y siete privilegios directos denegados a anon/authenticated/service_role. Cuatro funciones047 con owner supabase_admin, SECURITY DEFINER/search_path vacío, PUBLIC/anon/authenticated sin execute; service_role solo en issue/execute/admit y denegado al helper snapshot. Sin sobrecargas inesperadas; perfiles conservan contexto de acceso esperado.
+
+Las dos tablas046 y permisos coinciden con el preflight. Las tres huellas046 no cambiaron: cas `8669ad13baa657abe0db4506ba0fdbd6`, prepare `f23d65c3c496b166f79d6b4910d6b43a`, read `7f4522958a82f790dec8ae507f3f5c4e`. Huellas047 registradas para futuras comparaciones en la misma instancia: admit `925d464470c00ed9b5c9f4e158f9977d`, execute `c05ab88c3c45e9caca1e9b5eeef9d901`, issue `7476bb3026505af5adc0223a707c83b4`, snapshot `638ff853445c77a49261389263161222`.
+
+R47-T03 completada en su alcance de aplicación reportada y validación de catálogo antes/después. Evidencia aportada por el operador, no SQL ejecutado por el agente; no demuestra historial/igualdad completa de cuerpos de función o prueba de RPC/PostgREST en vivo. El archivo047 local conserva SHA revisado `7a3cc068d3216e558d97cb240cd326496fa49324b627f9ee9bbe11e457662559`; la correspondencia del catálogo no sustituye una huella de archivo remoto.
+
+Código del puente permanece local/sin publicación nueva; R47-T04/T05 (commit/publicación apagada y smoke) siguen pendientes, igual que C/D/S00. Ninguna autorización de despliegue o activación se deduce del permiso SQL. Instantly43 sin llamadas nuevas; registro técnico privado sin filas de negocio o secretos, sin cargar env reales, generar ticket/ventana/v9 o modificar contadores. No se repiten681/DB/build por registrar el resultado.
+
+## CAPP-R47: preflight de catálogo aportado por el operador
+
+El usuario autorizó y ejecutó únicamente la consulta de metadatos de solo lectura, y compartió `s00_047_catalog`. Resultado conforme al preflight: anon/authenticated/service_role presentes; dos tablas046 con columnas/constraints esperadas, owner supabase_admin, RLS=true, policies=0 y sin privilegios directos para esos roles. Las tres RPC046 son SECURITY DEFINER/search_path vacío, PUBLIC/anon/authenticated sin execute y service_role con execute. Tabla y cuatro firmas047 ausentes; sin sobrecargas inesperadas. Los null de047 corresponden a objetos inexistentes, no a permisos concedidos.
+
+Rol SQL supabase_admin, propietario de profiles con SELECT, superuser/bypassrls y force_rls=false: contexto compatible con el owner previsto. Se acepta el preflight de catálogo, no historial de migraciones, igualdad completa de cuerpos SQL, funcionamiento PostgREST o permiso para instalar047.
+
+Baseline de definición046 para comparar en el postflight de la misma instancia: trial_cas `8669ad13baa657abe0db4506ba0fdbd6`; trial_prepare `f23d65c3c496b166f79d6b4910d6b43a`; trial_read `7f4522958a82f790dec8ae507f3f5c4e`. Evidencia técnica mínima guardada localmente, sin filas de negocio/secretos; el agente no ejecutó SQL remoto.
+
+Evidencia Coolify aportada antes: flag ausente según operador; captura Rollback images muestra0af77b7 como Running image, retención2 y dos imágenes anteriores con acción de rollback. Esto identifica el mecanismo y disponibilidad observada, no una recuperación probada o retención futura garantizada. R47-T03 completada solo en su preflight; aplicación047/postflight, commit/publicación/smoke y C pendientes. Instantly43 sin nuevas peticiones; sin activación, cambios en vivo o despliegue.
+
+## CAPP-R47: candidato y runbook preparados offline — 29/10/2026
+
+[Cierre local y límites](s00/instantly-047-release-candidate.md), [catálogo/criterios/rollout](s00/instantly-047-release-runbook.md). Candidato `CAPP047-20261029-r1`:20 archivos de payload con huellas iguales a la copia QA681, SHA047 registrado, sin commit nuevo. Consulta de metadatos probada en9 escenarios PGlite: vacío,046,047/owner supabase_admin, contexto del owner y deriva ACL/helper/RLS/sobrecarga/parcial. Se preservan43/12 JSON y código probado; no se repiten681/TS/build por documentación. Enlaces/formato/diff y exclusión de privados comprobados al cierre. Remoto/main actual/imagen/flag/SQL/publicación/smoke y C pendientes;0 HTTP real,0 SQL remoto,0 env reales.
+
+## CAPP: implementación y QA offline — 29/10/2026
+
+[Informe trazable, diagnósticos y limitaciones](s00/instantly-c-app-validation.md). Puente/047 implementados localmente; **681/681** (25 nuevas), aceptación DB001–047, TypeScript/build aislado y revisión correctos. Pruebas SQL/API/ejecutor con fixtures y red bloqueada, sin `.env` reales. Fuente43 y12 JSON operativos preservados. 416/423 fuentes protegidas idénticas, siete modificaciones intencionales; 046/manifests/worker/S01 intactos. T02–05 completadas offline; los resultados previos siguientes conservan su alcance histórico. No nueva publicación o activación; T06/T07/C real/D/S00 pendientes.
+
+## CAPP: puente/manifiesto/presupuesto preparados — 29/10/2026
+
+[Contrato/ADR/AC/tareas](s00/instantly-c-app-bridge.md),9→A: permiso opaco temporal desde superadmin/MFA sin copiar sesión. Descubrimiento: CLI observa archivo local, GET admin solo summary y polling de1s no válido como HTTP; se propone047 aditiva para lease/cuotas/RPC transaccionales, observación completa/cierre antes de snapshot y C_APP/v9 futuro, sin editar046 o implementar ahora.
+
+Borrador privado no ejecutable en .local/pipeline-os/c-app-preparation/manifest.draft.json y ejemplo público sin vínculos reales. Hash/fingerprint/scope/B/campaña se vinculan internamente a source43; workspace/nonce/fechas/secretos/ticket y gates reales pendientes. validateCManifest lo rechaza; preview C actual env/fetch/save0/0/0. Aritmética por filas correcta:12–14 proveedor +8–19 control =20–33 normales; **19 nuevas/62 total Instantly +25 control =44 nuevas API cliente máximas**. Auth/backend/entregas entrantes se registran aparte;16 admisiones no garantiza16 HTTP entrantes, ni93 DB es techo global.423 fuentes y12 JSON idénticos,43/v7 preservado,0 env/red/código/SQL/permisos/activación/build/push. Solo preparación documental y auditoría offline; CAPP-T02–07/QA implementación/G6/C/D/S00 pendientes. Formato/enlaces/trazas al cierre, sin repetir656 suites por documentos.
+
+## REL: publicación0af77b7 y smoke real apagado — 29/10/2026
+
+[Evidencia y límites](s00/app-deployment-validation.md): usuario autoriza publicar0af77b7/main/autodeploy y confirma flag ausente. Preflight Git2f1f0a7→0af77b7 compatible, push normal de4 commits y lectura remota verifican main exacto. Operador reporta deploy Success; el agente no leyó logs/imagen de Coolify.046 aplicada por usuario y catálogo posterior conforme, owner supabase_admin revisado/simulado localmente; no nuevo SQL remoto por agente.
+
+Validación posterior de app autorizada: **4/4**, GET health200/JSON esperado, POST vacío webhook404 vacío/no-store, GET control404 vacío/no-store y GET login200/formulario esperado; cabeceras nosniff/DENY/CSP/no-store presentes. Sin redirecciones/retries, env reales, cookies, tokens o formulario enviado por el agente.4 HTTP app,0 Instantly/SQL directo,0 mensajes/configuración, **43/v7 y12 JSON intactos**. Respuesta humana posterior8→A acredita entrada con MFA y apertura de Oportunidades/lista/detalle, Conversaciones y Campañas, solo lectura; no es login ejecutado por el agente, comprobación de todas las cifras/acciones/permisos o recepción real. Logs/imagen y RPC PostgREST real siguen sin probar. REL-T04 acreditada, T05 con smoke y manual básico correctos; C/D/T00-04/S00 siguen abiertos. Registrar esa respuesta no añade peticiones ni otro push/autodeploy; documentación solo local.
+
 ## RC: versión conjunta revisada localmente — 29/10/2026
 
 Respuesta5→B incluye cambios públicos anteriores frente al main local: señales de oportunidades, webhook046, herramientas S00 y documentación. [Informe RC](s00/release-candidate.md): copia aislada512 archivos, **656/656 regresión**, aceptación general DB001–046, TypeScript y build normal Turbopack16.3.8 correctos;19/19 webhook previos. Errores iniciales de junction Windows y dependencia tsx faltante diagnosticados/resueltos solo en el entorno de QA, conservando logs y sin cambiar tests/producto. Code review sin bloqueantes confirmados en alcance revisado; sin auditoría manual exhaustiva de toda la herramienta histórica.

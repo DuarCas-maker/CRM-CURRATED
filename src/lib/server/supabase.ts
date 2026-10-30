@@ -9,7 +9,7 @@ export const configured = () =>
   );
 export const demoEnabled = () =>
   process.env.NODE_ENV !== "production" || process.env.DEMO_ENABLED === "true";
-export async function userClient() {
+export async function userClient(fetchImpl?: typeof fetch) {
   if (!configured())
     throw new HttpError(
       503,
@@ -20,6 +20,7 @@ export async function userClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      ...(fetchImpl ? { global: { fetch: fetchImpl } } : {}),
       cookies: {
         getAll: () => jar.getAll(),
         setAll: (values) => {
@@ -56,8 +57,8 @@ export class HttpError extends Error {
     super(message, options);
   }
 }
-export async function requireUser() {
-  const db = await userClient();
+export async function requireUser(options?: { fetchImpl?: typeof fetch }) {
+  const db = await userClient(options?.fetchImpl);
   const {
     data: { user },
     error,

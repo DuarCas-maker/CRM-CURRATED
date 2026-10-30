@@ -524,6 +524,7 @@ export async function runInstantlyC(
     webhooksIncludedConfirmed?: boolean;
     manifestReviewed?: boolean;
     receiverReady?: boolean;
+    receiverFailureAsOperational?: boolean;
     fetchImpl?: typeof fetch;
     clock?: InstantlyClock;
     signal?: AbortSignal;
@@ -769,7 +770,11 @@ export async function runInstantlyC(
     try {
       receipt = await receiver.observe();
     } catch {
-      fail("C_STORAGE_OR_INTERNAL_FAILURE");
+      fail(
+        options.receiverFailureAsOperational
+          ? "C_RECEIVER_FAILED"
+          : "C_STORAGE_OR_INTERNAL_FAILURE",
+      );
     }
     s.receiptObserved = receipt.authenticated;
     s.contextValidated = receipt.contextValidated;
@@ -877,7 +882,11 @@ export async function runInstantlyC(
       await receiver.arm();
     } catch (e) {
       if (e instanceof S00RunError && e.code === "C_WINDOW_CLOSED") throw e;
-      fail("C_STORAGE_OR_INTERNAL_FAILURE");
+      fail(
+        options.receiverFailureAsOperational
+          ? "C_RECEIVER_FAILED"
+          : "C_STORAGE_OR_INTERNAL_FAILURE",
+      );
     }
     s.receiverArmed = true;
     await save();
@@ -961,7 +970,11 @@ export async function runInstantlyC(
     try {
       await receiver.close();
     } catch {
-      fail("C_STORAGE_OR_INTERNAL_FAILURE");
+      fail(
+        options.receiverFailureAsOperational
+          ? "C_RECEIVER_FAILED"
+          : "C_STORAGE_OR_INTERNAL_FAILURE",
+      );
     }
     s.status =
       s.receiptObserved &&
@@ -1018,7 +1031,8 @@ export async function runInstantlyC(
       try {
         await receiver.close();
       } catch {
-        throw new S00RunError("C_STORAGE_OR_INTERNAL_FAILURE");
+        if (!options.receiverFailureAsOperational)
+          throw new S00RunError("C_STORAGE_OR_INTERNAL_FAILURE");
       }
     s.status = "failed";
     s.error = error;

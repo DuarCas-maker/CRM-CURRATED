@@ -18,6 +18,10 @@ type Deps = {
   now?: () => number;
   authorize?: () => Promise<Auth>;
   checkOrigin?: (request: Request) => void;
+  admit?: (
+    client: WebhookRpcClient,
+    nonce: string,
+  ) => Promise<{ status: number; trial?: Trial }>;
 };
 const reply = (status: number, body?: unknown) =>
   body === undefined
@@ -127,8 +131,17 @@ export function instantlyWebhookEndpoint(deps: Deps) {
     )
       return reply(404);
     try {
-      const client = deps.client(),
-        trial = await readInstantlyTrial(client, nonce);
+      const client = deps.client();
+      const admission = deps.admit
+        ? await deps.admit(client, nonce)
+        : undefined;
+      if (admission && admission.status !== 200)
+        return reply(
+          [404, 410, 429].includes(admission.status) ? admission.status : 503,
+        );
+      const trial = admission
+        ? admission.trial
+        : await readInstantlyTrial(client, nonce);
       if (!trial) return reply(404);
       if (trial.manifest.url !== urlFor(cfg.origin, nonce)) return reply(503);
       cSecrets(

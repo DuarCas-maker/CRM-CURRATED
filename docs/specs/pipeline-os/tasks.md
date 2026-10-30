@@ -1,5 +1,33 @@
 # Plan de sprints y tareas de Pipeline OS
 
+## R47-T04a: registro local del candidato autorizado
+
+Solicitud posterior autoriza el commit definitivo, con43 y prohibiciones remotas conservadas. [Cierre R47-C-T01–04](s00/instantly-047-local-commit.md): revisar contenido/QA/privados, documentar serialización LF del repo, preparar selección explícita y comprobar blobs/commit. El SHA resultante se identifica en Git y en la entrega, sin autorreferencia documental. No cambia el payload de20 archivos, ni aplica SQL, toca S01 o autoriza publicación. R47-T04 publicación/R47-T05 smoke y C siguen pendientes, aunque el incremento quede registrado localmente.
+
+## R47-T03 completada:047 aplicada por operador y catálogo aceptado
+
+Tras autorización específica, el usuario reportó Success y entregó postflight conforme: tabla/17 columnas/16 constraints/RLS/grants y cuatro funciones047 con permisos previstos, sin sobrecargas;046 conserva estructuras/permisos y tres huellas idénticas al preflight. [Resultado y límites](verification.md). No se ejecutó SQL remoto desde el agente. Siguiente: commit/revisión/publicación apagada de R47-T04, aún sin autorización; R47-T05/smoke y C/D/S00 pendientes.43 intactas, sin deploy/activación/envíos. Las secciones siguientes conservan la cronología anterior.
+
+## R47-T03: preflight remoto revisado, aplicación pendiente
+
+El operador ejecutó la consulta de solo lectura autorizada y compartió catálogo conforme:046 completa con permisos previstos,047 ausente, sin sobrecargas, rol/owner supabase_admin con acceso a perfiles. Baseline046 registrado para postflight. Flag ausente e imagen/mecanismo de recuperación observados en capturas previas; no se probó rollback ni se cambió retención. R47-T03 solo completa su preflight; faltan autorización/aplicación047 y postflight. R47-T04/05 y C no ejecutadas,43 intactas. [Evidencia y límites](verification.md).
+
+## CAPP-T06a / R47: preparación de publicación — 29/10/2026
+
+[Candidato](s00/instantly-047-release-candidate.md), [huellas](s00/instantly-047-release-manifest.json) y [runbook047](s00/instantly-047-release-runbook.md) preparados localmente. R47-T01 contenido/preservación y T02 identificación por huella completados para preparación; commit y ficha operativa final pendientes. Nueve escenarios de catálogo local conformes; el payload coincide con la QA681 previa, sin repetirla por documentos. R47-T03 SQL remoto, T04 publicación y T05 smoke/recuperación en vivo no ejecutados. CAPP-T06 completa exige además esas comprobaciones, configuración y manifiesto final; T07/C real/D/S00 siguen pendientes. Sin permisos heredados o consumo de43.
+
+## CAPP-T02–05: implementación local — 29/10/2026
+
+Solicitud explícita de puente/047 y QA offline. [Tareas, AC y verificación](s00/instantly-c-app-validation.md): T02 migración/RPC/admisión, T03 UI/API/credencial y T04 adaptador/CLI/v9 completados localmente; T05 cerrada para QA offline con 681/681, aceptación DB001–047, TS/build aislado y revisión. T06 release/047 remota/configuración/manifiesto final y T07 ejecución real siguen pendientes y requieren sus permisos. No consumir remanentes ni crear v9 real por completar código; fuente 43 y 12 archivos operativos preservados. S01 no se modifica.
+
+## CAPP: preparación de puente/manifiesto/presupuesto — 29/10/2026
+
+[CAPP-T01](s00/instantly-c-app-bridge.md) preparada tras9→A: contrato/ADR/8FR/12AC, borrador privado no ejecutable y cuentas19/62 proveedor +25 control (44 nuevas cliente como máximo); callback/HTTP DB se contabilizan aparte. T02 leases/RPC/047 local, T03 UI/API/ticket, T04 adaptador/ledgerv9, T05 QA/revisión, T06 release/config/costos/manifiesto final y T07 ejecución única permanecen pendientes y sujetos a solicitud/permiso de su alcance.43/12 JSON/fuentes preservados,0 env/red/código/SQL/activación; no otro push o despliegue.
+
+## REL: publicación apagada y disponibilidad básica — 29/10/2026
+
+[Informe posterior de app](s00/app-deployment-validation.md): REL-T04 acreditada mediante push normal autorizado0af77b7/main verificado y Success reportado por operador, flag ausente y smoke correcto.046 aplicada por usuario/postcatálogo correcto con owner supabase_admin (simulación local conforme); no se observó catálogo remoto previo/historial o igualdad completa de definiciones. REL-T05:4/4 comprobaciones HTTP y aceptación manual básica8→A (MFA/Oportunidades/lista/detalle/Conversaciones/Campañas) correctas; logs/imagen y aceptación funcional más amplia pendientes.43/12 JSON preservados,0 Instantly/envíos/configuración/Supabase directo por agente; sin nuevas peticiones al registrar8. C integrada/D/S00 pendientes. No nuevo push/deploy por esta documentación local.
+
 ## RC: versión conjunta local — 29/10/2026
 
 Respuesta5→B amplía REL-T02 a todos los cambios públicos pendientes, incluidas señales de oportunidades y herramientas S00. [RC-T01–04](s00/release-candidate.md): inventario/preservación, revisión conjunta, QA/build aislado y commit local. Sin push/merge/despliegue/Supabase remoto/APIs o transferencia S01; contador43 intacto. La publicación apagada y ficha de destino/imagen previa siguen siendo gates posteriores del runbook REL.

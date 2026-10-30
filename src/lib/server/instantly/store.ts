@@ -79,6 +79,9 @@ export async function readInstantlyTrial(
     p_nonce: nonce,
   });
   if (raw === null) return undefined;
+  return parseInstantlyTrial(nonce, raw);
+}
+export function parseInstantlyTrial(nonce: string, raw: unknown): Trial {
   const p = envelope.safeParse(raw);
   if (!p.success) return fail();
   try {
@@ -98,6 +101,7 @@ export async function readInstantlyTrial(
     return fail();
   }
 }
+export { rpc as instantlyRpc };
 export async function prepareInstantlyTrial(
   client: WebhookRpcClient,
   manifest: CManifest,

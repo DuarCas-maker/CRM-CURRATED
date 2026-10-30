@@ -1,5 +1,17 @@
 # Especificación de la reestructuración Pipeline OS
 
+## CAPP-R47: versión y publicación apagada preparadas — 29/10/2026
+
+[Runbook 047, FR01–05/AC01–05/T01–05](s00/instantly-047-release-runbook.md) y [candidato de contenido](s00/instantly-047-release-candidate.md). Alcance actual: congelar/revisar los 20 archivos del payload del puente probado y preparar catálogo, secuencia expand→código, smoke y recuperación. Sin commit/push/deploy/SQL remoto/activación; fuente43 y12 privados intactos. La huella del candidato no es un manifiesto C ni permiso de ensayo. Commit final, metadatos actuales del destino/imagen/flag, catálogo remoto y permisos siguen pendientes.
+
+## INS-CAPP: incremento local implementado — 29/10/2026
+
+[Implementación, matriz AC y límites](s00/instantly-c-app-validation.md): se implementan FR01–08 mediante 047 aditiva, control superadmin/MFA, lease hash-only, callback con admisión y ejecutor C_APP/v9. El alcance autorizado es exclusivamente local/offline; el estado real conserva 43 peticiones y sus 12 JSON. No se emite permiso real, habilita webhook, envía, publica o aplica SQL remoto. Los apartados anteriores siguientes conservan la cronología de planificación; T06/T07, C real, D y S00 siguen pendientes.
+
+## INS-CAPP: control delegado de prueba C — 29/10/2026
+
+[Contrato/ADR/AC/presupuesto integrado](s00/instantly-c-app-bridge.md), planificación STRICT tras9→A: autorización única superadmin/MFA y ticket opaco temporal para un ensayo, sin copiar sesión/contraseñas. CAPP-FR01–08/AC01–12/T01–07. Reutilizar app/046; futura047 aditiva para leases/cuotas, contrato de observación y cierre congelado, CLI C_APP/journalv9 propuestos.19 nuevas/62 acumuladas Instantly +25 control =44 peticiones API cliente nuevas máximas; backend/callbacks separados, no techo global de tráfico. Borradores no ejecutables,43/12 privados/fuentes intactos; no permisos/secretos reales, código, SQL, env, red, activación o despliegue. Implementación/QA y autorización real pendientes.
+
 ## RC: preparación de versión conjunta — 29/10/2026
 
 [Requisitos/aceptación/diseño/tareas RC](s00/release-candidate.md), STRICT. Respuesta5→B: revisar e incluir todos los cambios públicos pendientes frente al main local, manteniendo S01 y43/privados; preparar build aislado/commit local sin publicación o migración remota. No cambia el diseño IA-ADR01 ni autoriza C real. Ficha/imagen previa/versión remota/build Linux y G6 requieren su comprobación posterior.

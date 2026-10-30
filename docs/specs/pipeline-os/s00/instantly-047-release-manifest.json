@@ -1,0 +1,172 @@
+{
+  "version": 1,
+  "candidateId": "CAPP047-20261029-r1",
+  "status": "prepared_uncommitted_not_published",
+  "date": "2026-10-29",
+  "baseCommit": "0af77b7ce3baa0d46b0dd2e7e553dd88c230a150",
+  "branch": "codex/s00-auto-receive",
+  "lastReportedHealthyCommit": "0af77b7ce3baa0d46b0dd2e7e553dd88c230a150",
+  "remoteFreshness": "not_contacted_local_tracking_ref_only",
+  "target": {
+    "existingAppOrigin": "https://crm.finlabinc.com",
+    "branch": "main",
+    "autoDeploy": "operator_previously_confirmed",
+    "webhookRequiredState": "absent_or_false"
+  },
+  "payloadSha256": "a84dbab9de4a4ebdaaff9e7dd766ee89c3be0d94cf3f9ac9401d74ed3bf8bff9",
+  "migration": {
+    "file": "supabase/migrations/047_instantly_webhook_control_leases.sql",
+    "sha256": "7a3cc068d3216e558d97cb240cd326496fa49324b627f9ee9bbe11e457662559"
+  },
+  "payload": [
+    {
+      "file": "scripts/pipeline-os/s00-instantly-c-app-cli.ts",
+      "sha256": "3b909dd3156f6e6efdab0271991ec5d7b892bad6bc3ca432f828b4365175374b",
+      "bytes": 3226
+    },
+    {
+      "file": "scripts/pipeline-os/s00-instantly-c-app-files.ts",
+      "sha256": "35a9ed8bff0fe68ed203516e15f067ea5cda6bd3e697c3f6192491dfb98865dd",
+      "bytes": 3843
+    },
+    {
+      "file": "scripts/pipeline-os/s00-instantly-c-app.ts",
+      "sha256": "325cc24af6c49c661f140b15e741547b0b061e4e01dc2c625c139878d1104988",
+      "bytes": 11557
+    },
+    {
+      "file": "scripts/pipeline-os/s00-instantly-c.ts",
+      "sha256": "ee8be835ded2cc485018e01f9a3254ac22d4fa60bc8c570df0c88edd9ffd59eb",
+      "bytes": 31133
+    },
+    {
+      "file": "scripts/pipeline-os/s00-instantly-control-bridge.ts",
+      "sha256": "2824cd2f63f6b618245d4e4b5db4d286c394bee26b7c2fd8b62f60b01e146cfe",
+      "bytes": 10296
+    },
+    {
+      "file": "src/app/api/integrations/instantly/control/[nonce]/route.ts",
+      "sha256": "a29a3387ae606d5ef1cd58ac1a4557e18c7bcc14f278697f3928b0a49072a0ef",
+      "bytes": 328
+    },
+    {
+      "file": "src/app/api/integrations/instantly/trials/[nonce]/lease/route.ts",
+      "sha256": "edc9ae1031deead59311af90d89d9a27ec5514f5e5d784a0b4a0958c695ab9f7",
+      "bytes": 1280
+    },
+    {
+      "file": "src/app/api/integrations/instantly/webhook/[nonce]/route.ts",
+      "sha256": "b4e352bc0baf4420b00f3e90060cd98998363b1a8a7af726577cc13dfc0e88ed",
+      "bytes": 384
+    },
+    {
+      "file": "src/components/instantly-trial-control.tsx",
+      "sha256": "34e05f85838fed6c8a57efb947451039ca2097be7903516a37a061a472262223",
+      "bytes": 4954
+    },
+    {
+      "file": "src/components/integrations.tsx",
+      "sha256": "16640975647e1214f3bb091935f5111e7d049a5577cd558d41a9308f0bdc1f2c",
+      "bytes": 13323
+    },
+    {
+      "file": "src/lib/server/instantly/control-contract.ts",
+      "sha256": "72bc55798d2846f3a5659bff90f0319a9eca66573e88997fdd42c7a9e7b75d78",
+      "bytes": 4373
+    },
+    {
+      "file": "src/lib/server/instantly/control-endpoints.ts",
+      "sha256": "8d37e18cf5a23093056ae57f282dc975da8f4d86cc0b48e4432e003120d2fe12",
+      "bytes": 8344
+    },
+    {
+      "file": "src/lib/server/instantly/endpoints.ts",
+      "sha256": "ba7e91e6bb7670c3442c92a43c54dd5b8a2927bb4ba1476d5bea4265b9df10d6",
+      "bytes": 9467
+    },
+    {
+      "file": "src/lib/server/instantly/store.ts",
+      "sha256": "e270644f9701a25ae5434d5476a6d0f197c224e1cf9c3441c2b25e4c5ba9c877",
+      "bytes": 5512
+    },
+    {
+      "file": "src/lib/server/supabase.ts",
+      "sha256": "181bac97bd9e80e74066628ec52850629974aa56f78b3768b176882348c096ca",
+      "bytes": 4590
+    },
+    {
+      "file": "supabase/migrations/047_instantly_webhook_control_leases.sql",
+      "sha256": "7a3cc068d3216e558d97cb240cd326496fa49324b627f9ee9bbe11e457662559",
+      "bytes": 10439
+    },
+    {
+      "file": "tests/fixtures/pipeline-os-instantly-c-app.ts",
+      "sha256": "ecb69137c3a36b467f75a7fa17a5f9058abf272c8d712da8a94509ec5bcb37c3",
+      "bytes": 2466
+    },
+    {
+      "file": "tests/instantly-control.test.ts",
+      "sha256": "c8ff699891c3e2b1661603175910d244d6fd251abb947cd2a794dc378eb2cabb",
+      "bytes": 18482
+    },
+    {
+      "file": "tests/pipeline-os-s00-instantly-c-app.test.ts",
+      "sha256": "e7bcf45f6b8f81be2a62010bf82e26fa03f03335fd71c55d484b7eff0c69f44f",
+      "bytes": 20741
+    },
+    {
+      "file": "tests/pipeline-os-s00-inventory.test.ts",
+      "sha256": "5e8360f475936d085b7f8806c0bea6e7fedc9471d9adef89b4741d2c0cec5b2e",
+      "bytes": 15194
+    }
+  ],
+  "documentationPaths": [
+    "docs/ENVIRONMENT.md",
+    "docs/specs/pipeline-os/design.md",
+    "docs/specs/pipeline-os/parallel-development.md",
+    "docs/specs/pipeline-os/s00/README.md",
+    "docs/specs/pipeline-os/s00/app-deployment-validation.md",
+    "docs/specs/pipeline-os/s00/instantly-046-release-runbook.md",
+    "docs/specs/pipeline-os/s00/instantly-047-release-candidate.md",
+    "docs/specs/pipeline-os/s00/instantly-047-release-runbook.md",
+    "docs/specs/pipeline-os/s00/instantly-c-app-bridge.md",
+    "docs/specs/pipeline-os/s00/instantly-c-app-manifest.example.json",
+    "docs/specs/pipeline-os/s00/instantly-c-app-validation.md",
+    "docs/specs/pipeline-os/s00/instantly-phase-c.md",
+    "docs/specs/pipeline-os/spec.md",
+    "docs/specs/pipeline-os/tasks.md",
+    "docs/specs/pipeline-os/verification.md"
+  ],
+  "evidence": {
+    "reference": "instantly-c-app-validation.md",
+    "samePayloadAsOfflineQa": true,
+    "previousTestsPassed": 681,
+    "newImplementationTests": 25,
+    "database": "disposable_001_to_047_passed",
+    "typecheck": "passed",
+    "isolatedNextBuild": "passed",
+    "dockerLinux": "not_tested"
+  },
+  "preservation": {
+    "instantlyCalls": 43,
+    "operationalJsonUnchanged": 12,
+    "noRealEnvLoaded": true
+  },
+  "execution": {
+    "newCommitCreated": false,
+    "push": false,
+    "deployed": false,
+    "remoteSql": false,
+    "realApiRequests": 0,
+    "webhookActivated": false,
+    "messagesSent": 0
+  },
+  "pending": [
+    "current_remote_main",
+    "final_commit_sha",
+    "recoverable_previous_image_and_deployment",
+    "current_webhook_flag",
+    "remote_catalog_047",
+    "sql_publication_and_smoke_approval"
+  ]
+}

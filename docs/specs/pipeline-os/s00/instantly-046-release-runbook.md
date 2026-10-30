@@ -1,5 +1,9 @@
 # INS-REL: preparación de 046 y despliegue existente
 
+**Siguiente incremento preparado:** [runbook047 del puente de control](instantly-047-release-runbook.md). 046 ya tiene evidencia de aplicación/publicación; no repetirla al instalar047. La guía siguiente conserva la preparación histórica de046.
+
+**Continuación posterior autorizada:** [publicación0af77b7 y validación de app](app-deployment-validation.md). Migración aplicada por usuario/catálogo posterior conforme; main publicado/verificado, deploy Success reportado por operador, smoke4/4 apagado correcto.43 conservadas, sin C/envíos/activación; aceptación autenticada/logs aún pendientes. La preparación y las tablas de estado siguientes se conservan como antecedente, no como estado actualizado de ejecución.
+
 29/10/2026, America/Bogota. **Planificación SDD STRICT; no ejecutado en remoto.** Skills spec-driven-development, production-deployment y supabase-engineer. Extiende [INS-APP](instantly-app-integration.md), sin cambiar su implementación o permisos. No autoriza push, merge, SQL remoto, configuración en vivo, build, despliegue, pruebas HTTP ni activación de Instantly.
 
 ## 1. Objetivo y contexto confirmado

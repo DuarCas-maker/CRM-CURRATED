@@ -1,0 +1,78 @@
+{
+  "draftVersion": 1,
+  "protocol": "S00_INSTANTLY_C_APP_V1",
+  "draft": true,
+  "executionReady": false,
+  "origin": "https://crm.example.invalid",
+  "source": {
+    "version": 7,
+    "calls": 43,
+    "canonicalHash": null,
+    "scopeHash": null,
+    "bManifestHash": null,
+    "configurationFingerprint": null,
+    "workspaceId": null,
+    "campaignId": null
+  },
+  "receiverManifest": {
+    "version": 1,
+    "sourceHash": null,
+    "nonce": null,
+    "url": null,
+    "startsAt": null,
+    "endsAt": null,
+    "tokenHash": null,
+    "dedupKeyHash": null,
+    "controlled": false,
+    "noAdditionalCost": false,
+    "persistenceVerified": false,
+    "logsRedacted": false
+  },
+  "control": {
+    "authorizationMode": "superadmin_mfa_opaque_lease",
+    "leaseId": null,
+    "ticketFile": null,
+    "issuedAt": null,
+    "expiresAt": null,
+    "maxLeaseMs": 600000,
+    "scopes": ["prepare", "arm", "observe", "close", "revoke"],
+    "maxObservationRequests": 12,
+    "minimumPollMs": 10000
+  },
+  "budgets": {
+    "instantly": {
+      "base": 43,
+      "normal": 14,
+      "reserve": 3,
+      "emergency": 2,
+      "maxNew": 19,
+      "maxTotal": 62
+    },
+    "control": {
+      "base": 0,
+      "normal": 19,
+      "reserve": 4,
+      "emergency": 2,
+      "maxNew": 25
+    },
+    "maxNewClientApiRequests": 44,
+    "maxAdditionalGrantAuthBackendRequests": 4,
+    "callback": {
+      "windowMs": 120000,
+      "maxAdmissions": 16,
+      "maxStoredReceipts": 16,
+      "incomingHttpLimitGuaranteed": false,
+      "maxDbHttpPerDelivery": 4
+    }
+  },
+  "gates": {
+    "implementationVerified": false,
+    "migrationAndDeploymentVerified": false,
+    "manifestReviewed": false,
+    "apiAndWebhooksIncludedConfirmed": false,
+    "logsRedactedVerified": false,
+    "providerExecutionAuthorized": false,
+    "controlExecutionAuthorized": false,
+    "webhookActivationAuthorized": false
+  }
+}

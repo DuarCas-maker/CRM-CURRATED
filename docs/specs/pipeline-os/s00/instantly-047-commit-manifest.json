@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "candidateId": "CAPP047-20261029-r1",
+  "baseCommit": "0af77b7ce3baa0d46b0dd2e7e553dd88c230a150",
+  "branch": "codex/s00-auto-receive",
+  "identification": "git_commit_containing_this_manifest",
+  "authorization": "local_commit_only_no_publication",
+  "serialization": {
+    "attributes": "* text=auto eol=lf",
+    "transformation": "CRLF_to_LF_only",
+    "originalWorktreeManifest": "instantly-047-release-manifest.json",
+    "originalWorktreePayloadSha256": "a84dbab9de4a4ebdaaff9e7dd766ee89c3be0d94cf3f9ac9401d74ed3bf8bff9"
+  },
+  "gitLfPayloadSha256": "a84dbab9de4a4ebdaaff9e7dd766ee89c3be0d94cf3f9ac9401d74ed3bf8bff9",
+  "payload": [
+    {
+      "file": "scripts/pipeline-os/s00-instantly-c-app-cli.ts",
+      "sha256": "3b909dd3156f6e6efdab0271991ec5d7b892bad6bc3ca432f828b4365175374b",
+      "bytes": 3226,
+      "gitBlobOid": "d8e45f323537ee9ea0d790f819058f27aea28738"
+    },
+    {
+      "file": "scripts/pipeline-os/s00-instantly-c-app-files.ts",
+      "sha256": "35a9ed8bff0fe68ed203516e15f067ea5cda6bd3e697c3f6192491dfb98865dd",
+      "bytes": 3843,
+      "gitBlobOid": "a255a48c34d570e4af7f9c7f64ab0368659a63b5"
+    },
+    {
+      "file": "scripts/pipeline-os/s00-instantly-c-app.ts",
+      "sha256": "325cc24af6c49c661f140b15e741547b0b061e4e01dc2c625c139878d1104988",
+      "bytes": 11557,
+      "gitBlobOid": "13871bcfd11431f6b04d03e6c189175090030f86"
+    },
+    {
+      "file": "scripts/pipeline-os/s00-instantly-c.ts",
+      "sha256": "ee8be835ded2cc485018e01f9a3254ac22d4fa60bc8c570df0c88edd9ffd59eb",
+      "bytes": 31133,
+      "gitBlobOid": "460c812e676df9bbf4db6a1e59f15ab8b176b0c4"
+    },
+    {
+      "file": "scripts/pipeline-os/s00-instantly-control-bridge.ts",
+      "sha256": "2824cd2f63f6b618245d4e4b5db4d286c394bee26b7c2fd8b62f60b01e146cfe",
+      "bytes": 10296,
+      "gitBlobOid": "c17df3417eb01bbd9e9bacbfbcb08813543e22b3"
+    },
+    {
+      "file": "src/app/api/integrations/instantly/control/[nonce]/route.ts",
+      "sha256": "a29a3387ae606d5ef1cd58ac1a4557e18c7bcc14f278697f3928b0a49072a0ef",
+      "bytes": 328,
+      "gitBlobOid": "aaa011cee8a9e15be0c12ff9a5273b1e2c2aa39a"
+    },
+    {
+      "file": "src/app/api/integrations/instantly/trials/[nonce]/lease/route.ts",
+      "sha256": "edc9ae1031deead59311af90d89d9a27ec5514f5e5d784a0b4a0958c695ab9f7",
+      "bytes": 1280,
+      "gitBlobOid": "76920d9c77c79bb0e4667bdaffed4afc4a81e82c"
+    },
+    {
+      "file": "src/app/api/integrations/instantly/webhook/[nonce]/route.ts",
+      "sha256": "b4e352bc0baf4420b00f3e90060cd98998363b1a8a7af726577cc13dfc0e88ed",
+      "bytes": 384,
+      "gitBlobOid": "840598c8b108cecdc9d745afafad6a6ce8a27dbb"
+    },
+    {
+      "file": "src/components/instantly-trial-control.tsx",
+      "sha256": "34e05f85838fed6c8a57efb947451039ca2097be7903516a37a061a472262223",
+      "bytes": 4954,
+      "gitBlobOid": "319e65d02435c24861103c2d51890cdc70e9a91c"
+    },
+    {
+      "file": "src/components/integrations.tsx",
+      "sha256": "16640975647e1214f3bb091935f5111e7d049a5577cd558d41a9308f0bdc1f2c",
+      "bytes": 13323,
+      "gitBlobOid": "43043deab1dcb3e0bb5050e6ef935db88beaab77"
+    },
+    {
+      "file": "src/lib/server/instantly/control-contract.ts",
+      "sha256": "72bc55798d2846f3a5659bff90f0319a9eca66573e88997fdd42c7a9e7b75d78",
+      "bytes": 4373,
+      "gitBlobOid": "31e6cc9bb957b72972fcf8232a0e6597af15d7b0"
+    },
+    {
+      "file": "src/lib/server/instantly/control-endpoints.ts",
+      "sha256": "8d37e18cf5a23093056ae57f282dc975da8f4d86cc0b48e4432e003120d2fe12",
+      "bytes": 8344,
+      "gitBlobOid": "1c3f4456235da7ba1c9e75bccd532069dae4f552"
+    },
+    {
+      "file": "src/lib/server/instantly/endpoints.ts",
+      "sha256": "ba7e91e6bb7670c3442c92a43c54dd5b8a2927bb4ba1476d5bea4265b9df10d6",
+      "bytes": 9467,
+      "gitBlobOid": "4aa08fa190ebb5ed13b882d78e8bc3991d31abb8"
+    },
+    {
+      "file": "src/lib/server/instantly/store.ts",
+      "sha256": "e270644f9701a25ae5434d5476a6d0f197c224e1cf9c3441c2b25e4c5ba9c877",
+      "bytes": 5512,
+      "gitBlobOid": "90d90b4c061b9d82b9ed0abb03dd0da9099c2f2f"
+    },
+    {
+      "file": "src/lib/server/supabase.ts",
+      "sha256": "181bac97bd9e80e74066628ec52850629974aa56f78b3768b176882348c096ca",
+      "bytes": 4590,
+      "gitBlobOid": "3151d81220537617ac743eb970cc8336b69ace83"
+    },
+    {
+      "file": "supabase/migrations/047_instantly_webhook_control_leases.sql",
+      "sha256": "7a3cc068d3216e558d97cb240cd326496fa49324b627f9ee9bbe11e457662559",
+      "bytes": 10439,
+      "gitBlobOid": "5951edf653477acc12337d0d7866c1d014b521f2"
+    },
+    {
+      "file": "tests/fixtures/pipeline-os-instantly-c-app.ts",
+      "sha256": "ecb69137c3a36b467f75a7fa17a5f9058abf272c8d712da8a94509ec5bcb37c3",
+      "bytes": 2466,
+      "gitBlobOid": "fd849b150ee9e437a0efecb89d223cf971dd8d11"
+    },
+    {
+      "file": "tests/instantly-control.test.ts",
+      "sha256": "c8ff699891c3e2b1661603175910d244d6fd251abb947cd2a794dc378eb2cabb",
+      "bytes": 18482,
+      "gitBlobOid": "ca60c1a19a9dcfdd280668b70ec87474aecf46aa"
+    },
+    {
+      "file": "tests/pipeline-os-s00-instantly-c-app.test.ts",
+      "sha256": "e7bcf45f6b8f81be2a62010bf82e26fa03f03335fd71c55d484b7eff0c69f44f",
+      "bytes": 20741,
+      "gitBlobOid": "a97b6f9b873ae8adaebc1870168c53a12277f15c"
+    },
+    {
+      "file": "tests/pipeline-os-s00-inventory.test.ts",
+      "sha256": "5e8360f475936d085b7f8806c0bea6e7fedc9471d9adef89b4741d2c0cec5b2e",
+      "bytes": 15194,
+      "gitBlobOid": "1a8423a1e5705ee1e46df3edd49d8e6b867256c9"
+    }
+  ],
+  "migration": {
+    "file": "supabase/migrations/047_instantly_webhook_control_leases.sql",
+    "originalWorktreeSha256": "7a3cc068d3216e558d97cb240cd326496fa49324b627f9ee9bbe11e457662559",
+    "gitLfSha256": "7a3cc068d3216e558d97cb240cd326496fa49324b627f9ee9bbe11e457662559"
+  },
+  "evidence": {
+    "sameLogicalSourceAs681PassingTests": true,
+    "noProductChangesInCommitPreparation": true,
+    "operatorReported047SuccessAndCatalogAccepted": true,
+    "instantlyCalls": 43
+  },
+  "outOfScope": [
+    "push",
+    "merge",
+    "tag",
+    "deployment",
+    "remote_sql",
+    "webhook_activation",
+    "provider_requests",
+    "s01_changes"
+  ]
+}
