@@ -1,0 +1,1320 @@
+{
+  "id": "PRM-20261101",
+  "date": "2026-11-01",
+  "mode": "planning_only_not_executable",
+  "source": "../permission-diagnostic/result-review.json",
+  "inputSha256": "9aaaaf19fc497169b54b710866bc0af99f106ab88c73c681a69cc59ca404d430",
+  "externalCalls": 0,
+  "instantly": {
+    "consumed": 43,
+    "new": 0
+  },
+  "requirements": ["PRM-FR01", "PRM-FR02", "PRM-FR06"],
+  "counts": {
+    "relations": 28,
+    "anonymousEmptyTargets": 28,
+    "authenticatedReadOnly": 23,
+    "authenticatedNoAccess": 3,
+    "authenticatedCrud": 2,
+    "serviceFunctionInventory": 70,
+    "selfDependenciesMatching": 6
+  },
+  "contract": {
+    "rolesToReduce": ["anon", "authenticated"],
+    "operation": "observed_minus_target_only",
+    "grantMissingAccess": false,
+    "serviceRole": "preserve_observed_no_change",
+    "defaults": "excluded",
+    "functions": "excluded",
+    "columnGrants": "no_attacl_change; stop_on_unexpected_explicit_column_grant",
+    "sources": "base_001_to_047_before_local_ABC",
+    "notExecutableSql": true
+  },
+  "relations": [
+    {
+      "key": "public.campaign_assets",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/campaign-templates/assets/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/029_campaign_templates.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.campaign_events",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [],
+      "evidence": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.campaign_workspace",
+      "kind": "v",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/001_core.sql",
+        "supabase/migrations/029_campaign_templates.sql",
+        "supabase/migrations/039_campaign_delivery_controls.sql",
+        "supabase/migrations/043_campaign_first_contact.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.company_contacts",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/mail-actions.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/conversations/clients/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/conversations/channels/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/gmail/cases/[id]/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/010_gmail_history_cases.sql",
+        "supabase/migrations/011_gmail_evidence.sql",
+        "supabase/migrations/015_gmail_continuous.sql",
+        "supabase/migrations/017_gmail_team.sql",
+        "supabase/migrations/021_mail_manager.sql",
+        "supabase/migrations/022_lender_company_conversations.sql",
+        "supabase/migrations/024_reply_engagement.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.company_primary_cases",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [],
+      "evidence": [
+        "supabase/migrations/010_gmail_history_cases.sql",
+        "supabase/migrations/017_gmail_team.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.conversation_lenders",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/mail-actions.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/conversations/channels/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/020_mail_channels.sql",
+        "supabase/migrations/021_mail_manager.sql",
+        "supabase/migrations/022_lender_company_conversations.sql",
+        "supabase/migrations/023_lender_directory_portals.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.document_reviews",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/attachment-processing.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/documents/review/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/025_document_review.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.email_templates",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/lib/server/install-campaign-presets.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/029_campaign_templates.sql",
+        "supabase/migrations/039_campaign_delivery_controls.sql",
+        "supabase/migrations/043_campaign_first_contact.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.email_template_versions",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/install-campaign-presets.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/campaign-templates/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/039_campaign_delivery_controls.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.gmail_api_slots",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": [],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [],
+      "evidence": ["supabase/migrations/039_campaign_delivery_controls.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.gmail_api_usage",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": [],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [],
+      "evidence": ["supabase/migrations/039_campaign_delivery_controls.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.gmail_candidate_directory",
+      "kind": "v",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/app/api/gmail/history/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/024_reply_engagement.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.gmail_pending_associations",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/app/api/gmail/history/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/020_mail_channels.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.gmail_sent_usage",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": [],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "worker/gmail-sending-usage.ts",
+          "scope": "worker_service_candidate"
+        }
+      ],
+      "evidence": ["supabase/migrations/039_campaign_delivery_controls.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.lead_workspace",
+      "kind": "v",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/008_lead_preparation.sql",
+        "supabase/migrations/044_lead_preparation_tracking.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.lender_contacts",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/opportunity-signals.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/lib/server/opportunity-signals.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/lib/server/mail-recipient-selections.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/lib/server/mail-actions.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/conversations/channels/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/lenders/import/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/020_mail_channels.sql",
+        "supabase/migrations/021_mail_manager.sql",
+        "supabase/migrations/022_lender_company_conversations.sql",
+        "supabase/migrations/023_lender_directory_portals.sql",
+        "supabase/migrations/030_lender_management.sql",
+        "supabase/migrations/034_lender_document_packages.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.lender_guideline_versions",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/app/api/lenders/guidelines/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/030_lender_management.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.mail_drafts",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["DELETE", "INSERT", "SELECT", "UPDATE"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": ["REFERENCES", "TRIGGER", "TRUNCATE"]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/mail-manager.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/mail/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/021_mail_manager.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.mail_recipient_selections",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["DELETE", "INSERT", "SELECT", "UPDATE"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": ["REFERENCES", "TRIGGER", "TRUNCATE"]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/app/api/mail/recipient-selections/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/040_mail_recipient_selections.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.mail_uploads",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "worker/gmail.ts",
+          "scope": "worker_service_candidate"
+        },
+        {
+          "path": "src/lib/server/mail-manager.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/mail/uploads/[id]/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/mail/uploads/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/021_mail_manager.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.operational_settings",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/components/operational-dashboard.tsx",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/lib/demo-actions.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/lib/server/crm-readiness.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/operations/settings/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/031_operational_dashboard.sql",
+        "supabase/migrations/042_financing_control_dashboard.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "kind": "v",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [],
+      "evidence": [
+        "supabase/migrations/007_history.sql",
+        "supabase/migrations/024_reply_engagement.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "kind": "v",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/007_history.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.opportunity_workspace",
+      "kind": "v",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/lib/server/mail-actions.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/conversations/clients/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/conversations/channels/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/documents/review/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/001_core.sql",
+        "supabase/migrations/006_metrics.sql",
+        "supabase/migrations/007_history.sql",
+        "supabase/migrations/024_reply_engagement.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.process_state_history",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [],
+      "evidence": ["supabase/migrations/042_financing_control_dashboard.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.underwriting_runs",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "worker/underwriting.ts",
+          "scope": "worker_service_candidate"
+        },
+        {
+          "path": "src/app/api/underwriting/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/underwriting/report/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/underwriting/files/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/027_underwriting.sql",
+        "supabase/migrations/028_underwriting_settings.sql",
+        "supabase/migrations/030_lender_management.sql",
+        "supabase/migrations/031_operational_dashboard.sql",
+        "supabase/migrations/032_bank_documents.sql",
+        "supabase/migrations/037_underwriting_progress.sql",
+        "supabase/migrations/038_underwriting_human_review.sql",
+        "supabase/migrations/041_ai_service_usage.sql",
+        "supabase/migrations/042_financing_control_dashboard.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.underwriting_settings",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/components/underwriting-settings.tsx",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/lib/demo-actions.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/underwriting/settings/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/company-application/extract/route.ts",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/documents/classify/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": [
+        "supabase/migrations/027_underwriting.sql",
+        "supabase/migrations/028_underwriting_settings.sql",
+        "supabase/migrations/037_underwriting_progress.sql"
+      ],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    },
+    {
+      "key": "public.underwriting_setting_versions",
+      "kind": "r",
+      "anonTarget": [],
+      "authenticatedTarget": ["SELECT"],
+      "serviceRole": "preserve_observed_no_change",
+      "owner": "preserve_observed_no_change",
+      "public": "expected_absent_stop_on_new_grant",
+      "security": "preserve_RLS_policies_and_security_invoker",
+      "removeOnlyCurrentExcessFor": ["anon", "authenticated"],
+      "extraPrivilegesObserved": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"],
+      "consumers": [
+        {
+          "path": "src/components/underwriting-settings.tsx",
+          "scope": "application_context_review_required"
+        },
+        {
+          "path": "src/app/api/underwriting/settings/route.ts",
+          "scope": "application_context_review_required"
+        }
+      ],
+      "evidence": ["supabase/migrations/028_underwriting_settings.sql"],
+      "columns": "no_attacl_change; existing column drift derives from table access; stop on unexpected explicit column grant"
+    }
+  ]
+}

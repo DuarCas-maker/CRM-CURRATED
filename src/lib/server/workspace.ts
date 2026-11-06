@@ -1,3 +1,5 @@
+import { mailAccess } from "./mail-access";
+import { senderCapabilities, BrandDeliveryError } from "./brand-delivery";
 import { requireUser, checkDb } from "./supabase";
 import type { Workspace } from "../domain";
 import { stages } from "../domain";
@@ -170,7 +172,7 @@ export async function loadWorkspace(
     ["accounts", "mail_accounts"],
     ["campaigns", "campaign_workspace"],
     ["imports", "import_batches"],
-    ["conversations", "conversations"],
+    ["conversations", "mail_conversations_visible"],
     ["notifications", "notifications"],
     ["mail_review", "mail_review"],
   ];
@@ -218,6 +220,7 @@ export async function loadWorkspace(
         .order(sort, { ascending: false })
         .limit(related.has(key) ? 3000 : 500);
       if (related.has(key)) q = q.in("opportunity_id", caseIds);
+      if (key === "conversations") q = q.order("id");
       if (key === "imports" && preparing)
         q = q.range(
           leadSection === "imports" ? page * 100 : 0,
@@ -228,6 +231,11 @@ export async function loadWorkspace(
     }),
   );
   const data = Object.fromEntries(entries) as unknown as Workspace;
+  data.mail_access = Object.fromEntries(
+    await Promise.all(
+      caseIds.map(async (id) => [id, await mailAccess(db, id)] as const),
+    ),
+  );
   const [lenders, lenderContacts] = await Promise.all([
     readDirectory("lenders", "id"),
     readDirectory("lender_contacts", "email"),
@@ -236,13 +244,27 @@ export async function loadWorkspace(
   data.lender_contacts = lenderContacts as Workspace["lender_contacts"];
   // Dashboard rows have their own ordering and can include cases outside the
   // main opportunity page. Read only the missing visible cases under RLS.
-  const missingSignalIds = [...new Set((financingControl?.rows || []).map((row) => row.id))]
-    .filter((id) => !caseIds.includes(id));
+  const missingSignalIds = [
+    ...new Set((financingControl?.rows || []).map((row) => row.id)),
+  ].filter((id) => !caseIds.includes(id));
   const extraSignalCases = missingSignalIds.length
-    ? checkDb(await db.from("opportunity_workspace").select("id,email").in("id", missingSignalIds), "opportunity_signals.cases") || []
+    ? checkDb(
+        await db
+          .from("opportunity_workspace")
+          .select("id,email")
+          .in("id", missingSignalIds),
+        "opportunity_signals.cases",
+      ) || []
     : [];
-  if (caseId || ["overview", "pipeline"].includes(params.get("view") || "overview"))
-    data.opportunity_signals = await loadOpportunitySignals(db, [...opportunities, ...extraSignalCases], data);
+  if (
+    caseId ||
+    ["overview", "pipeline"].includes(params.get("view") || "overview")
+  )
+    data.opportunity_signals = await loadOpportunitySignals(
+      db,
+      [...opportunities, ...extraSignalCases],
+      data,
+    );
   async function readDirectory(table: string, sort: string) {
     const rows: unknown[] = [];
     for (let offset = 0; ; offset += 1000) {
@@ -263,10 +285,23 @@ export async function loadWorkspace(
           .eq("can_send", true),
         "mail_permissions",
       ) || [];
+    let capabilities: Awaited<ReturnType<typeof senderCapabilities>> = [];
+    try {
+      capabilities = await senderCapabilities(db);
+      data.brand_guards_ready = true;
+    } catch (e) {
+      if (!(e instanceof BrandDeliveryError) || e.status !== 503) throw e;
+      data.brand_guards_ready = false;
+    }
+    data.accounts = data.accounts.map((a) => ({
+      ...a,
+      brand_context: capabilities.find((c) => c.account_id === a.id),
+    }));
     data.sender_account_ids = data.accounts
       .filter(
         (a) =>
           a.status === "connected" &&
+          !!a.brand_context &&
           (profile.role === "superadmin" ||
             permissions.some((p) => p.account_id === a.id)),
       )

@@ -1,0 +1,208 @@
+{
+  "id": "AF-CVAR-r1",
+  "source": "operator_AF-FDIAG-r1_DETAIL",
+  "operatorServerVersion": "150008",
+  "fieldMismatchCount": 14,
+  "detailsTruncated": false,
+  "functionInventoryOk": true,
+  "sourceMigrationSha256": "19548594e04d95167ed23957264f25d796a0f5f02e9427c75bf1f53f4fd390aa",
+  "sourceContractSha256": "6fc8d3de046552f2f066abfb814b1929141ea2c3547d6762e0e7e1bfb820e4af",
+  "inheritedLineage": {
+    "public.account_delivery_usage_before_brand_b2(uuid)": "public.account_delivery_usage(uuid)",
+    "public.claim_notification_outbox_v15()": "public.claim_notification_outbox_v15()",
+    "public.defer_gmail_send_before_brand_b2(uuid, integer, text)": "public.defer_gmail_send(uuid, integer, text)",
+    "public.mark_sent_before_brand_b2(uuid, text, text)": "public.mark_sent(uuid, text, text)",
+    "public.mark_sent_v15(uuid, text, text)": "public.mark_sent_v15(uuid, text, text)",
+    "public.mark_sent_v19(uuid, text, text)": "public.mark_sent_v19(uuid, text, text)",
+    "public.mark_sent_v23(uuid, text, text)": "public.mark_sent_v23(uuid, text, text)",
+    "public.mark_sent_v37_campaign_delivery(uuid, text, text)": "public.mark_sent_v37_campaign_delivery(uuid, text, text)",
+    "public.queue_campaign_test_before_brand_b2(uuid, uuid, text, text, text, uuid)": "public.queue_campaign_test(uuid, uuid, text, text, text, uuid)"
+  },
+  "postInheritedSourceVariants": {
+    "public.account_delivery_usage_before_brand_b2(uuid)": [
+      "fc8b69199bfd5af291888a296f89cacd",
+      "be9c61a8828125ea1727774f62c368c7"
+    ],
+    "public.claim_notification_outbox_v15()": [
+      "0ede06e46fabad88cb3fcbc6234bfcba",
+      "2cf95152a96d66be4145416a9205d682"
+    ],
+    "public.defer_gmail_send_before_brand_b2(uuid, integer, text)": [
+      "915873b3cf87db10932cf28967f4ed7f",
+      "6e3d3135649eb4af0d6e6c345f7ca15b"
+    ],
+    "public.mark_sent_before_brand_b2(uuid, text, text)": [
+      "a6ce7ea7325591d376434e118154e888",
+      "4475639bb179ace04e8e5012d68a9c14"
+    ],
+    "public.mark_sent_v15(uuid, text, text)": [
+      "12afa5e27b93ffdfb1e2b213eec0bcf7",
+      "f583fa7907747127e526ed8052c8944d"
+    ],
+    "public.mark_sent_v19(uuid, text, text)": [
+      "a9bba7de3e8fd4a606a969e9602ab180",
+      "e913f07a407157edce0e5d3f3b334372"
+    ],
+    "public.mark_sent_v23(uuid, text, text)": [
+      "8786848e0a7d14d10d59fdcfc8ee53da",
+      "c8d5e3b37e798becf3d0b3d6cbefb377"
+    ],
+    "public.mark_sent_v37_campaign_delivery(uuid, text, text)": [
+      "0791c8895c9b80f84e81d1210186b230",
+      "ab2182d256a363f942a38dcb75a8d01f"
+    ],
+    "public.queue_campaign_test_before_brand_b2(uuid, uuid, text, text, text, uuid)": [
+      "5efba42a7dce44c88db757935e2c4314",
+      "9e1e6b95723df1ca69a9955edfc8fe89"
+    ]
+  },
+  "functions": [
+    {
+      "key": "public.account_delivery_usage_before_brand_b2(uuid)",
+      "base": "public.account_delivery_usage(uuid)",
+      "canonicalHash": "fc8b69199bfd5af291888a296f89cacd",
+      "receivedFieldFingerprint": "257e2d76ee3b7a6066e1c125fa85e79e",
+      "acceptedSourceHashes": [
+        "fc8b69199bfd5af291888a296f89cacd",
+        "be9c61a8828125ea1727774f62c368c7"
+      ]
+    },
+    {
+      "key": "public.claim_notification_outbox_v15()",
+      "base": "public.claim_notification_outbox_v15()",
+      "canonicalHash": "0ede06e46fabad88cb3fcbc6234bfcba",
+      "receivedFieldFingerprint": "7cfd050e4ef6f928b03db71e60657469",
+      "acceptedSourceHashes": [
+        "0ede06e46fabad88cb3fcbc6234bfcba",
+        "2cf95152a96d66be4145416a9205d682"
+      ]
+    },
+    {
+      "key": "public.defer_gmail_send_before_brand_b2(uuid, integer, text)",
+      "base": "public.defer_gmail_send(uuid, integer, text)",
+      "canonicalHash": "915873b3cf87db10932cf28967f4ed7f",
+      "receivedFieldFingerprint": "8045a9091a8c798f548a746683a61194",
+      "acceptedSourceHashes": [
+        "915873b3cf87db10932cf28967f4ed7f",
+        "6e3d3135649eb4af0d6e6c345f7ca15b"
+      ]
+    },
+    {
+      "key": "public.mark_sent_before_brand_b2(uuid, text, text)",
+      "base": "public.mark_sent(uuid, text, text)",
+      "canonicalHash": "a6ce7ea7325591d376434e118154e888",
+      "receivedFieldFingerprint": "118e9a13c4858b069437c9e097510655",
+      "acceptedSourceHashes": [
+        "a6ce7ea7325591d376434e118154e888",
+        "4475639bb179ace04e8e5012d68a9c14"
+      ]
+    },
+    {
+      "key": "public.mark_sent_v15(uuid, text, text)",
+      "base": "public.mark_sent_v15(uuid, text, text)",
+      "canonicalHash": "12afa5e27b93ffdfb1e2b213eec0bcf7",
+      "receivedFieldFingerprint": "c688c4ce9860ace9ef50cd72f5b5a457",
+      "acceptedSourceHashes": [
+        "12afa5e27b93ffdfb1e2b213eec0bcf7",
+        "f583fa7907747127e526ed8052c8944d"
+      ]
+    },
+    {
+      "key": "public.mark_sent_v19(uuid, text, text)",
+      "base": "public.mark_sent_v19(uuid, text, text)",
+      "canonicalHash": "a9bba7de3e8fd4a606a969e9602ab180",
+      "receivedFieldFingerprint": "af4619c8644868ffedf9349ecc386036",
+      "acceptedSourceHashes": [
+        "a9bba7de3e8fd4a606a969e9602ab180",
+        "e913f07a407157edce0e5d3f3b334372"
+      ]
+    },
+    {
+      "key": "public.mark_sent_v23(uuid, text, text)",
+      "base": "public.mark_sent_v23(uuid, text, text)",
+      "canonicalHash": "8786848e0a7d14d10d59fdcfc8ee53da",
+      "receivedFieldFingerprint": "aaa32c51634ec9cbc915ce3c2a312411",
+      "acceptedSourceHashes": [
+        "8786848e0a7d14d10d59fdcfc8ee53da",
+        "c8d5e3b37e798becf3d0b3d6cbefb377"
+      ]
+    },
+    {
+      "key": "public.mark_sent_v37_campaign_delivery(uuid, text, text)",
+      "base": "public.mark_sent_v37_campaign_delivery(uuid, text, text)",
+      "canonicalHash": "0791c8895c9b80f84e81d1210186b230",
+      "receivedFieldFingerprint": "0db9db955a8e8b9c4df43fd5e94af891",
+      "acceptedSourceHashes": [
+        "0791c8895c9b80f84e81d1210186b230",
+        "ab2182d256a363f942a38dcb75a8d01f"
+      ]
+    },
+    {
+      "key": "public.queue_campaign_test_before_brand_b2(uuid, uuid, text, text, text, uuid)",
+      "base": "public.queue_campaign_test(uuid, uuid, text, text, text, uuid)",
+      "canonicalHash": "5efba42a7dce44c88db757935e2c4314",
+      "receivedFieldFingerprint": "c50e11167f37afe58f68b0da964b9a1f",
+      "acceptedSourceHashes": [
+        "5efba42a7dce44c88db757935e2c4314",
+        "9e1e6b95723df1ca69a9955edfc8fe89"
+      ]
+    }
+  ],
+  "views": [
+    {
+      "key": "public.campaign_workspace",
+      "definition": " SELECT id,\n    name,\n    account_id,\n    seller_id,\n    created_by,\n    status,\n    daily_limit,\n    timezone,\n    start_hour,\n    end_hour,\n    subject,\n    body,\n    steps,\n    batch_id,\n    created_at,\n    template_id,\n    template_version,\n    requires_application,\n    asset_snapshot,\n    body_format,\n    excluded_contact_ids,\n    ( SELECT (count(*))::integer AS count\n           FROM public.campaign_enrollments e\n          WHERE (e.campaign_id = c.id)) AS audience_count,\n    public.campaign_delivery_stats(id) AS delivery_stats,\n    first_contact,\n    selected_contact_ids,\n    scheduled_at,\n    activated_at,\n    brand_snapshot\n   FROM public.campaigns c;",
+      "qualifiedDefinition": " SELECT c.id,\n    c.name,\n    c.account_id,\n    c.seller_id,\n    c.created_by,\n    c.status,\n    c.daily_limit,\n    c.timezone,\n    c.start_hour,\n    c.end_hour,\n    c.subject,\n    c.body,\n    c.steps,\n    c.batch_id,\n    c.created_at,\n    c.template_id,\n    c.template_version,\n    c.requires_application,\n    c.asset_snapshot,\n    c.body_format,\n    c.excluded_contact_ids,\n    ( SELECT (count(*))::integer AS count\n           FROM public.campaign_enrollments e\n          WHERE (e.campaign_id = c.id)) AS audience_count,\n    public.campaign_delivery_stats(c.id) AS delivery_stats,\n    c.first_contact,\n    c.selected_contact_ids,\n    c.scheduled_at,\n    c.activated_at,\n    c.brand_snapshot\n   FROM public.campaigns c;",
+      "acceptedViewHashes": [
+        "a4a0ceb443b475a576a27100de4ec2ca",
+        "609b60be641891c9dad337af229fa9f5"
+      ],
+      "receivedFieldFingerprint": "5a734e5a69aecadb8c80e418520f31e2"
+    },
+    {
+      "key": "public.mail_admin_outbox_visible",
+      "definition": " SELECT id,\n    account_id,\n    opportunity_id,\n    submission_id,\n    conversation_id,\n    enrollment_id,\n    to_email,\n    subject,\n    body,\n    area,\n    attachment_ids,\n    status,\n    message_id_header,\n    gmail_message_id,\n    gmail_thread_id,\n    requested_by,\n    sent_at,\n    sending_at,\n    available_at,\n    request_key,\n    created_at,\n    notification_id,\n    attachment_snapshot,\n    gmail_file_ids,\n    last_error,\n    send_attempts,\n    cc_emails,\n    process_id,\n    reply_message_id,\n    bcc_emails,\n    upload_ids,\n    signature_html,\n    sender_name,\n    forward_message_id,\n    forward_file_ids,\n    campaign_asset_snapshot,\n    body_html,\n    campaign_test\n   FROM s01_i02.visible_admin_outbox() visible_admin_outbox(id, account_id, opportunity_id, submission_id, conversation_id, enrollment_id, to_email, subject, body, area, attachment_ids, status, message_id_header, gmail_message_id, gmail_thread_id, requested_by, sent_at, sending_at, available_at, request_key, created_at, notification_id, attachment_snapshot, gmail_file_ids, last_error, send_attempts, cc_emails, process_id, reply_message_id, bcc_emails, upload_ids, signature_html, sender_name, forward_message_id, forward_file_ids, campaign_asset_snapshot, body_html, campaign_test);",
+      "qualifiedDefinition": " SELECT visible_admin_outbox.id,\n    visible_admin_outbox.account_id,\n    visible_admin_outbox.opportunity_id,\n    visible_admin_outbox.submission_id,\n    visible_admin_outbox.conversation_id,\n    visible_admin_outbox.enrollment_id,\n    visible_admin_outbox.to_email,\n    visible_admin_outbox.subject,\n    visible_admin_outbox.body,\n    visible_admin_outbox.area,\n    visible_admin_outbox.attachment_ids,\n    visible_admin_outbox.status,\n    visible_admin_outbox.message_id_header,\n    visible_admin_outbox.gmail_message_id,\n    visible_admin_outbox.gmail_thread_id,\n    visible_admin_outbox.requested_by,\n    visible_admin_outbox.sent_at,\n    visible_admin_outbox.sending_at,\n    visible_admin_outbox.available_at,\n    visible_admin_outbox.request_key,\n    visible_admin_outbox.created_at,\n    visible_admin_outbox.notification_id,\n    visible_admin_outbox.attachment_snapshot,\n    visible_admin_outbox.gmail_file_ids,\n    visible_admin_outbox.last_error,\n    visible_admin_outbox.send_attempts,\n    visible_admin_outbox.cc_emails,\n    visible_admin_outbox.process_id,\n    visible_admin_outbox.reply_message_id,\n    visible_admin_outbox.bcc_emails,\n    visible_admin_outbox.upload_ids,\n    visible_admin_outbox.signature_html,\n    visible_admin_outbox.sender_name,\n    visible_admin_outbox.forward_message_id,\n    visible_admin_outbox.forward_file_ids,\n    visible_admin_outbox.campaign_asset_snapshot,\n    visible_admin_outbox.body_html,\n    visible_admin_outbox.campaign_test\n   FROM s01_i02.visible_admin_outbox() visible_admin_outbox(id, account_id, opportunity_id, submission_id, conversation_id, enrollment_id, to_email, subject, body, area, attachment_ids, status, message_id_header, gmail_message_id, gmail_thread_id, requested_by, sent_at, sending_at, available_at, request_key, created_at, notification_id, attachment_snapshot, gmail_file_ids, last_error, send_attempts, cc_emails, process_id, reply_message_id, bcc_emails, upload_ids, signature_html, sender_name, forward_message_id, forward_file_ids, campaign_asset_snapshot, body_html, campaign_test);",
+      "acceptedViewHashes": [
+        "3cb2155bd4bd1f1fcc0e4f9b958b6f3c",
+        "30bb15a1f154b035a23cd2c4afabe669"
+      ],
+      "receivedFieldFingerprint": "66599ecda54bad84878efe1a5d0ab1b1"
+    },
+    {
+      "key": "public.mail_archive_visible",
+      "definition": " SELECT id,\n    account_id,\n    gmail_message_id,\n    gmail_thread_id,\n    internet_message_id,\n    subject,\n    sent_at,\n    direction,\n    nature,\n    participants,\n    attachment_index,\n    encrypted_payload,\n    created_at,\n    references_header,\n    is_live,\n    reply_intent,\n    reply_evaluated_at\n   FROM s01_i02.visible_archive() visible_archive(id, account_id, gmail_message_id, gmail_thread_id, internet_message_id, subject, sent_at, direction, nature, participants, attachment_index, encrypted_payload, created_at, references_header, is_live, reply_intent, reply_evaluated_at);",
+      "qualifiedDefinition": " SELECT visible_archive.id,\n    visible_archive.account_id,\n    visible_archive.gmail_message_id,\n    visible_archive.gmail_thread_id,\n    visible_archive.internet_message_id,\n    visible_archive.subject,\n    visible_archive.sent_at,\n    visible_archive.direction,\n    visible_archive.nature,\n    visible_archive.participants,\n    visible_archive.attachment_index,\n    visible_archive.encrypted_payload,\n    visible_archive.created_at,\n    visible_archive.references_header,\n    visible_archive.is_live,\n    visible_archive.reply_intent,\n    visible_archive.reply_evaluated_at\n   FROM s01_i02.visible_archive() visible_archive(id, account_id, gmail_message_id, gmail_thread_id, internet_message_id, subject, sent_at, direction, nature, participants, attachment_index, encrypted_payload, created_at, references_header, is_live, reply_intent, reply_evaluated_at);",
+      "acceptedViewHashes": [
+        "ba5c3ef7ded5062f3252fa566bec70ae",
+        "ccf519ad3e84e4748a81e54be0765c27"
+      ],
+      "receivedFieldFingerprint": "7579b2bce299b70c44df758a0450c9f3"
+    },
+    {
+      "key": "public.mail_conversations_visible",
+      "definition": " SELECT id,\n    opportunity_id,\n    submission_id,\n    account_id,\n    gmail_thread_id,\n    subject,\n    area,\n    needs_attention,\n    updated_at,\n    process_id,\n    recipient_email,\n    inbox_activated_at,\n    manually_incorporated_at,\n    gmail_delivery_thread_id,\n    can_reply\n   FROM s01_i02.visible_conversations() visible_conversations(id, opportunity_id, submission_id, account_id, gmail_thread_id, subject, area, needs_attention, updated_at, process_id, recipient_email, inbox_activated_at, manually_incorporated_at, gmail_delivery_thread_id, can_reply);",
+      "qualifiedDefinition": " SELECT visible_conversations.id,\n    visible_conversations.opportunity_id,\n    visible_conversations.submission_id,\n    visible_conversations.account_id,\n    visible_conversations.gmail_thread_id,\n    visible_conversations.subject,\n    visible_conversations.area,\n    visible_conversations.needs_attention,\n    visible_conversations.updated_at,\n    visible_conversations.process_id,\n    visible_conversations.recipient_email,\n    visible_conversations.inbox_activated_at,\n    visible_conversations.manually_incorporated_at,\n    visible_conversations.gmail_delivery_thread_id,\n    visible_conversations.can_reply\n   FROM s01_i02.visible_conversations() visible_conversations(id, opportunity_id, submission_id, account_id, gmail_thread_id, subject, area, needs_attention, updated_at, process_id, recipient_email, inbox_activated_at, manually_incorporated_at, gmail_delivery_thread_id, can_reply);",
+      "acceptedViewHashes": [
+        "866d94e5708bd5876f7d6175eaa5b9a7",
+        "edf4de01c456c64ee6c8add03886813c"
+      ],
+      "receivedFieldFingerprint": "122cb1b554ee7463d38ef3ded4e9f0fb"
+    },
+    {
+      "key": "public.mail_processes_visible",
+      "definition": " SELECT id,\n    opportunity_id,\n    sequence_number,\n    started_at,\n    ended_at,\n    classification,\n    label,\n    state,\n    is_unclassified_archive,\n    source_run_id,\n    created_at,\n    actual_funded_amount,\n    funded_lender_id,\n    request_key\n   FROM s01_i02.visible_processes() visible_processes(id, opportunity_id, sequence_number, started_at, ended_at, classification, label, state, is_unclassified_archive, source_run_id, created_at, actual_funded_amount, funded_lender_id, request_key);",
+      "qualifiedDefinition": " SELECT visible_processes.id,\n    visible_processes.opportunity_id,\n    visible_processes.sequence_number,\n    visible_processes.started_at,\n    visible_processes.ended_at,\n    visible_processes.classification,\n    visible_processes.label,\n    visible_processes.state,\n    visible_processes.is_unclassified_archive,\n    visible_processes.source_run_id,\n    visible_processes.created_at,\n    visible_processes.actual_funded_amount,\n    visible_processes.funded_lender_id,\n    visible_processes.request_key\n   FROM s01_i02.visible_processes() visible_processes(id, opportunity_id, sequence_number, started_at, ended_at, classification, label, state, is_unclassified_archive, source_run_id, created_at, actual_funded_amount, funded_lender_id, request_key);",
+      "acceptedViewHashes": [
+        "65309ec6cbf20063af341e14a3da5cc6",
+        "8ff9fae78ea487fc7cfd66a09d5a381c"
+      ],
+      "receivedFieldFingerprint": "c348f896b164ff380a2c7bf81fc49285"
+    }
+  ],
+  "nativeExecution": false,
+  "syntheticReferenceGeneration": true,
+  "remoteCleanupConfirmed": false,
+  "backupWaivedByOperator": true,
+  "remoteDiagnosticAttemptConsumed": true
+}

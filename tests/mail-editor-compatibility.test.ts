@@ -4,18 +4,31 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MailEditor } from "../src/components/mail-editor";
 import { demoWorkspace } from "../src/lib/demo";
+import { fakeBrandEnvelope } from "./fixtures/pipeline-os-s02-brand-delivery";
+import { snapshotPreparation } from "../src/lib/brand-delivery";
 function render(
   options: {
     advanced?: boolean;
     authorized?: boolean;
     demo?: boolean;
     lender?: boolean;
+    reviewed?: boolean;
   } = {},
 ) {
   const data = demoWorkspace();
   data.demo = options.demo || false;
   data.gmail_history_enabled = options.advanced || false;
   const co = data.conversations[0];
+  const preparation = snapshotPreparation(
+    fakeBrandEnvelope("00000000-0000-4000-8000-000000000001").brand_snapshot,
+  )!;
+  data.accounts[0].brand_context = {
+    ...preparation,
+    account_id: co.account_id,
+    brand_code: "FIXTURE",
+    brand_name: "Fixture brand",
+    can_campaign: false,
+  };
   data.accounts[0].status = options.demo ? "demo" : "connected";
   data.sender_account_ids = options.authorized === false ? [] : [co.account_id];
   return renderToStaticMarkup(
@@ -29,6 +42,7 @@ function render(
       inline: true,
       opportunity: data.opportunities.find((o) => o.id === co.opportunity_id),
       start: {
+        brand_preparation: options.reviewed === false ? undefined : preparation,
         mode: "reply",
         account_id: co.account_id,
         opportunity_id: co.opportunity_id,
@@ -76,4 +90,16 @@ test("company replies expose the reviewed recipient, copies and authorized accou
   assert(
     submit(render({ lender: true, authorized: false })).includes("disabled"),
   );
+});
+
+test("reply modes require an explicit brand review even with a technically permitted sender", () => {
+  for (const options of [
+    {},
+    { demo: true },
+    { lender: true },
+    { advanced: true },
+  ])
+    assert(
+      submit(render({ ...options, reviewed: false })).includes("disabled"),
+    );
 });

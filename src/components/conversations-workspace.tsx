@@ -896,7 +896,12 @@ export function ConversationsWorkspace({
         <button
           className="cw-new-mail"
           type="button"
-          disabled={!managed || pendingMode || !selectedCase}
+          disabled={
+            !managed ||
+            pendingMode ||
+            !selectedCase ||
+            (!data.demo && metadata.context?.can_write !== true)
+          }
           onClick={() =>
             setEditing({ mode: "compose", opportunity_id: caseId })
           }
@@ -1454,6 +1459,9 @@ export function ConversationsWorkspace({
                   <div className="cw-message-bubble">
                     <div className="cw-message-meta">
                       <strong>{m.sender}</strong>
+                      {m.brand_snapshot?.brand_name && (
+                        <small>{m.brand_snapshot.brand_name}</small>
+                      )}
                       <time>{dateLabel(m.sent_at, locale, true)}</time>
                     </div>
                     <MailBody body={m.body} locale={locale} />
@@ -1533,7 +1541,8 @@ export function ConversationsWorkspace({
             co &&
             active?.conversation_ids.includes(reply.conversation_id) &&
             !pendingMode &&
-            selectedCase ? (
+            selectedCase &&
+            (data.demo || co.can_reply === true) ? (
               <>
                 <div className="cw-reply-heading">
                   <span>
@@ -1617,17 +1626,19 @@ export function ConversationsWorkspace({
                       "Asocia este hilo a un expediente para poder responder.",
                       "Associate this thread with a case before replying.",
                     )
-                  : t(
-                      locale,
-                      "Selecciona una conversación para responder.",
-                      "Select a conversation to reply.",
-                    )}
+                  : co && co.can_reply === false
+                    ? t(locale, "Expediente de solo lectura", "Read-only case")
+                    : t(
+                        locale,
+                        "Selecciona una conversación para responder.",
+                        "Select a conversation to reply.",
+                      )}
               </p>
             )}
           </div>
         </section>
       </div>
-      {editing && (
+      {editing && (data.demo || metadata.context?.can_write === true) && (
         <MailEditor
           data={effectiveData}
           locale={locale}
@@ -1711,6 +1722,9 @@ export function ConversationsWorkspace({
               <article className="document-row" key={m.id}>
                 <div>
                   <strong>{m.sender}</strong>
+                  {m.brand_snapshot?.brand_name && (
+                    <small>{m.brand_snapshot.brand_name}</small>
+                  )}
                   <small>{dateLabel(m.sent_at, locale, true)}</small>
                   <MailBody body={m.body} locale={locale} />
                 </div>

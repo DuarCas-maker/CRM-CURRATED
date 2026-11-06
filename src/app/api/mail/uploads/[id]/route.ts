@@ -1,3 +1,4 @@
+import { requireMailSource } from "@/lib/server/mail-access";
 import { z } from "zod";
 import {
   requireUser,
@@ -13,6 +14,7 @@ export async function GET(
   try {
     const { db } = await requireUser();
     const id = z.uuid().parse((await params).id);
+    await requireMailSource(db, "upload", id);
     const file = checkDb(
       await db.from("mail_uploads").select("*").eq("id", id).single(),
     )!;

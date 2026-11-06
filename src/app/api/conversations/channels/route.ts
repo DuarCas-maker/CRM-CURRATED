@@ -1,10 +1,7 @@
+import { mailAccess } from "@/lib/server/mail-access";
+import { readableSenderCapabilities } from "@/lib/server/brand-delivery";
 import { z } from "zod";
-import {
-  requireUser,
-  serviceClient,
-  checkDb,
-  jsonError,
-} from "@/lib/server/supabase";
+import { requireUser, checkDb, jsonError } from "@/lib/server/supabase";
 import { conversationSummary } from "@/lib/server/conversation-summary";
 import type { MailChannels } from "@/lib/conversation-threads";
 export async function GET(request: Request) {
@@ -12,6 +9,7 @@ export async function GET(request: Request) {
     const params = new URL(request.url).searchParams;
     const id = z.uuid().parse(params.get("case"));
     const { db, profile } = await requireUser();
+    const access = await mailAccess(db, id);
     const opportunity = checkDb(
       await db
         .from("opportunities")
@@ -22,22 +20,23 @@ export async function GET(request: Request) {
     const conversations =
       checkDb(
         await db
-          .from("conversations")
+          .from("mail_conversations_visible")
           .select("*")
           .eq("opportunity_id", id)
-          .order("updated_at", { ascending: false }),
+          .order("updated_at", { ascending: false })
+          .order("id"),
       ) || [];
     const processes =
       checkDb(
         await db
-          .from("financing_processes")
+          .from("mail_processes_visible")
           .select("id,label,sequence_number")
           .eq("opportunity_id", id)
           .order("sequence_number", { ascending: false }),
       ) || [];
     const submissions =
       checkDb(
-        await serviceClient()
+        await db
           .from("submissions")
           .select("id,lender_id,process_id,status")
           .eq("opportunity_id", id),
@@ -161,6 +160,7 @@ export async function GET(request: Request) {
           .eq("user_id", profile.id)
           .eq("can_send", true),
       ) || [];
+    const capabilities = await readableSenderCapabilities(db);
     return Response.json(
       {
         thread_summaries: summaries,
@@ -168,12 +168,23 @@ export async function GET(request: Request) {
           .filter(
             (a) =>
               a.status === "connected" &&
+              capabilities.some((c) => c.account_id === a.id) &&
               (profile.role === "superadmin" ||
                 permissions.some((p) => p.account_id === a.id)),
           )
           .map((a) => a.id),
         context: {
-          opportunity: caseData,
+          can_write: access.can_write,
+          opportunity: {
+            ...caseData,
+            // The shared case's stored last_contact includes hidden-area mail.
+            // A mail response derives its date exclusively from visible sources.
+            last_contact: headers.reduce<string | null>(
+              (latest, m) =>
+                !latest || m.sent_at > latest ? m.sent_at : latest,
+              null,
+            ),
+          },
           client_emails: channels.client_emails,
           last_client_message_at: customerMessages[0]?.sent_at || null,
           documents: {

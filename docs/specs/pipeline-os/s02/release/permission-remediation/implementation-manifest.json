@@ -1,0 +1,229 @@
+{
+  "id": "PRM-20261101-implementation",
+  "date": "2026-11-01",
+  "sdd": "STRICT",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "candidateCommit": null,
+  "mode": "offline_implementation_no_remote_authorization",
+  "requirements": [
+    "PRM-FR01",
+    "PRM-FR02",
+    "PRM-FR03",
+    "PRM-FR04",
+    "PRM-FR05",
+    "PRM-FR06"
+  ],
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/README.md",
+      "sha256": "5a754bf0d02d63dabefbeb7c704c4622096260577a553f296a291ce3852803b1",
+      "bytes": 7098
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/acceptance.md",
+      "sha256": "47c1de8b405e8bbdd13a319863555eee30bfeeb719637cc560331b7c88c04c1c",
+      "bytes": 3278
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/design.md",
+      "sha256": "8d634fa18e113f28e084d09e25b681c648ca05df8bb35233784eacee37f1d31c",
+      "bytes": 11844
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/implementation-design.md",
+      "sha256": "8bb84cdd54b67a757778eb50c3ddfb053f565c56ae7946d241cd77b640c936a9",
+      "bytes": 3735
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/implementation-verification.md",
+      "sha256": "5d4d81b37cdb1ceac59d320e80533b3bc42396e4f8fe1e3a061a40d8b10943b2",
+      "bytes": 6934
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/local-view-reference.json",
+      "sha256": "9c484b4e0c813b0795e3d1b53f5d89258ec96dbfb864c3ce958023db2da93d54",
+      "bytes": 14134
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/offline-runbook.md",
+      "sha256": "4bea19b9604e958c62c0b0c0fc2f443e90067e1ec8b75c98a6459ae17fbafe1a",
+      "bytes": 3357
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/permission-correction.local.sql",
+      "sha256": "aa6a4baeec369b8df455bd36e0a04b1ad89b8fb2b8197792e364378c8ffb244a",
+      "bytes": 9971
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/spec.md",
+      "sha256": "4c150748f9b06947715279b3190b820211e8c5d757f824047e0a5a2ed5bb071f",
+      "bytes": 4264
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/tasks.md",
+      "sha256": "03305826de515e7feed4886f5fc387c71189444cc4a2cf3d1be7470d743e1939",
+      "bytes": 3031
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/verification.md",
+      "sha256": "873e53187c83b224f777ad5082ad59a3b1448a73008effcc9b44d37cdf302d76",
+      "bytes": 3260
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/view-review.sql",
+      "sha256": "dcd3f067310e1ca4c6d9965853d4f76757b2aef08a96bceb6cbf58c3fa128a35",
+      "bytes": 5247
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/runbook.md",
+      "sha256": "7cd4f9c249560edd8f92b0fc73a2c2a43d2e4f41dfd5f661e8332dade75e34c1",
+      "bytes": 14445
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/tasks.md",
+      "sha256": "34e22cca6550ccd14454bb4001e5db18de7a9fa02df9ea690f43bf40da7843b6",
+      "bytes": 6327
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/verification.md",
+      "sha256": "8f1547ba4ce9bcaa03f9c5f3b501aec11e5be9c12369f884387fbbd54c376f79",
+      "bytes": 8715
+    },
+    {
+      "path": "scripts/pipeline-os/permission-remediation.ts",
+      "sha256": "88f2e8e2a3cefbc08b0f8f52c46e11baac18d90fcdfb7e7fffa864cd4b79b531",
+      "bytes": 21119
+    },
+    {
+      "path": "scripts/pipeline-os/view-fingerprint.ts",
+      "sha256": "2cbc12c0e201e2a486e3b1aa682bc61f310a6cb553f0a76cb1aa6e7499d770c1",
+      "bytes": 3820
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-permission-remediation.ts",
+      "sha256": "d55e49981c4bec9ff364ce3344b7caf9f801638c2d88f1f4c7413f3c8675adde",
+      "bytes": 6682
+    },
+    {
+      "path": "tests/pipeline-os-permission-remediation.test.ts",
+      "sha256": "6c64ebb6a8b24fc9f62afb0964d4e76d89005aad976c2f1491f24a1b02a0bfdc",
+      "bytes": 19944
+    }
+  ],
+  "changedExistingDocumentation": [
+    "docs/specs/pipeline-os/s02/release/verification.md",
+    "docs/specs/pipeline-os/s02/release/tasks.md",
+    "docs/specs/pipeline-os/s02/release/runbook.md",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/design.md",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/acceptance.md",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/verification.md",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/tasks.md",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/spec.md",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/README.md"
+  ],
+  "addedArtifacts": [
+    "scripts/pipeline-os/permission-remediation.ts",
+    "scripts/pipeline-os/view-fingerprint.ts",
+    "tests/pipeline-os-permission-remediation.test.ts",
+    "tests/fixtures/pipeline-os-permission-remediation.ts",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/implementation-design.md",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/implementation-verification.md",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/offline-runbook.md",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/permission-correction.local.sql",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/view-review.sql",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/local-view-reference.json",
+    "docs/specs/pipeline-os/s02/release/permission-remediation/implementation-manifest.json"
+  ],
+  "verification": {
+    "newTests": {
+      "passed": 42,
+      "failed": 0,
+      "skipped": 0,
+      "file": "tests/pipeline-os-permission-remediation.test.ts",
+      "networkGuard": ".local/pipeline-os/s02-i01/offline.mjs"
+    },
+    "typecheck": "tsc --noEmit --incremental false: PASS",
+    "runtime": "Node22.23.4/PGlite0.5.8",
+    "postgresVersion": "180003",
+    "format": "Prettier checked separately; final check required with this manifest",
+    "json": "pass",
+    "localLinks": 74,
+    "diffCheck": "pass",
+    "sqlReproducibility": "pass",
+    "localReference": "three complete views",
+    "secretPatterns": "pass_high_confidence_not_full_audit"
+  },
+  "preservation": {
+    "baselinePublicFiles": 683,
+    "unchangedABCPayload": 100,
+    "unchangedMigrations": 47,
+    "unchangedOperationalHashes": 49,
+    "unchangedPDFiles": 22,
+    "unexpectedChanges": [],
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "productAndWorkerUnchanged": true
+  },
+  "correction": {
+    "artifact": "docs/specs/pipeline-os/s02/release/permission-remediation/permission-correction.local.sql",
+    "sha256": "aa6a4baeec369b8df455bd36e0a04b1ad89b8fb2b8197792e364378c8ffb244a",
+    "relations": 28,
+    "anonTargetsEmpty": 28,
+    "authenticatedSelectOnly": 23,
+    "authenticatedCrud": 2,
+    "authenticatedNone": 3,
+    "serviceFunctionsPreserved": 70,
+    "marker": "external pipeline_os.prm1_mode=offline_fixture_only",
+    "finalMigrationOrdinal": null,
+    "readyForRemoteApplication": false
+  },
+  "viewReview": {
+    "artifact": "docs/specs/pipeline-os/s02/release/permission-remediation/view-review.sql",
+    "sha256": "dcd3f067310e1ca4c6d9965853d4f76757b2aef08a96bceb6cbf58c3fa128a35",
+    "scopeSha256": "72df8f3480d7779879ebcf373008d3df8d7746c3bc0a0c2109dfd25b8d6279a3",
+    "referenceArtifact": "docs/specs/pipeline-os/s02/release/permission-remediation/local-view-reference.json",
+    "views": [
+      "public.campaign_workspace",
+      "public.opportunity_inbox",
+      "public.opportunity_tasks"
+    ],
+    "readOnly": true,
+    "proposalReady": true,
+    "executionAuthorized": false,
+    "realViewsCompared": false
+  },
+  "limits": [
+    "VR1/PRM1 not newly executed on native PG15.",
+    "One PGlite session does not test independent concurrent DDL/DCL.",
+    "View locks can recursively lock underlying relations; final footprint/window/backup/exclusion must be reviewed.",
+    "All previous accepted functional tests/pilots remain unrepeated.",
+    "No current remote flags, identity or freshness attested."
+  ],
+  "operations": {
+    "remoteSql": 0,
+    "remoteMigrations": 0,
+    "apiCalls": 0,
+    "pushes": 0,
+    "deploys": 0,
+    "sends": 0,
+    "paidVerifications": 0,
+    "providerActivation": 0,
+    "credentialFilesRead": 0,
+    "instantly": {
+      "consumed": 43,
+      "new": 0
+    },
+    "gmailDirect": "preserved",
+    "composio": "disabled_by_preserved_scope_not_requeried"
+  },
+  "proposedFutureBudget": {
+    "now": 0,
+    "readOnlyVR1": 1,
+    "correctiveScriptSeparatelyAuthorized": 1,
+    "readOnlyPostflightSeparatelyAuthorized": 1,
+    "retries": 0,
+    "notHttpRequestEstimate": true
+  },
+  "nextStep": "PRM-T05: present exact VR1 SQL/hash for separate single read-only authorization; no correction yet",
+  "readyForPublish": false
+}

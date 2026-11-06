@@ -1,0 +1,168 @@
+{
+  "id": "ABC-WW-20261105",
+  "date": "2026-11-05",
+  "sdd": "STRICT",
+  "mode": "reviewable_source_candidate_with_pending_qa",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "baseBranch": "codex/s00-auto-receive",
+  "candidateCommit": null,
+  "sourcePackagePrepared": true,
+  "readyForReview": true,
+  "readyForCommit": false,
+  "readyForPush": false,
+  "readyForDeployment": false,
+  "sourceTreeSha256": "8c9690dbe5c4421f709608f5e51062a140f42f3b62ddabd1ff586d7885ad6710",
+  "sourceInventory": "docs/specs/pipeline-os/s02/release/web-worker-20261105/sources.json",
+  "archive": {
+    "path": ".local/abc-release-20261105/abc-web-worker-sources.tar.gz",
+    "bytes": 3163193,
+    "sha256": "abf0979c698e430671e57c3a2aae75053ee327b729555e36f7c072421fca9718",
+    "files": 776,
+    "listingVerified": true,
+    "containsDependencies": false,
+    "containsRealEnv": false
+  },
+  "scope": "I01+A+B1+B2+C1/C2/C3 web and worker; existing CRM with accepted048/049; no product changes",
+  "installedSql": {
+    "operatorEvidence": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/application-postflight-received.json",
+    "ordinal": "049",
+    "contractSha256": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c",
+    "catalogAccepted": true,
+    "newSqlExecutions": 0,
+    "migrationReplayRequired": false,
+    "autodiscoveryBaseCount": 47,
+    "migrationLedgerNotInvented": true
+  },
+  "checks": {
+    "typeScript": "passed --noEmit --incremental false",
+    "payloadMatchesAccepted": 100,
+    "workerGraph": {
+      "compiledEntry": "worker/index.ts",
+      "internalInputs": 41,
+      "externalImports": [
+        "@supabase/ssr",
+        "@supabase/supabase-js",
+        "exceljs",
+        "google-auth-library",
+        "next/headers",
+        "node:crypto",
+        "node:fs/promises",
+        "node:timers/promises",
+        "papaparse",
+        "pdf-lib",
+        "web-push",
+        "zod"
+      ],
+      "allExternalImportsDeclared": true,
+      "schedulerExecuted": false,
+      "artifactForQaOnly": true
+    },
+    "archiveListing": "passed",
+    "stagedFileHashes": "passed",
+    "secretPatternScan": "no high-confidence private-key or OpenAI project-key pattern; not an exhaustive audit",
+    "dockerfiles": "reviewed unchanged; both non-root with healthchecks; no automatic SQL",
+    "buildHost": {
+      "platform": "win32",
+      "node": "v22.23.4",
+      "deepMkdir": "passed",
+      "fileSymlink": "EPERM",
+      "wslInventory": "list_failed_exit_1",
+      "dockerAvailable": false
+    },
+    "linuxImagesBuilt": false,
+    "standaloneBuildRerun": false,
+    "configurationOverride": false,
+    "visual": {
+      "fixture": ".local/abc-release-20261105/qa/index.html",
+      "bundleCompiled": true,
+      "sourceViews": ["brands", "composio", "mail", "campaign"],
+      "preparedWidths": [360, 768, 1280],
+      "preparedLocales": ["es", "en"],
+      "allInspectionCasesPending": true,
+      "validFixtureScreenshots": 0,
+      "keyboardCasesExecuted": 0,
+      "firstChannel": "cua_repl_inventory_timeout",
+      "windowsAlternative": "security_control_stopped_before_navigation_cannot_verify_browser_URL",
+      "furtherWindowsInputIssued": false
+    },
+    "acceptedFunctionalQaReusedByHash": true,
+    "newFunctionalTestRuns": 0,
+    "gitDiffCheck": "passed"
+  },
+  "operations": {
+    "apiCalls": 0,
+    "providerRequests": 0,
+    "remoteSql": 0,
+    "repeated049": 0,
+    "push": 0,
+    "commit": 0,
+    "deploy": 0,
+    "workerStarts": 0,
+    "realEnvFilesRead": 0,
+    "envFilesCopied": 0,
+    "installs": 0,
+    "instantlyConsumed": 43,
+    "instantlyNew": 0,
+    "gmailDirect": "fixed in unchanged writer",
+    "composio": "disabled in unchanged integration; live flags not queried"
+  },
+  "preservation": {
+    "existingPublicFilesCompared": 785,
+    "payload": 100,
+    "buildSupport": 10,
+    "operationalHashes": 49,
+    "realMigrations": 47,
+    "indexEmpty": true,
+    "headUnchanged": true,
+    "productFilesChanged": [],
+    "allowedDocumentationAndManifestChanges": [
+      "docs/specs/pipeline-os/s02/README.md",
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/manifest.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/manifest.json"
+    ]
+  },
+  "pending": [
+    "Linux build of both exact images",
+    "visual/keyboard review of delta",
+    "unaccredited contention/mixed-version checks and real publication controls"
+  ],
+  "nextStep": "Complete the pending QA with this sealed source candidate, using the existing infrastructure only under its own authorization; no migration replay, push or deployment now.",
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/spec.md",
+      "bytes": 3654,
+      "sha256": "e196785c4dbb73c686bc61b0d18f9903545eca97e42e1ad63c19346f212b9e71"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/design.md",
+      "bytes": 3397,
+      "sha256": "1676829e18f3b5d8c08490f8df655537a2c9b19bfb52ffc17bf91f38e21204ac"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/tasks.md",
+      "bytes": 1330,
+      "sha256": "e631917916807b275c8aa00428afe3a672757276788df74dfaa1a62cf348a4ff"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/acceptance.md",
+      "bytes": 1116,
+      "sha256": "d3e55c94ca84037b5aa5ed35ff03a308bb0ee5217d8e5b70462644570a3064dc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/runbook.md",
+      "bytes": 7015,
+      "sha256": "a142cc0e76a35771e18e62a8fd4e8b8f656eebb53aeb715e00250cde05eeafe4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/verification.md",
+      "bytes": 6039,
+      "sha256": "6ebcd25eedfb678702766c525f50b161926273629e374ec8d121706ec0d9a26c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/sources.json",
+      "bytes": 139797,
+      "sha256": "333528f2c9a13938bfe381c296afb63eda451d3ea0e1ff338bba36e708173d22"
+    }
+  ]
+}

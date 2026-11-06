@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { checkDb, serviceClient } from "./supabase";
+import { checkDb } from "./supabase";
 import { teamLabels } from "./gmail-team";
 import { readableMail } from "../mail-display";
 import {
@@ -40,7 +40,7 @@ export async function conversationSummary(
   for (let page = 0; ; page++) {
     const rows =
       checkDb(
-        await serviceClient()
+        await db
           .from("outbox")
           .select("conversation_id,reply_message_id")
           .eq("opportunity_id", caseId)

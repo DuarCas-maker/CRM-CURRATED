@@ -167,6 +167,7 @@ export interface Offer {
   status: string;
 }
 export interface MailAccount {
+  brand_context?: import("./brand-delivery").BrandCapability;
   campaign_daily_limit?: number;
   operational_reserve?: number;
   external_usage_synced_at?: string | null;
@@ -179,6 +180,7 @@ export interface MailAccount {
   sent_today: number;
 }
 export interface Campaign {
+  brand_snapshot?: import("./brand-delivery").BrandSnapshot | null;
   first_contact?: boolean;
   selected_contact_ids?: string[];
   scheduled_at?: string | null;
@@ -227,6 +229,7 @@ export interface ImportBatch {
   created_at: string;
 }
 export interface Conversation {
+  can_reply?: boolean;
   gmail_delivery_thread_id?: string | null;
   manually_incorporated_at?: string | null;
   process_id?: string | null;
@@ -238,9 +241,14 @@ export interface Conversation {
   subject: string;
   area: Area;
   needs_attention: boolean;
-  updated_at: string;
+  updated_at: string | null;
 }
 export interface Message {
+  brand_snapshot?: Pick<
+    import("./brand-delivery").BrandSnapshot,
+    "brand_id" | "brand_name" | "brand_code"
+  > | null;
+  brand_provenance?: "unconfirmed" | "dispatch_snapshot" | "confirmed_history";
   reply_intent?: import("./mail-interest").ReplyIntent | null;
   gmail_message_id?: string;
   participants?: import("./mail-display").MailPeer[];
@@ -272,6 +280,8 @@ export interface Preferences {
   locale: Locale;
 }
 export interface Workspace {
+  brand_guards_ready?: boolean;
+  mail_access?: Record<string, { area: Area; can_write: boolean }>;
   opportunity_signals?: Record<
     string,
     import("./opportunity-signals").OpportunitySignals

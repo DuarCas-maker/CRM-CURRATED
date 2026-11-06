@@ -1,0 +1,2409 @@
+{
+  "date": "2026-11-01",
+  "inputSha256": "1b16483ac1a36328846121b5775fac0687b3fee8d59f82146ae68109e80b9f2b",
+  "context": {
+    "sql_role": "supabase_admin",
+    "read_only": "on",
+    "profile_owner": "supabase_admin",
+    "server_version": "150008",
+    "sql_role_bypassrls": true,
+    "sql_role_superuser": true,
+    "sql_role_select_profiles": true,
+    "migration_history_present": false
+  },
+  "counts": {
+    "tables": 93,
+    "functions": 206,
+    "constraints": 422,
+    "policies": 75,
+    "triggers": 36,
+    "indexes": 172
+  },
+  "scope": "User-supplied catalog; no remote session or current target attestation",
+  "legacy": {
+    "outbox": {
+      "sent": 8
+    },
+    "accounts": {
+      "total": 1,
+      "connected": 1,
+      "without_brand_assignment": 1
+    },
+    "queued_without_brand_snapshot": 0,
+    "messages_without_confirmed_brand_provenance": 381
+  },
+  "normalizedFunctions": {
+    "total": 206,
+    "rawMatches": 1,
+    "lfMatches": 1,
+    "remaining": [
+      "public.crm_command_v7(text, jsonb, uuid)",
+      "public.can_area(uuid, case_area)",
+      "public.can_case(uuid)",
+      "public.accept_invitation()",
+      "public.enqueue_overdue()",
+      "public.track_task()",
+      "public.track_analysis()",
+      "public.ingest_import_chunk(uuid, jsonb)",
+      "public.track_message_contact()",
+      "public.current_app_role()",
+      "public.initialize_checklist(uuid, text)",
+      "public.notify_user(uuid, text, text)",
+      "public.register_import(uuid, text, text, jsonb, text, integer, uuid, uuid)",
+      "public.claim_job()",
+      "public.finish_job(uuid, uuid, boolean, text)",
+      "public.extend_job(uuid, uuid)",
+      "public.persist_application(text, text, text, text, text, uuid)",
+      "public.apply_verification_results(text, jsonb)",
+      "public.register_document(uuid, text, text, text, uuid)",
+      "public.suppress_contact(uuid, text)",
+      "public.stop_contact_sequence(uuid, text)",
+      "public.can_edit_case(uuid)",
+      "public.can_send(uuid)",
+      "public.claim_verifications()",
+      "public.message_phase()",
+      "public.claim_outbox_v15()",
+      "public.claim_outbox_v7()",
+      "public.track_case_changes()",
+      "public.record_sent_documents()",
+      "public.gmail_archive_checkpoint(uuid, text)",
+      "public.workspace_stats_base(text, text, uuid, uuid, timestamp with time zone)",
+      "public.workspace_stats(text, text, uuid, uuid, timestamp with time zone)",
+      "public.can_lead(uuid)",
+      "public.promote_verified_lead(uuid)",
+      "public.convert_valid_lead()",
+      "public.crm_command_v18(text, jsonb, uuid)",
+      "public.require_verified_opportunity()",
+      "public.gmail_claim_run(uuid)",
+      "public.gmail_store_message(uuid, uuid, jsonb)",
+      "public.gmail_apply_candidate_v19(uuid, uuid)",
+      "public.mail_send_status(uuid[])",
+      "public.clear_replaced_document_review()",
+      "public.crm_command_v26_underwriting(text, jsonb, uuid)",
+      "public.gmail_import_message_ids(uuid, uuid)",
+      "public.gmail_undo_import(uuid, uuid)",
+      "public.gmail_transfer_case(uuid, uuid, uuid, uuid)",
+      "public.claim_notification_outbox()",
+      "public.gmail_followups()",
+      "public.gmail_link_message_v23(uuid, jsonb)",
+      "public.gmail_preview_stats(uuid)",
+      "public.gmail_import_message_page(uuid, integer)",
+      "public.gmail_unlinked_message_count(uuid)",
+      "public.gmail_record_process(uuid, text, uuid, uuid, text, timestamp with time zone, uuid, numeric, uuid)",
+      "public.gmail_select_lender(uuid, uuid, uuid, uuid)",
+      "public.gmail_new_process(uuid, text, text, timestamp with time zone, uuid, uuid)",
+      "public.gmail_move_thread(uuid, uuid, uuid, uuid)",
+      "public.mail_index_lenders()",
+      "public.gmail_lock_manual_owner()",
+      "public.gmail_finish_incremental_import(uuid, uuid)",
+      "public.gmail_review_candidate_attachments(uuid, uuid)",
+      "public.gmail_associate_continuous(uuid)",
+      "public.lender_primary_contact()",
+      "public.gmail_process_live_reply(uuid)",
+      "public.gmail_case_mail_stats(uuid)",
+      "public.mark_sent_v19(uuid, text, text)",
+      "public.defer_gmail_send(uuid, integer, text)",
+      "public.claim_outbox()",
+      "public.queue_manual_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid)",
+      "public.claim_notification_outbox_v15()",
+      "public.mark_sent_v15(uuid, text, text)",
+      "public.gmail_register_team(text, text, text, text, uuid, uuid)",
+      "public.gmail_team_thread_page(uuid, integer)",
+      "public.gmail_confirm_team_response(uuid, uuid, uuid, text)",
+      "public.gmail_team_threads(uuid, integer)",
+      "public.gmail_attachment_format(text, text)",
+      "public.gmail_attachment_inline(jsonb)",
+      "public.gmail_protect_requested_candidate()",
+      "public.gmail_select_attachments(uuid, uuid, jsonb, boolean)",
+      "public.gmail_attachment_list(uuid, uuid, uuid, text[], boolean, integer)",
+      "public.gmail_require_attachment_choice()",
+      "public.gmail_activate_pending_imports()",
+      "public.gmail_index_addresses()",
+      "public.gmail_confirm_candidates(uuid, uuid, uuid)",
+      "public.crm_command_v20(text, jsonb, uuid)",
+      "public.gmail_associate_team_thread(uuid, uuid, uuid, uuid, uuid, uuid)",
+      "public.register_lender_contact(uuid, text)",
+      "public.queue_lender_emails(uuid, uuid, uuid, jsonb, text, text, uuid[], uuid[], uuid)",
+      "public.gmail_prepare_association(uuid, uuid, uuid, uuid)",
+      "public.gmail_apply_candidate(uuid, uuid)",
+      "public.can_mail_case(uuid)",
+      "public.mark_sent_v23(uuid, text, text)",
+      "public.mail_process(uuid, uuid)",
+      "public.advance_gmail_history(uuid, text)",
+      "public.queue_mail_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid[], text[], text[], uuid, uuid, uuid, uuid, text, text, uuid)",
+      "public.gmail_track_live_wait(uuid)",
+      "public.mail_case_stats(uuid)",
+      "public.associate_live_mail_v23(uuid, uuid, uuid, uuid)",
+      "public.queue_mail_lenders(jsonb)",
+      "public.queue_mail_forward(jsonb)",
+      "public.register_mail_contact(uuid, text, text, uuid)",
+      "public.mail_lender_for(text)",
+      "public.mail_is_team(text)",
+      "public.mail_index_lender_message(uuid, boolean)",
+      "public.register_named_lender_contact(uuid, text, text)",
+      "public.gmail_live_only_address(text)",
+      "public.mark_sent_v37_campaign_delivery(uuid, text, text)",
+      "public.crm_command_v24_documents(text, jsonb, uuid)",
+      "public.mail_company_domain(text)",
+      "public.mail_pending_threads(integer)",
+      "public.queue_lender_reply(jsonb)",
+      "public.validate_lender_directory()",
+      "public.validate_lender_contact_address()",
+      "public.gmail_record_case_closure()",
+      "public.gmail_build_preview_v23(uuid, uuid)",
+      "public.associate_live_mail(uuid, uuid, uuid, uuid)",
+      "public.incorporate_case_document(jsonb, uuid, uuid)",
+      "public.gmail_build_preview_v24(uuid, uuid)",
+      "public.gmail_approve_interest(uuid, uuid)",
+      "public.gmail_apply_rejection(uuid)",
+      "public.gmail_message_engagement()",
+      "public.gmail_copy_reply_intent()",
+      "public.gmail_manual_engagement()",
+      "public.mail_human_reply(text, text, text)",
+      "public.gmail_refresh_inbox(uuid)",
+      "public.gmail_record_reply(uuid, text)",
+      "public.gmail_case_thread(uuid, text, uuid)",
+      "public.gmail_link_message(uuid, jsonb)",
+      "public.case_document_command(text, jsonb, uuid)",
+      "public.gmail_refresh_participant_v24(uuid)",
+      "public.case_document_command_internal(text, jsonb, uuid)",
+      "public.mark_sent(uuid, text, text)",
+      "public.gmail_refresh_candidate_thread_stats(uuid)",
+      "public.gmail_refresh_participant(uuid)",
+      "public.due_campaign_enrollments(boolean)",
+      "public.gmail_build_preview(uuid, uuid)",
+      "public.underwriting_snapshot_current(uuid, jsonb)",
+      "public.finish_ai_usage_event(uuid, jsonb)",
+      "public.complete_finished_campaigns()",
+      "public.campaign_delivery_stats(uuid)",
+      "public.request_underwriting(uuid, uuid)",
+      "public.begin_underwriting(uuid, uuid, uuid)",
+      "public.start_underwriting_api(uuid, uuid, uuid)",
+      "public.complete_underwriting(uuid, uuid, uuid, jsonb, text, integer, integer, text, boolean)",
+      "public.approve_underwriting(uuid, text, text, text, text)",
+      "public.invalidate_underwriting_documents()",
+      "public.snapshot_underwriting_rules()",
+      "public.crm_command_v28_campaign_templates(text, jsonb, uuid)",
+      "public.save_underwriting_settings(jsonb, uuid)",
+      "public.crm_command_v31_banks(text, jsonb, uuid)",
+      "public.save_lender_guidelines(uuid, jsonb, integer, uuid)",
+      "public.freeze_queued_case_documents()",
+      "public.move_bank_documents(jsonb, uuid)",
+      "public.account_delivery_usage(uuid)",
+      "public.receive_case_document(jsonb, uuid, uuid)",
+      "public.sync_underwriting_progress()",
+      "public.import_lender_directory(jsonb, uuid)",
+      "public.snapshot_underwriting_lender_guidelines()",
+      "public.campaign_sending_budgets()",
+      "public.queue_campaign_test(uuid, uuid, text, text, text, uuid)",
+      "public.save_operational_settings(jsonb, uuid)",
+      "public.operational_dashboard(text, uuid, text, uuid, timestamp with time zone, text, integer)",
+      "public.document_packet_ready(uuid)",
+      "public.manage_case_document(text, jsonb, uuid)",
+      "public.invalidate_bank_classification()",
+      "public.save_campaign_template(jsonb, uuid)",
+      "public.crm_command_v37_campaign_delivery(text, jsonb, uuid)",
+      "public.save_company_application(uuid, text, integer, uuid)",
+      "public.register_company_application_pdf(uuid, uuid, integer, text, text, boolean, uuid)",
+      "public.campaign_missing_fields(text, text, jsonb, jsonb)",
+      "public.report_underwriting_progress(uuid, uuid, uuid, text, integer, jsonb)",
+      "public.record_underwriting_human_review()",
+      "public.campaign_audience_v42(uuid)",
+      "public.reject_underwriting(uuid, text)",
+      "public.save_campaign_template_v37(jsonb, uuid)",
+      "public.crm_command_v42_first_contact(text, jsonb, uuid)",
+      "public.reserve_gmail_api(uuid, text, integer)",
+      "public.recheck_outbox_delivery_v42(uuid)",
+      "public.ai_usage_summary(integer)",
+      "public.track_process_state()",
+      "public.financing_control_dashboard(text, uuid, text, uuid, timestamp with time zone, text, integer, text, integer)",
+      "public.record_campaign_delivery()",
+      "public.first_contact_candidates(text, text, uuid, uuid)",
+      "public.campaign_audience(uuid)",
+      "public.crm_command(text, jsonb, uuid)",
+      "public.recheck_outbox_delivery(uuid)",
+      "public.campaign_reply_rows(uuid)",
+      "public.campaign_contact_facts(uuid)",
+      "public.campaign_contact_summary(uuid)",
+      "public.campaign_center(text, integer, text)",
+      "public.campaign_contacts_page(uuid, text, text, integer)",
+      "public.campaign_leads_page(uuid, uuid, text, integer)",
+      "public.record_campaign_lifecycle()",
+      "public.campaign_activity_page(integer)",
+      "public.start_scheduled_campaigns()",
+      "public.lead_campaign_tracking(uuid)",
+      "public.lead_preparation_overview(text, uuid, timestamp with time zone, text, integer)",
+      "public.campaign_prepared_leads(text, text, uuid)",
+      "public.campaign_readiness_page(text, text, integer)",
+      "public.instantly_webhook_trial_read(text)",
+      "public.instantly_webhook_trial_prepare(text, jsonb, text, uuid, uuid)",
+      "public.instantly_webhook_trial_cas(text, integer, jsonb)",
+      "public.instantly_webhook_control_snapshot(text)",
+      "public.instantly_webhook_control_issue(uuid, text, jsonb, text, uuid, uuid, text, uuid)",
+      "public.instantly_webhook_control_execute(text, text, text, text, uuid)",
+      "public.instantly_webhook_control_admit(text)"
+    ]
+  },
+  "missingConstraints": {
+    "count": 619,
+    "kinds": {
+      "n": 619
+    }
+  },
+  "publicAclDrift": {
+    "count": 28,
+    "tables": 22,
+    "views": 6,
+    "objects": [
+      {
+        "key": "public.mail_drafts",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.mail_uploads",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.lead_workspace",
+        "kind": "v",
+        "rls": false,
+        "viewSecurity": ["security_invoker=true"],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "service_role",
+            "privilege": "delete"
+          },
+          {
+            "role": "service_role",
+            "privilege": "insert"
+          },
+          {
+            "role": "service_role",
+            "privilege": "update"
+          },
+          {
+            "role": "service_role",
+            "privilege": "trigger"
+          },
+          {
+            "role": "service_role",
+            "privilege": "truncate"
+          },
+          {
+            "role": "service_role",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.campaign_assets",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.campaign_events",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.email_templates",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.gmail_api_slots",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "select"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.gmail_api_usage",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "select"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.lender_contacts",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.company_contacts",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.document_reviews",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.gmail_sent_usage",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "select"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.opportunity_inbox",
+        "kind": "v",
+        "rls": false,
+        "viewSecurity": ["security_invoker=true"],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "service_role",
+            "privilege": "delete"
+          },
+          {
+            "role": "service_role",
+            "privilege": "insert"
+          },
+          {
+            "role": "service_role",
+            "privilege": "select"
+          },
+          {
+            "role": "service_role",
+            "privilege": "update"
+          },
+          {
+            "role": "service_role",
+            "privilege": "trigger"
+          },
+          {
+            "role": "service_role",
+            "privilege": "truncate"
+          },
+          {
+            "role": "service_role",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.opportunity_tasks",
+        "kind": "v",
+        "rls": false,
+        "viewSecurity": ["security_invoker=true"],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "service_role",
+            "privilege": "delete"
+          },
+          {
+            "role": "service_role",
+            "privilege": "insert"
+          },
+          {
+            "role": "service_role",
+            "privilege": "select"
+          },
+          {
+            "role": "service_role",
+            "privilege": "update"
+          },
+          {
+            "role": "service_role",
+            "privilege": "trigger"
+          },
+          {
+            "role": "service_role",
+            "privilege": "truncate"
+          },
+          {
+            "role": "service_role",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.underwriting_runs",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.campaign_workspace",
+        "kind": "v",
+        "rls": false,
+        "viewSecurity": ["security_invoker=true"],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "service_role",
+            "privilege": "delete"
+          },
+          {
+            "role": "service_role",
+            "privilege": "insert"
+          },
+          {
+            "role": "service_role",
+            "privilege": "update"
+          },
+          {
+            "role": "service_role",
+            "privilege": "trigger"
+          },
+          {
+            "role": "service_role",
+            "privilege": "truncate"
+          },
+          {
+            "role": "service_role",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.conversation_lenders",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.operational_settings",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.company_primary_cases",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.opportunity_workspace",
+        "kind": "v",
+        "rls": false,
+        "viewSecurity": ["security_invoker=true"],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.process_state_history",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.underwriting_settings",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.email_template_versions",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.gmail_candidate_directory",
+        "kind": "v",
+        "rls": false,
+        "viewSecurity": ["security_invoker=true"],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "service_role",
+            "privilege": "delete"
+          },
+          {
+            "role": "service_role",
+            "privilege": "insert"
+          },
+          {
+            "role": "service_role",
+            "privilege": "update"
+          },
+          {
+            "role": "service_role",
+            "privilege": "trigger"
+          },
+          {
+            "role": "service_role",
+            "privilege": "truncate"
+          },
+          {
+            "role": "service_role",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.lender_guideline_versions",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.mail_recipient_selections",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.gmail_pending_associations",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      },
+      {
+        "key": "public.underwriting_setting_versions",
+        "kind": "r",
+        "rls": true,
+        "viewSecurity": [],
+        "expanded": [
+          {
+            "role": "anon",
+            "privilege": "delete"
+          },
+          {
+            "role": "anon",
+            "privilege": "insert"
+          },
+          {
+            "role": "anon",
+            "privilege": "select"
+          },
+          {
+            "role": "anon",
+            "privilege": "update"
+          },
+          {
+            "role": "anon",
+            "privilege": "trigger"
+          },
+          {
+            "role": "anon",
+            "privilege": "truncate"
+          },
+          {
+            "role": "anon",
+            "privilege": "references"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "delete"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "insert"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "update"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "trigger"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "truncate"
+          },
+          {
+            "role": "authenticated",
+            "privilege": "references"
+          }
+        ]
+      }
+    ]
+  },
+  "functionAclDrift": {
+    "count": 70,
+    "onlyServiceRole": true,
+    "functions": [
+      {
+        "key": "public.mail_is_team(text)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.mail_index_lenders()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.mail_case_stats(uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.mail_lender_for(text)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.track_process_state()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_audience(uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_index_addresses()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.lender_primary_contact()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.mail_send_status(uuid[])",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.ai_usage_summary(integer)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_reply_rows(uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_copy_reply_intent()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_manual_engagement()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.mail_company_domain(text)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.queue_lender_reply(jsonb)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.queue_mail_forward(jsonb)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.queue_mail_lenders(jsonb)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_sending_budgets()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_message_engagement()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.record_campaign_delivery()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_audience_v42(uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_apply_rejection(uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_record_case_closure()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.record_campaign_lifecycle()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.validate_lender_directory()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_contact_facts(uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_delivery_stats(uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.mail_pending_threads(integer)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_contact_summary(uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_activity_page(integer)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.reject_underwriting(uuid, text)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.move_bank_documents(jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.request_underwriting(uuid, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.validate_lender_contact_address()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_protect_requested_candidate()",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.register_lender_contact(uuid, text)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_center(text, integer, text)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.import_lender_directory(jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.save_operational_settings(jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.manage_case_document(text, jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.save_campaign_template_v37(jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.save_underwriting_settings(jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.case_document_command(text, jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.crm_command_v31_banks(text, jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.mail_index_lender_message(uuid, boolean)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_prepared_leads(text, text, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.underwriting_snapshot_current(uuid, jsonb)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_readiness_page(text, text, integer)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.crm_command_v24_documents(text, jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.register_mail_contact(uuid, text, text, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_leads_page(uuid, uuid, text, integer)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_review_candidate_attachments(uuid, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.associate_live_mail_v23(uuid, uuid, uuid, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.crm_command_v26_underwriting(text, jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.register_named_lender_contact(uuid, text, text)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.first_contact_candidates(text, text, uuid, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.campaign_contacts_page(uuid, text, text, integer)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.case_document_command_internal(text, jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.approve_underwriting(uuid, text, text, text, text)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.save_lender_guidelines(uuid, jsonb, integer, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.crm_command_v37_campaign_delivery(text, jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_select_attachments(uuid, uuid, jsonb, boolean)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.crm_command_v28_campaign_templates(text, jsonb, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.queue_campaign_test(uuid, uuid, text, text, text, uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.gmail_attachment_list(uuid, uuid, uuid, text[], boolean, integer)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.queue_manual_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.queue_lender_emails(uuid, uuid, uuid, jsonb, text, text, uuid[], uuid[], uuid)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.operational_dashboard(text, uuid, text, uuid, timestamp with time zone, text, integer)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.financing_control_dashboard(text, uuid, text, uuid, timestamp with time zone, text, integer, text, integer)",
+        "changedRoles": ["service_role"]
+      },
+      {
+        "key": "public.queue_mail_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid[], text[], text[], uuid, uuid, uuid, uuid, text, text, uuid)",
+        "changedRoles": ["service_role"]
+      }
+    ]
+  },
+  "unresolvedPolicies": [
+    "public.campaigns.campaigns_read",
+    "public.mail_accounts.accounts_read",
+    "public.mail_drafts.mail_drafts_own",
+    "public.mail_review.live_review_mailbox",
+    "public.notifications.notifications_read",
+    "public.mail_permissions.mail_permissions_read",
+    "public.notification_preferences.preferences_read",
+    "public.mail_recipient_selections.mail_recipient_selections_own"
+  ],
+  "constraintFingerprintDrift": [
+    {
+      "section": "constraints",
+      "key": "public.profiles.profiles_id_fkey",
+      "fields": ["definition_md5"],
+      "before": {
+        "kind": "f",
+        "validated": true,
+        "definition_md5": "8144a065c1067095ce367d2e02cbc96a"
+      },
+      "observed": {
+        "kind": "f",
+        "validated": true,
+        "definition_md5": "dbc1c05eed03794083524117ae6883b6"
+      }
+    }
+  ],
+  "storageExtras": {
+    "indexes": [
+      "storage.bname",
+      "storage.objects_pkey",
+      "storage.bucketid_objname",
+      "storage.name_prefix_search",
+      "storage.idx_objects_bucket_id_name",
+      "storage.idx_objects_bucket_id_name_lower"
+    ],
+    "triggers": [
+      "storage.buckets.protect_buckets_delete",
+      "storage.objects.protect_objects_delete",
+      "storage.objects.update_objects_updated_at",
+      "storage.buckets.enforce_bucket_name_length_trigger"
+    ],
+    "constraints": [
+      "storage.objects.objects_pkey",
+      "storage.objects.objects_bucketId_fkey"
+    ]
+  },
+  "externalDatabaseCalls": 0,
+  "instantly": {
+    "consumed": 43,
+    "new": 0
+  },
+  "sqlMutations": 0,
+  "publicViewFingerprintDrift": [
+    "public.opportunity_inbox",
+    "public.opportunity_tasks",
+    "public.campaign_workspace"
+  ],
+  "storageObservedMetadataOnly": true,
+  "diagnosticImplemented": false,
+  "futureBudget": {
+    "manualSqlExecutions": 1,
+    "automaticRetries": 0,
+    "instantlyRequests": 0,
+    "composioRequests": 0
+  },
+  "publicationGate": "open_findings_not_approved"
+}

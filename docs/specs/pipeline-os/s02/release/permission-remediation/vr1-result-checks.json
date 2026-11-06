@@ -1,0 +1,111 @@
+{
+  "id": "VR1-result-review",
+  "date": "2026-11-01",
+  "sourceKind": "canonical_semantic_transcription_of_operator_paste_not_original_byte_digest",
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/README.md",
+      "sha256": "9dbb395a0b83d8c2b4568e8f3976b467feb9bd02bfe4c867ebef0bbc3e8e636f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/offline-runbook.md",
+      "sha256": "640b37d6d45e25bc3004e92302b4b34e01f87cc995cb629bee77c3aa1fde048e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/tasks.md",
+      "sha256": "2c11b972ef3372892c101522c166a5087fd449ae775e42e4df2ffa7da77def71"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-comparison.json",
+      "sha256": "c3d1536bdc190db3da071e6bd3732b3aeb7dd642b4ab3fcf576459dbde375646"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-observed-canonical.json",
+      "sha256": "2b0bd59b0b2043e13cd37fe9eabe7ce550272cc78dcbbff0953ddbb4280ac838"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-qualified-reference.json",
+      "sha256": "39d2b360e071851dbc74cfde662ed0247a6306be345edc983256bfb064e01d12"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-result-review.json",
+      "sha256": "82a791d8bb24537a9689a0d633b069eb565a829352baa929c1fe49b5b24b869a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-result-review.md",
+      "sha256": "929edd2db02884f08e1c2b853533f2b6ec7bbbfd51abdb58475a2502ec666dfd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/runbook.md",
+      "sha256": "83f00767cd24664c6fa348094acc3ae6653be9f0cfce0f080a8fd70f036a75cc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/tasks.md",
+      "sha256": "d0fee68716204d52598eeabcc41be2a82f9ffe9898a06bcb51d9e9d7fc6fd6dd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/verification.md",
+      "sha256": "7b60ee67e3879e992dab907f3bd577a113c7d49c485c1753c7a4aaed96713e7f"
+    }
+  ],
+  "scopeSha256": "72df8f3480d7779879ebcf373008d3df8d7746c3bc0a0c2109dfd25b8d6279a3",
+  "observedCanonicalSha256": "2b0bd59b0b2043e13cd37fe9eabe7ce550272cc78dcbbff0953ddbb4280ac838",
+  "sqlSha256": "dcd3f067310e1ca4c6d9965853d4f76757b2aef08a96bceb6cbf58c3fa128a35",
+  "checks": {
+    "strictInput": "pass",
+    "knownColumns": 83,
+    "metadataMatches": 3,
+    "qualifiedRawHashMatches": 3,
+    "qualifiedLfHashMatches": 3,
+    "qualifiedLexicalMatches": 3,
+    "syntheticRoundTrips": 3,
+    "negativeChecks": 3,
+    "originalUnresolvedComparisonRetained": true,
+    "originalReferenceSqlLexerComparatorUnchanged": true,
+    "localLinks": 68,
+    "json": "pass",
+    "diff": "pass",
+    "secretPatterns": "high_confidence_pass_not_full_audit"
+  },
+  "preservation": {
+    "baselinePublicFiles": 694,
+    "existingDocumentationChanges": [
+      "docs/specs/pipeline-os/s02/release/verification.md",
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/runbook.md",
+      "docs/specs/pipeline-os/s02/release/permission-remediation/tasks.md",
+      "docs/specs/pipeline-os/s02/release/permission-remediation/README.md",
+      "docs/specs/pipeline-os/s02/release/permission-remediation/offline-runbook.md"
+    ],
+    "unexpectedPublicChanges": [],
+    "unchangedPayload": 100,
+    "unchangedMigrations": 47,
+    "unchangedPrivateOperationalHashes": 49,
+    "headUnchanged": true,
+    "indexEmpty": true
+  },
+  "authorization": {
+    "singleReadAuthorized": 1,
+    "operatorReportedExecutions": 1,
+    "agentRemoteExecutions": 0,
+    "retries": 0,
+    "consumed": true
+  },
+  "operations": {
+    "newApiCalls": 0,
+    "newRemoteSqlByAgent": 0,
+    "correctionApplied": false,
+    "deploys": 0,
+    "pushes": 0,
+    "sends": 0,
+    "paidVerifications": 0,
+    "instantly": {
+      "consumed": 43,
+      "new": 0
+    }
+  },
+  "status": "three_view_definition_differences_explained_for_supplied_snapshot",
+  "publicationApproved": false,
+  "permissionCorrectionApproved": false,
+  "next": "PRM-T06 prepare final scoped permission correction and application protocol; no remote changes authorized"
+}

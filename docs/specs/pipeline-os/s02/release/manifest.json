@@ -1,0 +1,1503 @@
+{
+  "id": "ABC-20261031-prep1",
+  "date": "2026-10-31",
+  "mode": "reviewable_source_candidate_not_publishable",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "baseBranch": "codex/s00-auto-receive",
+  "candidateCommit": null,
+  "tag": null,
+  "imageDigest": null,
+  "readyForCommit": false,
+  "readyForPush": false,
+  "readyForRemoteSql": false,
+  "remoteStateVerified": false,
+  "scope": "I01 + A/B1/B2/C1/C2/C3 already implemented locally; no source changes, copied S01 checkout or private material",
+  "payloadSha256": "ae39d8e66d8202d6499004e453c312ce0313d70e43410e790fb1c827cd324678",
+  "payload": [
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-delivery.local.sql",
+      "kind": "local_sql_candidate_not_remote",
+      "gitAction": "add",
+      "bytes": 66581,
+      "workingSha256": "7a24c586fe9dd7640191c8788ae19eea636ea7f06508b0786ffc61f6ec301fab",
+      "lfSha256": "7a24c586fe9dd7640191c8788ae19eea636ea7f06508b0786ffc61f6ec301fab",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-management.local.sql",
+      "kind": "local_sql_candidate_not_remote",
+      "gitAction": "add",
+      "bytes": 31070,
+      "workingSha256": "ff3ed9771b93c0d0ef5e6c125a60a41c70dabb1e0a3f410d917785e5dd1cc821",
+      "lfSha256": "ff3ed9771b93c0d0ef5e6c125a60a41c70dabb1e0a3f410d917785e5dd1cc821",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/migrations/c-composio-bindings.local.sql",
+      "kind": "local_sql_candidate_not_remote",
+      "gitAction": "add",
+      "bytes": 37423,
+      "workingSha256": "c350e981fe58631aa2409757f6a5045b12eafa299b08e693070df2bf55df459c",
+      "lfSha256": "c350e981fe58631aa2409757f6a5045b12eafa299b08e693070df2bf55df459c",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json"
+      ]
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/migrations/a-brand-foundation.local.sql",
+      "kind": "local_sql_candidate_not_remote",
+      "gitAction": "add",
+      "bytes": 6444,
+      "workingSha256": "89c718bf3add80bf470b238d21e965e4efc87999bcfce2dc9c57799a8eddc910",
+      "lfSha256": "89c718bf3add80bf470b238d21e965e4efc87999bcfce2dc9c57799a8eddc910",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/migrations/a-mail-permissions.local.sql",
+      "kind": "local_sql_candidate_not_remote",
+      "gitAction": "add",
+      "bytes": 140522,
+      "workingSha256": "c4fe7156725038c1cd832d90889b44ba547171e65d0ec7c4d4b53e5a44844907",
+      "lfSha256": "c4fe7156725038c1cd832d90889b44ba547171e65d0ec7c4d4b53e5a44844907",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/actions/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 10457,
+      "workingSha256": "3e435f819ecabb1f8533dc4bae1a41f18d861ef72b19f7ea00194d158bc328a4",
+      "lfSha256": "3e435f819ecabb1f8533dc4bae1a41f18d861ef72b19f7ea00194d158bc328a4",
+      "baseSha256": "5758dc1e14b88597dfb31b59aba1fc2580c3c7d9be00823b1b483c9b9af22eb6",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/brands/route.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 1343,
+      "workingSha256": "0fad2c32e93befb74f45cddc503b2c612c189692dff64b6a75e57ab1224b9647",
+      "lfSha256": "0fad2c32e93befb74f45cddc503b2c612c189692dff64b6a75e57ab1224b9647",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/campaigns/center/route.ts",
+      "kind": "application",
+      "gitAction": "unchanged_dependency",
+      "bytes": 6759,
+      "workingSha256": "246a48893f7d7ca4b78ea4288418b8ee94b5387a96972e7bb957c36c57138ef8",
+      "lfSha256": "246a48893f7d7ca4b78ea4288418b8ee94b5387a96972e7bb957c36c57138ef8",
+      "baseSha256": "246a48893f7d7ca4b78ea4288418b8ee94b5387a96972e7bb957c36c57138ef8",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/campaigns/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2930,
+      "workingSha256": "d8ad7dc06b632c63ea933ed8bffa7556da33f550304cc04ec2229da10d96c2a1",
+      "lfSha256": "d8ad7dc06b632c63ea933ed8bffa7556da33f550304cc04ec2229da10d96c2a1",
+      "baseSha256": "fda1d08d9c45b03c6a0add87b547c588f85b9d70fe026654aba9e7322d329f3c",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/conversations/[id]/messages/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 3382,
+      "workingSha256": "6b0b8290166c49f0c841d877c78006a05e3ab32d05bf6cabdf90ef6a226f02d6",
+      "lfSha256": "6b0b8290166c49f0c841d877c78006a05e3ab32d05bf6cabdf90ef6a226f02d6",
+      "baseSha256": "0603f3685499c01e2af8c8c5e21898165479cb19c86eb33fdfcdcdaeff406777",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/conversations/channels/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 7025,
+      "workingSha256": "bd96245dbc01d946e9f9ae75366b1c0feaa1fd06d679e7dafdba93415f1e6151",
+      "lfSha256": "bd96245dbc01d946e9f9ae75366b1c0feaa1fd06d679e7dafdba93415f1e6151",
+      "baseSha256": "e9e6187839b566267cbf1c5144ffc2953f65b7c92bd6d585e226805774d7d5d5",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/documents/[id]/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 1393,
+      "workingSha256": "f2d251e50a095c7613a90a3cccf428962ebfb826cc7dbd50442e3d27f13bc701",
+      "lfSha256": "f2d251e50a095c7613a90a3cccf428962ebfb826cc7dbd50442e3d27f13bc701",
+      "baseSha256": "5d144b0a5585f5dc89f76b56e9676bda0dc47434c9acf4971146c44065213292",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/documents/classify/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 6881,
+      "workingSha256": "704bf7956a13bb204edc7944b6d4b83ae21ef8a324a74de43221bf1f2297977c",
+      "lfSha256": "704bf7956a13bb204edc7944b6d4b83ae21ef8a324a74de43221bf1f2297977c",
+      "baseSha256": "b4aafe5c15a0ea4a9708b6e789edf2f7f7447fcba791087e64b1bd067168f7a7",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/gmail/archive/[id]/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 1629,
+      "workingSha256": "91b08b6bbf8418f3e9277d1c23e1e7a4b9fdcea0b6575d4c29495ac1ee5d9911",
+      "lfSha256": "91b08b6bbf8418f3e9277d1c23e1e7a4b9fdcea0b6575d4c29495ac1ee5d9911",
+      "baseSha256": "d831f67e69d4e248be295e5964fdbaaf13671a31e45266da357ee63acc2f9d1d",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/gmail/archive/[id]/thread/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2609,
+      "workingSha256": "86df3d31188039659122097e2828f7cd667b4d085078d6b82920270b743fe6c1",
+      "lfSha256": "86df3d31188039659122097e2828f7cd667b4d085078d6b82920270b743fe6c1",
+      "baseSha256": "2bc5a0611e11355b899de49729d3102853790cb477544bc939b69045e5a7a345",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/gmail/attachments/preview/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 1810,
+      "workingSha256": "5db9fd06c8e040601bab6354566038d15a4fd9fbde6bc5f8b4aa4df8d5665052",
+      "lfSha256": "5db9fd06c8e040601bab6354566038d15a4fd9fbde6bc5f8b4aa4df8d5665052",
+      "baseSha256": "e791fa401c44b338f1cff1c72507c165e8a7166e52b4d676020cd9a88677089f",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/gmail/callback/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2717,
+      "workingSha256": "6d03a561c66c15ea720fe21045fb363427610823a19de5f660dfbdf44b267a8e",
+      "lfSha256": "6d03a561c66c15ea720fe21045fb363427610823a19de5f660dfbdf44b267a8e",
+      "baseSha256": "0d04a59772373d94edb049597d516fded1814dafff178d3a84705b36278aa595",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/gmail/cases/[id]/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 13176,
+      "workingSha256": "d1e67004777e1bc354fac37121d9ed56e7e4b0934bfaa2a3efa567f262a49d47",
+      "lfSha256": "d1e67004777e1bc354fac37121d9ed56e7e4b0934bfaa2a3efa567f262a49d47",
+      "baseSha256": "826726194a2701f6d5c71af23f14317b730c493d40896de06f8ad9f737a582f3",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/gmail/connect/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2293,
+      "workingSha256": "dd4a5131557ec2f755aed831ab6792c55611a825cc8ad3fc55c6682f548b6e84",
+      "lfSha256": "dd4a5131557ec2f755aed831ab6792c55611a825cc8ad3fc55c6682f548b6e84",
+      "baseSha256": "de1ba8f5589e1403d72cf8b52ea2d9aa44b5ec520fb59f6f30a4129d7e47852d",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/gmail/files/[id]/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2573,
+      "workingSha256": "5751501f63ca86f40b74ff0dc3feb221d141b85a8e80c91e578cb1719c1486ff",
+      "lfSha256": "5751501f63ca86f40b74ff0dc3feb221d141b85a8e80c91e578cb1719c1486ff",
+      "baseSha256": "08036f1d505086e1fc6f638901b2e56926b5af731ad4e46715a91008e97c480d",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/composio/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2076,
+      "workingSha256": "ae9d0e3c665c4be5cca2a63a89d73b05802bf0ec50a51ef0a380c23790046929",
+      "lfSha256": "ae9d0e3c665c4be5cca2a63a89d73b05802bf0ec50a51ef0a380c23790046929",
+      "baseSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/mail/review/[id]/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2755,
+      "workingSha256": "db7af830a43495422afc1fcc69940e68b731f16ea2b4b6fe1641af0a73970bfb",
+      "lfSha256": "db7af830a43495422afc1fcc69940e68b731f16ea2b4b6fe1641af0a73970bfb",
+      "baseSha256": "a9272f52e21c8423381900f8ac18c74fda852c7189e00f4b2edcec1de55684f0",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/mail/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 10084,
+      "workingSha256": "0cf619259a740386aa1086fe1655e2fb4dfc57e3bb75a7abdec9dc7dcb67de3c",
+      "lfSha256": "0cf619259a740386aa1086fe1655e2fb4dfc57e3bb75a7abdec9dc7dcb67de3c",
+      "baseSha256": "39a2b73d7ffefd4c9b00e74c9033b435a9ab1a897072327355270a44ce12d1f4",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/mail/sent-files/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2636,
+      "workingSha256": "e7eef50e729c8032d6522a90a2ebe1ef520468cd433a959a095d11547a217e66",
+      "lfSha256": "e7eef50e729c8032d6522a90a2ebe1ef520468cd433a959a095d11547a217e66",
+      "baseSha256": "5d7475944b5d39a464881c0f3debcfabe0dfc3f5cba53450eb3f7ae0627d8505",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/mail/uploads/[id]/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 1162,
+      "workingSha256": "9bbd04642f1819ec7136a153bca00fe5131d8d3c9ebd2396a26ca09ba7428797",
+      "lfSha256": "9bbd04642f1819ec7136a153bca00fe5131d8d3c9ebd2396a26ca09ba7428797",
+      "baseSha256": "f6c476bc5683564449ff5db2834d8ccb44a1fb9722b111d464854d981ac5cdeb",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/app/api/mail/uploads/route.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2105,
+      "workingSha256": "aeb595fa8677239cd51676104c09491e230e7d1e51c90b566ade97ef0dac1162",
+      "lfSha256": "aeb595fa8677239cd51676104c09491e230e7d1e51c90b566ade97ef0dac1162",
+      "baseSha256": "fe8fec2565fcfd51164e39d59d77819bf000b7c44bac039bb1d535f359ffbf32",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/brand-settings.tsx",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 27664,
+      "workingSha256": "118ebc4a926d7e3c40ffbe6d39617e1ac2d798f3f8a280cdd01bebc517527ea3",
+      "lfSha256": "118ebc4a926d7e3c40ffbe6d39617e1ac2d798f3f8a280cdd01bebc517527ea3",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/campaign-center.tsx",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 42468,
+      "workingSha256": "7eb353193b825f379b05c8a6a60cdba8089aefc23726f26c498ee1b15fe0e01d",
+      "lfSha256": "7eb353193b825f379b05c8a6a60cdba8089aefc23726f26c498ee1b15fe0e01d",
+      "baseSha256": "336c36f5daf12ba2a451ee881a5e57157d832782b6ba1fd996dd54710f86e2ff",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/campaign-composer.tsx",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 19112,
+      "workingSha256": "9755bb01a7ba8a3379887fa75757b04b74a582ec4a2408b978702db042e3dfac",
+      "lfSha256": "9755bb01a7ba8a3379887fa75757b04b74a582ec4a2408b978702db042e3dfac",
+      "baseSha256": "8806fc788ae21c44018e139b5a41ba98ef8f1a423f23ae56048705858a0a3051",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/campaign-review.tsx",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 20273,
+      "workingSha256": "e28d1057963847e869f52830690708df7a6959598ed709a6a52a941fa9c6b833",
+      "lfSha256": "e28d1057963847e869f52830690708df7a6959598ed709a6a52a941fa9c6b833",
+      "baseSha256": "73ee75c8501214ea02573f855341234afc1793b9d71e3082351559e8c280dbbb",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/composio-account-bindings.tsx",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 21349,
+      "workingSha256": "10add3adb579319e364e7c134264c4a4774bb8116e0a3c06bd746efff75cedd0",
+      "lfSha256": "10add3adb579319e364e7c134264c4a4774bb8116e0a3c06bd746efff75cedd0",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/conversations-workspace.tsx",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 59722,
+      "workingSha256": "9600ef8a2939d60c4b55ae2ac1d15c724cdac80a66bf91de6115b11f2a839390",
+      "lfSha256": "9600ef8a2939d60c4b55ae2ac1d15c724cdac80a66bf91de6115b11f2a839390",
+      "baseSha256": "4db811efeecf5d26d9a135701c39736253408db036568d7708f0532e09f08921",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 123641,
+      "workingSha256": "8f3f78ec8e766feeef6cd87ec7625fde6803658535911082bd7fe43976d00b2b",
+      "lfSha256": "8f3f78ec8e766feeef6cd87ec7625fde6803658535911082bd7fe43976d00b2b",
+      "baseSha256": "68d5c7e48dc016cfc7db1f7737879f0a082c6fab82b34dafe272305d970a4911",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/gmail-history.tsx",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 61249,
+      "workingSha256": "3bb7c9464379091d030965305dd47c7f6247ab738e889a0309ad41f7b850a020",
+      "lfSha256": "3bb7c9464379091d030965305dd47c7f6247ab738e889a0309ad41f7b850a020",
+      "baseSha256": "a3023545ecf7d029ed02ec0cf15093e7e6bd49460bc7117e003f2f769cefb620",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/integrations.tsx",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 13855,
+      "workingSha256": "30e2cfe35b4032f1604bca2bbd065ed689b9d755ed81e8115fcef16fcdb65eab",
+      "lfSha256": "30e2cfe35b4032f1604bca2bbd065ed689b9d755ed81e8115fcef16fcdb65eab",
+      "baseSha256": "16640975647e1214f3bb091935f5111e7d049a5577cd558d41a9308f0bdc1f2c",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/mail-composer.tsx",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2949,
+      "workingSha256": "de645490c66adec55e3704c42a0d3f396f430dafb1977598018316b5f7da1b31",
+      "lfSha256": "de645490c66adec55e3704c42a0d3f396f430dafb1977598018316b5f7da1b31",
+      "baseSha256": "4ac3fa99a5ecb1b44f1fd3403b14ba60cb512ea56248711e4394dfa3f48f160c",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/components/mail-editor.tsx",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 44123,
+      "workingSha256": "b2e251f31a54f30d955f97221e0da7f6e72e6563c3cf105cf3e45c31f78d8f52",
+      "lfSha256": "b2e251f31a54f30d955f97221e0da7f6e72e6563c3cf105cf3e45c31f78d8f52",
+      "baseSha256": "7c307e27f12554ad3922269ad6ef63e4e595d5c50812ada71b3a7c51f2e3319b",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/brand-delivery.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 3656,
+      "workingSha256": "2246a537b4ecebb82124a74f65915f4c57f066141576fb1eb30183ec991bee5c",
+      "lfSha256": "2246a537b4ecebb82124a74f65915f4c57f066141576fb1eb30183ec991bee5c",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/brand-management.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 9214,
+      "workingSha256": "d459ad1f6ae0f4c020a326a611e00cdfc978a8c8eb479c71720df54c5627cec3",
+      "lfSha256": "d459ad1f6ae0f4c020a326a611e00cdfc978a8c8eb479c71720df54c5627cec3",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/composio-bindings.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 7015,
+      "workingSha256": "a4e9ed08fb2cda57a8a73a23fae299a67b787d599f75bee6d5ec1fe8ff0669b2",
+      "lfSha256": "a4e9ed08fb2cda57a8a73a23fae299a67b787d599f75bee6d5ec1fe8ff0669b2",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/conversation-threads.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 12898,
+      "workingSha256": "04c1724c1d7e71557c5bab8cefa50102c0bd945d4520b62c1ec829d1ec20796b",
+      "lfSha256": "04c1724c1d7e71557c5bab8cefa50102c0bd945d4520b62c1ec829d1ec20796b",
+      "baseSha256": "3491515890d52d81f4f13239bf59a93446b3a9426c6499fb8e46baa57f2bb279",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/domain.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 14401,
+      "workingSha256": "1b3c67d34cc1d882352c5e2728cc0c239d910c705c7faa519aa2f691c1e896fb",
+      "lfSha256": "1b3c67d34cc1d882352c5e2728cc0c239d910c705c7faa519aa2f691c1e896fb",
+      "baseSha256": "58d61335c3ef2e6e2d4e766c0736c0b0ea1c9051b66c9f1a591481d98a63d055",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/mail-manager.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 3746,
+      "workingSha256": "8435a920df343765d68d2776f8f87c95317399f158332f0b3586de7f9c5c6a02",
+      "lfSha256": "8435a920df343765d68d2776f8f87c95317399f158332f0b3586de7f9c5c6a02",
+      "baseSha256": "c75d4de46b9cc11e90a44313ec58a3baa291112beb9d67d86ebb93b31384e332",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/pipeline-os/s01/brand-contracts.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 1751,
+      "workingSha256": "9d186d09896648c605005fb49c3d5f0d7c6bb9b77d62c4e8fa6e5acf12024bef",
+      "lfSha256": "9d186d09896648c605005fb49c3d5f0d7c6bb9b77d62c4e8fa6e5acf12024bef",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/pipeline-os/s01/brand-inputs.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 3866,
+      "workingSha256": "fd2221afe5c138761bf01c8b70d1d353971a27d9928268a68164a22be73d1f80",
+      "lfSha256": "fd2221afe5c138761bf01c8b70d1d353971a27d9928268a68164a22be73d1f80",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/brand-actions.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 2135,
+      "workingSha256": "a229d9d895f92c1585a9188a7e7e535d7bdac6d26563a0a0b69020c18ed8fbb4",
+      "lfSha256": "a229d9d895f92c1585a9188a7e7e535d7bdac6d26563a0a0b69020c18ed8fbb4",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/brand-delivery.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 3068,
+      "workingSha256": "b312b224e873616277012bb7da90e02560c7062ede557ac5ba43fabd34776b97",
+      "lfSha256": "b312b224e873616277012bb7da90e02560c7062ede557ac5ba43fabd34776b97",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/campaign-delivery.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 1244,
+      "workingSha256": "59e611dcb92564c5c8a888730d57136841b52d0daa64abf4c7d568cd8126686d",
+      "lfSha256": "59e611dcb92564c5c8a888730d57136841b52d0daa64abf4c7d568cd8126686d",
+      "baseSha256": "9356fa315d73410bffc8828715877e7936364ef29d49b543a85f4e47a153e18c",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/conversation-summary.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 3657,
+      "workingSha256": "c5467464cd6ad420509885b48da095e61b6bbbb99d7ae0e35ca5b069f891dabc",
+      "lfSha256": "c5467464cd6ad420509885b48da095e61b6bbbb99d7ae0e35ca5b069f891dabc",
+      "baseSha256": "2a5b26c32f94c347e5cef3c1261df071ba7404a4ed6a31f3ccfbd1bb5309daa4",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/document-review.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 5951,
+      "workingSha256": "e5ff3d84eed03edd1b2d72f180e1e56af49ef77862e1b89ac9e801e3c07c9433",
+      "lfSha256": "e5ff3d84eed03edd1b2d72f180e1e56af49ef77862e1b89ac9e801e3c07c9433",
+      "baseSha256": "c2a0dd9f19e322cd600a21721ab1dcb477cf21824d4bc5e7782cf57dac577b3f",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/documents.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2132,
+      "workingSha256": "29c76484258d91f5217fba18c27d933d88f0aff935fcf298198591aefd4c7ec1",
+      "lfSha256": "29c76484258d91f5217fba18c27d933d88f0aff935fcf298198591aefd4c7ec1",
+      "baseSha256": "8872a61895949994d8e30ac4039ca51e780fe92d67942a887800ea425e945ca8",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/gmail-attachment-preview.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2029,
+      "workingSha256": "626e9636b573159c73b9c9d4ff6e078b57d9695050d8a1274510119858242486",
+      "lfSha256": "626e9636b573159c73b9c9d4ff6e078b57d9695050d8a1274510119858242486",
+      "baseSha256": "36b4dbeee56800f98a6f5c0bd0fc56a71f4ae487a47a3fae148270a4f43e63d2",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 4389,
+      "workingSha256": "dcffe1b27ba7b69b24d74570798a81ad0ce26e6306955e9abac5044e0bf6674c",
+      "lfSha256": "dcffe1b27ba7b69b24d74570798a81ad0ce26e6306955e9abac5044e0bf6674c",
+      "baseSha256": "b5d759df0225fa87a49634b630cbee099183fe804e878cc6814cffa17268a866",
+      "lastEvidence": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/implementation-manifest.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-access.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 1814,
+      "workingSha256": "b20f1d7c2185885f84b1d6109df21287592ad1e58a92a9e7db0b32d4a3ac0e9e",
+      "lfSha256": "b20f1d7c2185885f84b1d6109df21287592ad1e58a92a9e7db0b32d4a3ac0e9e",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 7921,
+      "workingSha256": "7430dcd9b9aea3cb8e2ba5d93124e26803e03f19117204ad351266ffd0a6d35c",
+      "lfSha256": "7430dcd9b9aea3cb8e2ba5d93124e26803e03f19117204ad351266ffd0a6d35c",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 9694,
+      "workingSha256": "4d1069390167a03e6cf31257ba90f23c4f4d8790cf79f06cfe675a5788206776",
+      "lfSha256": "4d1069390167a03e6cf31257ba90f23c4f4d8790cf79f06cfe675a5788206776",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-actions.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 20026,
+      "workingSha256": "860125145118b9fcf4d18d05d2a8b1bc540028e91842f3653deb6219aec027ca",
+      "lfSha256": "860125145118b9fcf4d18d05d2a8b1bc540028e91842f3653deb6219aec027ca",
+      "baseSha256": "93554b8f607a1950727bfee6dc229e2c319d88d284e30b9fad07916e9d7d4054",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-manager.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 7854,
+      "workingSha256": "61a13684e14f7c3ce2a48aa456af0757de9bf791bbfbbe2ef16053d6793f4427",
+      "lfSha256": "61a13684e14f7c3ce2a48aa456af0757de9bf791bbfbbe2ef16053d6793f4427",
+      "baseSha256": "884def20e1f718cbd933cfdffc1cfb2295d8980399846d309e92656dafa9de5e",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 15654,
+      "workingSha256": "c941726cdcfd700d8b1c45b9646be8c9374bb67d3f2eac05b31311d3297130d8",
+      "lfSha256": "c941726cdcfd700d8b1c45b9646be8c9374bb67d3f2eac05b31311d3297130d8",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/implementation-manifest.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-transport/contract.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 1085,
+      "workingSha256": "a38920e11561fbb41680f120a51a29bdcdcf38f011e54417acb3588e9dee2b92",
+      "lfSha256": "a38920e11561fbb41680f120a51a29bdcdcf38f011e54417acb3588e9dee2b92",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/implementation-manifest.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-transport/errors.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 785,
+      "workingSha256": "9f03a63a8e650d93e1bcf7c009a93afa2afe0e81e37f74e938d533962bf13aae",
+      "lfSha256": "9f03a63a8e650d93e1bcf7c009a93afa2afe0e81e37f74e938d533962bf13aae",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/implementation-manifest.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-transport/factory.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 867,
+      "workingSha256": "f33c01c21a1fc79c106b95746dc5441c1af1e58f3ebff7cbeb3b19676cee15d0",
+      "lfSha256": "f33c01c21a1fc79c106b95746dc5441c1af1e58f3ebff7cbeb3b19676cee15d0",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/implementation-manifest.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/mail-transport/gmail-direct.ts",
+      "kind": "application",
+      "gitAction": "add",
+      "bytes": 1026,
+      "workingSha256": "a8c86659531d0d5f25d23d7bd352836d7253ad4c0bd5edcc011501149e1df7a0",
+      "lfSha256": "a8c86659531d0d5f25d23d7bd352836d7253ad4c0bd5edcc011501149e1df7a0",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/implementation-manifest.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/opportunity-signals.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2431,
+      "workingSha256": "8682f87a3df8db16b98d9dfe8fad3bee49e38f5a2810644cada412e0de67fed7",
+      "lfSha256": "8682f87a3df8db16b98d9dfe8fad3bee49e38f5a2810644cada412e0de67fed7",
+      "baseSha256": "9faa852dbec503bc013ffa2fec2212fce55d2417420e58731c6320de21fae7d9",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "src/lib/server/workspace.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 14350,
+      "workingSha256": "9ea0c707b33a997b4d38182893c2b8a53ff6d6638535c7bf7a9abcf839abfa9f",
+      "lfSha256": "9ea0c707b33a997b4d38182893c2b8a53ff6d6638535c7bf7a9abcf839abfa9f",
+      "baseSha256": "4d2cfa830a509ac3514b1317f530dabdf1fc83e29d608b62a5ef00b3b3e53b70",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/campaign-attachments.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "modify",
+      "bytes": 5393,
+      "workingSha256": "fd8a4c16dc010def01ae0614b39bcdfe1b20a96a7de227e42b1213705b360182",
+      "lfSha256": "fd8a4c16dc010def01ae0614b39bcdfe1b20a96a7de227e42b1213705b360182",
+      "baseSha256": "b3172ad09c20dda329133bcd4b61e32e1635e44cd11c64ad6b4e57bbcae14f24",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/document-package-delivery.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "modify",
+      "bytes": 5490,
+      "workingSha256": "8da2088da5b8164e4e2918816e6b870dd5a013d4675b387c81c52a3b76b4849a",
+      "lfSha256": "8da2088da5b8164e4e2918816e6b870dd5a013d4675b387c81c52a3b76b4849a",
+      "baseSha256": "b1f298278201479acb95635e2fe880970edfbacaffae21861d69664dc5154ad4",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s01/t01-02-i01-foundation.rollback.sql",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 735,
+      "workingSha256": "77572ebd68bdbcb026aa7eef61fcf4bb39d8ca74e0922c2ab83432bce7d6f16a",
+      "lfSha256": "77572ebd68bdbcb026aa7eef61fcf4bb39d8ca74e0922c2ab83432bce7d6f16a",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s01/t01-02-i01-foundation.sql",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 6435,
+      "workingSha256": "46a4f0bb4c1be08bf31b941a44763c8019cb6f02a41ff72f7ddd3be54f7ba3e9",
+      "lfSha256": "46a4f0bb4c1be08bf31b941a44763c8019cb6f02a41ff72f7ddd3be54f7ba3e9",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s01/t01-02-i02-mail-permissions.rollback.sql",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 2869,
+      "workingSha256": "c8f6388b1e495b2da73cad469f98ec6c7955b49191c5473ff4e8f765dca07d9a",
+      "lfSha256": "c8f6388b1e495b2da73cad469f98ec6c7955b49191c5473ff4e8f765dca07d9a",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s01/t01-02-i02-mail-permissions.sql",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 38213,
+      "workingSha256": "3d4fac61f099b9f7b8eaee96ff6e1eeff9cdece7860daa649b741c90964fce6c",
+      "lfSha256": "3d4fac61f099b9f7b8eaee96ff6e1eeff9cdece7860daa649b741c90964fce6c",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-brand-delivery.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 3950,
+      "workingSha256": "fe894f6f1b5bca72b03efec0e2e7aa9608db150ad6b19ec764c443ac6ad1b558",
+      "lfSha256": "fe894f6f1b5bca72b03efec0e2e7aa9608db150ad6b19ec764c443ac6ad1b558",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-composio-bindings.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 3818,
+      "workingSha256": "1b08593a42840ff6ee0a07c102db02c149aa05cf5a354c670f725e3152de02bb",
+      "lfSha256": "1b08593a42840ff6ee0a07c102db02c149aa05cf5a354c670f725e3152de02bb",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-transport.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 2501,
+      "workingSha256": "379994c99179571a80ddbbc2ae2fe763748b05bd090765f29e6a48fcdebfea6d",
+      "lfSha256": "379994c99179571a80ddbbc2ae2fe763748b05bd090765f29e6a48fcdebfea6d",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/implementation-manifest.json"
+      ]
+    },
+    {
+      "path": "tests/mail-editor-compatibility.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "modify",
+      "bytes": 3920,
+      "workingSha256": "d7125051c8490cf51851042cc3e9727d1a2729bb8591194fc93a511c6cff8571",
+      "lfSha256": "d7125051c8490cf51851042cc3e9727d1a2729bb8591194fc93a511c6cff8571",
+      "baseSha256": "c4b0f4948aaa4a920b3b7dd4389c55f946a3301ab8789171f7bd9a15a8889e7e",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/mail-forward.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "modify",
+      "bytes": 5810,
+      "workingSha256": "0b2a051c832bc148e27e7de34bb39982e997a3cbb20f514642ddde2328d45653",
+      "lfSha256": "0b2a051c832bc148e27e7de34bb39982e997a3cbb20f514642ddde2328d45653",
+      "baseSha256": "74ede206832583be4c5ab6ce35925c1b033dce51b7b7a454d464590737d54a1f",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/mail-manager.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "modify",
+      "bytes": 26294,
+      "workingSha256": "dc23e1d17da0fbcd00170bacc240bc5e667a37cf032cf1c545fef44d6281b993",
+      "lfSha256": "dc23e1d17da0fbcd00170bacc240bc5e667a37cf032cf1c545fef44d6281b993",
+      "baseSha256": "a19eba77a27c83472f30bb2551bb70e6a6d35a871e914b5efa7c620f467c004b",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/mail-send.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "modify",
+      "bytes": 6860,
+      "workingSha256": "912eecefc61f4bbad05de1578054c75580afe1b2763e79c5493d312691b32537",
+      "lfSha256": "912eecefc61f4bbad05de1578054c75580afe1b2763e79c5493d312691b32537",
+      "baseSha256": "19b1037609541c7a784a9692aa69d631cad5d9e76a6f35fc67dd732915c4e332",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/opportunity-signals.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "modify",
+      "bytes": 7604,
+      "workingSha256": "a9ada8524ba22fe06b458c8c7e451c6163988c80616f3013aba9048abaeb472e",
+      "lfSha256": "a9ada8524ba22fe06b458c8c7e451c6163988c80616f3013aba9048abaeb472e",
+      "baseSha256": "2414c493090ee89b57d85803f4d4bb19c7abfcc18b2c3d4a4d2433ae70ee8f52",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s01-brand-contracts.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 6057,
+      "workingSha256": "b210c001f052926d47094edc79289a17429bbae56e426c5f119042369622a3ef",
+      "lfSha256": "b210c001f052926d47094edc79289a17429bbae56e426c5f119042369622a3ef",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s01-brand-foundation.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 20150,
+      "workingSha256": "899542558d0181c010984b2e878155bcf6d9056cf60a90d5e1e23347fe649ca1",
+      "lfSha256": "899542558d0181c010984b2e878155bcf6d9056cf60a90d5e1e23347fe649ca1",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s01-mail-permissions-api.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 21051,
+      "workingSha256": "e49ee641c4e66821c006e7f8eb5d45f22c8e2482fd0a84c59551401b1d78dbb8",
+      "lfSha256": "e49ee641c4e66821c006e7f8eb5d45f22c8e2482fd0a84c59551401b1d78dbb8",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s01-mail-permissions.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 30356,
+      "workingSha256": "aaad5f552f70d6e46221db6e31b04ab02dfdadb53c1dc13c1b638d3173db60e8",
+      "lfSha256": "aaad5f552f70d6e46221db6e31b04ab02dfdadb53c1dc13c1b638d3173db60e8",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-a-api.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 11844,
+      "workingSha256": "ddaad03ad3b310c1c0832931f6e5177fb9b1d538399ea549b219be7ccbb9b6dd",
+      "lfSha256": "ddaad03ad3b310c1c0832931f6e5177fb9b1d538399ea549b219be7ccbb9b6dd",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-a.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 9265,
+      "workingSha256": "438cde259b543db891b64b06036a632b2c0b04714ad8deebf30d267e5352f559",
+      "lfSha256": "438cde259b543db891b64b06036a632b2c0b04714ad8deebf30d267e5352f559",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-a-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-admin.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 18335,
+      "workingSha256": "134f662f2cf9030ce739e518ed235b9b6cfc36cf2edb3daca6f164e2541bbb56",
+      "lfSha256": "134f662f2cf9030ce739e518ed235b9b6cfc36cf2edb3daca6f164e2541bbb56",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-api.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 21028,
+      "workingSha256": "63f28defca860cb9dcbe58beb8e2812f151152a640147f040e3b29701d69ddaa",
+      "lfSha256": "63f28defca860cb9dcbe58beb8e2812f151152a640147f040e3b29701d69ddaa",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-composition.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 8339,
+      "workingSha256": "3e91ac65c2c960bec212987302c9726809c84c753a1166b75f8babdc407d0fc4",
+      "lfSha256": "3e91ac65c2c960bec212987302c9726809c84c753a1166b75f8babdc407d0fc4",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-dispatch.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 14323,
+      "workingSha256": "3eac17bc48cab1341c834a6d7209a26cb0e1299267085812deeb5fad6c2e0da0",
+      "lfSha256": "3eac17bc48cab1341c834a6d7209a26cb0e1299267085812deeb5fad6c2e0da0",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-snapshots.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 19732,
+      "workingSha256": "ad0336ad7edc08f0632e4f04722fffac4c48b60a0bad4fa8b901c84575874499",
+      "lfSha256": "ad0336ad7edc08f0632e4f04722fffac4c48b60a0bad4fa8b901c84575874499",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-ui.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 6228,
+      "workingSha256": "81960c233539c279ab5a9c3d326f82499ca66839914543127b15d6ee54e2bb10",
+      "lfSha256": "81960c233539c279ab5a9c3d326f82499ca66839914543127b15d6ee54e2bb10",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-api.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 12099,
+      "workingSha256": "4e778e673df3bd212b918caad145ef6f0932cca1335fde99b9a3a234abcfd6f4",
+      "lfSha256": "4e778e673df3bd212b918caad145ef6f0932cca1335fde99b9a3a234abcfd6f4",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-bindings.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 18012,
+      "workingSha256": "10a45d5757a43937f05d61138a5792344351b024f6fa249b8dcfe4259282a523",
+      "lfSha256": "10a45d5757a43937f05d61138a5792344351b024f6fa249b8dcfe4259282a523",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-composition.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 32488,
+      "workingSha256": "e397c5bf72e6f9f9206e5f40422aedf0592dfb55a3e696a4f1deef8d161b44fe",
+      "lfSha256": "e397c5bf72e6f9f9206e5f40422aedf0592dfb55a3e696a4f1deef8d161b44fe",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c3-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c3-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-ui.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 7650,
+      "workingSha256": "7c7c791b33f50293c399a89bb8b47416f889b97d697444bc7c26430019d7a1c6",
+      "lfSha256": "7c7c791b33f50293c399a89bb8b47416f889b97d697444bc7c26430019d7a1c6",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-verifier.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 43570,
+      "workingSha256": "976fe3aba2fa9933d97abaa2c54b7bd196ec27a53b7bb3c4f9fa7558a969dcce",
+      "lfSha256": "976fe3aba2fa9933d97abaa2c54b7bd196ec27a53b7bb3c4f9fa7558a969dcce",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json"
+      ]
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport.test.ts",
+      "kind": "test_or_fixture",
+      "gitAction": "add",
+      "bytes": 24498,
+      "workingSha256": "a14fab038ff905cc3ce319107b7b40d1446231789e2a6b564ff57bfec121a11a",
+      "lfSha256": "a14fab038ff905cc3ce319107b7b40d1446231789e2a6b564ff57bfec121a11a",
+      "baseSha256": null,
+      "lastEvidence": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/implementation-manifest.json"
+      ]
+    },
+    {
+      "path": "worker/campaigns.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 6403,
+      "workingSha256": "a799b156111d0231e432ed1621e27da437cd73655fc7a613a0afac3a46e34b22",
+      "lfSha256": "a799b156111d0231e432ed1621e27da437cd73655fc7a613a0afac3a46e34b22",
+      "baseSha256": "bd365bff7cb25e651f2f6cd3cb8c7ff9f0cbf314d239d02e3672347f16e6ad68",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "worker/gmail.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 33780,
+      "workingSha256": "99f0d3df722f6f1014d7a5e0c0d5bf01b9046302b42c4186e02144625ebd0e56",
+      "lfSha256": "99f0d3df722f6f1014d7a5e0c0d5bf01b9046302b42c4186e02144625ebd0e56",
+      "baseSha256": "607be0a11575a4642cc05918ef1b4a06a4e020ff34fa68362cd3456af86d9791",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    },
+    {
+      "path": "worker/notifications.ts",
+      "kind": "application",
+      "gitAction": "modify",
+      "bytes": 2696,
+      "workingSha256": "6ee19cb0dce6e971a02cc9875c0f9fea52517ab19f92f9fe2f65305cb5a10eee",
+      "lfSha256": "6ee19cb0dce6e971a02cc9875c0f9fea52517ab19f92f9fe2f65305cb5a10eee",
+      "baseSha256": "f46e4bb10491af48727022eadbfb5761ded3ccc942eee8fd4be70d7fec181080",
+      "lastEvidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "evidenceHistory": [
+        "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json"
+      ]
+    }
+  ],
+  "support": [
+    {
+      "path": "Dockerfile",
+      "sha256": "e7169e2f042b548cb3a3a205b1a3278582bc1975f10ab4ec7c4aadf0cf2b760a"
+    },
+    {
+      "path": "Dockerfile.worker",
+      "sha256": "31879c433f6d4726cbb665ea38c45b5c668b5a1cfd2bb5a97c0d105e06dd726b"
+    },
+    {
+      "path": ".dockerignore",
+      "sha256": "1f5aa7cce4f087632b573c8e058d745bd1bb627117070f6e7157870d3619ec5c"
+    },
+    {
+      "path": "next.config.ts",
+      "sha256": "f33ca239a9e548e055a993b0a93687fd298661724aacbd506d8362c40aa6b1c1"
+    },
+    {
+      "path": "package.json",
+      "sha256": "3f104d1fc5a62f4499225d7f2c5968c8bfe370dc3b1c3623933b71d1bb5a65dc"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "a3dffb076a16a739665a750332f894bc36d17a7f103d7c2fe84e834e54871203"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha256": "ac02d96368617c760f093cfe61fdec64b6244007ab3553e0d6621f706f54a353"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "d1908c2f22d6ebdf6fefc2c37db6d975e569e121c07108ee2a9e25504719bc80"
+    },
+    {
+      "path": "scripts/prepare-pdf-viewer.mjs",
+      "sha256": "fde3616734e2fd6d76268a437367d86aec857f5bcd4e06833772268c1422b157"
+    },
+    {
+      "path": ".env.example",
+      "sha256": "347d6f89cee8fe321c2e89d096d3224bb3783f1df0852243207bc84bba4486b3"
+    }
+  ],
+  "previousEvidence": [
+    {
+      "path": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "sha256": "8c7c597f9c12fbb4bdbfe34048104cc23da0b1fdeee85c438d78322026cc46fe"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "sha256": "ea771e5435522139635dc19cf0f92ace785717ffd3f03526de5da64534575160"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "sha256": "f7e1adab5a5c0c2a81a87d325c6f06602b72ccb66299e65ef2afd593cd26fb4d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "sha256": "2443cc5a19dca1c5859265cecf993e02865cebcda938bf975d37068236d4b4ea"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "sha256": "961a5b5ddf30256ba12eda8168b2542ed54260af2c508317949e3efc3ff02d9d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json",
+      "sha256": "df0010523a2a554e4faaa36a754e4516e747c810db003e5a9c622f3e6cf9a225"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c3-implementation.json",
+      "sha256": "1934df605b202b829bcb358c0c2727f55b2a69fb717fa09a70654b7f6bdf134e"
+    }
+  ],
+  "sourceDeltaFullyCovered": true,
+  "continuityDocumentation": [
+    {
+      "path": "docs/specs/pipeline-os/s00/README.md",
+      "sha256": "97ed4157ac36495f55984ce8c1f9d7adc6d58a422e79e5ffc7474cd984fa40b8",
+      "reason": "Historical publication/smoke continuity required by shared documentation links; no S00 code or live action"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-release-runbook.md",
+      "sha256": "79520b70912561492ea78fc13ba54b631b9407cc70195c275e4b2dc7a9bc569f",
+      "reason": "Historical publication/smoke continuity required by shared documentation links; no S00 code or live action"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-app-smoke.md",
+      "sha256": "f98157253c88c8ef10e7016b15d50b48d6af058f275ef18b51df9830f2e10f45",
+      "reason": "Historical publication/smoke continuity required by shared documentation links; no S00 code or live action"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-publication.md",
+      "sha256": "fec79304fb9bd9507d3ae54a4ae519df4e82423d249196582a099793425f3c13",
+      "reason": "Historical publication/smoke continuity required by shared documentation links; no S00 code or live action"
+    }
+  ],
+  "documentationForLaterReview": [
+    "docs/specs/pipeline-os/s02/**",
+    "docs/specs/pipeline-os/parallel-development.md",
+    "docs/specs/pipeline-os/tasks.md",
+    "docs/specs/pipeline-os/verification.md"
+  ],
+  "exclusions": [
+    ".env real files",
+    ".local/**",
+    "node_modules/.next/generated artifacts",
+    "S01 source worktree",
+    "private credentials/counters/attachments",
+    "new S00 functional code or activation",
+    "new final production migrations until catalog review"
+  ],
+  "currentLocalMigrationCount": 47,
+  "proposedProductionMigrationNumbers": [],
+  "sqlSourcesAreMarkedSandboxCandidates": true,
+  "environmentNamesOnly": [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "APP_ORIGIN",
+    "INTEGRATION_ENCRYPTION_KEY",
+    "BOUNCER_API_KEY",
+    "OPENAI_API_KEY",
+    "R_OPENAI_API_KEY",
+    "A_OPENAI_API_KEY",
+    "D_OPENAI_API_KEY",
+    "GMAIL_SYNC_MODE",
+    "GOOGLE_PUBSUB_TOPIC",
+    "GOOGLE_PUBSUB_AUDIENCE",
+    "GOOGLE_PUBSUB_SERVICE_ACCOUNT",
+    "GOOGLE_OAUTH_ORGANIZATIONS",
+    "GMAIL_HISTORY_ENABLED",
+    "VAPID_PUBLIC_KEY",
+    "VAPID_PRIVATE_KEY",
+    "VAPID_SUBJECT",
+    "NOTIFICATION_GMAIL_ACCOUNT_ID",
+    "DEMO_ENABLED",
+    "PUBLIC_FORM_ENABLED",
+    "FORM_DECLARATION_VERSION",
+    "FORM_DECLARATION_TEXT",
+    "WORKER_HEARTBEAT_FILE",
+    "INSTANTLY_WEBHOOK_ENABLED",
+    "INSTANTLY_S00_WEBHOOK_SECRET",
+    "INSTANTLY_S00_WEBHOOK_DEDUP_KEY"
+  ],
+  "newRuntimeEnvironmentVariables": [],
+  "reportedTarget": {
+    "webResource": "CRM CURRATADED",
+    "workerResource": "curated-worker",
+    "domain": "https://crm.finlabinc.com",
+    "branch": "main",
+    "automaticWebDeploymentReported": true,
+    "workerAutoStartControlVerified": false,
+    "lastHealthyCommitReported": "fb9f2015e682fc0704340530425322efc62c601b",
+    "metadataSource": "Earlier human reports; not refreshed or a recovery-image attestation"
+  },
+  "checks": {
+    "inherited": "C3:139/139, TS and format; source hashes revalidated, not rerun",
+    "newCatalogSql": "5/5 in PGlite; no remote calls",
+    "dockerCliAvailable": false,
+    "postgresCliAvailable": false,
+    "visual": "pending",
+    "standaloneBuild": "pending inherited Windows EPERM",
+    "independentPostgresContention": "pending",
+    "remoteCatalog": "pending"
+  },
+  "externalCallsAuthorized": 0,
+  "externalCallsExecuted": 0,
+  "instantlyConsumed": 43,
+  "productProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "instantlyWebhookTargetState": "absent_or_false; fresh operator confirmation pending",
+  "publicationAuthorized": false
+}

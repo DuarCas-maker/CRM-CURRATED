@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-31",
+  "mode": "C3_local_composition_only",
+  "head": "fb9f2015e682fc0704340530425322efc62c601b",
+  "baselinePublicFiles": 638,
+  "unchangedBaselinePublicFiles": 620,
+  "existingProductSqlFixtureFilesModified": 0,
+  "newTestFiles": 1,
+  "files": [
+    {
+      "path": "tests/pipeline-os-s02-block-c-composition.test.ts",
+      "sha256": "e397c5bf72e6f9f9206e5f40422aedf0592dfb55a3e696a4f1deef8d161b44fe"
+    }
+  ],
+  "previousC1C2SourcesAndEvidencePreserved": true,
+  "protectedI01": 8,
+  "protectedB2Entries": 34,
+  "historicalMigrationsPreserved": 47,
+  "privateOperationalJsonPreserved": 49,
+  "localLinksChecked": 289,
+  "checks": {
+    "C3": "14/14",
+    "selectedRegression": "125/125 (24 C1 +28 C2 +73 earlier selected suites)",
+    "total": "139/139; Node parent groups included",
+    "normalRunner": "wrapper passed; same14 child coverage not counted twice",
+    "typecheck": "passed",
+    "format": "passed",
+    "diffCheck": "passed",
+    "sql": "PGlite catalog/ACL/RLS/constraints/policies/triggers/indexes/business preservation, populated rollback and reapply",
+    "transport": "actual Gmail facade with mocked OAuth/decrypt/client/fetch; one synthetic profile GET only",
+    "isolation": "Babel AST relative import graph and literal direct provider, no C1/C2 runtime resolver"
+  },
+  "externalCalls": 0,
+  "envFilesRead": false,
+  "fakeProcessEnvRestored": true,
+  "messagesSent": 0,
+  "remoteChanges": false,
+  "instantlyConsumed": 43,
+  "productProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "C3Implemented": true,
+  "promotionAuthorized": false,
+  "pending": [
+    "Prepare joint A/B/C release and INT-T04/T00-02-I gates",
+    "C1 visual/keyboard/responsive QA",
+    "Full standalone build: inherited Windows EPERM",
+    "Independent PostgreSQL contention",
+    "Remote catalog/Storage/legacy/writer versions/final migration numbering",
+    "Production configuration/provenance/rotation publication source and separately authorized real verification",
+    "Future single-writer selector/cutover; verified is not active",
+    "S00/Instantly C remains deferred"
+  ]
+}

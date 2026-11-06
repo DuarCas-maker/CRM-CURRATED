@@ -1,7 +1,6 @@
 import { z } from "zod";
 import {
   requireUser,
-  serviceClient,
   checkDb,
   HttpError,
   jsonError,
@@ -16,7 +15,7 @@ export async function GET(
   try {
     const id = z.uuid().parse((await params).id);
     const { db, profile } = await requireUser();
-    const service = serviceClient();
+
     if (
       profile.role !== "superadmin" &&
       !(
@@ -31,15 +30,15 @@ export async function GET(
     )
       throw new HttpError(403, "Message access required");
     const anchor = checkDb(
-      await service
-        .from("gmail_archive_messages")
+      await db
+        .from("mail_archive_visible")
         .select("account_id,gmail_thread_id")
         .eq("id", id)
         .single(),
     )!;
     const queryParams = new URL(request.url).searchParams;
-    let query = service
-      .from("gmail_archive_messages")
+    let query = db
+      .from("mail_archive_visible")
       .select("id,sent_at,encrypted_payload")
       .eq("account_id", anchor.account_id)
       .eq("gmail_thread_id", anchor.gmail_thread_id)
@@ -56,21 +55,7 @@ export async function GET(
       );
     }
     const rows = checkDb(await query) || [];
-    let visible = rows.slice(0, 50);
-    if (profile.role !== "superadmin" && visible.length) {
-      const allowed =
-        checkDb(
-          await db
-            .from("case_events")
-            .select("archive_message_id")
-            .in(
-              "archive_message_id",
-              visible.map((m) => m.id),
-            ),
-        ) || [];
-      const ids = new Set(allowed.map((e) => e.archive_message_id));
-      visible = visible.filter((m) => ids.has(m.id));
-    }
+    const visible = rows.slice(0, 50);
     const snapshots = visible.map((m) => ({
       ...(JSON.parse(decrypt(m.encrypted_payload)) as MailSnapshot),
       archive_id: m.id,

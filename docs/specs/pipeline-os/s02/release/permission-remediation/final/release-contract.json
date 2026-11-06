@@ -1,0 +1,2336 @@
+{
+  "id": "PRM-FINAL-r1",
+  "ordinal": "048",
+  "ordinalStatus": "coordinator_local_reservation_not_remote_history",
+  "sourceBase": "001-047 before ABC",
+  "sourceFixtureVersion": "180003",
+  "targets": [
+    {
+      "key": "public.campaign_assets",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.campaign_events",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.campaign_workspace",
+      "kind": "v",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.company_contacts",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.company_primary_cases",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.conversation_lenders",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.document_reviews",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.email_template_versions",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.email_templates",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    { "key": "public.gmail_api_slots", "kind": "r", "authenticated": [] },
+    { "key": "public.gmail_api_usage", "kind": "r", "authenticated": [] },
+    {
+      "key": "public.gmail_candidate_directory",
+      "kind": "v",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.gmail_pending_associations",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    { "key": "public.gmail_sent_usage", "kind": "r", "authenticated": [] },
+    {
+      "key": "public.lead_workspace",
+      "kind": "v",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.lender_contacts",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.lender_guideline_versions",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.mail_drafts",
+      "kind": "r",
+      "authenticated": ["DELETE", "INSERT", "SELECT", "UPDATE"]
+    },
+    {
+      "key": "public.mail_recipient_selections",
+      "kind": "r",
+      "authenticated": ["DELETE", "INSERT", "SELECT", "UPDATE"]
+    },
+    { "key": "public.mail_uploads", "kind": "r", "authenticated": ["SELECT"] },
+    {
+      "key": "public.operational_settings",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "kind": "v",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "kind": "v",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.opportunity_workspace",
+      "kind": "v",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.process_state_history",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.underwriting_runs",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.underwriting_setting_versions",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    },
+    {
+      "key": "public.underwriting_settings",
+      "kind": "r",
+      "authenticated": ["SELECT"]
+    }
+  ],
+  "columns": [
+    {
+      "key": "public.campaign_assets",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "request_key",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "name",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "mime_type",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "size",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "storage_path",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "content_hash",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.campaign_events",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "campaign_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "kind",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "occurred_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "opportunity_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "email",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "source_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.campaign_workspace",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "name",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "account_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "seller_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "status",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "daily_limit",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "timezone",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "start_hour",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "end_hour",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "subject",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "body",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "steps",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "batch_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "template_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "template_version",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "requires_application",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "asset_snapshot",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "body_format",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "excluded_contact_ids",
+          "type": "pg_catalog._uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "audience_count",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "delivery_stats",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "first_contact",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "selected_contact_ids",
+          "type": "pg_catalog._uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "scheduled_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "activated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.company_contacts",
+      "columns": [
+        {
+          "name": "company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "contact_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "relationship",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "source_candidate_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.company_primary_cases",
+      "columns": [
+        {
+          "name": "company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "opportunity_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.conversation_lenders",
+      "columns": [
+        {
+          "name": "conversation_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "lender_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.document_reviews",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "document_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "content_hash",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "status",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "notes",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "reviewer_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "period",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "reviewed_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.email_template_versions",
+      "columns": [
+        {
+          "name": "template_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "version",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "snapshot",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.email_templates",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "name",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "subject",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "body",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "steps",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "asset_ids",
+          "type": "pg_catalog._uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "version",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "updated_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "archived_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "body_format",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.gmail_api_slots",
+      "columns": [
+        {
+          "name": "scope",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "next_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.gmail_api_usage",
+      "columns": [
+        {
+          "name": "project",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "minute",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "units",
+          "type": "pg_catalog.int8",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.gmail_candidate_directory",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "run_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "email",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "name",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company_name",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "phone",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "participant_kind",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "classification",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "copied_only",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "message_count",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "inbound_count",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "outbound_count",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "campaign_count",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "attachment_count",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "copy_count",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "first_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_personal_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "existing_contact_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "existing_company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "candidate_opportunity_ids",
+          "type": "pg_catalog._uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "evidence_ids",
+          "type": "pg_catalog._uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "selected",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "imported_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_error",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "result_opportunity_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "selected_opportunity_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "selected_process_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "selected_company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "submission_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "import_requested_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "attachments_reviewed_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_received_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "latest_reply_intent",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "inbox_approved_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "account_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "run_status",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.gmail_pending_associations",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "team_candidate_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "client_candidate_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "evidence_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "applied_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_error",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.gmail_sent_usage",
+      "columns": [
+        {
+          "name": "account_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "gmail_message_id",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "internet_message_id",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "sent_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "recipients",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.lead_workspace",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "industry",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "product",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "seller_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "batch_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "opportunity_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "email",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "phone",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "verification",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "suppressed",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "verification_state",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "analysis_started_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "analysis_completed_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "campaign_enrolled",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "campaign_sent",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.lender_contacts",
+      "columns": [
+        {
+          "name": "email",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "lender_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "name",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.lender_guideline_versions",
+      "columns": [
+        {
+          "name": "lender_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "version",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "guidelines",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.mail_drafts",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "opportunity_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "user_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "payload",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.mail_recipient_selections",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "user_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "name",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "targets",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.mail_uploads",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "opportunity_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "uploaded_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "name",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "mime_type",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "size",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "storage_path",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "content_hash",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.operational_settings",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "version",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "reply_hours",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "followup_hours",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "offer_warning_hours",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "updated_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "industry",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "product",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "seller_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "closer_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "stage",
+          "type": "public.case_stage",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_contact",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "summary",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_signed",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_complete",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "handed_off_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "campaign_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "archived_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "funded_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_lender_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "email",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "phone",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "verification",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "industry",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "product",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "seller_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "closer_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "stage",
+          "type": "public.case_stage",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_contact",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "summary",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_signed",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_complete",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "handed_off_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "campaign_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "archived_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "funded_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_lender_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "email",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "phone",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "verification",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.opportunity_workspace",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "industry",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "product",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "seller_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "closer_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "stage",
+          "type": "public.case_stage",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_contact",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "summary",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_signed",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_complete",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "handed_off_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "campaign_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "archived_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "funded_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_lender_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "email",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "phone",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "verification",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.process_state_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "process_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "from_state",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "state",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "entered_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "exited_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "actor_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        }
+      ]
+    },
+    {
+      "key": "public.underwriting_runs",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "opportunity_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "requested_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "request_key",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "status",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "model",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "prompt",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "prompt_version",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "max_output_tokens",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "document_snapshot",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "lender_snapshot",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "report",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "response_id",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "input_tokens",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "output_tokens",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_error",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "job_lease",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "api_started_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "analysis_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "completed_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "rules",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "progress_stage",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "progress_percent",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "documents_processed",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "progress_updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "provider_diagnostics",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "reviewed_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "reviewed_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "review_notes",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.underwriting_setting_versions",
+      "columns": [
+        {
+          "name": "version",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "prompt",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "model",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "enabled",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "max_output_tokens",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "daily_run_limit",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "rules",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "updated_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    },
+    {
+      "key": "public.underwriting_settings",
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "version",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "prompt",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "model",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "enabled",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "max_output_tokens",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "daily_run_limit",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "updated_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": true
+        },
+        {
+          "name": "rules",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": true
+        }
+      ]
+    }
+  ],
+  "viewHashes": [
+    {
+      "key": "public.campaign_workspace",
+      "rawHashes": [
+        "321f987da7339d43e9de9d6b45cf5b63",
+        "f0ac44d1f4e3fb6738d3593c70279216"
+      ]
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "rawHashes": [
+        "8828ed34ceab6746923f6a5159f236d1",
+        "a97f28bbf20ead4cbd23b63ee01e77af"
+      ]
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "rawHashes": [
+        "c74d30a32132dd00a1f9e4c526d1eeee",
+        "92973974f4631dbee17c3ab56383d986"
+      ]
+    }
+  ],
+  "footprint": [
+    "public.campaign_assets",
+    "public.campaign_enrollments",
+    "public.campaign_events",
+    "public.campaign_workspace",
+    "public.campaigns",
+    "public.company_contacts",
+    "public.company_primary_cases",
+    "public.contacts",
+    "public.conversation_lenders",
+    "public.conversations",
+    "public.document_reviews",
+    "public.email_template_versions",
+    "public.email_templates",
+    "public.gmail_api_slots",
+    "public.gmail_api_usage",
+    "public.gmail_candidate_directory",
+    "public.gmail_candidates",
+    "public.gmail_pending_associations",
+    "public.gmail_runs",
+    "public.gmail_sent_usage",
+    "public.lead_workspace",
+    "public.leads",
+    "public.lender_contacts",
+    "public.lender_guideline_versions",
+    "public.mail_drafts",
+    "public.mail_recipient_selections",
+    "public.mail_uploads",
+    "public.operational_settings",
+    "public.opportunities",
+    "public.opportunity_inbox",
+    "public.opportunity_tasks",
+    "public.opportunity_workspace",
+    "public.process_state_history",
+    "public.suppressions",
+    "public.tasks",
+    "public.underwriting_runs",
+    "public.underwriting_setting_versions",
+    "public.underwriting_settings",
+    "public.verifications"
+  ],
+  "roles": ["anon", "authenticated"],
+  "expectedOwner": "supabase_admin",
+  "preserve": [
+    "data",
+    "service_role",
+    "owners",
+    "RLS",
+    "policies",
+    "view_definitions",
+    "column_ACL",
+    "functions_EXECUTE",
+    "defaults",
+    "Storage",
+    "memberships"
+  ],
+  "timeouts": { "lockMs": 2000, "statementMs": 15000 },
+  "sourceDigests": {
+    "candidate": "aa6a4baeec369b8df455bd36e0a04b1ad89b8fb2b8197792e364378c8ffb244a",
+    "matrix": "38c17a940b1ffb6c11e1351a3f795a0337540cb7902a4fff39f01e7c5778652e",
+    "acceptedVR1": "82a791d8bb24537a9689a0d633b069eb565a829352baa929c1fe49b5b24b869a"
+  },
+  "realCalls": 0,
+  "instantlyConsumed": 43
+}

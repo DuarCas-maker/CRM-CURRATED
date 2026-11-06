@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-31",
+  "mode": "C1_local_only",
+  "head": "fb9f2015e682fc0704340530425322efc62c601b",
+  "baselinePublicFiles": 621,
+  "unchangedBaselinePublicFiles": 604,
+  "files": [
+    {
+      "path": "src/components/integrations.tsx",
+      "baselineSha256": "aca056c39abb4c6bf72264508b53a6de03a31f146a6c2610688bdeb1130fa61c",
+      "sha256": "30e2cfe35b4032f1604bca2bbd065ed689b9d755ed81e8115fcef16fcdb65eab"
+    },
+    {
+      "path": "src/lib/composio-bindings.ts",
+      "baselineSha256": null,
+      "sha256": "a4e9ed08fb2cda57a8a73a23fae299a67b787d599f75bee6d5ec1fe8ff0669b2"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding.ts",
+      "baselineSha256": null,
+      "sha256": "5d67a868efa13570521d89937a607fdfef1449f86d7ff0501dd69a1624cf43b1"
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/composio/route.ts",
+      "baselineSha256": null,
+      "sha256": "ae9d0e3c665c4be5cca2a63a89d73b05802bf0ec50a51ef0a380c23790046929"
+    },
+    {
+      "path": "src/components/composio-account-bindings.tsx",
+      "baselineSha256": null,
+      "sha256": "10add3adb579319e364e7c134264c4a4774bb8116e0a3c06bd746efff75cedd0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/migrations/c-composio-bindings.local.sql",
+      "baselineSha256": null,
+      "sha256": "f06276b1d5b0d659815e0853d2167dafa2c45c60dfcc3a7ff37321146a6a6dd0"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-bindings.test.ts",
+      "baselineSha256": null,
+      "sha256": "10a45d5757a43937f05d61138a5792344351b024f6fa249b8dcfe4259282a523"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-api.test.ts",
+      "baselineSha256": null,
+      "sha256": "4e778e673df3bd212b918caad145ef6f0932cca1335fde99b9a3a234abcfd6f4"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-ui.test.ts",
+      "baselineSha256": null,
+      "sha256": "7c7c791b33f50293c399a89bb8b47416f889b97d697444bc7c26430019d7a1c6"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-composio-bindings.ts",
+      "baselineSha256": null,
+      "sha256": "1b08593a42840ff6ee0a07c102db02c149aa05cf5a354c670f725e3152de02bb"
+    }
+  ],
+  "modifiedExistingProductFiles": 1,
+  "addedProductSqlTestFixtureFiles": 9,
+  "protectedI01": 8,
+  "protectedB2Entries": 34,
+  "historicalMigrationsPreserved": 47,
+  "privateOperationalJsonPreserved": 49,
+  "localLinksChecked": 32,
+  "checks": {
+    "c1Tests": "24/24",
+    "selectedRegression": "73/73",
+    "total": "97/97 (Node counts include parent groups)",
+    "normalRunnerCompatibility": "passed; duplicate coverage not added to total",
+    "typecheck": "passed",
+    "format": "passed",
+    "diffCheck": "passed",
+    "browserFixtureBundle": "compiled; not visually inspected"
+  },
+  "externalCalls": 0,
+  "envFilesRead": false,
+  "messagesSent": 0,
+  "remoteChanges": false,
+  "instantlyConsumed": 43,
+  "productProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "C2Implemented": false,
+  "C3Implemented": false,
+  "pending": [
+    "C2 verifier/evidence with fake dependencies",
+    "C3 composition",
+    "Visual/keyboard/responsive QA",
+    "Full standalone build (inherited Windows EPERM)",
+    "Independent PostgreSQL contention",
+    "Remote catalog, final migration numbering and release"
+  ]
+}

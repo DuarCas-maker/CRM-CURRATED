@@ -1,3 +1,4 @@
+import { fakeBrandEnvelope } from "./fixtures/pipeline-os-s02-brand-delivery";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
@@ -34,6 +35,7 @@ test("forwarding sends the original encrypted attachment bytes and refuses alter
       fileId = randomUUID(),
       caseId = randomUUID();
     const msg = {
+      ...fakeBrandEnvelope(account.id),
       id: randomUUID(),
       account_id: account.id,
       opportunity_id: caseId,
@@ -102,7 +104,8 @@ test("forwarding sends the original encrypted attachment bytes and refuses alter
           );
         const path = url.pathname.split("/").pop();
         if (path === "reserve_gmail_api") return Response.json(0);
-        if (path === "recheck_outbox_delivery") return Response.json(true);
+        if (path === "admit_brand_dispatch")
+          return Response.json("11111111-1111-4111-8111-111111111111");
         if (path === "claim_outbox") {
           if (msg.status !== "queued") return Response.json([]);
           msg.status = "sending";

@@ -1,3 +1,4 @@
+import { requireMailSource } from "@/lib/server/mail-access";
 import {
   requireUser,
   serviceClient,
@@ -16,6 +17,7 @@ export async function GET(
   try {
     const { db } = await requireUser();
     const { id } = await params;
+    await requireMailSource(db, "document", id);
     const doc = checkDb(
       await db
         .from("documents")

@@ -22,3 +22,18 @@ Leer `docs/specs/pipeline-os/parallel-development.md` antes de editar. El usuari
 - Cada chat trabaja en su propio directorio/rama. Integración posterior revisada, con pruebas y autorización de push/merge/despliegue cuando corresponda. No reset/stash/clean/revert sobre cambios ajenos o snapshots para ocultar conflictos.
 
 <!-- pipeline-os-parallel:end -->
+
+<!-- pipeline-os-f2-f3:start -->
+
+# Pipeline OS: frentes F2/F3 aislados (05/11/2026)
+
+El usuario autorizó preparar una base común local conservando el WIP y abrir dos chats en worktrees aislados. Leer `docs/specs/pipeline-os/parallel-roadmap-20261105.md` y `docs/specs/pipeline-os/parallel-common-base-20261105.md`. La autorización inicial es de discovery/planificación, no implementación de producto, integración o publicación.
+
+- F2, conexión Gmail–Composio: escribir únicamente `docs/specs/pipeline-os/s02/connect-gmail/**`; leer su AGENTS. Preparar S02-CONNECT-T01, reutilizando identidad/marcas/bindings existentes. No generar enlaces OAuth ni activar Composio.
+- F3, piloto/QA: escribir únicamente `docs/specs/pipeline-os/operations-pilot/**`; leer su AGENTS. Preparar R02/R03/R04 y QA del delta con datos ficticios; no configurar datos reales ni arrancar el worker.
+- Modelos/rutas/componentes compartidos, worker, Dockerfiles, package/lock, AGENTS raíz, docs raíz y migraciones siguen bajo el coordinador. Todo cambio propuesto se entrega en un manifiesto; no hay transferencia implícita a F2/F3.
+- Verificar base y fuentes antes de editar. Si faltan runtime/dependencias, informar y continuar solo lo documental; no instalar ni copiar node_modules, env o .local de otro checkout. No leer credenciales/contadores privados, iniciar servicios, usar proveedores/Supabase remoto, enviar mensajes, verificar leads, repetir 048/049, hacer commit/push/merge/deploy o cambiar infraestructura desde estos frentes.
+- Gmail directo se conserva y Composio sigue deshabilitado; Instantly permanece en43 y ningún permiso/remanente de API se hereda. Registrar hechos/pruebas realmente observados, preguntas nuevas y límites. No repetir pilotos aceptados de recepción, adjuntos o importación.
+- Cada chat conserva su carpeta y rama; no reset/stash/clean/rebase para igualar fuentes. Las comprobaciones pueden generar evidencia local propia no sensible, sin copiar registros privados del coordinador.
+
+<!-- pipeline-os-f2-f3:end -->

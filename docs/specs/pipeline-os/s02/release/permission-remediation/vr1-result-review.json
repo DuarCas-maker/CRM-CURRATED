@@ -1,0 +1,99 @@
+{
+  "protocol": "VR1",
+  "date": "2026-11-01",
+  "source": "Operator-pasted metadata, canonical semantic transcription; not a byte-exact copy of original paste",
+  "scopeSha256": "72df8f3480d7779879ebcf373008d3df8d7746c3bc0a0c2109dfd25b8d6279a3",
+  "context": {
+    "version": "150008",
+    "sqlRole": "supabase_admin",
+    "readOnly": "on",
+    "searchPath": "pg_catalog, pg_temp",
+    "standardStrings": "on"
+  },
+  "originalComparison": "vr1-comparison.json retained; three unresolved lexical hashes against original PGlite18 deparse",
+  "supplementalMethod": "Only qualify known direct output slots and the c.id function argument of synthetic base47 source; observed metadata and original reference/comparator/SQL remain unchanged. No qualifier stripping or literal normalization.",
+  "checks": [
+    {
+      "key": "public.campaign_workspace",
+      "sourceMigration": "043_campaign_first_contact.sql",
+      "qualifiedOutputSlots": 25,
+      "qualificationsAdded": 26,
+      "rawHashMatches": true,
+      "lfHashMatches": true,
+      "lexicalMatches": true,
+      "syntheticRoundTripUnchanged": true,
+      "negativeDriftRejected": true
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "sourceMigration": "024_reply_engagement.sql",
+      "qualifiedOutputSlots": 28,
+      "qualificationsAdded": 28,
+      "rawHashMatches": true,
+      "lfHashMatches": true,
+      "lexicalMatches": true,
+      "syntheticRoundTripUnchanged": true,
+      "negativeDriftRejected": true
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "sourceMigration": "007_history.sql",
+      "qualifiedOutputSlots": 28,
+      "qualificationsAdded": 28,
+      "rawHashMatches": true,
+      "lfHashMatches": true,
+      "lexicalMatches": true,
+      "syntheticRoundTripUnchanged": true,
+      "negativeDriftRejected": true
+    }
+  ],
+  "comparison": {
+    "protocol": "VR1",
+    "results": [
+      {
+        "key": "public.campaign_workspace",
+        "status": "definition_matches_in_scope",
+        "rawHashMatches": true,
+        "lexicalMatches": true,
+        "metadataMatches": true
+      },
+      {
+        "key": "public.opportunity_inbox",
+        "status": "definition_matches_in_scope",
+        "rawHashMatches": true,
+        "lexicalMatches": true,
+        "metadataMatches": true
+      },
+      {
+        "key": "public.opportunity_tasks",
+        "status": "definition_matches_in_scope",
+        "rawHashMatches": true,
+        "lexicalMatches": true,
+        "metadataMatches": true
+      }
+    ],
+    "allViewsMatch": true,
+    "publicationApproved": false,
+    "targetIdentityAttested": false,
+    "permissionCorrectionApproved": false,
+    "instantlyConsumed": 43,
+    "externalCalls": 0
+  },
+  "remoteExecution": {
+    "authorized": 1,
+    "operatorReported": 1,
+    "agentExecuted": 0,
+    "retries": 0,
+    "authorizationConsumed": true
+  },
+  "operations": {
+    "newRemoteSql": 0,
+    "correctionApplied": false,
+    "deploys": 0,
+    "instantlyConsumed": 43,
+    "instantlyNew": 0
+  },
+  "permissionCorrectionApproved": false,
+  "publicationApproved": false,
+  "supplementalReferenceProvenance": "Derived expected representation of synthetic base47 source, not a new catalog capture. Context denotes the PG18 source fixture; fingerprints hash explicitly qualified source text and match operator-reported PG15 raw hashes."
+}

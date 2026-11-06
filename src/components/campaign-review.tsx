@@ -12,6 +12,11 @@ import { renderCampaignContent } from "@/lib/campaign-content";
 import type { Action } from "./crm";
 import { t } from "./ui";
 import { campaignPreviewValues } from "@/lib/campaign-templates";
+import {
+  accountPreparation,
+  snapshotPreparation,
+  sameBrandPreparation,
+} from "@/lib/brand-delivery";
 
 export function SendingBudgets({
   data,
@@ -153,7 +158,10 @@ export function CampaignReview({
   act: Action;
   close: () => void;
 }) {
-  const canManage = ["superadmin", "seller_admin"].includes(data.profile.role);
+  const canManage =
+    ["superadmin", "seller_admin"].includes(data.profile.role) &&
+    !!data.accounts.find((a) => a.id === campaign.account_id)?.brand_context
+      ?.can_campaign;
   const [audience, setAudience] = useState<CampaignAudience[]>([]),
     [selected, setSelected] = useState("");
   const [error, setError] = useState(""),
@@ -167,6 +175,14 @@ export function CampaignReview({
     [page, setPage] = useState(0);
   const [testKey, setTestKey] = useState(() => crypto.randomUUID());
   const [scheduledAt, setScheduledAt] = useState("");
+  const [brandReviewed, setBrandReviewed] = useState(false);
+  const brandPreparation = accountPreparation(
+    data.accounts.find((a) => a.id === campaign.account_id),
+  );
+  const brandCurrent = sameBrandPreparation(
+    brandPreparation,
+    snapshotPreparation(campaign.brand_snapshot),
+  );
   async function load() {
     if (!canManage) {
       setLoaded(true);
@@ -304,6 +320,52 @@ export function CampaignReview({
         {campaign.timezone} · {campaign.start_hour}:00–{campaign.end_hour}:00 ·{" "}
         {campaign.daily_limit}/24 h
       </p>
+      <p>
+        {t(locale, "Marca de la intención", "Intent brand")}:{" "}
+        {campaign.brand_snapshot?.brand_name ||
+          t(locale, "Pendiente de revisión", "Awaiting review")}
+      </p>
+      <label>
+        <input
+          type="checkbox"
+          checked={brandReviewed}
+          onChange={(e) => setBrandReviewed(e.target.checked)}
+        />
+        {t(
+          locale,
+          "Revisé la cuenta y la marca para esta operación.",
+          "I reviewed the account and brand for this operation.",
+        )}
+      </label>
+      {!brandCurrent && (
+        <p className="info-banner" role="status">
+          {t(
+            locale,
+            "La marca está pendiente o la preparación cambió. Revisa antes de activar o probar.",
+            "The brand is pending or preparation changed. Review before activating or testing.",
+          )}
+        </p>
+      )}
+      {!brandCurrent &&
+        canManage &&
+        brandPreparation &&
+        ["draft", "paused"].includes(campaign.status) && (
+          <button
+            className="button"
+            disabled={busy || !brandReviewed || data.demo}
+            onClick={() =>
+              void run(async () => {
+                await act("prepare_campaign", {
+                  id: campaign.id,
+                  brand_preparation: brandPreparation,
+                });
+                close();
+              })
+            }
+          >
+            {t(locale, "Guardar revisión de marca", "Save brand review")}
+          </button>
+        )}
       <label className="field">
         {t(locale, "Buscar destinatario", "Find recipient")}
         <input
@@ -388,6 +450,7 @@ export function CampaignReview({
               await act("campaign_audience_settings", {
                 id: campaign.id,
                 excluded_contact_ids: excluded,
+                brand_preparation: brandPreparation,
               });
               await load();
             })
@@ -429,6 +492,8 @@ export function CampaignReview({
               busy ||
               dirty ||
               data.demo ||
+              !brandCurrent ||
+              !brandReviewed ||
               !!previewError ||
               contact.reason !== "eligible" ||
               excluded.includes(contact.contact_id)
@@ -442,6 +507,7 @@ export function CampaignReview({
                     campaign_id: campaign.id,
                     contact_id: contact.contact_id,
                     request_key: testKey,
+                    brand_preparation: brandPreparation,
                   }),
                 });
                 const result = await response.json();
@@ -499,6 +565,8 @@ export function CampaignReview({
               !eligible.length ||
               !!missing.length ||
               !scheduledAt ||
+              !brandCurrent ||
+              !brandReviewed ||
               data.demo
             }
             onClick={() =>
@@ -506,6 +574,7 @@ export function CampaignReview({
                 await act("schedule_campaign", {
                   id: campaign.id,
                   scheduled_at: new Date(scheduledAt).toISOString(),
+                  brand_preparation: brandPreparation,
                 });
                 close();
               })
@@ -528,11 +597,24 @@ export function CampaignReview({
             !loaded ||
             !eligible.length ||
             !!missing.length ||
+            !brandCurrent ||
+            !brandReviewed ||
             data.demo
           }
           onClick={() =>
             void run(async () => {
-              await act("activate_campaign", { id: campaign.id });
+              if (!brandCurrent || !brandReviewed)
+                throw new Error(
+                  t(
+                    locale,
+                    "Revisa la marca antes de activar.",
+                    "Review the brand before activating.",
+                  ),
+                );
+              await act("activate_campaign", {
+                id: campaign.id,
+                brand_preparation: brandPreparation,
+              });
               close();
             })
           }

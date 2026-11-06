@@ -1,11 +1,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { CampaignAudience } from "../campaign-delivery";
 import { checkDb, HttpError } from "./supabase";
+import { deliveryResult } from "./brand-delivery";
 
 export function campaignDb<T>(result: {
   data: T;
   error: { code?: string; message: string } | null;
 }): T {
+  if (result.error?.message.startsWith("BRAND_")) return deliveryResult(result);
   if (
     result.error &&
     ["PGRST202", "PGRST204", "42703", "42883"].includes(result.error.code || "")

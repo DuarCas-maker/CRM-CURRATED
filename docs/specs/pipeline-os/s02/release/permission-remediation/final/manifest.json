@@ -1,0 +1,192 @@
+{
+  "id": "PRM-FINAL-r1",
+  "date": "2026-11-01",
+  "sdd": "STRICT",
+  "mode": "final_sql_and_protocol_prepared_not_executed_remotely",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "candidateCommit": null,
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/README.md",
+      "bytes": 8108,
+      "sha256": "b486250c6b869d5816e36d8de2bae728ef558b82a34a8d87b0bb78e85653d295"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/048_restore_scoped_public_permissions.sql",
+      "bytes": 47667,
+      "sha256": "75548207a9c465d5151c2f2a6e727fd38cafee2b185d51ff57c02509365d4dd2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/README.md",
+      "bytes": 6033,
+      "sha256": "62bca9887829d01480e2e2f5570623e3356b3aa68e0ca5d439c884acd2bb76eb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/lock-footprint.json",
+      "bytes": 6938,
+      "sha256": "c2665825a3350ae2e90b0a06bf2160106255a404cf9f77d78a6b9c282f1fa8d3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/postflight.sql",
+      "bytes": 39602,
+      "sha256": "ffd5090202fecfab3bbbbf51a048693d74b486e757de6c1c3fdfea2737589db6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/protocol.md",
+      "bytes": 10207,
+      "sha256": "02b5cbd14e8a1a76ec0d95dddfe3022d9010a5d4395f14be85dddb18580f32d8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/release-contract.json",
+      "bytes": 54777,
+      "sha256": "3c883ea1c38971ac4af058c7800166d3ba0b846a97a228ad85025138b59a1a1e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/verification.md",
+      "bytes": 7156,
+      "sha256": "25130b3f90df313ffeaea52db146794463081ca986a2216440c8b0133822d6a4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/offline-runbook.md",
+      "bytes": 4123,
+      "sha256": "93672cc1c5d4fd49a49e35d14b5f8b609d60a221e2e7e74992abfa1131561c31"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/tasks.md",
+      "bytes": 3687,
+      "sha256": "ec4f60a36bddd60fc3577757f17c9680e06f2323f68f01c06be5c0caacddbcd1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/runbook.md",
+      "bytes": 15264,
+      "sha256": "c9ac22716eeb21b5d78f7b91d6179620b86e658c396075e99bfb9942a0fe7028"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/tasks.md",
+      "bytes": 7050,
+      "sha256": "d7177c59f27e88621adc2b99a8e8234e336423ad3b36347f6a4b066356fc152d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/verification.md",
+      "bytes": 9522,
+      "sha256": "ba3e8c030b96674d88a20dd1173f9742e7125a713be114837b201de98551de24"
+    },
+    {
+      "path": "tests/pipeline-os-permission-finalization.test.ts",
+      "bytes": 11397,
+      "sha256": "7f8dde71fc0ea99b08a1265738d2309b9c05edc26b462e32a1f61922be5edc83"
+    }
+  ],
+  "ordinal": {
+    "value": "048",
+    "reservation": "local_coordinator_only",
+    "remoteHistoryAttested": false,
+    "autodiscoveryMigrationAdded": false,
+    "deliveryPath": "docs/specs/pipeline-os/s02/release/permission-remediation/final/048_restore_scoped_public_permissions.sql",
+    "laterMigrationPath": "supabase/migrations/048_restore_scoped_public_permissions.sql"
+  },
+  "sqlSha256": "75548207a9c465d5151c2f2a6e727fd38cafee2b185d51ff57c02509365d4dd2",
+  "postflightSha256": "ffd5090202fecfab3bbbbf51a048693d74b486e757de6c1c3fdfea2737589db6",
+  "contractSha256": "3c883ea1c38971ac4af058c7800166d3ba0b846a97a228ad85025138b59a1a1e",
+  "scope": {
+    "DCLRelations": 28,
+    "columnsGuarded": 329,
+    "lockFootprint": 39,
+    "additionalImplicitLocks": 11,
+    "anonEmpty": 28,
+    "authenticatedSelectOnly": 23,
+    "authenticatedCrud": 2,
+    "authenticatedNone": 3,
+    "rolesChanged": ["anon", "authenticated"],
+    "serviceRightsPreserved": true,
+    "dataDml": false,
+    "defaultsChanged": false,
+    "functionsExecuteChanged": false,
+    "viewsChanged": false
+  },
+  "checks": {
+    "newTests": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "file": "tests/pipeline-os-permission-finalization.test.ts",
+      "networkGuard": ".local/pipeline-os/s02-i01/offline.mjs"
+    },
+    "runtime": "Node22.23.4/PGlite0.5.8/PostgreSQL180003",
+    "typecheck": "tsc --noEmit --incremental false: pass",
+    "json": "pass",
+    "localLinks": 89,
+    "diff": "pass",
+    "secretPatterns": "high_confidence_pass_not_full_audit",
+    "realRoleFlagsSource": "Accepted PD-R1 payload SHA256 9aaaaf19fc497169b54b710866bc0af99f106ab88c73c681a69cc59ca404d430; three app-role flags confirmed without new query",
+    "sameSessionActualLocks": 39,
+    "independentConnectionContention": "not_verified",
+    "nativePG15CorrectiveExecution": "not_executed"
+  },
+  "preservation": {
+    "baselinePublicFiles": 700,
+    "existingDocumentationChanges": [
+      "docs/specs/pipeline-os/s02/release/verification.md",
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/runbook.md",
+      "docs/specs/pipeline-os/s02/release/permission-remediation/tasks.md",
+      "docs/specs/pipeline-os/s02/release/permission-remediation/README.md",
+      "docs/specs/pipeline-os/s02/release/permission-remediation/offline-runbook.md"
+    ],
+    "unexpectedChanges": [],
+    "payloadUnchanged": 100,
+    "migrationsUnchanged": 47,
+    "privateOperationalHashesUnchanged": 49,
+    "protectedDiagnosticFiles": 32,
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "sourceWorkerDependenciesUnchanged": true,
+    "acceptedTestsNotRerun": true
+  },
+  "gates": {
+    "localSqlAndProtocolPrepared": true,
+    "readyForRemoteApplication": false,
+    "backupVerified": false,
+    "restoreProcedureVerified": false,
+    "currentDestinationAndOrdinalReconciled": false,
+    "windowAgreed": false,
+    "liveDDLExclusionConfirmed": false,
+    "independentContentionVerified": false,
+    "productionAuthorized": false,
+    "publicationAuthorized": false
+  },
+  "proposedExecutionBudget": {
+    "normalSqlScripts": 2,
+    "correction": 1,
+    "readOnlyPostflight": 1,
+    "conditionalRollbackCleanup": 1,
+    "maximumIncludingCleanup": 3,
+    "retries": 0,
+    "separateRemoteRehearsalNotIncluded": true,
+    "notHttpRequestEstimate": true
+  },
+  "operations": {
+    "apiCalls": 0,
+    "remoteSql": 0,
+    "remoteMigrations": 0,
+    "pushes": 0,
+    "deploys": 0,
+    "serviceControl": 0,
+    "sends": 0,
+    "paidVerifications": 0,
+    "credentialFilesRead": 0,
+    "instantly": {
+      "consumed": 43,
+      "new": 0
+    },
+    "gmailDirect": "preserved",
+    "composio": "disabled_by_preserved_scope_not_requeried"
+  },
+  "limits": [
+    "16 delta tests and one-session locks are not native PG15 or independent concurrency evidence.",
+    "048 local reservation does not authenticate destination or prove remote migration history.",
+    "Pre-commit receipt alone is not commit evidence.",
+    "Prepared SQL does not authorize execution, backup creation, service controls or promotion."
+  ],
+  "nextStep": "Complete operational evidence of backup/recovery, fresh destination/ordinal, independent contention, approved window and DDL exclusion, then obtain exact execution authorization."
+}

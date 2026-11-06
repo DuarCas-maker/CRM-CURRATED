@@ -1,9 +1,17 @@
+import { mailAccess, requireMailSnapshot } from "./mail-access";
+import { deliveryContext, queueBrandMail } from "./brand-delivery";
 import { gmail } from "./google";
-import { checkDb, HttpError, serviceClient } from "./supabase";
+import { checkDb, HttpError } from "./supabase";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { outgoingMailSchema } from "../mail-manager";
 import type { Profile } from "../domain";
-export async function senderSignature(db: SupabaseClient, accountId: string) {
+export async function senderSignature(
+  db: SupabaseClient,
+  accountId: string,
+  preparation?: unknown,
+  caseId?: string,
+) {
+  await deliveryContext(db, accountId, preparation, "mail", caseId || null);
   if (!checkDb(await db.rpc("can_send", { account: accountId })))
     throw new HttpError(403, "Sender permission required");
   const account = checkDb(
@@ -18,6 +26,10 @@ export async function senderSignature(db: SupabaseClient, accountId: string) {
   const settings = await gmail<{ signature?: string; displayName?: string }>(
     accountId,
     `settings/sendAs/${encodeURIComponent(account.email)}`,
+    {},
+    async () => {
+      await deliveryContext(db, accountId, preparation, "mail", caseId || null);
+    },
   );
   if (
     (settings.signature || "").length > 100000 ||
@@ -79,7 +91,7 @@ export async function messageFiles(
     incoming.push(...rows);
     if (rows.length < 1000) break;
   }
-  const service = serviceClient();
+  const service = db;
   const sent = headers.length
     ? checkDb(
         await service
@@ -94,6 +106,9 @@ export async function messageFiles(
           .eq("status", "sent"),
       ) || []
     : [];
+  for (const row of sent)
+    for (const file of row.attachment_snapshot || [])
+      await requireMailSnapshot(db, row.id, file.id);
   const docIds = sent.flatMap((s) => s.attachment_ids || []),
     gmailIds = sent.flatMap((s) => s.gmail_file_ids || []),
     uploadIds = sent.flatMap((s) => s.upload_ids || []);
@@ -166,7 +181,13 @@ export async function sendManagedMail(
     !checkDb(await db.rpc("can_mail_case", { case_id: input.opportunity_id }))
   )
     throw new HttpError(403, "Case access required");
-  const signature = await senderSignature(db, input.account_id);
+  await mailAccess(db, input.opportunity_id, true);
+  const signature = await senderSignature(
+    db,
+    input.account_id,
+    input.brand_preparation,
+    input.opportunity_id,
+  );
   const common = {
     case_id: input.opportunity_id,
     account: input.account_id,
@@ -188,28 +209,36 @@ export async function sendManagedMail(
   };
   const result =
     input.mode === "forward"
-      ? checkDb(
-          await db.rpc("queue_mail_forward", {
-            input: {
-              ...common,
-              forward_message_id: input.forward_message_id,
-              forward_file_ids: input.forward_file_ids,
-            },
-          }),
+      ? await queueBrandMail(
+          db,
+          "queue_mail_forward",
+          {
+            ...common,
+            forward_message_id: input.forward_message_id,
+            forward_file_ids: input.forward_file_ids,
+          },
+          input.brand_preparation,
         )
       : input.mode === "lenders"
-        ? checkDb(
-            await db.rpc("queue_mail_lenders", {
-              input: { ...common, targets: input.targets },
-            }),
+        ? await queueBrandMail(
+            db,
+            "queue_mail_lenders",
+            { ...common, targets: input.targets },
+            input.brand_preparation,
           )
         : input.mode === "reply" && input.lender_id
-          ? checkDb(
-              await db.rpc("queue_lender_reply", {
-                input: { ...common, lender: input.lender_id },
-              }),
+          ? await queueBrandMail(
+              db,
+              "queue_lender_reply",
+              { ...common, lender: input.lender_id },
+              input.brand_preparation,
             )
-          : checkDb(await db.rpc("queue_mail_email", common));
+          : await queueBrandMail(
+              db,
+              "queue_mail_email",
+              common,
+              input.brand_preparation,
+            );
   if (input.draft_id)
     checkDb(
       await db

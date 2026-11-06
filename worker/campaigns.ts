@@ -24,6 +24,23 @@ export async function scheduleCampaigns() {
     )!;
     if (campaign.status !== "active") continue;
     if (
+      !checked(
+        await client.rpc("brand_campaign_ready", { campaign: campaign.id }),
+      )
+    ) {
+      checked(
+        await client
+          .from("campaigns")
+          .update({ status: "paused" })
+          .eq("id", campaign.id),
+      );
+      await alertAdmins(
+        `brand:${campaign.id}`,
+        "A campaign requires a current brand review",
+      );
+      continue;
+    }
+    if (
       campaign.requires_application !== false &&
       (process.env.PUBLIC_FORM_ENABLED !== "true" ||
         !process.env.FORM_DECLARATION_VERSION ||

@@ -1,0 +1,44 @@
+{
+  "id": "AF-CVAR-r1-operator-result",
+  "reviewedOn": "2026-11-05",
+  "source": "operator_results_pasted_in_this_chat",
+  "independentAgentRemoteCalls": 0,
+  "explicitCompleteScriptSuccessAnswerReceived": false,
+  "pipeline_os_abc_application": {
+    "stage": "checked_before_commit",
+    "ordinal": "049",
+    "protocol": "ABC-FINAL-r1",
+    "targetsOk": true,
+    "contractSha256": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c",
+    "protectedAfter": "6bb4165d697a9688d01aed2962f57cac",
+    "protectedBefore": "6bb4165d697a9688d01aed2962f57cac",
+    "preservationMatches": true,
+    "gmailProviderExpected": "gmail_oauth",
+    "composioEnabledExpected": false
+  },
+  "pipeline_os_abc_postflight": {
+    "context": {
+      "sqlRole": "supabase_admin",
+      "version": "150008",
+      "readOnly": "on",
+      "searchPath": "pg_catalog, pg_temp"
+    },
+    "ordinal": "049",
+    "rolesOk": true,
+    "protocol": "ABC-FINAL-r1",
+    "targetsOk": true,
+    "changedObjects": {
+      "indexes": 27,
+      "schemas": 4,
+      "policies": 29,
+      "triggers": 15,
+      "functions": 132,
+      "relations": 25,
+      "constraints": 97
+    },
+    "contractSha256": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c",
+    "protectedFingerprint": "6bb4165d697a9688d01aed2962f57cac",
+    "gmailProviderExpected": "gmail_oauth",
+    "composioEnabledExpected": false
+  }
+}

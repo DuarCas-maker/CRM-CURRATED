@@ -1,0 +1,989 @@
+{
+  "id": "PRM-20261101",
+  "date": "2026-11-01",
+  "mode": "planning_only_not_executable",
+  "source": "../permission-diagnostic/result-review.json",
+  "inputSha256": "9aaaaf19fc497169b54b710866bc0af99f106ab88c73c681a69cc59ca404d430",
+  "externalCalls": 0,
+  "instantly": {
+    "consumed": 43,
+    "new": 0
+  },
+  "requirement": "PRM-FR03",
+  "count": 70,
+  "decision": "preserve_all_70_service_role_differences_in_PRM1; separate_review_required_before_any_revoke",
+  "evidenceLimit": "Literal .rpc and SQL references only; no inference of nonuse from absence; caller database role requires review.",
+  "functions": [
+    {
+      "key": "public.mail_is_team(text)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "sql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/022_lender_company_conversations.sql",
+        "supabase/migrations/023_lender_directory_portals.sql",
+        "supabase/migrations/024_reply_engagement.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.mail_index_lenders()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/020_mail_channels.sql",
+        "supabase/migrations/022_lender_company_conversations.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.mail_case_stats(uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": false,
+      "language": "sql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/conversations/channels/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/021_mail_manager.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.mail_lender_for(text)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "sql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/022_lender_company_conversations.sql",
+        "supabase/migrations/023_lender_directory_portals.sql",
+        "supabase/migrations/024_reply_engagement.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.track_process_state()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/042_financing_control_dashboard.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_audience(uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/lib/server/campaign-delivery.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": [
+        "supabase/migrations/039_campaign_delivery_controls.sql",
+        "supabase/migrations/043_campaign_first_contact.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_index_addresses()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/019_incremental_gmail.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.lender_primary_contact()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/020_mail_channels.sql",
+        "supabase/migrations/023_lender_directory_portals.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.mail_send_status(uuid[])",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "sql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/016_manual_email.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.ai_usage_summary(integer)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": false,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/ai/usage/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/041_ai_service_usage.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_reply_rows(uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_copy_reply_intent()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/024_reply_engagement.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_manual_engagement()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/024_reply_engagement.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.mail_company_domain(text)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": false,
+      "language": "sql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/022_lender_company_conversations.sql",
+        "supabase/migrations/023_lender_directory_portals.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.queue_lender_reply(jsonb)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/022_lender_company_conversations.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.queue_mail_forward(jsonb)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/021_mail_manager.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.queue_mail_lenders(jsonb)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/021_mail_manager.sql",
+        "supabase/migrations/034_lender_document_packages.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_sending_budgets()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "sql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/campaigns/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/039_campaign_delivery_controls.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_message_engagement()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/024_reply_engagement.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.record_campaign_delivery()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_audience_v42(uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_apply_rejection(uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/024_reply_engagement.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_record_case_closure()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/024_reply_engagement.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.record_campaign_lifecycle()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.validate_lender_directory()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/023_lender_directory_portals.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_contact_facts(uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_delivery_stats(uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/029_campaign_templates.sql",
+        "supabase/migrations/039_campaign_delivery_controls.sql",
+        "supabase/migrations/043_campaign_first_contact.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.mail_pending_threads(integer)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "sql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/mail/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": [
+        "supabase/migrations/021_mail_manager.sql",
+        "supabase/migrations/024_reply_engagement.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_contact_summary(uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "sql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_activity_page(integer)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "sql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.reject_underwriting(uuid, text)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/underwriting/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/038_underwriting_human_review.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.move_bank_documents(jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/actions/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/035_bank_document_management.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.request_underwriting(uuid, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/underwriting/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": [
+        "supabase/migrations/027_underwriting.sql",
+        "supabase/migrations/032_bank_documents.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.validate_lender_contact_address()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/023_lender_directory_portals.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_protect_requested_candidate()",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/019_incremental_gmail.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.register_lender_contact(uuid, text)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/020_mail_channels.sql",
+        "supabase/migrations/022_lender_company_conversations.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_center(text, integer, text)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.import_lender_directory(jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/lenders/import/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/030_lender_management.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.save_operational_settings(jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/operations/settings/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/031_operational_dashboard.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.manage_case_document(text, jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/032_bank_documents.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.save_campaign_template_v37(jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/039_campaign_delivery_controls.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.save_underwriting_settings(jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/underwriting/settings/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/028_underwriting_settings.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.case_document_command(text, jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/lib/server/document-review.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/025_document_review.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.crm_command_v31_banks(text, jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/032_bank_documents.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.mail_index_lender_message(uuid, boolean)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/022_lender_company_conversations.sql",
+        "supabase/migrations/023_lender_directory_portals.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_prepared_leads(text, text, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/045_campaign_readiness.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.underwriting_snapshot_current(uuid, jsonb)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "sql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/027_underwriting.sql",
+        "supabase/migrations/032_bank_documents.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_readiness_page(text, text, integer)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/campaigns/center/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/045_campaign_readiness.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.crm_command_v24_documents(text, jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/025_document_review.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.register_mail_contact(uuid, text, text, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/mail/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": [
+        "supabase/migrations/021_mail_manager.sql",
+        "supabase/migrations/022_lender_company_conversations.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_leads_page(uuid, uuid, text, integer)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_review_candidate_attachments(uuid, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/gmail/attachments/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/019_incremental_gmail.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.associate_live_mail_v23(uuid, uuid, uuid, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/024_reply_engagement.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.crm_command_v26_underwriting(text, jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/027_underwriting.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.register_named_lender_contact(uuid, text, text)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/lib/server/mail-actions.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": [
+        "supabase/migrations/022_lender_company_conversations.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.first_contact_candidates(text, text, uuid, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/043_campaign_first_contact.sql",
+        "supabase/migrations/045_campaign_readiness.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.campaign_contacts_page(uuid, text, text, integer)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "sql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/043_campaign_first_contact.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.case_document_command_internal(text, jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/025_document_review.sql",
+        "supabase/migrations/032_bank_documents.sql",
+        "supabase/migrations/033_company_applications.sql",
+        "supabase/migrations/036_document_intake.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.approve_underwriting(uuid, text, text, text, text)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/underwriting/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/027_underwriting.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.save_lender_guidelines(uuid, jsonb, integer, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/lenders/guidelines/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": ["supabase/migrations/030_lender_management.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.crm_command_v37_campaign_delivery(text, jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/039_campaign_delivery_controls.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_select_attachments(uuid, uuid, jsonb, boolean)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/gmail/attachments/route.ts",
+          "scope": "db_context_not_assumed"
+        },
+        {
+          "path": "src/app/api/gmail/cases/[id]/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": [
+        "supabase/migrations/018_gmail_attachment_selection.sql",
+        "supabase/migrations/019_incremental_gmail.sql",
+        "supabase/migrations/026_gmail_import_thread_attachments.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.crm_command_v28_campaign_templates(text, jsonb, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/029_campaign_templates.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.queue_campaign_test(uuid, uuid, text, text, text, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": ["supabase/migrations/039_campaign_delivery_controls.sql"],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.gmail_attachment_list(uuid, uuid, uuid, text[], boolean, integer)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/app/api/gmail/attachments/route.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": [
+        "supabase/migrations/018_gmail_attachment_selection.sql",
+        "supabase/migrations/026_gmail_import_thread_attachments.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.queue_manual_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/016_manual_email.sql",
+        "supabase/migrations/020_mail_channels.sql",
+        "supabase/migrations/034_lender_document_packages.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.queue_lender_emails(uuid, uuid, uuid, jsonb, text, text, uuid[], uuid[], uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/020_mail_channels.sql",
+        "supabase/migrations/034_lender_document_packages.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.operational_dashboard(text, uuid, text, uuid, timestamp with time zone, text, integer)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": [
+        "supabase/migrations/031_operational_dashboard.sql",
+        "supabase/migrations/034_lender_document_packages.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.financing_control_dashboard(text, uuid, text, uuid, timestamp with time zone, text, integer, text, integer)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [
+        {
+          "path": "src/lib/server/workspace.ts",
+          "scope": "db_context_not_assumed"
+        }
+      ],
+      "sqlMentions": [
+        "supabase/migrations/042_financing_control_dashboard.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    },
+    {
+      "key": "public.queue_mail_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid[], text[], text[], uuid, uuid, uuid, uuid, text, text, uuid)",
+      "sourceRoleDifference": "service_role_only",
+      "currentDecision": "preserve_until_separate_callchain_review; excluded_from_PRM1_revokes",
+      "expectedServiceRole": false,
+      "definer": true,
+      "language": "plpgsql",
+      "literalRpcEvidence": [],
+      "sqlMentions": [
+        "supabase/migrations/021_mail_manager.sql",
+        "supabase/migrations/022_lender_company_conversations.sql",
+        "supabase/migrations/024_reply_engagement.sql"
+      ],
+      "evidenceLimit": "literal scan; dynamic/indirect calls and role context require review; absence is not proof of nonuse"
+    }
+  ]
+}

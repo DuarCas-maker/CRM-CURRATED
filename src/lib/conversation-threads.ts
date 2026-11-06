@@ -16,6 +16,7 @@ export type ThreadHeader = Pick<
   reply_intent?: import("./mail-interest").ReplyIntent | null;
 };
 export type ThreadSummary = {
+  can_reply?: boolean;
   id: string;
   conversation_ids: string[];
   opportunity_id: string;
@@ -38,6 +39,7 @@ export type CaseMailContext = {
   last_client_message_at: string | null;
   documents: { required: number; approved: number; ready: boolean };
   followup: { title: string; at: string | null } | null;
+  can_write?: boolean;
 };
 export type MailChannels = {
   conversations: Conversation[];
@@ -180,16 +182,18 @@ export function summarizeOriginalThreads(
       subject: latestConversation.subject,
       sender: latest?.sender || latestConversation.recipient_email || "",
       snippet: readableMail(latest?.body || "").text.slice(0, 220),
-      sent_at: latest?.sent_at || latestConversation.updated_at,
+      sent_at: latest?.sent_at || latestConversation.updated_at || "",
       category,
       lender_ids: lenderIds,
       participants,
+      can_reply: group.every((c) => c.can_reply === true),
       unread: group.some((c) => c.needs_attention),
     });
   }
   return result.sort(
     (a, b) =>
-      Date.parse(b.sent_at) - Date.parse(a.sent_at) || a.id.localeCompare(b.id),
+      (Date.parse(b.sent_at) || 0) - (Date.parse(a.sent_at) || 0) ||
+      a.id.localeCompare(b.id),
   );
 }
 
@@ -319,7 +323,8 @@ export function summarizeThreads(
   // Case association determines history visibility; reply intent only drives commercial workflows.
   return result.sort(
     (a, b) =>
-      Date.parse(b.sent_at) - Date.parse(a.sent_at) || a.id.localeCompare(b.id),
+      (Date.parse(b.sent_at) || 0) - (Date.parse(a.sent_at) || 0) ||
+      a.id.localeCompare(b.id),
   );
 }
 

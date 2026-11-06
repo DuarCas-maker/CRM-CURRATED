@@ -1,0 +1,47 @@
+{
+  "protocol": "AF-PRE-r1",
+  "reviewedOn": "2026-11-04",
+  "source": "operator_result_pasted_in_this_chat",
+  "observedAt": null,
+  "catalogResultAccepted": true,
+  "separateScriptSuccessMessageProvided": false,
+  "context": {
+    "sqlRole": "supabase_admin",
+    "version": "150008",
+    "readOnly": "on",
+    "isolation": "repeatable read",
+    "searchPath": "pg_catalog, pg_temp"
+  },
+  "complete": true,
+  "catalogOk": true,
+  "preconditionsOk": true,
+  "mismatchCount": 0,
+  "mismatches": [],
+  "detailsTruncated": false,
+  "allReportedChecksTrue": true,
+  "queue": {
+    "paused": 0,
+    "queued": 0,
+    "sending": 0,
+    "uncertain": 0,
+    "activeCampaigns": 0,
+    "activeEnrollments": 0
+  },
+  "legacyReviewRequired": false,
+  "contractSha256": "8fafee3c08c3aea1941b91058fcc9594560d280ede7b66724583b5167f932321",
+  "migrationSha256": "e4626cb612868f4cd13ebce98ca3a6b5fea0e51f7d73b05f0e4935dd3be0b604",
+  "publicationReady": false,
+  "authorization": {
+    "manualReadBudget": 1,
+    "operatorReadResultReceived": 1,
+    "remainingAuthorizedReads": 0,
+    "agentRemoteReads": 0,
+    "application049Authorized": false
+  },
+  "limits": [
+    "Point-in-time catalog evidence; no freshness timestamp supplied",
+    "Does not attest worker pause, native049 application or final views",
+    "Does not attest backup, build, installer, cutover or publication"
+  ],
+  "instantly": { "consumed": 43, "new": 0 }
+}

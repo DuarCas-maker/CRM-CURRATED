@@ -1,0 +1,15 @@
+# Rollout y recuperación de B
+
+Actualización B2: pasos1–3 y verificación funcional del4 ejecutados solo localmente; [evidencia](b2-verification.md). El rollback del candidato completo se ensayó en memoria y046/047 siguen intactas. Ningún paso remoto ejecutado, sin numeración final. Visual/build/contención PostgreSQL y pasos5–7 pendientes; C Composio sigue sin activar. Instantly43.
+
+B1 se implementó y probó offline; pasos1/2 ejecutados solo localmente, con QA visual pendiente. [Evidencia](b1-verification.md). B2 y promoción no ejecutados. Presupuesto externo0 e Instantly43. No crear marcas/membresías/mapeos reales, generar OAuth real, ejecutar SQL remoto, activar webhook/campaña o publicar.
+
+1. Autorizar B1 local sobre manifiesto y revalidar huellas. Trabajar en este checkout, sin editar S01 o sincronizar su rama. Crear candidatos protegidos por marcador, fuera de supabase/migrations; no elegir número final todavía.
+2. Implementar/probar B1 con SQL/Google/transporte ficticios y UI acotada. Mantener A y directo; sin asociaciones Composio. Entregar límites, no promover sus comandos/UI por separado de B2.
+3. Autorizar B2 y revalidar los paths propios/compartidos tras B1. Implementar snapshots/guardas de todas las salidas, adaptar fixtures necesarias sin relajar permisos y ensayar orden de revocación/admisión.
+4. Revisar conjunto B: transacciones/errores/lectores, SQL aditivo desde001–047+A, regresión pertinente y recuperación. No repetir pruebas reales de envío/adjuntos ni importación/verificación aceptadas. El build completo pendiente por EPERM Windows necesita una validación en entorno compatible; no llamarlo aprobado por pasar TypeScript.
+5. Antes de promover: T00-02-I con lectura de catálogo/RLS/grants/Storage y agregados de legado bajo permiso propio, versiones web/worker y escritores de servicio. Confirmar recuperación para el cambio sin ejecutar hoy backups o tocar infraestructura. Probar locks PostgreSQL multiconexión y fijar migraciones finales/ownership. No reaplicar030/046/047.
+6. Release futuro autorizado: coordinar web/worker/SQL para no dejar binarios anteriores que ignoren marca o filtren configuración. Pausar despachos afectados, identificar sending/uncertain y revisar marca/membresías/cuentas/pendientes; no rellenar legacy y reanudarlo automáticamente. Asignaciones reales se aprueban por cuenta, sin inferirlas de los fixtures M1/M2.
+7. Habilitación comercial solo con B completo, catálogo y asignaciones revisadas. Composio sigue fuera hasta C y su corte autorizado; no exige una prueba real de proveedor para preparar B.
+
+Recuperación: en local descartar solo artefactos/ediciones B de forma revisada, conservando WIP anterior y snapshots. En uso real pausar, conciliar intentos y corregir hacia adelante con lectores/guardas compatibles. No hard delete de marcas/revisiones ni restaurar021. Una restauración/version antigua no puede volver a despachar legacy sin snapshot ni reenviar uncertain. Procedimiento específico y decisión de preservación se acuerdan al preparar el release, no se ejecutan por este plan.

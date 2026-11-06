@@ -1,0 +1,120 @@
+{
+  "id": "PRM-20261101-preparation",
+  "date": "2026-11-01",
+  "mode": "planning_only_not_implementation",
+  "inputSha256": "9aaaaf19fc497169b54b710866bc0af99f106ab88c73c681a69cc59ca404d430",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "candidateCommit": null,
+  "artifacts": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/README.md",
+      "sha256": "809569e37ab44b6a8ec1fa0d2e7d09cd7c9c0940d1697df23faf381528810515",
+      "bytes": 6509
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/acceptance.md",
+      "sha256": "8a7852b4ef95831568e37670e51bb9aae862ffe6c9e475bfad1aa526909230e9",
+      "bytes": 2922
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/design.md",
+      "sha256": "5b820dfb16462d4b5fbc1079f3859cc88cfe84b2dfbf5287e463b5333aa101e4",
+      "bytes": 11385
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/function-inventory.json",
+      "sha256": "21dd180ce02639c13b8a49fce22e3d900ca8909a48863ab6ba4e9bcdfd5c17ec",
+      "bytes": 43981
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/permissions-matrix.json",
+      "sha256": "38c17a940b1ffb6c11e1351a3f795a0337540cb7902a4fff39f01e7c5778652e",
+      "bytes": 41386
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/spec.md",
+      "sha256": "679de9d4e5f0195ea49ddbccb1abdb416b31c5e994182a1c74909e374cf42dbb",
+      "bytes": 3623
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/tasks.md",
+      "sha256": "1b5e941e16b711dd9a63aa36e8db39a5107c91de5fd9d85cc6067d7a53414129",
+      "bytes": 2680
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/verification.md",
+      "sha256": "c10c4259803fc8e74615a85c3f9054af794c57c057f52be7cf33899bcc48dd59",
+      "bytes": 2923
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/view-review.json",
+      "sha256": "8337b18fab5e0944bcbcfc0b667276b100181aa4ff9c6f52b7c8e16ebd6eaa01",
+      "bytes": 5085
+    }
+  ],
+  "changedExistingDocumentation": [
+    "docs/specs/pipeline-os/s02/release/verification.md",
+    "docs/specs/pipeline-os/s02/release/tasks.md",
+    "docs/specs/pipeline-os/s02/release/runbook.md",
+    "docs/specs/pipeline-os/s02/release/permission-diagnostic/README.md"
+  ],
+  "checks": {
+    "json": "pass",
+    "localMarkdownLinks": 57,
+    "highConfidenceSecretPatternScan": "pass_not_full_security_audit",
+    "diffCheck": "pass",
+    "matrix28": "pass",
+    "authenticatedTargets": {
+      "selectOnly": 23,
+      "crud": 2,
+      "none": 3
+    },
+    "anonymousTargetsEmpty": 28,
+    "deferredServiceFunctions": 70,
+    "selfDependencyHashesMatching": 6,
+    "unresolvedViewDefinitions": 3,
+    "noExecutableSqlCreated": true
+  },
+  "preservation": {
+    "baselinePublicFiles": 673,
+    "unchangedPayloadFiles": 100,
+    "unchangedMigrationFiles": 47,
+    "unchangedPrivateOperationalHashes": 49,
+    "protectedDiagnosticFiles": 7,
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "unexpectedPublicChanges": []
+  },
+  "verificationLimits": [
+    "No new functional SQL/DCL/DML/tokenizer tests; planning checks only.",
+    "Accepted 32 PD and 139 product tests were not repeated.",
+    "Sources and metadata reviewed locally; no current remote flags, identity or freshness verified.",
+    "PRM1 candidate and VR1 query/lexer not yet implemented."
+  ],
+  "execution": {
+    "externalCalls": 0,
+    "remoteSql": 0,
+    "appliedMigrations": 0,
+    "deploys": 0,
+    "pushes": 0,
+    "providersActivated": 0,
+    "sends": 0,
+    "paidVerifications": 0,
+    "credentialFilesRead": 0,
+    "instantly": {
+      "consumed": 43,
+      "new": 0
+    }
+  },
+  "proposedFutureBudget": {
+    "now": 0,
+    "readOnlyVR1Executions": 1,
+    "correctiveScriptSeparatelyAuthorized": 1,
+    "readOnlyPostflightSeparatelyAuthorized": 1,
+    "retries": 0,
+    "notHttpRequestEstimate": true
+  },
+  "nextStep": "PRM-T03/04 implement_and_test_offline_only_on_subsequent_instruction",
+  "readyForRemoteSql": false,
+  "readyForPublish": false
+}

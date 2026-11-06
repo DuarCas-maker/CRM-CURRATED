@@ -1,0 +1,59 @@
+# C3 — composición y recuperación verificadas offline
+
+31/10/2026 · SDD STRICT · Continuación solicitada tras la entrega C2, aplicada al incremento C3/C-T08 ya definido. [Concreción previa](c3-local.md), [manifiesto](manifest.json), [huellas](c3-implementation.json). **C1/C2/C3 funcionales locales; QA visual/build/contención/catálogo y promoción pendientes.** No se declara C/S02/S00 completo para producción.
+
+## Qué cambió
+
+Un único archivo nuevo de pruebas: `tests/pipeline-os-s02-block-c-composition.test.ts`. Cero modificaciones de producto, SQL, fixtures anteriores, dependencias o configuración. Documentación propia y las ocho referencias del manifiesto actualizadas; todas las fuentes previas quedan congeladas, incluidas C1/C2.
+
+La suite instala001–047+A+B1+B2+C en PGlite y compone los helpers/RPC reales con sesiones y dependencias ficticias. Comprueba candidato→identidad errónea/bloqueado→nueva evidencia→confirmado→reemplazado→revocado, sin cambiar los datos comerciales o la intención directa preparada. No relee credenciales reales ni repite los pilotos aceptados de correo/adjuntos/importación/Bouncer.
+
+La fachada Gmail real se importa con mocks de cliente Supabase, descifrado, renovación OAuth y fetch. Se ejecuta **solo un profile GET sintético**, nunca messages/send; el servidor de cuota y la barrera de admisión B2 usan SQL real en memoria. La prueba conserva el orden OAuth→cuota del proyecto directo→guarda final→wire falso. Los valores de organización/origen son ficticios dentro de ese proceso y se restauran al terminar; no se abre ningún archivo env. No se inicia el worker o la web.
+
+El escenario de recuperación uncertain reconcilia un resultado tardío explícitamente ficticio mediante mark_sent; no representa un correo enviado o recibido. Demuestra que registrar/revisar/reemplazar/revocar C no libera otra admisión, cambia Message-ID o duplica el histórico. El worker solo se inspecciona por sus fuentes/imports; no se acredita una ejecución completa del worker en producción.
+
+## Trazabilidad
+
+| FR / AC                                        | Evidencia nueva C3                                                                                                                                                                                                                                        | Resultado y límite                                                                                                                                                                        |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR01/03/04/06–08/10/12, AC01/03/04/06–08/10/12 | Ciclo C completo con helpers reales y conexión/perfil falsos; comparación de todas las tablas comerciales, salvo tablas C/recibos/auditoría; preparación B2 antes/después.                                                                                | Solo cambia metadata C y sus recibos/auditoría. Cuenta/OAuth/marca/permisos/cola/historia no se alteran por C. Identidad demostrada únicamente en fixtures.                               |
+| FR01/08/12, AC01/08/12                         | Fachada Gmail real, selección literal de proveedor, cuota directa distinta de cuota C, hook de admisión único y profile GET falso. Intentar construir adaptador con cualquiera de los cinco estados persistidos C.                                        | Gmail OAuth directo; candidate/blocked/verified/revoked/superseded rechazados como active antes de HTTP. Ningún envío ni selector nuevo.                                                  |
+| FR02/10/12, AC02/10/12                         | Matriz SA/cuatro roles operativos/otro seller; capacidades de remitente y acceso a cuenta/caso iguales antes/después de verified C. Revocar/restaurar membresía y preparar otra intención directa.                                                        | Verified C no concede permisos; B2 pausa la intención vieja y no la rejuvenece. Solo una nueva intención con autorización vigente admite. No prueba contención multiconexión.             |
+| FR01/05/10, AC01/05/10                         | Intento directo uncertain con admisión consumida; cambios C; intento de reencolar; resultado tardío ficticio y replay.                                                                                                                                    | No segunda admisión/HTTP; reencolar falla; conciliación guarda una sola historia con procedencia de marca, mismo Message-ID e intentos.                                                   |
+| FR11/12, AC11/12                               | Catálogo completo de funciones/owner/ACL/configuración SECURITY DEFINER, tablas/columnas/RLS, constraints, políticas, triggers e índices antes/después. Aplicar C, crear historia verificada/revocada, rollback y reaplicar desde cabecera0.              | Catálogo previo y todas las filas originales, incluidos recibos/auditoría, idénticos tras rollback. Reaplicación limpia correcta. No SQL remoto, ordinal ni respaldo real.                |
+| FR01/12, AC01/12                               | Grafo de imports relativos estáticos/dinámicos literales de fachada/worker/transporte con AST Babel instalado en Next; comprobación AST del argumento provider en la única construcción de transporte de google.ts. Huellas de todas las fuentes previas. | El grafo no alcanza registro/verificador C. Selección directa literal sin spread que la sobrescriba; todos los imports relativos encontrados resueltos. No se modifica ningún consumidor. |
+| FR02/03/05–09/11, AC02/03/05–09/11             | Regresión C1/C2 y administración/guardas B1/B2, Origin y cambios sin guardar.                                                                                                                                                                             | 125/125 seleccionadas. UI C1 conserva su evidencia SSR; QA visual/teclado aún no acreditada.                                                                                              |
+
+## Checks ejecutados
+
+**14/14 nuevas C3 y125/125 de regresión seleccionada:139/139**, incluidos grupos padre Node. El wrapper del runner normal también pasó, ejecutando las mismas14 en un proceso aislado; no se vuelve a sumar esa cobertura. TypeScript `--noEmit --incremental false`, formato Prettier y diff-check correctos. No script lint configurado.
+
+```powershell
+$node = '.local/toolchains/node-v22.23.4-win-x64/node.exe'
+& $node --experimental-test-module-mocks --import './.local/pipeline-os/s02-i01/offline.mjs' --import tsx --test tests/pipeline-os-s02-block-c-composition.test.ts
+& $node --experimental-test-module-mocks --import './.local/pipeline-os/s02-i01/offline.mjs' --import tsx --test --test-concurrency=3 tests/pipeline-os-s02-block-c-bindings.test.ts tests/pipeline-os-s02-block-c-api.test.ts tests/pipeline-os-s02-block-c-ui.test.ts tests/pipeline-os-s02-block-c-verifier.test.ts tests/pipeline-os-s02-block-b-admin.test.ts tests/pipeline-os-s02-block-b-api.test.ts tests/pipeline-os-s02-block-b-ui.test.ts tests/pipeline-os-s02-block-b-snapshots.test.ts tests/pipeline-os-s02-block-b-dispatch.test.ts tests/pipeline-os-s02-block-b-composition.test.ts tests/request-origin.test.ts tests/unsaved-changes.test.ts
+& $node --import './.local/pipeline-os/s02-i01/offline.mjs' --import tsx --test tests/pipeline-os-s02-block-c-composition.test.ts
+& $node --import './.local/pipeline-os/s02-i01/offline.mjs' node_modules/typescript/bin/tsc --noEmit --incremental false
+git diff --check
+```
+
+El preload bloquea fetch/http/https/socket/TLS/DNS externos; la única sustitución fetch C3 es una allowlist exacta de profile GET ficticio. El wrapper propaga el preload si se proporcionó, sin exigir archivos privados para su uso habitual en CI. Ningún SDK o proceso usa credenciales del proyecto. Logs ignorados en `.local/pipeline-os/s02-c3/`.
+
+## Revisión y conservación
+
+Revisión propia con safe-code-review: alcance completo del test y su composición contra las implementaciones C/B/I01; entradas fijas y SQL parametrizado, mocks limitados a OAuth/credenciales/wire/clientes, permisos/cuota/admisión/transiciones en DB, restauración de mocks/env del proceso y ausencia de efecto remoto. Se reforzaron los filtros exactos de cuenta/credencial del cliente falso y la selección AST del proveedor para no ocultar un cambio de consumidor.
+
+El primer pase detectó dos errores del nuevo harness: brand_sender_capabilities retorna un conjunto, no un escalar; TypeScript7 no expone la API AST clásica. Se corrigió la lectura del conjunto y se usó Babel ya incluido en Next, sin dependencia nueva. No se relajó ningún AC, se desactivaron triggers o se modificó producto para hacer pasar pruebas. No defectos productivos confirmados abiertos en este alcance.
+
+Baseline638 archivos públicos; ocho I01,34 entradas B2, todas las fuentes C1/C2 y47 migraciones históricas intactos.49 JSON operativos anteriores preservados por hash, sin leer valores ni abrir archivos env. HEAD fb9f201 intacto, sin commit/push/merge/deploy. [Inventario final](c3-implementation.json).
+
+## Qué queda para publicar u operar por Composio
+
+| Pendiente                                          | Evidencia necesaria                                                                                                                                                 | Estado actual                                                                                                          |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Versión conjunta A/B/C y catálogo INT-T04/T00-02-I | Contraste de esquema/funciones/RLS/grants/Storage/legado y versiones de web/worker; migraciones finales, recuperación y alcance revisados.                          | No consulta remota ni número SQL final en C3. Preparar esta versión y el plan de cierre de gates es el siguiente paso. |
+| QA de promoción                                    | Visual/teclado/responsive de C1, build standalone completo y contención PostgreSQL con conexiones independientes.                                                   | Pendientes heredados; EPERM Windows y limitaciones de navegador no se sustituyen con SSR/PGlite.                       |
+| Identidad/configuración reales                     | Fuente servidor acreditada para clave/proyecto/cuota/configuración/permisos y publicación de sus rotaciones; contrato vigente y protocolo/presupuesto real propios. | C2 tiene solo dependencias inyectables; no hay factory ni UI de verificación real.                                     |
+| Activación de Composio                             | Selector por cuenta/escritor único, conciliación/cursor/uncertain, cuotas y recheck final, corte aprobado.                                                          | Fuera del alcance; verified no habilita transporte.                                                                    |
+
+Rollback de C3: retirar solo el test y su delta documental tras preservar evidencia; producto/SQL previos nunca cambiaron. **Gmail directo activo; Composio deshabilitado; Instantly43 consumidas/0 nuevas.0 llamadas reales/envíos/costos/cambios remotos.** S00/Instantly C siguen pendientes por separado.

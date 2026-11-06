@@ -1,9 +1,15 @@
 import { z } from "zod";
+import { brandAction, brandJsonError } from "@/lib/server/brand-actions";
+import {
+  BrandDeliveryError,
+  deliveryContext,
+  deliveryResult,
+  deliveryJsonError,
+} from "@/lib/server/brand-delivery";
 import {
   checkOrigin,
   requireUser,
   checkDb,
-  jsonError,
   HttpError,
   serviceClient,
 } from "@/lib/server/supabase";
@@ -33,6 +39,13 @@ export async function POST(request: Request) {
     const parsed = envelope.safeParse(JSON.parse(raw.toString("utf8")));
     if (!parsed.success) throw new HttpError(400, "Invalid request");
     const { kind, payload: p, idempotency_key } = parsed.data;
+    if (kind.startsWith("brand_"))
+      return Response.json(
+        {
+          result: await brandAction(db, profile.role, kind, p, idempotency_key),
+        },
+        { headers: { "Cache-Control": "no-store" } },
+      );
     // Fail closed during rollout: an older command function can still copy
     // follow-up steps from a system template. Never create through that path.
     if (["create_campaign", "schedule_campaign"].includes(kind)) {
@@ -151,6 +164,12 @@ export async function POST(request: Request) {
             )!
           : p;
       if (!c) throw new HttpError(404, "Campaign not found");
+      await deliveryContext(
+        db,
+        String(c.account_id),
+        p.brand_preparation,
+        "campaign",
+      );
       if (
         kind !== "create_campaign" &&
         c.requires_application !== false &&
@@ -266,14 +285,27 @@ export async function POST(request: Request) {
       );
       return Response.json({ ok: true });
     }
+    const result = await db.rpc("crm_command", {
+      kind,
+      p,
+      request_key: idempotency_key,
+    });
     return Response.json(
-      checkDb(
-        await db.rpc("crm_command", { kind, p, request_key: idempotency_key }),
-      ),
+      [
+        "create_campaign",
+        "prepare_campaign",
+        "activate_campaign",
+        "schedule_campaign",
+        "campaign_audience_settings",
+      ].includes(kind)
+        ? deliveryResult(result)
+        : checkDb(result),
     );
   } catch (e) {
     if (e instanceof z.ZodError)
       return Response.json({ error: "Invalid fields" }, { status: 400 });
-    return jsonError(e);
+    return e instanceof BrandDeliveryError
+      ? deliveryJsonError(e)
+      : brandJsonError(e);
   }
 }

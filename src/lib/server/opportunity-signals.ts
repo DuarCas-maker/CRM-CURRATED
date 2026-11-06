@@ -51,7 +51,7 @@ export async function loadOpportunitySignals(
   const ids = opportunities.map((o) => o.id);
   const [conversations, documents, submissions] = await Promise.all([
     read<SignalConversation>(
-      "conversations",
+      "mail_conversations_visible",
       "id,opportunity_id,submission_id,recipient_email",
       "opportunity_id",
       ids,

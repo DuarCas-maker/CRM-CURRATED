@@ -1,4 +1,5 @@
 import { db, checked, alertAdmins } from "./db";
+import { brandSnapshotSchema } from "../src/lib/brand-delivery";
 import { gmail, GmailError, organization } from "../src/lib/server/google";
 import { hash, encrypt } from "../src/lib/server/crypto";
 import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
@@ -362,7 +363,9 @@ async function ingestMessage(
           status: outbound ? "sent" : "received",
           internet_message_id: h("Message-ID"),
           ...(gmailHistoryEnabled() ? { nature } : {}),
-          references_header: [h("References"), h("In-Reply-To")].filter(Boolean).join(" "),
+          references_header: [h("References"), h("In-Reply-To")]
+            .filter(Boolean)
+            .join(" "),
         },
         {
           onConflict: "conversation_id,gmail_message_id",
@@ -614,9 +617,23 @@ export async function sendNext() {
     checked(await client.rpc("claim_outbox"))?.[0] ||
     checked(await client.rpc("claim_notification_outbox"))?.[0];
   if (!msg) return;
+  // A binary/schema mismatch must stop before settings, attachments or transport.
+  if (
+    !brandSnapshotSchema.safeParse(msg.brand_snapshot).success ||
+    !/^[a-f0-9-]{36}$/.test(msg.brand_claim_token || "")
+  ) {
+    checked(
+      await client
+        .from("outbox")
+        .update({ status: "paused", last_error: "BRAND_PREPARATION_REQUIRED" })
+        .eq("id", msg.id),
+    );
+    return;
+  }
   let acceptedByGmail = false;
   let sendAttempted = false;
   let deliveryHeld = false;
+  let admission: string | null = null;
   try {
     const account = checked(
       await client
@@ -632,6 +649,20 @@ export async function sendNext() {
       }>(
         msg.account_id,
         `settings/sendAs/${encodeURIComponent(account.email)}`,
+        {},
+        async () => {
+          if (
+            !checked(
+              await client.rpc("brand_signature_allowed", {
+                message: msg.id,
+                claim_token: msg.brand_claim_token,
+              }),
+            )
+          ) {
+            deliveryHeld = true;
+            throw new Error("DELIVERY_HELD");
+          }
+        },
       );
       msg.signature_html = settings.signature || "";
       msg.sender_name = settings.displayName || "";
@@ -915,12 +946,19 @@ export async function sendNext() {
       },
       async () => {
         const permitted = checked(
-          await client.rpc("recheck_outbox_delivery", { message: msg.id }),
+          await client.rpc("admit_brand_dispatch", {
+            message: msg.id,
+            claim_token: msg.brand_claim_token,
+          }),
         );
-        if (!permitted) {
+        if (
+          typeof permitted !== "string" ||
+          !/^[a-f0-9-]{36}$/.test(permitted)
+        ) {
           deliveryHeld = true;
           throw new Error("DELIVERY_HELD");
         }
+        admission = permitted;
         sendAttempted = true;
       },
     );
@@ -953,6 +991,14 @@ export async function sendNext() {
       );
       return;
     }
+    const admitted = admission as string | null;
+    if (admitted)
+      checked(
+        await client.rpc("brand_dispatch_uncertain", {
+          message: msg.id,
+          admission: admitted,
+        }),
+      );
     checked(
       await client
         .from("outbox")

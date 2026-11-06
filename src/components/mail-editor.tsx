@@ -1,5 +1,10 @@
 "use client";
 import { ProtectedForm } from "./unsaved-changes";
+import {
+  accountPreparation,
+  sameBrandPreparation,
+  type BrandPreparation,
+} from "@/lib/brand-delivery";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { Locale, Opportunity, Workspace } from "@/lib/domain";
 import { canSeeOpportunity } from "@/lib/domain";
@@ -74,6 +79,12 @@ export function MailEditor({
           "",
   );
   const [mode, setMode] = useState(start.mode || "compose");
+  const [brandPreparation, setBrandPreparation] =
+    useState<BrandPreparation | null>(start.brand_preparation || null);
+  const expectedBrand = accountPreparation(
+    accounts.find((a) => a.id === accountId),
+  );
+  const brandCurrent = sameBrandPreparation(brandPreparation, expectedBrand);
   const legacyReply = mode === "reply" && !data.gmail_history_enabled;
   const lenderReply = mode === "reply" && !!start.lender_id;
   useEffect(() => {
@@ -213,9 +224,26 @@ export function MailEditor({
   useEffect(() => {
     setSignature(null);
     setError("");
-    if (!accountId || data.demo || !data.gmail_history_enabled) return;
+    if (
+      !accountId ||
+      !brandCurrent ||
+      !brandPreparation ||
+      data.demo ||
+      !data.gmail_history_enabled
+    )
+      return;
     const controller = new AbortController();
-    fetch(`/api/mail?signature=${accountId}`, { signal: controller.signal })
+    fetch(
+      "/api/mail?" +
+        new URLSearchParams({
+          signature: accountId,
+          case: caseId,
+          brand_id: brandPreparation.brand_id,
+          brand_revision: String(brandPreparation.brand_revision),
+          account_revision: String(brandPreparation.account_revision),
+        }),
+      { signal: controller.signal },
+    )
       .then(async (r) => {
         const p = await r.json();
         if (!r.ok) throw Error(p.error);
@@ -225,10 +253,19 @@ export function MailEditor({
         if (!controller.signal.aborted) setError(e.message);
       });
     return () => controller.abort();
-  }, [accountId, data.demo, data.gmail_history_enabled, signatureRevision]);
+  }, [
+    accountId,
+    caseId,
+    brandCurrent,
+    brandPreparation,
+    data.demo,
+    data.gmail_history_enabled,
+    signatureRevision,
+  ]);
   const payload = () => ({
     opportunity_id: caseId,
     account_id: accountId,
+    brand_preparation: brandPreparation || undefined,
     mode,
     to_email: to.trim(),
     cc_emails: mailCopies(cc, [to]),
@@ -439,6 +476,42 @@ export function MailEditor({
           }
         }}
       >
+        <label className="field">
+          {t(locale, "Marca revisada del remitente", "Reviewed sender brand")}
+          <select
+            required
+            disabled={locked}
+            value={brandCurrent ? brandPreparation?.brand_id || "" : ""}
+            onChange={(e) =>
+              setBrandPreparation(e.target.value ? expectedBrand : null)
+            }
+          >
+            <option value="">
+              {t(
+                locale,
+                "Revisa y selecciona la marca",
+                "Review and select the brand",
+              )}
+            </option>
+            {expectedBrand && (
+              <option value={expectedBrand.brand_id}>
+                {
+                  accounts.find((a) => a.id === accountId)?.brand_context
+                    ?.brand_name
+                }
+              </option>
+            )}
+          </select>
+          {!brandCurrent && (
+            <small>
+              {t(
+                locale,
+                "Revisa la marca y sus permisos antes de consultar la firma o enviar.",
+                "Review the brand and permissions before reading the signature or sending.",
+              )}
+            </small>
+          )}
+        </label>
         {(!legacyReply || lenderReply) && (
           <EditorOptions
             compact={compact}
@@ -454,6 +527,7 @@ export function MailEditor({
                 value={caseId}
                 onChange={(e) => {
                   setCaseId(e.target.value);
+                  setBrandPreparation(null);
                   setProcess("");
                   setTargets({});
                   setTargetCopies({});
@@ -480,7 +554,10 @@ export function MailEditor({
                 required
                 disabled={locked}
                 value={accountId}
-                onChange={(e) => setAccountId(e.target.value)}
+                onChange={(e) => {
+                  setAccountId(e.target.value);
+                  setBrandPreparation(null);
+                }}
               >
                 <option value="">
                   {t(
@@ -1044,6 +1121,7 @@ export function MailEditor({
             disabled={
               (mode === "lenders" && invalidRecipients) ||
               !accountId ||
+              !brandCurrent ||
               !caseId ||
               (!data.demo && data.gmail_history_enabled && !signature)
             }

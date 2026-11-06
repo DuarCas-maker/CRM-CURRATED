@@ -7,6 +7,8 @@ import type { Action } from "./crm";
 import { Modal, Field, SaveButton, t, Empty } from "./ui";
 import { GmailHistory } from "./gmail-history";
 import { InstantlyTrialControl } from "./instantly-trial-control";
+import { BrandSettings } from "./brand-settings";
+import { ComposioAccountBindings } from "./composio-account-bindings";
 export function Integrations({
   data,
   locale,
@@ -52,6 +54,21 @@ export function Integrations({
         }
       />
       <GmailHistory workspace={data} locale={locale} openCase={openCase} />
+      <BrandSettings
+        locale={locale}
+        allowed={
+          data.profile.role === "superadmin" && data.profile.active === true
+        }
+        demo={data.demo}
+      />
+      <ComposioAccountBindings
+        locale={locale}
+        allowed={
+          data.profile.role === "superadmin" && data.profile.active === true
+        }
+        demo={data.demo}
+        accounts={data.accounts}
+      />
       <section className="panel settings-panel">
         <h2>
           {t(locale, "Administración de accesos", "Access administration")}

@@ -1,0 +1,279 @@
+{
+  "id": "ABC-20261101-readiness-r1",
+  "date": "2026-11-01",
+  "mode": "SDD_STRICT_documentation_and_local_review_only",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "candidateCommit": null,
+  "publicationReady": false,
+  "applicationReceipt": {
+    "stage": "checked_before_commit",
+    "ordinal": "048",
+    "version": "150008",
+    "protocol": "PRM-FINAL-r1",
+    "relations": 28,
+    "contractSha256": "3c883ea1c38971ac4af058c7800166d3ba0b846a97a228ad85025138b59a1a1e",
+    "protectedBefore": "0d2debf1491ab689bd789c0c3bd3922c",
+    "protectedAfter": "0d2debf1491ab689bd789c0c3bd3922c",
+    "preservationMatches": true
+  },
+  "postflight": {
+    "context": {
+      "sqlRole": "supabase_admin",
+      "version": "150008",
+      "readOnly": "on",
+      "searchPath": "pg_catalog, pg_temp"
+    },
+    "ordinal": "048",
+    "protocol": "PRM-FINAL-r1",
+    "objectsOk": true,
+    "allTargetsOk": true,
+    "humanRolesOk": true,
+    "footprintMatches": true,
+    "serviceRoleReady": true,
+    "contractSha256": "3c883ea1c38971ac4af058c7800166d3ba0b846a97a228ad85025138b59a1a1e",
+    "protectedFingerprint": "0d2debf1491ab689bd789c0c3bd3922c",
+    "relations": [
+      {
+        "key": "public.campaign_assets",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.campaign_events",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.campaign_workspace",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.company_contacts",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.company_primary_cases",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.conversation_lenders",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.document_reviews",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.email_templates",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.email_template_versions",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.gmail_api_slots",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": []
+      },
+      {
+        "key": "public.gmail_api_usage",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": []
+      },
+      {
+        "key": "public.gmail_candidate_directory",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.gmail_pending_associations",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.gmail_sent_usage",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": []
+      },
+      {
+        "key": "public.lead_workspace",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.lender_contacts",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.lender_guideline_versions",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.mail_drafts",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["DELETE", "INSERT", "SELECT", "UPDATE"]
+      },
+      {
+        "key": "public.mail_recipient_selections",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["DELETE", "INSERT", "SELECT", "UPDATE"]
+      },
+      {
+        "key": "public.mail_uploads",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.operational_settings",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.opportunity_inbox",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.opportunity_tasks",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.opportunity_workspace",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.process_state_history",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.underwriting_runs",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.underwriting_settings",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      },
+      {
+        "key": "public.underwriting_setting_versions",
+        "anon": [],
+        "targetOk": true,
+        "authenticated": ["SELECT"]
+      }
+    ]
+  },
+  "provenance": {
+    "source": "Operator supplied both outputs in chat, attributed to CRM self-hosted Supabase; semantic transcription only, not original-byte capture",
+    "agentAuthenticatedRemoteConnection": false,
+    "operatorReportedWhole048IncludingCommit": true,
+    "fullEditorSuccessSeparatelyCaptured": false,
+    "remoteLedgerAttested": false,
+    "backupWindowAndConcurrencyNotRetrospectivelyAttested": true
+  },
+  "acceptance": {
+    "contractMatch": true,
+    "relationsMatched": 28,
+    "anonEmpty": 28,
+    "authenticatedSelectOnly": 23,
+    "authenticatedCrud": 2,
+    "authenticatedNone": 3,
+    "protectedFingerprintMatch": true,
+    "catalogStateAcceptedWithinScope": true,
+    "globalSecurityOrProductReadiness": false
+  },
+  "preservation": {
+    "payloadUnchanged": 100,
+    "payloadSha256": "ae39d8e66d8202d6499004e453c312ce0313d70e43410e790fb1c827cd324678",
+    "buildSupportUnchanged": 10,
+    "migrationsUnchanged": 47,
+    "privateOperationalHashesUnchanged": 49,
+    "headUnchanged": true,
+    "indexUnchangedAndEmpty": true,
+    "existingDocsChanged": [
+      "docs/specs/pipeline-os/s02/release/verification.md",
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/runbook.md",
+      "docs/specs/pipeline-os/s02/release/permission-remediation/tasks.md",
+      "docs/specs/pipeline-os/s02/README.md"
+    ],
+    "newPublicFiles": [
+      "docs/specs/pipeline-os/s02/release/readiness-review.md",
+      "docs/specs/pipeline-os/s02/release/readiness-report.json"
+    ],
+    "localLinks": 78,
+    "acceptedTestsNotRerun": true
+  },
+  "remaining": [
+    "REL-T03: close catalog residuals for final new objects and operational metadata; do not repeat accepted PD/VR1/048",
+    "REL-T04: inspect new UI with fictitious data",
+    "REL-T05: isolated Linux web/worker build",
+    "REL-T06: independent PostgreSQL concurrency and mixed-version recovery",
+    "REL-T07: final ABC migrations and reconcile packaging of already operator-applied 048",
+    "REL-T08: exact commit, recovery and coordinated deployment approval",
+    "REL-T09: approved future publication, bootstrap and narrow postflight; no automatic resume"
+  ],
+  "environmentDiscovery": {
+    "docker": false,
+    "psql": false,
+    "postgres": false,
+    "wslExecutablePresentOnly": true,
+    "noInstallOrLaunch": true
+  },
+  "operationsThisReview": {
+    "apiCalls": 0,
+    "remoteSql": 0,
+    "remoteChanges": 0,
+    "pushes": 0,
+    "deploys": 0,
+    "sends": 0,
+    "credentialFilesRead": 0,
+    "instantly": {
+      "consumed": 43,
+      "new": 0
+    },
+    "gmailDirect": "preserved; local provider literal gmail_oauth",
+    "composio": "disabled by unchanged local sources; remote flags not queried"
+  },
+  "nextStep": "Prepare final ABC migration protocol and exact artifacts locally on base001-047 plus accepted048, then test only new delta; no remote execution."
+}

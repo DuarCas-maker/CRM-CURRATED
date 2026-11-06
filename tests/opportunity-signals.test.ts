@@ -183,7 +183,7 @@ test("server metadata pages beyond the inbox limit, scopes requests, and surface
         requested.push(url);
         assert(!url.searchParams.get("select")?.includes("body"));
         const table = url.pathname.split("/").pop();
-        if (table === "conversations") {
+        if (table === "mail_conversations_visible") {
           assert.equal(url.searchParams.get("opportunity_id"), `in.(${o.id})`);
           return Response.json(data.conversations);
         }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { brandPreparationSchema } from "./brand-delivery";
 
 const address = z
   .email()
@@ -8,6 +9,7 @@ export const outgoingMailSchema = z
   .object({
     opportunity_id: z.uuid(),
     account_id: z.uuid(),
+    brand_preparation: brandPreparationSchema.optional(),
     mode: z.enum(["compose", "reply", "forward", "lenders"]).default("compose"),
     to_email: address,
     cc_emails: z.array(address).max(20).default([]),

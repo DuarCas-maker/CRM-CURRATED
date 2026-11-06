@@ -1,17 +1,17 @@
 import { cookies } from "next/headers";
-import {
-  requireUser,
-  serviceClient,
-  checkDb,
-  HttpError,
-  jsonError,
-} from "@/lib/server/supabase";
+import { requireUser, HttpError } from "@/lib/server/supabase";
 import { oauthClient, organization } from "@/lib/server/google";
 import { token, hash } from "@/lib/server/crypto";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
+import { parseBrandOAuthIntent } from "@/lib/brand-management";
+import {
+  BrandError,
+  brandResult,
+  brandJsonError,
+} from "@/lib/server/brand-actions";
 export async function GET(request: Request) {
   try {
-    const { profile } = await requireUser();
+    const { profile, db } = await requireUser();
     if (profile.role !== "superadmin")
       throw new HttpError(403, "Superadmin required");
     if (!gmailHistoryEnabled())
@@ -19,18 +19,28 @@ export async function GET(request: Request) {
         503,
         "Apply Gmail migrations and enable GMAIL_HISTORY_ENABLED before connecting accounts",
       );
-    const id = new URL(request.url).searchParams.get("organization") || "";
+    const params = new URL(request.url).searchParams;
+    const id = params.get("organization") || "";
     const org = organization(id);
+    const number = (key: string) => {
+      const value = params.get(key);
+      return value && /^[1-9][0-9]*$/.test(value) ? Number(value) : null;
+    };
+    const intent = parseBrandOAuthIntent({
+      mode: params.get("mode"),
+      brand_id: params.get("brand_id"),
+      expected_brand_revision: number("expected_brand_revision"),
+      account_id: params.get("account_id") || null,
+      expected_account_revision: number("expected_account_revision"),
+    });
+    if (!intent) throw new BrandError("BRAND_INVALID_INPUT", 400);
     const state = token();
-    checkDb(
-      await serviceClient()
-        .from("oauth_states")
-        .insert({
-          state_hash: hash(state),
-          user_id: profile.id,
-          organization: id,
-          expires_at: new Date(Date.now() + 600000).toISOString(),
-        }),
+    brandResult(
+      await db.rpc("brand_oauth_begin", {
+        state_hash: hash(state),
+        organization_id: id,
+        intent,
+      }),
     );
     (await cookies()).set("gmail_oauth_state", hash(state), {
       httpOnly: true,
@@ -54,6 +64,6 @@ export async function GET(request: Request) {
       }),
     );
   } catch (e) {
-    return jsonError(e);
+    return brandJsonError(e);
   }
 }

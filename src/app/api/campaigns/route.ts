@@ -10,6 +10,8 @@ import { readBounded } from "@/lib/server/body";
 import { renderCampaignContent } from "@/lib/campaign-content";
 import { audienceValues } from "@/lib/campaign-delivery";
 import { renderTemplate } from "@/lib/domain";
+import { brandPreparationSchema } from "@/lib/brand-delivery";
+import { deliveryJsonError } from "@/lib/server/brand-delivery";
 
 export async function GET(request: Request) {
   try {
@@ -41,6 +43,7 @@ export async function POST(request: Request) {
         campaign_id: z.uuid(),
         contact_id: z.uuid(),
         request_key: z.uuid(),
+        brand_preparation: brandPreparationSchema,
       })
       .parse(JSON.parse((await readBounded(request, 4096)).toString("utf8")));
     const contacts = await campaignAudience(db, p.campaign_id);
@@ -62,19 +65,20 @@ export async function POST(request: Request) {
       campaign.body_format,
     );
     const result = campaignDb(
-      await db.rpc("queue_campaign_test", {
+      await db.rpc("queue_brand_campaign_test", {
         campaign: p.campaign_id,
         contact: contact.contact_id,
         subject_text: `[PRUEBA] ${renderTemplate(campaign.subject, values)}`,
         body_text: message.text,
         html: message.html,
         request: p.request_key,
+        preparation: p.brand_preparation,
       }),
     );
     return Response.json({ id: result, recipient: profile.email });
   } catch (e) {
     if (e instanceof z.ZodError)
       return Response.json({ error: "Invalid fields" }, { status: 400 });
-    return jsonError(e);
+    return deliveryJsonError(e);
   }
 }

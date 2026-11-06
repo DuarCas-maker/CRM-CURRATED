@@ -3,16 +3,9 @@ import { z } from "zod";
 import { setTimeout as delay } from "node:timers/promises";
 import { decrypt } from "./crypto";
 import { serviceClient, checkDb, HttpError } from "./supabase";
-import {
-  GmailError,
-  gmailResponseError,
-  isGmailQuotaError,
-} from "../gmail-errors";
-import {
-  GmailQuotaPacer,
-  gmailRequestCost,
-  gmailRequestOperation,
-} from "../gmail-quota";
+import { GmailError, isGmailQuotaError } from "../gmail-errors";
+import { GmailQuotaPacer, gmailRequestCost } from "../gmail-quota";
+import { createMailTransport } from "./mail-transport/factory";
 export { GmailError } from "../gmail-errors";
 const quotaPacer = new GmailQuotaPacer();
 const quotaProjects = new Map<string, string>();
@@ -128,24 +121,15 @@ export async function gmail<T>(
     throw new Error("GMAIL_QUOTA_RESERVATION_FAILED");
   if (reserved > 0) await delay(reserved);
   await beforeRequest?.();
-  const res = await fetch(
-    `https://gmail.googleapis.com/gmail/v1/users/me/${path}`,
-    {
-      ...init,
-      headers: {
-        Authorization: `Bearer ${access}`,
-        "Content-Type": "application/json",
-        ...init.headers,
-      },
-      signal: AbortSignal.timeout(30000),
-    },
-  );
-  if (!res.ok) {
-    const error = await gmailResponseError(res);
-    error.operation = gmailRequestOperation(path, init.method);
+  try {
+    // I01 deliberately has no Composio selector, env flag or binding lookup.
+    return await createMailTransport({
+      provider: "gmail_oauth",
+      accessToken: access,
+    }).execute<T>({ path, init });
+  } catch (error) {
     if (isGmailQuotaError(error))
       error.unitsPerMinute = quotaPacer.throttle(accountId);
     throw error;
   }
-  return res.json() as Promise<T>;
 }

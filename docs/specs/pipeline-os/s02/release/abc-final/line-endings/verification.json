@@ -1,0 +1,148 @@
+{
+  "id": "AF-EOL-r1",
+  "date": "2026-11-04",
+  "sdd": "STRICT",
+  "mode": "scoped_source_hash_comparison_fix_offline",
+  "publicationReady": false,
+  "readyForRemoteSql": false,
+  "previousArtifacts": {
+    "migration": "e4626cb612868f4cd13ebce98ca3a6b5fea0e51f7d73b05f0e4935dd3be0b604",
+    "postflight": "bae5b6653aee9eeb928e1ee1079adf52a7492bd9065595e40c67de5f74088e10",
+    "contract": "8fafee3c08c3aea1941b91058fcc9594560d280ede7b66724583b5167f932321",
+    "preflight": "04c0f304409c4c6b2ca59a6c6ec9a00f77a591c68863d718ac099a8a29046e4a"
+  },
+  "currentArtifacts": {
+    "migration": "19548594e04d95167ed23957264f25d796a0f5f02e9427c75bf1f53f4fd390aa",
+    "postflight": "c3dd51e27a1818ed821ea915ff398f16956bf13efeca6fc8cd715ab28c13f679",
+    "contract": "6fc8d3de046552f2f066abfb814b1929141ea2c3547d6762e0e7e1bfb820e4af",
+    "preflight": "8ac0093cba7a3330a062380b9b0ab4506ce17973286b138ad49502a02e59b852"
+  },
+  "sourceVariants": {
+    "postFunctions": 117,
+    "protectedFunctions": 2,
+    "total": 119,
+    "quotedMultilineSources": 0,
+    "wholeBodyPairsOnly": true,
+    "unknownHashesRejected": true,
+    "rawSnapshotUnchanged": true,
+    "runtimeProsrcNormalization": false,
+    "changedObjectSetExpanded": false,
+    "protectedProjection": "only known raw sourceHash pairs for campaign_contact_summary and campaign_contacts_page; other fields/hashes stay exact"
+  },
+  "checks": {
+    "newTests": { "passed": 6, "failed": 0, "skipped": 0 },
+    "regression": {
+      "migration049": 15,
+      "preflight": 12,
+      "executor": 12,
+      "passed": 39,
+      "failed": 0
+    },
+    "distinctCases": 45,
+    "coverage": [
+      "LF_and_CRLF_application_commit",
+      "cross_serialization_read_only_postflight_and_fingerprint",
+      "old_matcher_failure_reproduction",
+      "code_and_literal_drift",
+      "mixed_body_EOL_rejected",
+      "function_config_and_ACL_drift",
+      "protected_source_and_config_drift",
+      "lexer_comments_escapes_dollar_quotes_incomplete_input",
+      "exact_reverse_and_deterministic_regeneration"
+    ],
+    "runtime": "Node22.23.4 PGlite0.5.8 PG180003 in memory; no nativePG15",
+    "typeScript": "passed --noEmit --incremental false",
+    "format": "passed",
+    "json": "passed",
+    "links": 157,
+    "diff": "passed",
+    "cliPlan": {
+      "passed": true,
+      "fixtureSteps": 52,
+      "plannedCases": 16,
+      "processStarts": 0,
+      "nativeTestsExecuted": 0
+    },
+    "initialQaFindings": [
+      "two identically re-emitted functions required explicit EOL treatment in protected fingerprint",
+      "known old preflight byte version reappeared, source unattributed; regenerated only after hash verification; no QA_INPUT_HASH relaxation"
+    ],
+    "review": "safe-code-review local diff; exact whitelist/other fields/preservation checked; native semantics still pending"
+  },
+  "incident": {
+    "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/incident.json",
+    "oldRemoteAttemptFailedBeforeCommit": true,
+    "operatorPostFailureCatalogAccepted": true,
+    "readPermissionConsumed": true,
+    "exclusiveRemoteCauseConfirmed": false,
+    "newRemoteReads": 0
+  },
+  "preservation": {
+    "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "originalPublicFilesChecked": 759,
+    "payload": 100,
+    "buildSupport": 10,
+    "migrations": 47,
+    "operationalHashes": 49,
+    "prepared048Unchanged": true,
+    "candidateSqlBodiesAndFiveSourcesUnchanged": true,
+    "oldReceiptsAndVerificationRecordsUnchanged": true,
+    "applicationWorkerDependenciesAndOldTestsUnchanged": true,
+    "permittedQaBindingChanges": [
+      "scripts/pipeline-os/pg15/artifacts.ts",
+      "tests/fixtures/pipeline-os-pg15-executor.ts"
+    ],
+    "changedExisting": [
+      "tests/fixtures/pipeline-os-pg15-executor.ts",
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/runbook.md",
+      "scripts/pipeline-os/pg15/artifacts.ts",
+      "docs/specs/pipeline-os/s02/README.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/postflight.sql",
+      "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+      "docs/specs/pipeline-os/s02/release/abc-final/contract.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/design.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/protocol.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/verification.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/tasks.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/README.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/preflight/preflight.sql",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-runbook.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/manifest.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/README.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/manifest.json"
+    ],
+    "added": [
+      "scripts/pipeline-os/abc-source-variants.ts",
+      "tests/pipeline-os-abc-line-endings.test.ts",
+      "docs/specs/pipeline-os/s02/release/abc-final/line-endings/spec.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/line-endings/source-variants.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/line-endings/incident.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/line-endings/verification.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/line-endings/verification.json"
+    ],
+    "unexpectedChanges": []
+  },
+  "operations": {
+    "newRemoteSql": 0,
+    "remoteChanges": 0,
+    "apiCalls": 0,
+    "sends": 0,
+    "deploys": 0,
+    "pushes": 0,
+    "installations": 0,
+    "nativePostgresStarts": 0,
+    "realCredentialFilesRead": 0,
+    "instantly": { "consumed": 43, "new": 0 },
+    "gmailDirect": "active preserved by unchanged source",
+    "composio": "disabled by preserved scope; no live flag query"
+  },
+  "pending": [
+    "nativePG15_application_final_deparser_and_dump_restore",
+    "independent_contention_and_mixed_binary_compatibility",
+    "visual_Linux_build_installer_cutover_backup_and_publication_authorization"
+  ],
+  "nextStep": "Use the newly sealed revision for an authorized isolated PG15 rehearsal; no remote retry or read authorization is implied."
+}

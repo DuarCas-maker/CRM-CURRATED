@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-01",
+  "mode": "implemented_and_tested_offline_only",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "scopeDigest": "c323bbbea3b07afa2c30b3c6847e887c2a2d660be28ecb87497ff19582711b4a",
+  "sqlSha256": "e6116007a597cc67f51be3c257c19f0469da3284715a3e0ff21c2746e19fca21",
+  "payloadSourcesPreserved": 100,
+  "migrationsPreserved": 47,
+  "privateHashesPreserved": 49,
+  "priorPublicFilesPreserved": 652,
+  "changedPriorDocuments": [
+    "docs/specs/pipeline-os/s02/release/verification.md",
+    "docs/specs/pipeline-os/s02/release/tasks.md",
+    "docs/specs/pipeline-os/s02/release/runbook.md",
+    "docs/specs/pipeline-os/s02/release/permission-diagnostic/verification.md",
+    "docs/specs/pipeline-os/s02/release/permission-diagnostic/tasks.md",
+    "docs/specs/pipeline-os/s02/release/permission-diagnostic/README.md",
+    "docs/specs/pipeline-os/s02/release/permission-diagnostic/design.md",
+    "docs/specs/pipeline-os/s02/release/permission-diagnostic/acceptance.md"
+  ],
+  "newSourceFiles": [
+    "scripts/pipeline-os/catalog-permissions.ts",
+    "tests/pipeline-os-catalog-permissions.test.ts",
+    "tests/fixtures/pipeline-os-catalog-permissions.ts"
+  ],
+  "tests": {
+    "total": 32,
+    "passed": 32,
+    "failed": 0,
+    "engine": "180003",
+    "independentPostgres15Executed": false
+  },
+  "checks": {
+    "typeScript": true,
+    "cliOffline": true,
+    "prettier": true,
+    "json": true,
+    "links": 44,
+    "gitDiff": true,
+    "sourcePreservation": true,
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "secretPatternScan": "high-confidence only"
+  },
+  "proposedRemoteBudget": {
+    "manualSqlExecutions": 1,
+    "automaticRetries": 0,
+    "requiresNewAuthorization": true
+  },
+  "remoteSqlExecuted": 0,
+  "remoteChanges": 0,
+  "providerRequests": 0,
+  "instantly": {
+    "consumed": 43,
+    "new": 0
+  },
+  "gmailDirect": true,
+  "composioEnabled": false,
+  "promotionApproved": false,
+  "nativePg15Gate": "pending",
+  "artifacts": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/acceptance.md",
+      "sha256": "e90cf875052bba69c6e13ff2d4f59e9e928856febb06cf21e0d94a9a99cc673e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/design.md",
+      "sha256": "77eec1ddf7ba462a73cfe7bbb50adcaea20daa02aa2d48b3d136542ee17c25e5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/diagnostic.sql",
+      "sha256": "e6116007a597cc67f51be3c257c19f0469da3284715a3e0ff21c2746e19fca21"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/diagnostic.template.sql",
+      "sha256": "d33ebb09347f9526763f655f8f80d03e7b3aca8dfcee0452a2817982028561b1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/implementation-design.md",
+      "sha256": "33011a44a39329b8099ca353eb99d5396b4f17e0beb497848bd514c6a19340a8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/implementation-verification.md",
+      "sha256": "e1225673d4331ecaa90f455dc1aa703aaf638a1563ed1512fd353f1b12c0007d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/local-reference.json",
+      "sha256": "f151b0655c0a75ab1742e2311f997e5d33de95342c40cdc4c2d7ec55747e23d4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/observations.json",
+      "sha256": "60fb1a34c537e45f65c4d730336d70583819bbced91f63ed7102d87790563801"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/preparation-checks.json",
+      "sha256": "93469f015a69ae5663ab071b2973e9e60bb5b121d04fa8bb1bedf53865480139"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/README.md",
+      "sha256": "591686da0359c525006fdc7bc9662b1353c07c6f68871fcfd1077ebb90c548cc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/scope.json",
+      "sha256": "f576a37450d9ba2a8f1d913e43e514953c44419b28c1fc6cefb96b67286c46d6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/spec.md",
+      "sha256": "b4c2a7151ecf79c52a323b3460e76f0ddbe429d7c3f1723c02084f25e0fd80c2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/tasks.md",
+      "sha256": "ebd910d834b4776dd51f761a1e5b4a2fd86927e2ab847a7e0c937c3519d94501"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/verification.md",
+      "sha256": "fede45b3b6e65cac29903de719db17a221b7e488652dad1d2eb32ab44035b600"
+    },
+    {
+      "path": "scripts/pipeline-os/catalog-permissions.ts",
+      "sha256": "1da825ec306f6a0f48109967fa29d4b0e9b82973ba2d8eea9a6ce88a6b07688b"
+    },
+    {
+      "path": "tests/pipeline-os-catalog-permissions.test.ts",
+      "sha256": "6ef70fdea7e6387afa01c210a5e460d352ca2740ad98b2dcfeb8b8ac5769b487"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-catalog-permissions.ts",
+      "sha256": "222fe6ea98508a53c592103ef91271d19c9cee95863ea276633048402c4046a2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/runbook.md",
+      "sha256": "7b46a4e153eecce1235699ea2f3522dd751b3354a1e2682a12335044410c154a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/tasks.md",
+      "sha256": "b535137879a21b3798b697d63bd64341dd13063444cc2ce6f0d69b14eb6c16a7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/verification.md",
+      "sha256": "54c2f7ff1e23fb99cd0ea8edadc53b6aa68bccde3e41c8968dd6628cb389dc91"
+    }
+  ]
+}

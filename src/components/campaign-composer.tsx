@@ -10,6 +10,11 @@ import {
 import { renderCampaignContent } from "@/lib/campaign-content";
 import type { Action } from "./crm";
 import { Field, t } from "./ui";
+import {
+  accountPreparation,
+  sameBrandPreparation,
+  type BrandPreparation,
+} from "@/lib/brand-delivery";
 
 interface LeadsPage {
   eligible: number;
@@ -38,6 +43,7 @@ export function CampaignComposer({
   const accounts = data.accounts.filter(
     (a) =>
       a.status === "connected" &&
+      !!a.brand_context?.can_campaign &&
       (data.demo ||
         data.profile.role === "superadmin" ||
         data.sender_account_ids?.includes(a.id)),
@@ -46,6 +52,12 @@ export function CampaignComposer({
     initialTemplate?.id || templates[0]?.id || "",
   );
   const [account, setAccount] = useState(accounts[0]?.id || "");
+  const [brandPreparation, setBrandPreparation] =
+    useState<BrandPreparation | null>(null);
+  const expectedBrand = accountPreparation(
+    accounts.find((a) => a.id === account),
+  );
+  const brandCurrent = sameBrandPreparation(expectedBrand, brandPreparation);
   const [manual, setManual] = useState(false),
     [ids, setIds] = useState<string[]>([]);
   const [query, setQuery] = useState(""),
@@ -104,7 +116,7 @@ export function CampaignComposer({
   } catch {}
   const selected = manual ? ids.length : Math.min(leads?.eligible || 0, 5000);
   async function submit(form: HTMLFormElement, intent: string) {
-    if (!template || data.demo) return;
+    if (!template || !brandCurrent || data.demo) return;
     setBusy(true);
     setError("");
     try {
@@ -114,6 +126,7 @@ export function CampaignComposer({
         const result = (await act("create_campaign", {
           ...fields,
           account_id: account,
+          brand_preparation: brandPreparation,
           template_id: template.id,
           template_version: template.version,
           subject: template.subject,
@@ -129,8 +142,13 @@ export function CampaignComposer({
         await act("schedule_campaign", {
           id,
           scheduled_at: new Date(scheduled).toISOString(),
+          brand_preparation: brandPreparation,
         });
-      if (intent === "activate") await act("activate_campaign", { id });
+      if (intent === "activate")
+        await act("activate_campaign", {
+          id,
+          brand_preparation: brandPreparation,
+        });
       close();
     } catch (e) {
       setError((e as Error).message);
@@ -190,6 +208,32 @@ export function CampaignComposer({
           )}
         </p>
       )}
+      <label className="field">
+        {t(locale, "Marca de la campaña", "Campaign brand")}
+        <select
+          required
+          value={brandCurrent ? brandPreparation?.brand_id || "" : ""}
+          onChange={(e) =>
+            setBrandPreparation(e.target.value ? expectedBrand : null)
+          }
+        >
+          <option value="">
+            {t(
+              locale,
+              "Revisa y selecciona la marca",
+              "Review and select the brand",
+            )}
+          </option>
+          {expectedBrand && (
+            <option value={expectedBrand.brand_id}>
+              {
+                accounts.find((a) => a.id === account)?.brand_context
+                  ?.brand_name
+              }
+            </option>
+          )}
+        </select>
+      </label>
       {!accounts.length && (
         <p className="campaign-note">
           {t(
@@ -239,6 +283,7 @@ export function CampaignComposer({
               value={account}
               onChange={(e) => {
                 setAccount(e.target.value);
+                setBrandPreparation(null);
                 setIds([]);
                 setPage(0);
                 setReview(false);
@@ -510,7 +555,7 @@ export function CampaignComposer({
         <button
           className="button"
           value="draft"
-          disabled={busy || !template || !account || data.demo}
+          disabled={busy || !template || !account || !brandCurrent || data.demo}
         >
           {t(locale, "Guardar borrador", "Save draft")}
         </button>

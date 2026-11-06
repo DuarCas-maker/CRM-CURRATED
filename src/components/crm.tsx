@@ -1,4 +1,5 @@
 "use client";
+import { BrandConnectionFields } from "./brand-settings";
 import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
@@ -3042,13 +3043,11 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   required
                 />
                 <div className="modal-footer">
-                  <button
-                    type="submit"
-                    className="button primary"
-                    disabled={data.demo}
-                  >
-                    {t(locale, "Continuar con Google", "Continue with Google")}
-                  </button>
+                  <BrandConnectionFields
+                    locale={locale}
+                    disabled={busy}
+                    demo={data.demo}
+                  />
                 </div>
                 {data.demo && (
                   <p className="muted">

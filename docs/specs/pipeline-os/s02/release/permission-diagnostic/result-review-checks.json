@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-01",
+  "inputValidated": true,
+  "comparatorStatus": "findings_open",
+  "queryExecutedOnPg15ReportedByOperator": true,
+  "nativeIsolatedBatteryExecuted": false,
+  "productTestsRepeated": 0,
+  "typeScriptNotRepeated": "No source changes; previous32 tests and TS evidence retained",
+  "checks": {
+    "json": true,
+    "prettier": true,
+    "links": 50,
+    "gitDiff": true,
+    "protectedImplementationArtifacts": true,
+    "payloadSources": 100,
+    "migrations": 47,
+    "privateHashes": 49,
+    "headUnchanged": true,
+    "indexEmpty": true
+  },
+  "agentSqlRequests": 0,
+  "newProviderRequests": 0,
+  "remoteMutations": 0,
+  "instantlyConsumed": 43,
+  "publicationApproved": false,
+  "artifacts": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/README.md",
+      "sha256": "86b587eab13437589bd50f1842f1e50d8797850bfb6d2dd0cded5b03d6c5af07"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/tasks.md",
+      "sha256": "b0b4572fd5a30845ffc9e4ed7eeba7cc4ffbbc94948c941a8bd6b75c4ad53ebb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/implementation-verification.md",
+      "sha256": "dc5ef2f759900d61c36cb55c6c51f85e3c40d9741d3e18f3558d4e94d4ae0c6c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/result-review.md",
+      "sha256": "190718679b5b5005167a211636d2ecc1cb8fce9a70180c0acc9884aa1be5b1a1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/changes/CR-001-real-readonly-validation.md",
+      "sha256": "9ca9a8f72585a380ef061223219a3fab02da5fbac4145a9a89bf08c0d4d304af"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/result-review.json",
+      "sha256": "30f174c16f7efb1d7b4b40d5f43c341e343ec1be4b33cdb6d5b971ca9c9136e1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/runbook.md",
+      "sha256": "e1ee996e5f239c70a84ad017fa612ee401a441a4043dcedecef8d9206f486dd9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/tasks.md",
+      "sha256": "8f1074fb492c5fdfcec0a44ac93ba3e6234cf3ff37cfe6c7609104c8b423d4cc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/verification.md",
+      "sha256": "75b5dcb920bebca9714deeffc7e2a1b7a7d2578a070b1616eaa19260705b9431"
+    }
+  ]
+}

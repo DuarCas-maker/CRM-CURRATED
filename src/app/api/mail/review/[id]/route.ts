@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  requireUser,
-  serviceClient,
-  checkDb,
-  jsonError,
-} from "@/lib/server/supabase";
+import { requireUser, checkDb, jsonError } from "@/lib/server/supabase";
 import { decrypt } from "@/lib/server/crypto";
 import type { MailSnapshot } from "@/lib/gmail-history";
 export async function GET(
@@ -22,8 +17,8 @@ export async function GET(
         .single(),
     )!;
     const archive = checkDb(
-      await serviceClient()
-        .from("gmail_archive_messages")
+      await db
+        .from("mail_archive_visible")
         .select("encrypted_payload,gmail_thread_id")
         .eq("account_id", r.account_id)
         .eq("gmail_message_id", r.gmail_message_id)
@@ -37,8 +32,8 @@ export async function GET(
     let cursor = null;
     const paramsUrl = new URL(request.url).searchParams;
     if (paramsUrl.get("thread") === "true") {
-      let query = serviceClient()
-        .from("gmail_archive_messages")
+      let query = db
+        .from("mail_archive_visible")
         .select("id,sent_at,encrypted_payload")
         .eq("account_id", r.account_id)
         .eq("gmail_thread_id", archive.gmail_thread_id)

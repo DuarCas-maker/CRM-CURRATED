@@ -1,3 +1,4 @@
+import { requireMailSnapshot } from "@/lib/server/mail-access";
 import { z } from "zod";
 import {
   requireUser,
@@ -22,21 +23,22 @@ export async function GET(request: Request) {
     )!;
     const conversation = checkDb(
       await db
-        .from("conversations")
+        .from("mail_conversations_visible")
         .select("opportunity_id")
         .eq("id", message.conversation_id)
         .single(),
     )!;
     const service = serviceClient();
     const sent = checkDb(
-      await service
+      await db
         .from("outbox")
-        .select("attachment_snapshot,upload_ids,gmail_file_ids")
+        .select("id,attachment_snapshot,upload_ids,gmail_file_ids")
         .eq("message_id_header", message.internet_message_id)
         .eq("opportunity_id", conversation.opportunity_id)
         .eq("status", "sent")
         .single(),
     )!;
+    await requireMailSnapshot(db, sent.id, fileId);
     const snapshot = (sent.attachment_snapshot || []).find(
       (f: { id: string }) => f.id === fileId,
     );

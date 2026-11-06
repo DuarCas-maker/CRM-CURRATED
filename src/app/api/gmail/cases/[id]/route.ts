@@ -91,7 +91,7 @@ export async function GET(
     )!;
     const processes = checkDb(
       await db
-        .from("financing_processes")
+        .from("mail_processes_visible")
         .select("*")
         .eq("opportunity_id", id)
         .order("sequence_number"),
@@ -207,7 +207,7 @@ export async function POST(
         throw new HttpError(403, "Closer access required");
       checkDb(
         await db
-          .from("financing_processes")
+          .from("mail_processes_visible")
           .select("id")
           .eq("id", input.process_id)
           .eq("opportunity_id", id)
@@ -343,7 +343,7 @@ export async function POST(
     } else {
       checkDb(
         await db
-          .from("financing_processes")
+          .from("mail_processes_visible")
           .select("id")
           .eq("id", input.process_id)
           .eq("opportunity_id", id)

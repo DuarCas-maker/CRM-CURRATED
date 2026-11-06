@@ -1,0 +1,70 @@
+{
+  "createdOn": "2026-10-31",
+  "scope": "S02-I01 local only",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "productSelector": "gmail_oauth",
+  "composioProductEnabled": false,
+  "codeFiles": [
+    {
+      "path": "src/lib/server/google.ts",
+      "action": "modified",
+      "sha256": "dcffe1b27ba7b69b24d74570798a81ad0ce26e6306955e9abac5044e0bf6674c"
+    },
+    {
+      "path": "src/lib/server/mail-transport/contract.ts",
+      "action": "added",
+      "sha256": "a38920e11561fbb41680f120a51a29bdcdcf38f011e54417acb3588e9dee2b92"
+    },
+    {
+      "path": "src/lib/server/mail-transport/gmail-direct.ts",
+      "action": "added",
+      "sha256": "a8c86659531d0d5f25d23d7bd352836d7253ad4c0bd5edcc011501149e1df7a0"
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "action": "added",
+      "sha256": "c941726cdcfd700d8b1c45b9646be8c9374bb67d3f2eac05b31311d3297130d8"
+    },
+    {
+      "path": "src/lib/server/mail-transport/errors.ts",
+      "action": "added",
+      "sha256": "9f03a63a8e650d93e1bcf7c009a93afa2afe0e81e37f74e938d533962bf13aae"
+    },
+    {
+      "path": "src/lib/server/mail-transport/factory.ts",
+      "action": "added",
+      "sha256": "f33c01c21a1fc79c106b95746dc5441c1af1e58f3ebff7cbeb3b19676cee15d0"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport.test.ts",
+      "action": "added",
+      "sha256": "a14fab038ff905cc3ce319107b7b40d1446231789e2a6b564ff57bfec121a11a"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-transport.ts",
+      "action": "added",
+      "sha256": "379994c99179571a80ddbbc2ae2fe763748b05bd090765f29e6a48fcdebfea6d"
+    }
+  ],
+  "verification": {
+    "newTransportTests": {
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typecheck": "passed",
+    "format": "passed",
+    "unrelatedPublicFilesUnchanged": 532,
+    "rootPrivateJsonFilesUnchanged": 49,
+    "s01PublicFilesUnchanged": 39,
+    "oauthAndTokenCacheLogicUnchanged": true,
+    "facadeBeforeRequestSequenceUnchanged": true,
+    "acceptedTestsRepeated": false
+  },
+  "externalProviderRequests": 0,
+  "instantlyAccumulatedCallsPreserved": 43,
+  "envFilesRead": false,
+  "remoteChanges": false,
+  "migration": false,
+  "deployment": false
+}

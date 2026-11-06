@@ -1,5 +1,49 @@
 # Verificación de Pipeline OS
 
+Versión conjunta ABC-20261031-prep1 preparada31/10/2026: [runbook y cierre de QA](s02/release/runbook.md).100 fuentes conciliadas (63 aplicación/32 pruebas/5 SQL de ensayo),5 comprobaciones nuevas del catálogo READ ONLY en memoria;139/139 C3 heredadas con las mismas fuentes, no reejecutadas. No publicable aún: catálogo/QA visual/build/PostgreSQL/migraciones finales/control del worker pendientes. Próximo paso REL-T03: lectura autorizada del catálogo y metadatos, no SQL de cambio o deploy. Producto/47 SQL/49 registros operativos/HEAD intactos; Gmail directo activo, Composio deshabilitado e Instantly43/0 nuevas. Las constancias previas conservan su alcance histórico.
+
+C3 compuesto/probado offline31/10/2026 por continuación humana: [evidencia](s02/integration/block-c/c3-verification.md),14 nuevas/125 regresión/TS correctos. Un test nuevo, sin cambios a producto/SQL/fixtures C1/C2/A/B/I01. C1/C2/C3 funcionales locales; siguiente: preparar versión conjunta A/B/C y cierre de gates INT-T04/T00-02-I. QA visual/build/contención, catálogo y promoción siguen pendientes. Directo activo, Composio deshabilitado, Instantly43/0 nuevas; sin APIs/envíos/remoto/push/deploy. Las constancias anteriores conservan su alcance histórico.
+
+C2 local implementado/probado31/10/2026 por autorización humana: [evidencia](s02/integration/block-c/c2-verification.md),28 nuevas/97 regresión/TS correctos. Dos fuentes C1 extendidas/dos adiciones; identidad/permisos y evidencia sellada con dependencias falsas, aprobación humana sin activar transporte. C3 y promoción pendientes; Gmail directo activo, Composio deshabilitado, Instantly43/0 nuevas. Sin env reales/API/envíos/SQL remoto/push/deploy o cambios del checkout S01. Las constancias previas conservan su alcance histórico.
+
+Actualización C1 implementada31/10/2026: [entrega y límites](s02/integration/block-c/c1-verification.md),24 pruebas nuevas/73 regresión/TS correctos. Registro/API/panel/revocación de candidatos y SQL en memoria, sin evidencia positiva o selector Composio. I01/A/B/47 SQL/49 hashes operativos conservados fuera del único compartido permitido; Instantly43 y0 API/envíos/remoto/push/deploy. Siguiente incremento: C2, verificador inyectable offline y protocolo de evidencia, bajo solicitud; visual/build/contención/catálogo y promoción siguen pendientes.
+
+## Preparación C —31/10/2026
+
+[Evidencia documental](s02/integration/block-c/verification.md), [manifiesto](s02/integration/block-c/manifest.json): identidades/estados/evidencia y revisión técnica separadas del despacho B2. Trazabilidad/paths/huellas/formato/enlaces comprobados; código y SQL C no creados. Los118 tests de B2 son evidencia previa, no se repitieron ni se atribuyen a C. Directo fijo, Composio deshabilitado, Instantly43; sin env/red/remoto.
+
+## B2: guardas de envío verificadas offline —31/10/2026
+
+[Evidencia](s02/integration/block-b/b2-verification.md), [huellas](s02/integration/block-b/b2-implementation.json):118/118 seleccionadas (32 nuevos B2,12 composición/envío y74 regresión), TypeScript/formato correctos. SQL candidato sin ordinal aplicado y revertido solo en memoria; ocho I01,13 B1 protegidos fuera de actions,47 migraciones y49 JSON operativos intactos. Sin env/API/envíos/remoto/push/deploy; Instantly43, directo fijo, Composio apagado. QA visual, empaquetado y contención PostgreSQL independiente pendientes; no equivale a promoción.
+
+## Preparación B —31/10/2026
+
+[Evidencia](s02/integration/block-b/verification.md), [manifiesto](s02/integration/block-b/manifest.json). Discovery de caminos administrativos, dos formularios OAuth, scheduler/notificaciones con escritura de servicio y seis fixtures de worker afectadas. SDD STRICT por paquetes B1/B2, snapshots y corte compatibles con el diseño S01 aprobado. Solo documentación/huellas; no ejecutar código, SQL, APIs o pruebas reales. Las155 pruebas de A siguen como evidencia heredada, no resultados de B. Instantly43 y fuentes/controles privados preservados; build completo A sigue pendiente EPERM Windows.
+
+## Bloque A S01 integrado en la base S02 —31/10/2026
+
+[Evidencia y límites](s02/integration/verification.md), [manifiesto](s02/integration/block-a-implementation.json):28 existentes/siete nuevos S01 incorporados; cuatro SQL originales como fixtures, dos candidatos locales no numerados y dos tests nuevos.155/155 offline (37 S01,111 regresión,7 composición), TS/formato correctos. Catálogo estático equivale a fixtures sobre001–047 y046/047 quedan intactas. Worker real/fachada directa/SQL nuevos con transporte falso: éxito, veto tras revocación y uncertain sin retry correctos. Standalone alcanzó generación y falló por symlinks EPERM Windows; copia de compilación QA separada, no artefacto de despliegue. Sin APIs/env reales/envíos/remoto/activación/commit/push;43 Instantly. B/C/T00-02-I y promoción pendientes.
+
+## Preparación de integración S01/Composio — 31/10/2026
+
+[Evidencia](s02/integration/verification.md) y [reporte](s02/integration/compatibility-report.json):39 huellas S01,28 existentes coordinador, ocho I01 y45 SQL comunes correctos. Nueva prueba PGlite aplica los preliminares I01/I02 sobre001–047 y revierte; cuatro vistas/tres columnas presentes, definiciones/ACL/owners/constraints/policies de046/047 iguales antes/después. Es coexistencia sintética, no integración funcional ni catálogo remoto.49 JSON privados intactos,43 Instantly, cero env/API/remoto/activaciones. Plan A/B/C y manifiesto preparados; código, SQL final y gates posteriores pendientes.
+
+## S02-I01: transporte compatible implementado offline — 31/10/2026
+
+[Evidencia, límites y baseline aceptado](s02/verification.md), [huellas del incremento](s02/implementation-manifest.json): ocho paths de código/tests implementados por autorización posterior,33/33 pruebas nuevas, TS/formato y revisión de alcance correctos. Gmail directo fijo; Composio inyectable, sin selección real, env o SQL nuevos.532 archivos públicos previos ajenos,49 JSON privados y39 fuentes S01 intactos, OAuth/caché y secuencia de cuota/hook conservados. La revisión previa S01 cubrió28 existentes/11 nuevos y45 SQL idénticos; sus tests20/144 y la aceptación operativa de correo/adjuntos/PRUEBA/Bouncer no se repiten. No se fusiona S01 ni se copia su SQL sandbox. Instantly43 y C pendiente; sin APIs/env reales/servicios/SQL/envíos o cambios remotos, commit/push/despliegue. Solo I01 local queda completado; selección por cuenta e integración S01 pendientes.
+
+## R47-T05a: smoke real de app6/6 — 30/10/2026
+
+[Resultados y límites](s00/instantly-047-app-smoke.md). Permiso explícito hasta6 HTTP a crm.finlabinc.com ejecutado una vez: health/login200 y webhook/trial/control/lease404 vacíos/no-store. Seis respuestas con nosniff/DENY/CSP, sin redirects/retries, credenciales o formulario enviado. Transporte HTTPS acotado, reserva durable previa y12 casos del validador offline correctos antes de red.43/v7/12 JSON y20 payload preservados;0 Instantly/SQL/envíos/activación/deploy. Techo6 agotado, sin más HTTP por ese permiso.
+
+R47-T05a completada; sesión/MFA/vistas actuales e imagen de recuperación retenida siguen pendientes, igual que RPC/recepción C/D/S00. Los resultados de app no certifican por sí solos imagen/version exacta o DB interna; se combinan con mainfb9f201 verificado y healthy reportado por operador. Registro local, sin nuevo commit/push o suites de producto repetidas.
+
+## R47-T04: fb9f201 publicado y Coolify healthy reportado — 30/10/2026
+
+[Evidencia, balance y límites](s00/instantly-047-publication.md). Publicación autorizada del SHA exacto: origen/repo y árbol revisados, main remoto0af77b7 compatible, push normal de un commit y lectura posterior confirman main **fb9f2015e682fc0704340530425322efc62c601b**. Operador confirma Success/Finished y contenedor healthy para ese commit; el agente no leyó logs/imagen final. Conector GitHub sin estados; Computer Use terminó al no poder verificar la URL, sin operar el recurso.
+
+R47-T04 completada en ese alcance.43/v7/12 JSON y payload20 preservados, sin peticiones Instantly/envíos/SQL adicional/activación/cambio de variables o segundo despliegue manual. Smoke app0; R47-T05, RPC vivo/C/D/S00 pendientes. Registro documental local posterior al push, no incluido en otra publicación. Evidencia de QA681 del mismo payload conservada, sin repetir suites por esta constancia.
+
 ## R47-T04a: cierre del commit local autorizado
 
 [Registro y criterios](s00/instantly-047-local-commit.md). Verificación previa:20 archivos idénticos al candidato/copia QA681,12 JSON operativos idénticos y43; no más SQL remoto, APIs, env reales o cambios de aplicación. El empaquetado respeta `* text=auto eol=lf`; los20 archivos ya están en LF y sus huellas se conservan. El manifiesto Git-LF permite comprobar cada blob staged contra el contenido probado, preservando las huellas originales. El commit que contiene ese cierre identifica el incremento; su padre debe ser0af77b7 y sus rutas la selección pública explícita. La entrega/recibo local consignan el resultado real de staging/commit, sin inventar su SHA antes de crearlo. No se repiten681/DB/build por documentación; publicación/smoke/RPC vivo y C/D/S00 pendientes.

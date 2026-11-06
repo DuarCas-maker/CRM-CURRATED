@@ -1,0 +1,41 @@
+{
+  "id": "AF-EOL-r1-incident",
+  "reviewedOn": "2026-11-04",
+  "source": "operator_messages_and_pasted_post_failure_preflight_in_this_chat",
+  "attempt": {
+    "operatorConfirmedFullScriptInCrm": true,
+    "error": "ABC_FINAL_CONTRACT_MISMATCH",
+    "sqlState": "P0001",
+    "location": "final check before COMMIT, line29",
+    "migrationSha256": "e4626cb612868f4cd13ebce98ca3a6b5fea0e51f7d73b05f0e4935dd3be0b604",
+    "contractSha256": "8fafee3c08c3aea1941b91058fcc9594560d280ede7b66724583b5167f932321"
+  },
+  "postFailureVerification": {
+    "conditionalCleanupAndOneManualReadAuthorized": true,
+    "operatorReadResultReceived": 1,
+    "remainingAuthorizedReads": 0,
+    "cleanupSuccessMessageSeparatelySupplied": false,
+    "exactExecutionTimestampSupplied": false,
+    "version": "150008",
+    "readOnly": "on",
+    "complete": true,
+    "catalogOk": true,
+    "preconditionsOk": true,
+    "mismatchCount": 0,
+    "detailsTruncated": false,
+    "newObjectsAbsentInCheckedScope": true,
+    "allReportedQueueAggregatesZero": true,
+    "publicationReady": false,
+    "scope": "catalog and queue evidence consistent with rollback; not an inspection of all production rows"
+  },
+  "offlineReproduction": {
+    "canonicalLF": "passed",
+    "wholeScriptCRLFBeforeFix": "same final contract error",
+    "initialFinalSourceHashMismatches": 117,
+    "additionalProtectedSourceHashMismatches": 2,
+    "confirmedExclusiveProductionCause": false,
+    "runtime": "PGlite18 in memory; no nativePG15 or real API"
+  },
+  "newAgentRemoteCalls": 0,
+  "instantly": { "consumed": 43, "new": 0 }
+}

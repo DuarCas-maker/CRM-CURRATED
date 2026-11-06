@@ -1,5 +1,9 @@
 # Sprint S00 validaciones locales y preparación de APIs
 
+**Smoke HTTP posterior a fb9f201:6/6 correctas30/10:** [health/login200 y cuatro entradas técnicas404 vacías/no-store](instantly-047-app-smoke.md), headers correctos, sin redirects/retries/credenciales.43/12 JSON intactos;0 Instantly/SQL/envíos/activación/deploy, techo6 agotado. T05a HTTP completa; faltan comprobaciones manuales actuales de sesión/vistas/retención, RPC/C/D/S00. Registro local, no otra publicación.
+
+**fb9f201 publicado30/10:** [main verificado y Coolify Success/Finished/healthy reportado](instantly-047-publication.md). Push normal autorizado de un commit, sin segundo Deploy/Redeploy;047 ya aplicada, sin SQL adicional, activación o envíos.43/12 JSON/payload20 preservados. Falta R47-T05 (smoke/vistas/retención posterior), RPC vivo y C/D/S00; el build reportado no acredita recepción. Esta constancia queda local y no genera otra publicación.
+
 **Commit local del puente autorizado:** [cierre y controles](instantly-047-local-commit.md),20 archivos de payload y documentos públicos revisados, con serialización LF del repositorio. Identificación por el commit que incorpora el cierre, sin SHA autorreferente.43/12 JSON preservados; no publicación, SQL remoto, activación o C real.047 ya aplicada por operador con postflight aceptado. Publicación apagada y smoke requieren su autorización posterior.
 
 **047 aplicada por operador y postflight aceptado:** autorización limitada a SQL047+catálogo, Success reportado y tabla/17 columnas/16 constraints/RLS/grants/cuatro funciones conformes;046 con tres huellas iguales al preflight. [Evidencia](../verification.md). Código del puente todavía local, sin nueva publicación/activación; R47-T04/05 y C/D/S00 pendientes.43 conservadas, sin RPC vivo probado o SQL remoto ejecutado por el agente. No volver a aplicar047.

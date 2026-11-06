@@ -1,0 +1,68 @@
+{
+  "id": "PAR2-20261105",
+  "date": "2026-11-05",
+  "mode": "planning_only",
+  "roadmap": "docs/specs/pipeline-os/parallel-roadmap-20261105.md",
+  "requirements": [
+    "PAR2-FR01",
+    "PAR2-FR02",
+    "PAR2-FR03",
+    "PAR2-FR04",
+    "PAR2-FR05"
+  ],
+  "recommendedChats": 3,
+  "optionalFourth": "Instantly C/D offline planning",
+  "pendingAdded": {
+    "id": "S02-CONNECT-T01",
+    "status": "pending_discovery_and_specification",
+    "purpose": "connect a Gmail from CRM through Composio",
+    "separateFrom": "per-mailbox provider activation R06",
+    "implementationAuthorized": false
+  },
+  "checkedContext": {
+    "operator049PostflightAccepted": true,
+    "webWorkerCandidate": "ABC-WW-20261105",
+    "sourceTreeSha256": "8c9690dbe5c4421f709608f5e51062a140f42f3b62ddabd1ff586d7885ad6710",
+    "existingS01Thread": {
+      "id": "01a18602-a8f8-7141-9fc9-0fdf580a8224",
+      "title": "Pipeline OS — S01: identidad y estados",
+      "latestCompletedDelivery": "I02 local",
+      "baseCommit": "ae0c42cdb36f24b2710cbe363df584f08f839f05",
+      "notCurrentReadyBase": true
+    },
+    "source": "public_repo_git_worktree_metadata_and_read_only_thread_history",
+    "openAiDocumentation": "https://developers.openai.com/blog/mastering-codex-remote-for-engineering"
+  },
+  "verification": {
+    "existingPublicFilesCompared": 793,
+    "payloadUnchanged": 100,
+    "supportUnchanged": 10,
+    "operationalHashesUnchanged": 49,
+    "candidateArchiveUnchanged": true,
+    "format": "passed new roadmap",
+    "localLinks": 100,
+    "diff": "passed",
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "newProductTestRuns": 0
+  },
+  "effects": {
+    "chatsCreated": 0,
+    "worktreesCreated": 0,
+    "worktreesModified": 0,
+    "ownershipTransfers": 0,
+    "subagentsSpawned": 0,
+    "sourceCodeChanges": 0,
+    "providerApiCalls": 0,
+    "remoteSql": 0,
+    "sends": 0,
+    "pushes": 0,
+    "deploys": 0,
+    "realEnvFilesRead": 0,
+    "instantlyConsumed": 43,
+    "instantlyNew": 0,
+    "gmailDirect": "preserved",
+    "composio": "disabled preserved"
+  },
+  "nextStep": "On explicit instruction, prepare verified current public base and isolated F2/F3 chats; do not start implementation or external operations by this plan."
+}

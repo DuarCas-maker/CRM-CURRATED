@@ -1,0 +1,116 @@
+{
+  "date": "2026-10-31",
+  "scope": "B1 local only",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "implementationAuthorized": true,
+  "authorizedPackages": ["B1"],
+  "existingModified": 6,
+  "additions": 8,
+  "files": [
+    {
+      "path": "src/app/api/actions/route.ts",
+      "sha256": "495b66ca875f45e56b0990ecef62d689d91db130c68be07f510fff572c86333a",
+      "action": "modified"
+    },
+    {
+      "path": "src/components/integrations.tsx",
+      "sha256": "aca056c39abb4c6bf72264508b53a6de03a31f146a6c2610688bdeb1130fa61c",
+      "action": "modified"
+    },
+    {
+      "path": "src/components/gmail-history.tsx",
+      "sha256": "3bb7c9464379091d030965305dd47c7f6247ab738e889a0309ad41f7b850a020",
+      "action": "modified"
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "sha256": "8f3f78ec8e766feeef6cd87ec7625fde6803658535911082bd7fe43976d00b2b",
+      "action": "modified"
+    },
+    {
+      "path": "src/app/api/gmail/connect/route.ts",
+      "sha256": "dd4a5131557ec2f755aed831ab6792c55611a825cc8ad3fc55c6682f548b6e84",
+      "action": "modified"
+    },
+    {
+      "path": "src/app/api/gmail/callback/route.ts",
+      "sha256": "6d03a561c66c15ea720fe21045fb363427610823a19de5f660dfbdf44b267a8e",
+      "action": "modified"
+    },
+    {
+      "path": "src/lib/brand-management.ts",
+      "sha256": "d459ad1f6ae0f4c020a326a611e00cdfc978a8c8eb479c71720df54c5627cec3",
+      "action": "added"
+    },
+    {
+      "path": "src/lib/server/brand-actions.ts",
+      "sha256": "a229d9d895f92c1585a9188a7e7e535d7bdac6d26563a0a0b69020c18ed8fbb4",
+      "action": "added"
+    },
+    {
+      "path": "src/app/api/brands/route.ts",
+      "sha256": "0fad2c32e93befb74f45cddc503b2c612c189692dff64b6a75e57ab1224b9647",
+      "action": "added"
+    },
+    {
+      "path": "src/components/brand-settings.tsx",
+      "sha256": "118ebc4a926d7e3c40ffbe6d39617e1ac2d798f3f8a280cdd01bebc517527ea3",
+      "action": "added"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-admin.test.ts",
+      "sha256": "134f662f2cf9030ce739e518ed235b9b6cfc36cf2edb3daca6f164e2541bbb56",
+      "action": "added"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-api.test.ts",
+      "sha256": "63f28defca860cb9dcbe58beb8e2812f151152a640147f040e3b29701d69ddaa",
+      "action": "added"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-ui.test.ts",
+      "sha256": "81960c233539c279ab5a9c3d326f82499ca66839914543127b15d6ee54e2bb10",
+      "action": "added"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-management.local.sql",
+      "sha256": "ff3ed9771b93c0d0ef5e6c125a60a41c70dabb1e0a3f410d917785e5dd1cc821",
+      "action": "added"
+    }
+  ],
+  "protected": {
+    "blockA": 43,
+    "i01": 8,
+    "historicalMigrations": 47,
+    "privateOperationalJson": 49,
+    "unexpectedChanges": [],
+    "privateChanged": [],
+    "headUnchanged": true
+  },
+  "checks": {
+    "newTests": {
+      "pass": 30,
+      "fail": 0
+    },
+    "selectedRegression": {
+      "pass": 31,
+      "fail": 0
+    },
+    "typecheck": "passed",
+    "format": "passed",
+    "diffCheck": "passed",
+    "visual": "pending: IAB timeout; Chrome Crashpad startup failure",
+    "fullNextBuild": "pending: inherited Windows EPERM; not rerun",
+    "realPostgresConcurrency": "pending"
+  },
+  "externalPetitions": 0,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "productProvider": "gmail_oauth",
+  "composioProductEnabled": false,
+  "remoteSql": false,
+  "commit": false,
+  "push": false,
+  "deploy": false,
+  "next": "B2 requires authorization and manifest revalidation; no standalone B1 promotion"
+}

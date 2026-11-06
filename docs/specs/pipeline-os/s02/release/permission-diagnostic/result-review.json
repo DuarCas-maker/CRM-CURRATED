@@ -1,0 +1,1015 @@
+{
+  "dateReceived": "2026-11-01",
+  "inputSha256": "9aaaaf19fc497169b54b710866bc0af99f106ab88c73c681a69cc59ca404d430",
+  "inputBytes": 1414808,
+  "source": "Operator-supplied PD-R1 result attributed to the CRM self-hosted Studio; not an agent-authenticated DB connection",
+  "protocol": "PD-R1",
+  "scopeDigest": "c323bbbea3b07afa2c30b3c6847e887c2a2d660be28ecb87497ff19582711b4a",
+  "sqlSha256": "e6116007a597cc67f51be3c257c19f0469da3284715a3e0ff21c2746e19fca21",
+  "context": {
+    "sql_role": "supabase_admin",
+    "read_only": "on",
+    "server_version": "150008",
+    "search_path": "pg_catalog",
+    "superuser": true,
+    "bypass": true,
+    "migration_history_present": false
+  },
+  "completeness": {
+    "objects_ok": true,
+    "limits_ok": true,
+    "depth_exceeded": false,
+    "counts": {
+      "roles": 15,
+      "edges": 15,
+      "relations": 93,
+      "functions": 206,
+      "columns": 1010,
+      "constraints": 422,
+      "acl": 1320,
+      "defaults": 3,
+      "dependencies": 618,
+      "policies": 8,
+      "views": 3,
+      "storage_triggers": 4,
+      "storage_indexes": 7,
+      "unexpected_functions": 0
+    }
+  },
+  "functionFingerprintComparison": {
+    "source_hash": {
+      "same": 1,
+      "different": 205
+    },
+    "source_lf_hash": {
+      "same": 206,
+      "different": 0
+    },
+    "definition_hash": {
+      "same": 1,
+      "different": 205
+    },
+    "definition_lf_hash": {
+      "same": 206,
+      "different": 0
+    },
+    "defaults_hash": {
+      "same": 206,
+      "different": 0
+    },
+    "config_hash": {
+      "same": 206,
+      "different": 0
+    },
+    "result_hash": {
+      "same": 206,
+      "different": 0
+    },
+    "language": {
+      "same": 206,
+      "different": 0
+    },
+    "volatility": {
+      "same": 206,
+      "different": 0
+    },
+    "strict": {
+      "same": 206,
+      "different": 0
+    },
+    "parallel": {
+      "same": 206,
+      "different": 0
+    },
+    "definer": {
+      "same": 206,
+      "different": 0
+    },
+    "returns_set": {
+      "same": 206,
+      "different": 0
+    },
+    "leakproof": {
+      "same": 206,
+      "different": 0
+    },
+    "search_path_kind": {
+      "same": 206,
+      "different": 0
+    }
+  },
+  "policyDifferences": 0,
+  "profilesFkEqual": true,
+  "publicColumnAccessDifferenceCount": 329,
+  "publicRelations": [
+    {
+      "key": "public.campaign_assets",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.campaign_events",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.campaign_workspace",
+      "kind": "v",
+      "rls": false,
+      "security": ["security_invoker=true"],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.company_contacts",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.company_primary_cases",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.conversation_lenders",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.document_reviews",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.email_templates",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.email_template_versions",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.gmail_api_slots",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.gmail_api_usage",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.gmail_candidate_directory",
+      "kind": "v",
+      "rls": false,
+      "security": ["security_invoker=true"],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.gmail_pending_associations",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.gmail_sent_usage",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.lead_workspace",
+      "kind": "v",
+      "rls": false,
+      "security": ["security_invoker=true"],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.lender_contacts",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.lender_guideline_versions",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.mail_drafts",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": ["REFERENCES", "TRIGGER", "TRUNCATE"]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.mail_recipient_selections",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": ["REFERENCES", "TRIGGER", "TRUNCATE"]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.mail_uploads",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.operational_settings",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "kind": "v",
+      "rls": false,
+      "security": ["security_invoker=true"],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "kind": "v",
+      "rls": false,
+      "security": ["security_invoker=true"],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.opportunity_workspace",
+      "kind": "v",
+      "rls": false,
+      "security": ["security_invoker=true"],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.process_state_history",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.underwriting_runs",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.underwriting_settings",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    },
+    {
+      "key": "public.underwriting_setting_versions",
+      "kind": "r",
+      "rls": true,
+      "security": [],
+      "extraPrivileges": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      },
+      "directGrantors": ["supabase_admin"]
+    }
+  ],
+  "creatorDefaults": [
+    {
+      "key": "supabase_admin:public:S",
+      "owner": "supabase_admin",
+      "schema": "public",
+      "kind": "S",
+      "grants": {
+        "anon": ["SELECT", "UPDATE", "USAGE"],
+        "authenticated": ["SELECT", "UPDATE", "USAGE"],
+        "postgres": ["SELECT", "UPDATE", "USAGE"],
+        "service_role": ["SELECT", "UPDATE", "USAGE"]
+      }
+    },
+    {
+      "key": "supabase_admin:public:f",
+      "owner": "supabase_admin",
+      "schema": "public",
+      "kind": "f",
+      "grants": {
+        "anon": ["EXECUTE"],
+        "authenticated": ["EXECUTE"],
+        "postgres": ["EXECUTE"],
+        "service_role": ["EXECUTE"]
+      }
+    },
+    {
+      "key": "supabase_admin:public:r",
+      "owner": "supabase_admin",
+      "schema": "public",
+      "kind": "r",
+      "grants": {
+        "anon": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "authenticated": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "postgres": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ],
+        "service_role": [
+          "DELETE",
+          "INSERT",
+          "REFERENCES",
+          "SELECT",
+          "TRIGGER",
+          "TRUNCATE",
+          "UPDATE"
+        ]
+      }
+    }
+  ],
+  "rawComparatorEntries": {
+    "confirmed_permission_drift": 605,
+    "platform_pending": 27,
+    "unresolved_definition": 9
+  },
+  "rawEntryTotal": 641,
+  "rawCountsAreNotIndependentVulnerabilityCount": true,
+  "remainingViews": [
+    {
+      "section": "views",
+      "key": "public.campaign_workspace",
+      "fields": ["definition_hash", "definition_lf_hash"],
+      "classification": "unresolved_definition"
+    },
+    {
+      "section": "views",
+      "key": "public.opportunity_inbox",
+      "fields": ["definition_hash", "definition_lf_hash"],
+      "classification": "unresolved_definition"
+    },
+    {
+      "section": "views",
+      "key": "public.opportunity_tasks",
+      "fields": ["definition_hash", "definition_lf_hash"],
+      "classification": "unresolved_definition"
+    }
+  ],
+  "remainingViewDependencies": [
+    {
+      "section": "dependencies",
+      "key": "view:public.campaign_workspace:n:e6e947314fab25e79f486d99b13a1e2e",
+      "fields": ["added"],
+      "classification": "unresolved_definition"
+    },
+    {
+      "section": "dependencies",
+      "key": "view:public.gmail_candidate_directory:n:313c32839e40868cded47827d3f8b030",
+      "fields": ["added"],
+      "classification": "unresolved_definition"
+    },
+    {
+      "section": "dependencies",
+      "key": "view:public.lead_workspace:n:01e48f732769d1013cb58a91511129ad",
+      "fields": ["added"],
+      "classification": "unresolved_definition"
+    },
+    {
+      "section": "dependencies",
+      "key": "view:public.opportunity_inbox:n:07922de0200b8d8a5bd60e76845f82d0",
+      "fields": ["added"],
+      "classification": "unresolved_definition"
+    },
+    {
+      "section": "dependencies",
+      "key": "view:public.opportunity_tasks:n:80cd742ee157f9b50c72f130fb945e0c",
+      "fields": ["added"],
+      "classification": "unresolved_definition"
+    },
+    {
+      "section": "dependencies",
+      "key": "view:public.opportunity_workspace:n:436da91da38d677ee3c134751275ffc0",
+      "fields": ["added"],
+      "classification": "unresolved_definition"
+    }
+  ],
+  "interpretation": {
+    "queryCompatibility": "PD-R1 returned valid scoped output on PostgreSQL15.8; isolated motor not required to repeat this query",
+    "functionBodies": "LF-normalized body/definition hashes all match; raw differences retained conservatively",
+    "defaultHistory": "Current defaults match a possible grant mechanism, not historical proof",
+    "remediation": "not prepared or applied",
+    "releaseGate": "open findings; no publication approval"
+  },
+  "operatorReadExecutionsReported": 1,
+  "additionalQueriesExecutedByAgent": 0,
+  "remoteChangesByAgent": 0,
+  "providerRequests": 0,
+  "instantly": {
+    "consumed": 43,
+    "new": 0
+  }
+}

@@ -1,3 +1,4 @@
+import { requireMailSource } from "./mail-access";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { DocumentSource } from "../document-review";
 import {
@@ -14,6 +15,7 @@ export async function documentSource(
   source: DocumentSource,
   id: string,
 ) {
+  await requireMailSource(db, source, id);
   if (source === "document") {
     const row = checkDb(
       await db.from("documents").select("*").eq("id", id).maybeSingle(),
@@ -43,7 +45,7 @@ export async function documentSource(
     )!;
     const co = checkDb(
       await db
-        .from("conversations")
+        .from("mail_conversations_visible")
         .select("opportunity_id")
         .eq("id", msg.conversation_id)
         .single(),
@@ -76,6 +78,7 @@ export async function documentBytes(
   } else if (source === "saved") {
     bytes = (
       await readArchiveAttachment(
+        db,
         row.archive_message_id,
         row.part_id,
         row.storage_path,
@@ -93,7 +96,7 @@ export async function documentBytes(
     )!;
     const co = checkDb(
       await db
-        .from("conversations")
+        .from("mail_conversations_visible")
         .select("account_id")
         .eq("id", msg.conversation_id)
         .single(),

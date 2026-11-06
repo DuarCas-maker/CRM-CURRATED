@@ -1,20 +1,35 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { serviceClient, checkDb, HttpError } from "./supabase";
 import { decrypt } from "./crypto";
 import { gmail } from "./google";
 import type { MailSnapshot } from "../gmail-history";
 export async function readArchiveAttachment(
+  db: SupabaseClient,
   messageId: string,
   partId: string,
   storedPath?: string | null,
 ) {
   const service = serviceClient();
   const archive = checkDb(
-    await service
-      .from("gmail_archive_messages")
+    await db
+      .from("mail_archive_visible")
       .select("*")
       .eq("id", messageId)
       .single(),
   )!;
+  if (storedPath) {
+    const file =
+      checkDb(
+        await db
+          .from("gmail_saved_attachments")
+          .select("id")
+          .eq("archive_message_id", messageId)
+          .eq("part_id", partId)
+          .eq("storage_path", storedPath)
+          .limit(1),
+      ) || [];
+    if (!file.length) throw new HttpError(404, "Attachment not found");
+  }
   const snapshot = JSON.parse(
     decrypt(archive.encrypted_payload),
   ) as MailSnapshot;

@@ -1,3 +1,4 @@
+import { fakeBrandEnvelope } from "./fixtures/pipeline-os-s02-brand-delivery";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
@@ -34,6 +35,7 @@ test("sender retries confirmed quota rejections but never blindly repeats an unc
       organization: "fixture",
     };
     const msg = {
+      ...fakeBrandEnvelope(account.id),
       id: randomUUID(),
       account_id: account.id,
       opportunity_id: randomUUID(),
@@ -100,12 +102,12 @@ test("sender retries confirmed quota rejections but never blindly repeats an unc
         );
         const resource = url.pathname.replace("/rest/v1/", "");
         if (resource === "rpc/reserve_gmail_api") return Response.json(0);
-        if (resource === "rpc/recheck_outbox_delivery") {
+        if (resource === "rpc/admit_brand_dispatch") {
           if (mode === "held") {
             msg.status = "paused";
             return Response.json(false);
           }
-          return Response.json(true);
+          return Response.json("11111111-1111-4111-8111-111111111111");
         }
         if (resource === "rpc/claim_outbox") {
           if (msg.status !== "queued") return Response.json([]);
@@ -131,6 +133,8 @@ test("sender retries confirmed quota rejections but never blindly repeats an unc
           if (body?.status) msg.status = body.status;
           return Response.json(null);
         }
+        if (resource === "rpc/brand_dispatch_uncertain")
+          return Response.json(null);
         if (resource === "rpc/mark_sent") {
           if (mode === "db_failure")
             return Response.json(

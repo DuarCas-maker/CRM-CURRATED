@@ -7,6 +7,16 @@ export async function storeDocument(
   source: string,
   actor: string | null,
 ) {
+  if (actor) {
+    const allowed = await serviceClient().rpc("mail_document_write_allowed", {
+      document_id: documentId,
+      acting_user: actor,
+    });
+    if (allowed.error)
+      throw new HttpError(503, "Mail access contract is unavailable");
+    if (allowed.data !== true)
+      throw new HttpError(403, "Case and area access required");
+  }
   const uploaded = await uploadDocument(file, documentId, opportunityId);
   const db = serviceClient();
   checkDb(

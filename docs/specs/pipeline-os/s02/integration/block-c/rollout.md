@@ -1,0 +1,15 @@
+# C — promoción y recuperación
+
+C1 implementado y probado solo localmente: paso1 funcional, candidato SQL no numerado y UI/API. [Evidencia](c1-verification.md). C2 también implementado y probado offline: [evidencia](c2-verification.md). C3 compuesto/probado offline sin cambios productivos: [evidencia](c3-verification.md). QA pendiente y todos los pasos de promoción siguen abiertos; ningún recurso, variable o cambio remoto nuevo. **Directo activo, Composio deshabilitado, Instantly43.**
+
+1. Implementar C1 solo tras solicitud, revalidando su manifiesto. Ensayar SQL marcado sobre001–047+A+B1+B2 en memoria. No copiar SQL de sandbox a Supabase remoto ni asignar número final por documentación.
+2. C2 añade únicamente verificador falso y evidencia acotada; no crear factory de red o ruta operativa de verificación. Contrastar el contrato local al implementarlo; contrastar documentación oficial/procedencia de proyecto/cuota antes de un protocolo real posterior, bajo sus límites.
+3. C3 verifica composición/preservación. Proteger los ocho I01, candidatos/guardas B2, firmas, callbacks OAuth, worker y47 migraciones. Publicar un resultado local no equivale a activar Composio.
+4. Antes de promover cualquier parte de A/B/C: completar T00-02-I de catálogo/RLS/Storage/legado y versiones, contrastar owners/grants/funciones, resolver build standalone/visual y contención multiconexión. Mantener los pendientes B explícitos. No reejecutar030/046/047 por este bloque.
+5. Una promoción posterior debe coordinar web/worker/SQL y rollback compatible; tendrá alcance/commit/entorno y autorización propios. No agregar IDs/credenciales de S00 automáticamente a tablas productivas. Asignaciones reales requieren revisión por cuenta y marca, sin usar alias M1/M2 como identidad.
+6. La verificación externa de asociación necesita protocolo/presupuesto/cupo/contexto servidor propios y credenciales ya guardadas bajo autorización vigente; hoy no se leen ni validan. Criterio de freno si no se demuestra proyecto Google/clave-proyecto/permisos. No enviar pruebas por comprobar identidad.
+7. Activar Composio exige otro incremento: selector por cuenta/epoch de escritor, cola y uncertain conciliados, cuotas y recheck final compatibles, una sola vía y sin fallback. Verified de C no basta; no exponer «Activar» antes de esas guardas.
+
+Recuperación local: comprobar rollback de candidato C en la misma transacción aislada; restaurar únicamente el delta propio de forma revisada si fuera necesario, preservando WIP A/B/I01 y del usuario. No reset/stash/clean/revert general ni edición del checkout S01.
+
+En un futuro entorno con datos, preferir deshabilitar administración C y corrección hacia adelante manteniendo asociaciones/evidencia/historia; una revocación local no llama al proveedor. El plan final de preservación se acordará para ese release. No se impone ni ejecuta un respaldo remoto en esta preparación; las instrucciones del usuario sobre los datos existentes se conservan. Un binario anterior no puede usar un verified como active ni eludir B2.

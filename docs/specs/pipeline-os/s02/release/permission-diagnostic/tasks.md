@@ -1,0 +1,15 @@
+# Tareas finitas PD
+
+Resultado posterior01/11/2026: [CR-001](changes/CR-001-real-readonly-validation.md) aceptada para una lectura real; salida PD-R1 válida en150008, analizada localmente. PD-T04 queda cubierta en compatibilidad de la consulta por esa ejecución, PD-T05/06 realizados por el operador/revisión del resultado con hallazgos abiertos. [Revisión](result-review.md). No se requieren instalación o pruebas destructivas en producción; el gate de PG15 aislado de las filas históricas siguientes no bloquea esta consulta ya ejecutada. PD-T07 pendiente de preparación/QA/autorización propia; cero cambios remotos por este resultado.
+
+| ID / FR             | Entrega                                                                                     | Estado                                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| PD-T01 / FR01/03    | Revisar input, diferencias y evidencia local; inventario separando hecho/hipótesis.         | Completado localmente; ver observations/verification.                                               |
+| PD-T02 / FR02/04/05 | Protocolo/contrato, hipótesis, aceptación, privacidad y presupuesto del diagnóstico.        | Preparado; no script SQL o runner productivo.                                                       |
+| PD-T03 / FR02–05    | Implementar PD-R1 y comparación/fixtures offline por instrucción posterior.                 | Completado por autorización posterior: SQL de lectura generado y CLI local sin transporte de red.   |
+| PD-T04 / FR02–05    | Probar permisos y negativos; revisar salida y compatibilidad PG15.                          | 32/32 nuevas y TypeScript correctos en PGlite18; ejecución en PostgreSQL15 independiente pendiente. |
+| PD-T05 / FR04/05    | Presentar SQL/hash exactos y pedir alcance concreto del único diagnóstico remoto.           | No autorizado en este incremento; no heredar permiso anterior.                                      |
+| PD-T06 / FR01–05    | Obtener la única salida autorizada y clasificar cada residual; registrar límites.           | Pendiente; ante error/incompleto detener sin retry.                                                 |
+| PD-T07 / FR02/03    | Proponer corrección mínima y regresión por causa confirmada, separada de publicación A/B/C. | Pendiente de evidencia, sin corregir ahora ni reaplicar historia.                                   |
+
+Actualización de implementación01/11/2026: PD-T03 completada; PD-T04 pasa32/32 nuevas y TS/formato en PGlite18, con ejecución nativaPG15 aún pendiente. [Evidencia y manifiesto](implementation-verification.md). Las filas de preparación anteriores conservan su alcance histórico. No consultas remotas ni autorización para PD-T05/06. Siguiente paso: cerrar esa compatibilidad offline sin usar producción. No empezar SQL final, asignaciones reales, publicación, nuevos chats o subagentes por este plan.

@@ -9,6 +9,10 @@ import {
 } from "@/lib/server/supabase";
 import { readBounded } from "@/lib/server/body";
 import { senderSignature, sendManagedMail } from "@/lib/server/mail-manager";
+import {
+  readableSenderCapabilities,
+  deliveryJsonError,
+} from "@/lib/server/brand-delivery";
 
 export async function GET(request: Request) {
   try {
@@ -16,7 +20,16 @@ export async function GET(request: Request) {
     const params = new URL(request.url).searchParams;
     if (params.get("signature"))
       return Response.json(
-        await senderSignature(db, z.uuid().parse(params.get("signature"))),
+        await senderSignature(
+          db,
+          z.uuid().parse(params.get("signature")),
+          {
+            brand_id: params.get("brand_id"),
+            brand_revision: Number(params.get("brand_revision")),
+            account_revision: Number(params.get("account_revision")),
+          },
+          z.uuid().parse(params.get("case")),
+        ),
       );
     const service = serviceClient();
     const caseId = params.get("case")
@@ -47,6 +60,7 @@ export async function GET(request: Request) {
           .from("mail_accounts")
           .select("id,email,status,owner_id,live_enabled"),
       ) || [];
+    const brandCapabilities = await readableSenderCapabilities(db);
     const permissions =
       checkDb(
         await db
@@ -58,7 +72,7 @@ export async function GET(request: Request) {
     const related = caseId
       ? checkDb(
           await db
-            .from("conversations")
+            .from("mail_conversations_visible")
             .select("account_id")
             .eq("opportunity_id", caseId),
         ) || []
@@ -99,6 +113,7 @@ export async function GET(request: Request) {
           .filter((a) => ids.includes(a.id))
           .map((a) => ({
             ...a,
+            brand_context: brandCapabilities.find((c) => c.account_id === a.id),
             last_synced_at:
               cursors.find((c) => c.account_id === a.id)?.last_reconciled_at ||
               null,
@@ -108,7 +123,12 @@ export async function GET(request: Request) {
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (e) {
-    return jsonError(e);
+    if (e instanceof z.ZodError)
+      return Response.json(
+        { error: "Invalid mail parameters" },
+        { status: 400 },
+      );
+    return deliveryJsonError(e);
   }
 }
 export async function POST(request: Request) {
@@ -199,7 +219,7 @@ export async function POST(request: Request) {
         const related = caseId
           ? checkDb(
               await db
-                .from("conversations")
+                .from("mail_conversations_visible")
                 .select("id")
                 .eq("opportunity_id", caseId)
                 .eq("account_id", id)
@@ -240,7 +260,7 @@ export async function POST(request: Request) {
         const threads =
           checkDb(
             await db
-              .from("conversations")
+              .from("mail_conversations_visible")
               .select("account_id,gmail_thread_id")
               .eq("opportunity_id", caseId),
           ) || [];
@@ -262,19 +282,17 @@ export async function POST(request: Request) {
             ) || [];
           if (!pending.length)
             checkDb(
-              await service
-                .from("jobs")
-                .upsert(
-                  {
-                    kind: "gmail_live_thread",
-                    payload: {
-                      account_id: thread.account_id,
-                      thread_id: thread.gmail_thread_id,
-                    },
-                    dedupe_key: `manual-thread:${thread.account_id}:${thread.gmail_thread_id}:${envelope.request_id}`,
+              await service.from("jobs").upsert(
+                {
+                  kind: "gmail_live_thread",
+                  payload: {
+                    account_id: thread.account_id,
+                    thread_id: thread.gmail_thread_id,
                   },
-                  { onConflict: "dedupe_key", ignoreDuplicates: true },
-                ),
+                  dedupe_key: `manual-thread:${thread.account_id}:${thread.gmail_thread_id}:${envelope.request_id}`,
+                },
+                { onConflict: "dedupe_key", ignoreDuplicates: true },
+              ),
             );
         }
       }
@@ -292,6 +310,6 @@ export async function POST(request: Request) {
         },
         { status: 400 },
       );
-    return jsonError(e);
+    return deliveryJsonError(e);
   }
 }

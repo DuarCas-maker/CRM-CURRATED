@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-31",
+  "mode": "C2_local_only",
+  "head": "fb9f2015e682fc0704340530425322efc62c601b",
+  "baselinePublicFiles": 632,
+  "unchangedBaselinePublicFiles": 613,
+  "existingProductSqlFilesModified": 2,
+  "newProductTestFiles": 2,
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/migrations/c-composio-bindings.local.sql",
+      "baselineSha256": "f06276b1d5b0d659815e0853d2167dafa2c45c60dfcc3a7ff37321146a6a6dd0",
+      "sha256": "c350e981fe58631aa2409757f6a5045b12eafa299b08e693070df2bf55df459c"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding.ts",
+      "baselineSha256": "5d67a868efa13570521d89937a607fdfef1449f86d7ff0501dd69a1624cf43b1",
+      "sha256": "7430dcd9b9aea3cb8e2ba5d93124e26803e03f19117204ad351266ffd0a6d35c"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+      "baselineSha256": null,
+      "sha256": "4d1069390167a03e6cf31257ba90f23c4f4d8790cf79f06cfe675a5788206776"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-verifier.test.ts",
+      "baselineSha256": null,
+      "sha256": "976fe3aba2fa9933d97abaa2c54b7bd196ec27a53b7bb3c4f9fa7558a969dcce"
+    }
+  ],
+  "protectedI01": 8,
+  "protectedB2Entries": 34,
+  "historicalMigrationsPreserved": 47,
+  "privateOperationalJsonPreserved": 49,
+  "otherC1SourcesPreserved": true,
+  "localLinksChecked": 267,
+  "checks": {
+    "C2": "28/28",
+    "selectedRegression": "97/97 (24 C1 +73 selected earlier suites)",
+    "total": "125/125; Node counts include parent groups",
+    "typecheck": "passed",
+    "format": "passed",
+    "diffCheck": "passed",
+    "sql": "PGlite only, marker/catalog/ACL/rollback and injected final-write failures",
+    "networkBlock": "fetch/http/https/socket/TLS/DNS preload"
+  },
+  "externalCalls": 0,
+  "envFilesRead": false,
+  "messagesSent": 0,
+  "remoteChanges": false,
+  "instantlyConsumed": 43,
+  "productProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "C2Implemented": true,
+  "C3Implemented": false,
+  "pending": [
+    "C3 composition/recovery",
+    "Production source of verified configuration and rotation publication",
+    "Real provider contract/quota/provenance protocol separately authorized",
+    "C1 visual/keyboard/responsive QA",
+    "Full standalone build: inherited Windows EPERM",
+    "Independent PostgreSQL contention",
+    "Remote catalog/final migration numbering/release"
+  ]
+}

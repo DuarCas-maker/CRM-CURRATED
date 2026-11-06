@@ -1,0 +1,32 @@
+{
+  "protocol": "VR1",
+  "results": [
+    {
+      "key": "public.campaign_workspace",
+      "status": "unresolved",
+      "rawHashMatches": false,
+      "lexicalMatches": false,
+      "metadataMatches": true
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "status": "unresolved",
+      "rawHashMatches": false,
+      "lexicalMatches": false,
+      "metadataMatches": true
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "status": "unresolved",
+      "rawHashMatches": false,
+      "lexicalMatches": false,
+      "metadataMatches": true
+    }
+  ],
+  "allViewsMatch": false,
+  "publicationApproved": false,
+  "targetIdentityAttested": false,
+  "permissionCorrectionApproved": false,
+  "instantlyConsumed": 43,
+  "externalCalls": 0
+}

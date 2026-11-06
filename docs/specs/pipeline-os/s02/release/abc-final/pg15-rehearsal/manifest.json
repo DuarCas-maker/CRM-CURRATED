@@ -1,0 +1,692 @@
+{
+  "id": "AF-PG15-r1",
+  "date": "2026-11-04",
+  "sdd": "STRICT",
+  "mode": "executor_offline_implemented_native_pending",
+  "preparationComplete": true,
+  "executorImplemented": true,
+  "nativeTestsExecuted": 0,
+  "publicationReady": false,
+  "readyForRemoteSql": false,
+  "artifacts": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+      "bytes": 911177,
+      "sha256": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/postflight.sql",
+      "bytes": 273951,
+      "sha256": "dd192f1983ccd4a4d3f8ecf014869bf696076e75710d0b2284e92467b30456dd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/contract.json",
+      "bytes": 394137,
+      "sha256": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/preflight/preflight.sql",
+      "bytes": 280605,
+      "sha256": "b39f472286b89cac22553d649adab10b722b8ea37c623ca43709ddf3428786e8"
+    },
+    {
+      "path": "supabase/migrations/001_core.sql",
+      "bytes": 24991,
+      "sha256": "d289f241a98ed4faa5430df044c2256c913f9dcbe38d478ee500722ebc8a10da"
+    },
+    {
+      "path": "supabase/migrations/002_commands.sql",
+      "bytes": 26736,
+      "sha256": "c82248d334efddd9f405f68138dba4c02020fe18699a9fbe8b7fd7cd6bcdef56"
+    },
+    {
+      "path": "supabase/migrations/003_service_workflows.sql",
+      "bytes": 16822,
+      "sha256": "0ecb45220e2b203bfc1272809802c08392bc497f3f2ed6207d3928e9c3f96cbc"
+    },
+    {
+      "path": "supabase/migrations/004_integrations.sql",
+      "bytes": 3931,
+      "sha256": "e2f4f9b6b92ff3abf17ee8adad9bff993257b0a508acd6f17d6b3886aa40478a"
+    },
+    {
+      "path": "supabase/migrations/005_mail_visibility.sql",
+      "bytes": 2010,
+      "sha256": "46b8c322564b2631ff7500b260a78c60f6b089b93fc942f0d2487d4e1981d790"
+    },
+    {
+      "path": "supabase/migrations/006_metrics.sql",
+      "bytes": 3207,
+      "sha256": "1277bfb3b2da187d28ccebd4bdab51f1b469f164c58ee78c4d58e79e88746b10"
+    },
+    {
+      "path": "supabase/migrations/007_history.sql",
+      "bytes": 8465,
+      "sha256": "fcb453683cd9c25f26021d189bb950f03233e2fb2cc95ec30e74d7f878d19709"
+    },
+    {
+      "path": "supabase/migrations/008_lead_preparation.sql",
+      "bytes": 15729,
+      "sha256": "96f1ea110e3b8aab0b4b896d82c3fc988ba1a29e3a6639cfbd5fb36cadf0e167"
+    },
+    {
+      "path": "supabase/migrations/009_gmail_archive.sql",
+      "bytes": 9836,
+      "sha256": "215986597240c9cd472cd96ea2cb534dcb7cc784e0f784d6a6952adbd281b2f9"
+    },
+    {
+      "path": "supabase/migrations/010_gmail_history_cases.sql",
+      "bytes": 20533,
+      "sha256": "02937e6f0e104696bd8c61758260e63033a80012a3ffd4addfef83c1e8c587cb"
+    },
+    {
+      "path": "supabase/migrations/011_gmail_evidence.sql",
+      "bytes": 6913,
+      "sha256": "d489a8275494274d4d55680cb3bf0502d6e3ef17de09d424cbad0eaafe54f0a6"
+    },
+    {
+      "path": "supabase/migrations/012_gmail_preview.sql",
+      "bytes": 4129,
+      "sha256": "a8882c1bb43b5b035399d8764b2c4d7aa8ea4c47fdef520dd36a6373ffc74110"
+    },
+    {
+      "path": "supabase/migrations/013_financing_history.sql",
+      "bytes": 8708,
+      "sha256": "17fb8c6d424a699ffab7a4edb080becdee02a097d9437c86f8fb604874309452"
+    },
+    {
+      "path": "supabase/migrations/014_gmail_reply_files.sql",
+      "bytes": 97,
+      "sha256": "18188bddb4e0928ed42760231d45c19128c2631e75721e5c43d34b13b2cbc960"
+    },
+    {
+      "path": "supabase/migrations/015_gmail_continuous.sql",
+      "bytes": 7167,
+      "sha256": "156958cf5619d1f0b030f1a52c46fc5906688dc0bc303d5669823546f34f427c"
+    },
+    {
+      "path": "supabase/migrations/016_manual_email.sql",
+      "bytes": 8589,
+      "sha256": "62f5fdfaca8f02e99df26ff847035ae2d1cfc2ce833cbcd235f372e8d00b654f"
+    },
+    {
+      "path": "supabase/migrations/017_gmail_team.sql",
+      "bytes": 33102,
+      "sha256": "c2b16fb4cdc9de7edb4f9466d88d441cd6b2f75d3540029211ebaea0174ba5a7"
+    },
+    {
+      "path": "supabase/migrations/018_gmail_attachment_selection.sql",
+      "bytes": 12295,
+      "sha256": "03a806b7cd0e28afd8d20fc1013f64fd20ad9ac194f586b6de85a1e47acedf6b"
+    },
+    {
+      "path": "supabase/migrations/019_incremental_gmail.sql",
+      "bytes": 19132,
+      "sha256": "53c7e87f0a5f1fb8fbfc5408ea257bc84a6953abbd0db5f2103ab25fe337d5fc"
+    },
+    {
+      "path": "supabase/migrations/020_mail_channels.sql",
+      "bytes": 18181,
+      "sha256": "3b4f6ecb7310f665cc9d6b84a30f0cf2709756019daff627faf7d113eb319cf9"
+    },
+    {
+      "path": "supabase/migrations/021_mail_manager.sql",
+      "bytes": 36642,
+      "sha256": "0774fbebfd4c3c01e79dd3764ced73a15ef0af5d6adc4e2c83e8c637f708eceb"
+    },
+    {
+      "path": "supabase/migrations/022_lender_company_conversations.sql",
+      "bytes": 17128,
+      "sha256": "2a50c5761176ea286b4aa2236ddbdaf31e2ce3d4a983e6d5f82e5054f0bd1d35"
+    },
+    {
+      "path": "supabase/migrations/023_lender_directory_portals.sql",
+      "bytes": 22433,
+      "sha256": "f982d4cd05d6de7f1249ebe74708049611d01f5db9c7ae7b3776931a5a187cb3"
+    },
+    {
+      "path": "supabase/migrations/024_reply_engagement.sql",
+      "bytes": 34126,
+      "sha256": "d06a9a21ef91263e9e3d65e4b644640fc7493709dd3bfa16127dad1943a28df1"
+    },
+    {
+      "path": "supabase/migrations/025_document_review.sql",
+      "bytes": 10271,
+      "sha256": "e177b2e7a118f2e6e7e87cb079da0ffe592ffb8ff09bb17d21de727dbea6f170"
+    },
+    {
+      "path": "supabase/migrations/026_gmail_import_thread_attachments.sql",
+      "bytes": 7726,
+      "sha256": "266d68431e93a65fcc56adb07e5480499e3b67f973c9ed3b9f5377b20e14e446"
+    },
+    {
+      "path": "supabase/migrations/027_underwriting.sql",
+      "bytes": 19655,
+      "sha256": "6eb85b64cce8793b0a731bdee27face886bb01cc7ac7c3d8b68ed9c2858ca2d9"
+    },
+    {
+      "path": "supabase/migrations/028_underwriting_settings.sql",
+      "bytes": 5877,
+      "sha256": "56c6a3fb644e5ac37afb7a5c5a84ca9ffd7d0427ff0150a30f9c832d537eb139"
+    },
+    {
+      "path": "supabase/migrations/029_campaign_templates.sql",
+      "bytes": 9951,
+      "sha256": "5b41062cda8c643a65235845bdba081af001fb6e4f9319c2a10367fd5a0573f5"
+    },
+    {
+      "path": "supabase/migrations/030_lender_management.sql",
+      "bytes": 7750,
+      "sha256": "1a2c917d128a7c61bedf6f85e529eeaaf6ff4ddfa99165158ec696aeccfeef3d"
+    },
+    {
+      "path": "supabase/migrations/031_operational_dashboard.sql",
+      "bytes": 12587,
+      "sha256": "b0a7a8afbcd9b31c61a1b89862c90d7d2da4170bcf2d55ebb550194949dbeef8"
+    },
+    {
+      "path": "supabase/migrations/032_bank_documents.sql",
+      "bytes": 11067,
+      "sha256": "fc5f6ec77ee153d398cd07d0fe51db15724f15ccf0a7b7759004810a5ef8d4dd"
+    },
+    {
+      "path": "supabase/migrations/033_company_applications.sql",
+      "bytes": 6413,
+      "sha256": "546d0e99ef24db795d6a22d8962609c7a693d0a9200b6e9f6b44bcacb8c2dfc1"
+    },
+    {
+      "path": "supabase/migrations/034_lender_document_packages.sql",
+      "bytes": 4530,
+      "sha256": "836e3b92cbe5f376d6b8614e5f1248b21210b6179bcceb17732ea74c9d343a00"
+    },
+    {
+      "path": "supabase/migrations/035_bank_document_management.sql",
+      "bytes": 5363,
+      "sha256": "f996444c75b2e9b350f87d35ca34e3232b478953b948bbfffbcaa060e7109f8b"
+    },
+    {
+      "path": "supabase/migrations/036_document_intake.sql",
+      "bytes": 6558,
+      "sha256": "2d131f806f8c01bbe95a73f4530ef3f814067bd5f1d148f91aa9add862e01977"
+    },
+    {
+      "path": "supabase/migrations/037_underwriting_progress.sql",
+      "bytes": 4598,
+      "sha256": "07e5bf51541c32e4a34d332051ca3768b58fdd64bcea62bb5d0268238640f72c"
+    },
+    {
+      "path": "supabase/migrations/038_underwriting_human_review.sql",
+      "bytes": 3557,
+      "sha256": "60a91689e3847973cca2de594d3b9ee010cb82ac1045e8895eba8a01986deebf"
+    },
+    {
+      "path": "supabase/migrations/039_campaign_delivery_controls.sql",
+      "bytes": 31216,
+      "sha256": "5e39c7ce4a71df5dd43d4ddad70e69ad5e1cadd8e0e092e4aec22f11937bd8d1"
+    },
+    {
+      "path": "supabase/migrations/040_mail_recipient_selections.sql",
+      "bytes": 994,
+      "sha256": "0482fbdb10c75796c8e4e1cc05bf9f96644c75b6bb65bbc8ea03079ebfc0f4ee"
+    },
+    {
+      "path": "supabase/migrations/041_ai_service_usage.sql",
+      "bytes": 5139,
+      "sha256": "f8c13ba16407b269107e7e9d40eec1fe614c98fc157e2461193fc45aa87df108"
+    },
+    {
+      "path": "supabase/migrations/042_financing_control_dashboard.sql",
+      "bytes": 24364,
+      "sha256": "640a1f6a4a04e21af3fdc9346446d0146a3d140c6b1c7c73480af4569cdb8e08"
+    },
+    {
+      "path": "supabase/migrations/043_campaign_first_contact.sql",
+      "bytes": 30306,
+      "sha256": "7008a4a6488f62b61d34aae8f819debb4a0714d2f16aaf37aeab332ff41462d0"
+    },
+    {
+      "path": "supabase/migrations/044_lead_preparation_tracking.sql",
+      "bytes": 4537,
+      "sha256": "489db7d36d46f8dbdd74f5ce4779e61fa4d2b1c7fec1637e34499ef46748b033"
+    },
+    {
+      "path": "supabase/migrations/045_campaign_readiness.sql",
+      "bytes": 6760,
+      "sha256": "a6bc0238184188ad2ff583f802b95759190119a18a482d488f6f77bf25b5f1bc"
+    },
+    {
+      "path": "supabase/migrations/046_instantly_webhook_trials.sql",
+      "bytes": 10602,
+      "sha256": "3e820cf5fb087a645bbaa91c8c37205df069d8b076aee96ad1385dd36cebed81"
+    },
+    {
+      "path": "supabase/migrations/047_instantly_webhook_control_leases.sql",
+      "bytes": 10439,
+      "sha256": "7a3cc068d3216e558d97cb240cd326496fa49324b627f9ee9bbe11e457662559"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/048_restore_scoped_public_permissions.sql",
+      "bytes": 47667,
+      "sha256": "75548207a9c465d5151c2f2a6e727fd38cafee2b185d51ff57c02509365d4dd2"
+    },
+    {
+      "path": "tests/feature-database.ts",
+      "bytes": 2549,
+      "sha256": "4f9a8b2c814c2a58b8ad137f65234b3270587f915c64367f401caae6e6adec0f"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-permission-remediation.ts",
+      "bytes": 6682,
+      "sha256": "d55e49981c4bec9ff364ce3344b7caf9f801638c2d88f1f4c7413f3c8675adde"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-abc-final.ts",
+      "bytes": 8132,
+      "sha256": "a9e54495f78d5af797f0669d7e37433a8c28ca5ba26828cc58a63337df28924e"
+    },
+    {
+      "path": "tests/pipeline-os-abc-final-sql.test.ts",
+      "bytes": 12721,
+      "sha256": "3b77b2197491671213871cc0443adf7268122dff601a1def64f8a8fe067ad17c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/release-contract.json",
+      "bytes": 54777,
+      "sha256": "3c883ea1c38971ac4af058c7800166d3ba0b846a97a228ad85025138b59a1a1e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/function-inventory.json",
+      "bytes": 43981,
+      "sha256": "21dd180ce02639c13b8a49fce22e3d900ca8909a48863ab6ba4e9bcdfd5c17ec"
+    }
+  ],
+  "operatorPreflight": {
+    "path": "docs/specs/pipeline-os/s02/release/abc-final/preflight/result-review.json",
+    "catalogAccepted": true,
+    "operatorResultCount": 1,
+    "newAgentRemoteReads": 0,
+    "permissionConsumed": true,
+    "noRepeatRequired": true,
+    "exactExecutionTimestampSupplied": false,
+    "scriptSuccessSeparatelyReported": false
+  },
+  "runtime": {
+    "proposed": "native_portable_PostgreSQL15_Windows_private_cluster",
+    "available": false,
+    "selectedVersion": null,
+    "downloadSource": null,
+    "binarySha256": null,
+    "acquisitionAuthorized": false,
+    "localStartAuthorized": false,
+    "inspection": {
+      "commandsAbsent": [
+        "docker",
+        "podman",
+        "psql",
+        "postgres",
+        "initdb",
+        "pg_ctl",
+        "pg_dump",
+        "pg_restore"
+      ],
+      "standardDirectoriesAbsent": [
+        "C:/Program Files/PostgreSQL",
+        "C:/Program Files/Docker/Docker",
+        "C:/Program Files/RedHat/Podman"
+      ],
+      "localToolchains": ["node-v22.23.4-win-x64", "node-v22.23.4-win-x64.zip"],
+      "wslExecutablePresent": true,
+      "wslDistributionOrRuntimeInspected": false
+    },
+    "proposedHost": "127.0.0.1",
+    "proposedPort": 55449,
+    "portAvailabilityTested": false,
+    "realDbObservedVersion": "150008",
+    "osCollationMinorParityUnproven": true
+  },
+  "plannedCases": 16,
+  "tasks": {
+    "PG_T01": "prepared_not_executed",
+    "PG_T02": "runtime_selection_and_scope_pending",
+    "PG_T03": "implemented_and_verified_offline_12_tests",
+    "PG_T04": "native_execution_pending",
+    "PG_T05": "evidence_review_and_targeted_shutdown_pending"
+  },
+  "verification": {
+    "documentationOnly": false,
+    "newTestsRun": 12,
+    "acceptedPilotTestsNotRepeated": true,
+    "typeScript": "passed",
+    "format": "passed",
+    "json": "passed",
+    "links": 151,
+    "diff": "passed",
+    "nativeTestsExecuted": 0
+  },
+  "preservation": {
+    "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "originalPublicFilesChecked": 739,
+    "payloadFiles": 100,
+    "buildSupportFiles": 10,
+    "migrations": 47,
+    "operationalHashes": 49,
+    "prepared048049PostflightContractPreflightUnchanged": true,
+    "productWorkerTestsDependenciesUnchanged": true,
+    "unexpectedChanges": [],
+    "changedExistingDocs": [
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/runbook.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/verification.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/tasks.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/README.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/protocol.md",
+      "docs/specs/pipeline-os/s02/README.md"
+    ]
+  },
+  "operations": {
+    "apiCalls": 0,
+    "newRemoteSql": 0,
+    "remoteChanges": 0,
+    "serviceStarts": 0,
+    "installations": 0,
+    "downloads": 0,
+    "deploys": 0,
+    "pushes": 0,
+    "sends": 0,
+    "credentialFilesRead": 0,
+    "instantly": { "consumed": 43, "new": 0 },
+    "gmailDirect": "active preserved by unchanged sources; no live flags read",
+    "composio": "disabled by preserved scope"
+  },
+  "nextStep": "Prepare joint web/worker release and installer reconciliation; do not repeat 048/049 or accepted diagnostics.",
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/evidence.json",
+      "bytes": 17184,
+      "sha256": "1e5f40ff6cb0aaf2f9d5ce093fcb83de3adb067ccaf3d518ef6eb1fa4e2267f6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/manifest.json",
+      "bytes": 3261,
+      "sha256": "fd14778ded8c82dc16ff1be77c87a2e1a14abf32213ecd45ec590c134d14e14e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/prior-diagnostic-manifest.json",
+      "bytes": 2265,
+      "sha256": "7972a78726a2237706b92e7c9e9c89f68cb2a4e26cc72a679b563a37966ddad7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/spec.md",
+      "bytes": 5845,
+      "sha256": "33b155260f25566362090aed173df39417b293df3baff43caf7becc816da1f2c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/verification.json",
+      "bytes": 5082,
+      "sha256": "63fbeb9bdaed09041a521288eb764dc5893864c92bdbaf58facb3f29f8b543c4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/verification.md",
+      "bytes": 5436,
+      "sha256": "e1820a4fbea10827b0de9e0583e35424917880e723773051127fdf46d6171346"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/README.md",
+      "bytes": 3818,
+      "sha256": "779b0b9313ded3c35676338e8f872c9533e6d6bb4e33f6e41b7c952310f5158d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/diagnostic.rollback.sql",
+      "bytes": 909928,
+      "sha256": "a2de43622882ffe9e1796c7b4d25ad582518121fea55010363bcee762ae33d79"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/manifest.json",
+      "bytes": 2890,
+      "sha256": "ed88aa82fa807fffd7027909340b6a558ea9d05f121bb7913b52b5ddf9c92241"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/spec.md",
+      "bytes": 5289,
+      "sha256": "203ba4733d5e2ddb4bdb1568c5a3938ebda5b1a6ee6f369c43decf6ef42c56e4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/verification.json",
+      "bytes": 3315,
+      "sha256": "97ade9c1ad6568565c32a92710356623d4f73869b3db00276e04905713134407"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/verification.md",
+      "bytes": 4856,
+      "sha256": "e29e4eed6f336775a50a9aac9fe2932df324f47cf911f49798929a95049f98d7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/incident.json",
+      "bytes": 1582,
+      "sha256": "d03741a0aed6771fc463ade7eae0fcbb958c4b0b54983688e9094c37c9d37b24"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/source-variants.json",
+      "bytes": 17174,
+      "sha256": "bc49a995fd3cb0bffed28b5e1ed86535c6dafec37a878ff15e8c7ada3964d444"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/spec.md",
+      "bytes": 6223,
+      "sha256": "672ab9657010fe55f6a1e064388c6aeb3b2207c3fc30b9ab651161373475385b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/verification.json",
+      "bytes": 6349,
+      "sha256": "d8410cfa1f5ee1bb655ecb90edadc0b26c226e281ce6ae731c6a9c4d0595751e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/verification.md",
+      "bytes": 5459,
+      "sha256": "ce1d953fe65cc3f1983a18b1c77b7032e919d37630a58c3e7b838fa9d921de20"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/README.md",
+      "bytes": 4863,
+      "sha256": "5ecde1865ac0b67d7914b26c40b2cb223a6d878afbab928187cad46ca1306743"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/acceptance.md",
+      "bytes": 6808,
+      "sha256": "ad75e43c29aa44e280abfdb114498c02ab91828e93e0a429fd535bbbd451dd6d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/design.md",
+      "bytes": 7116,
+      "sha256": "40ecb23e23f310569744703d5cbdd5e9cda6e6fa1bf6cdfa659d58858cff849c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-runbook.md",
+      "bytes": 5063,
+      "sha256": "f2d67aa92f474f68fe3a3b5a1897d255ea5cb2213b94d4cb35dc9f8118bb2742"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-spec.md",
+      "bytes": 3765,
+      "sha256": "0f8797846561c8df8a82b41b76eb900a52e9b7a8d0929e9c1def9a52dc099177"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-verification.json",
+      "bytes": 6445,
+      "sha256": "2fbdc0a1b1d353dd969efa5955268c60c556f143bf7384f001fbc3d527dfcf13"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-verification.md",
+      "bytes": 5823,
+      "sha256": "9fe77903357f6ebcd7b9a5bfd3b313af7ad69057d48d39e01714848eee3970fb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/spec.md",
+      "bytes": 4849,
+      "sha256": "6ef160bb1d8686a34fb268cbd6a2d5df3acc32b81505178f1feb9388423a899d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/tasks.md",
+      "bytes": 2820,
+      "sha256": "8f887239b4d44caa4fd5c103381e3b396c2b0674c82e755db744f5f550665488"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/verification.md",
+      "bytes": 3052,
+      "sha256": "c9690073fd4b3b843a08371b41d7588b13b13ff97e852048946ed35765fd1fff"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/preflight/result-review.json",
+      "bytes": 1415,
+      "sha256": "acbdeef5fc7f02d28ae9c879046ad3d64425582485440f6e0c814ba84e25723e"
+    },
+    {
+      "path": "scripts/pipeline-os/abc-catalog-variants.ts",
+      "bytes": 8953,
+      "sha256": "d0883b371f0d1f028813552a2ca8db7016221cefdd3f8054ca363f543c6b4fbc"
+    },
+    {
+      "path": "scripts/pipeline-os/abc-final-diagnostic.ts",
+      "bytes": 6509,
+      "sha256": "37ccce45f0ce24b4fec008d4f5be65e83c244d0056803052fb3ce179078162db"
+    },
+    {
+      "path": "scripts/pipeline-os/abc-source-variants.ts",
+      "bytes": 7360,
+      "sha256": "6aa74aaeb67ab2f14fdcdbbe4ce0aef4ef78bc9cf7e13eee07165e5e52ebd38d"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/artifacts.ts",
+      "bytes": 3821,
+      "sha256": "4ec20fab450e304fbe85038755eabdbc46771974fa4a2006c5ef04d57e96b73c"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/cli.ts",
+      "bytes": 2326,
+      "sha256": "4d63542a93e04bf2814145aa0a24d141b08ee2df73ed949d256c03c70235c276"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/fixture.ts",
+      "bytes": 10526,
+      "sha256": "51353019576daba15932bc2c723a504ef13c0b2b363861bb29209851443fecc7"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/process.ts",
+      "bytes": 11807,
+      "sha256": "3307e30df2a68b7707847ec9a40b433f14588df6b72c09972ce47ee04f88703e"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/runner.ts",
+      "bytes": 20595,
+      "sha256": "a5a29d7dfac8124a7a5f0b3a654c5858e76efe29f7beb0c9c2463a127956a4be"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/types.ts",
+      "bytes": 6263,
+      "sha256": "07314afe8f8406ce9a5259c916971df4fb764508c94aaa0033b555015e697638"
+    },
+    {
+      "path": "scripts/pipeline-os/prepare-abc-final-diagnostic.ts",
+      "bytes": 939,
+      "sha256": "8e3f894a866af01a95a85f5ed5e31dce3dbc5f669e7c3a291a86d96ee35e3280"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-pg15-executor.ts",
+      "bytes": 10203,
+      "sha256": "2518f67012e0cd4806f18fc461b214b4acd19a1fc7f7a811b9cba7be9f40a918"
+    },
+    {
+      "path": "tests/pipeline-os-abc-catalog-variants.test.ts",
+      "bytes": 10054,
+      "sha256": "d71aa3026255cb8b0d925de27268b7c1d1ef853ffab0314217b855bf0f0c4766"
+    },
+    {
+      "path": "tests/pipeline-os-abc-final-diagnostic.test.ts",
+      "bytes": 10254,
+      "sha256": "05c41a8252aae343a0a88f74a61479d7d636be8e6c10d94b5eb45b6e34c4917e"
+    },
+    {
+      "path": "tests/pipeline-os-abc-line-endings.test.ts",
+      "bytes": 9115,
+      "sha256": "6e0f89e9b5eaafb7d97f818591d2490c4c49f769bcd961eb054f59a34cf009a7"
+    },
+    {
+      "path": "tests/pipeline-os-pg15-executor.test.ts",
+      "bytes": 18929,
+      "sha256": "61fc53c43ae18d0cbc0e6878a37ed67217ed0cd7785a33c8d25913745def8395"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/application-postflight-received.json",
+      "bytes": 1402,
+      "sha256": "a5a4a24ba287d1cb9fe51d942101d6b4a0716a103676b6480053c659c034c1a0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/application-result-review.md",
+      "bytes": 3551,
+      "sha256": "3ed50c3777ac944f73d24563c68d852083fc0867eee7b740fbf1c0b8c31b9915"
+    }
+  ],
+  "executor": {
+    "id": "PG-EXEC-r1",
+    "report": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-verification.json",
+    "modules": 6,
+    "newTests": 12,
+    "simulatedScenarios": 16,
+    "nativeTestsExecuted": 0,
+    "localExecutionAuthorized": false,
+    "installationOrStartImplemented": false
+  },
+  "sourceVariantRevision": {
+    "id": "AF-EOL-r1",
+    "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/verification.json",
+    "currentArtifacts": {
+      "migration": "19548594e04d95167ed23957264f25d796a0f5f02e9427c75bf1f53f4fd390aa",
+      "postflight": "c3dd51e27a1818ed821ea915ff398f16956bf13efeca6fc8cd715ab28c13f679",
+      "contract": "6fc8d3de046552f2f066abfb814b1929141ea2c3547d6762e0e7e1bfb820e4af",
+      "preflight": "8ac0093cba7a3330a062380b9b0ab4506ce17973286b138ad49502a02e59b852"
+    },
+    "offlineTestsPassed": 45,
+    "nativeTestsExecuted": 0
+  },
+  "catalogVariantRevision": {
+    "id": "AF-CVAR-r1",
+    "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/verification.json",
+    "currentArtifacts": {
+      "migration": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39",
+      "postflight": "dd192f1983ccd4a4d3f8ecf014869bf696076e75710d0b2284e92467b30456dd",
+      "contract": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c",
+      "preflight": "b39f472286b89cac22553d649adab10b722b8ea37c623ca43709ddf3428786e8"
+    },
+    "distinctOfflineCases": 56,
+    "nativeTestsExecuted": 0
+  },
+  "acceptedOperatorCatalog": {
+    "id": "AF-CVAR-r1-remote-catalog-accepted",
+    "reviewedOn": "2026-11-05",
+    "source": "operator_pasted_application_then_read_only_postflight",
+    "evidencePath": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/application-postflight-received.json",
+    "contractSha256": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c",
+    "protectedFingerprint": "6bb4165d697a9688d01aed2962f57cac",
+    "rolesOk": true,
+    "targetsOk": true,
+    "protectedMatches": true,
+    "catalogAccepted": true,
+    "migrationHistoryNotQueried": true,
+    "explicitSuccessAnswerReceived": false,
+    "nativeIsolatedQaCompleted": false,
+    "agentRemoteCalls": 0,
+    "instantlyConsumed": 43,
+    "instantlyNew": 0,
+    "nextStep": "Prepare joint web/worker release and installer reconciliation; do not repeat 048/049 or accepted diagnostics."
+  },
+  "currentWebWorkerCandidate": {
+    "id": "ABC-WW-20261105",
+    "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/manifest.json",
+    "sourceTreeSha256": "8c9690dbe5c4421f709608f5e51062a140f42f3b62ddabd1ff586d7885ad6710",
+    "sourcePackagePrepared": true,
+    "readyForPush": false,
+    "readyForDeployment": false
+  }
+}

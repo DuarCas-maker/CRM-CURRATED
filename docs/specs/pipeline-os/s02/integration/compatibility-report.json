@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-31",
+  "mode": "planning_local_compatibility_only",
+  "baseMigrations": 47,
+  "commonMigrationFilesByteIdentical": 45,
+  "s01PublicHashesMatched": 39,
+  "s02I01CodeHashesMatched": 8,
+  "s01SandboxApplyOn001To047": "passed",
+  "safeViewsPresent": 4,
+  "accessAreaColumnsPresent": 3,
+  "instantly046047CatalogUnchangedAfterApply": true,
+  "sandboxRollback": "passed",
+  "instantly046047CatalogUnchangedAfterRollback": true,
+  "instantlyCatalogSha256": "b7c0ded3d30514743d15e1a07c50c7f7240da681e4618c8e658526d23351ccee",
+  "fullApplicationIntegrationTested": false,
+  "remoteCatalogValidated": false,
+  "acceptedProviderTestsRepeated": false,
+  "externalRequests": 0,
+  "instantlyCallsPreserved": 43,
+  "composioActivated": false,
+  "privateRootJsonFilesUnchanged": 49
+}

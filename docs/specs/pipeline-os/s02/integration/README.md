@@ -1,0 +1,34 @@
+# Integración S01 y asociación de cuentas Composio
+
+Versión conjunta ABC-20261031-prep1 preparada31/10/2026: [runbook y cierre de QA](../release/runbook.md).100 fuentes conciliadas (63 aplicación/32 pruebas/5 SQL de ensayo),5 comprobaciones nuevas del catálogo READ ONLY en memoria;139/139 C3 heredadas con las mismas fuentes, no reejecutadas. No publicable aún: catálogo/QA visual/build/PostgreSQL/migraciones finales/control del worker pendientes. Próximo paso REL-T03: lectura autorizada del catálogo y metadatos, no SQL de cambio o deploy. Producto/47 SQL/49 registros operativos/HEAD intactos; Gmail directo activo, Composio deshabilitado e Instantly43/0 nuevas. Las constancias previas conservan su alcance histórico.
+
+C3 compuesto/probado offline31/10/2026 por continuación humana: [evidencia](block-c/c3-verification.md),14 nuevas/125 regresión/TS correctos. Un test nuevo, sin cambios a producto/SQL/fixtures C1/C2/A/B/I01. C1/C2/C3 funcionales locales; siguiente: preparar versión conjunta A/B/C y cierre de gates INT-T04/T00-02-I. QA visual/build/contención, catálogo y promoción siguen pendientes. Directo activo, Composio deshabilitado, Instantly43/0 nuevas; sin APIs/envíos/remoto/push/deploy. Las constancias anteriores conservan su alcance histórico.
+
+C2 local implementado/probado31/10/2026 por autorización humana: [evidencia](block-c/c2-verification.md),28 nuevas/97 regresión/TS correctos. Dos fuentes C1 extendidas/dos adiciones; identidad/permisos y evidencia sellada con dependencias falsas, aprobación humana sin activar transporte. C3 y promoción pendientes; Gmail directo activo, Composio deshabilitado, Instantly43/0 nuevas. Sin env reales/API/envíos/SQL remoto/push/deploy o cambios del checkout S01. Las constancias previas conservan su alcance histórico.
+
+Actualización C1 implementada31/10/2026: [entrega y límites](block-c/c1-verification.md),24 pruebas nuevas/73 regresión/TS correctos. Registro/API/panel/revocación de candidatos y SQL en memoria, sin evidencia positiva o selector Composio. I01/A/B/47 SQL/49 hashes operativos conservados fuera del único compartido permitido; Instantly43 y0 API/envíos/remoto/push/deploy. Siguiente incremento: C2, verificador inyectable offline y protocolo de evidencia, bajo solicitud; visual/build/contención/catálogo y promoción siguen pendientes.
+
+Actualización C: [paquete detallado de asociación](block-c/README.md) preparado sobre A+B1+B2 locales. C1 persistencia/API/UI; C2 evidencia falsa sellada y aprobación; C3 composición. Sin SQL/código nuevo, sin selector Composio o verificación real. Próximo paso C1 local bajo solicitud. [Tasks](block-c/tasks.md), [manifiesto](block-c/manifest.json), [QA documental](block-c/verification.md).
+
+Actualización B2: [B1/B2 funcional local](block-b/b2-verification.md),118 pruebas seleccionadas correctas con SQL y servicios ficticios. A incorporado; siguiente bloque de producto C, persistencia y revisión de asociación Composio sin activación. Visual/build/contención PostgreSQL/catálogo y publicación siguen pendientes. Directo fijo, Composio deshabilitado, Instantly43 y0 APIs/remoto. Lo siguiente conserva la planificación y evidencia históricas.
+
+**Bloque B:** [B1 implementado y probado localmente](block-b/b1-verification.md); administración, asignaciones y OAuth directo. B2 sigue preparado y pendiente de implementación; revalidar su manifiesto después de B1. Sin APIs/cambios remotos. B1 no se habilita solo mientras falte B2.
+
+**Actualización posterior31/10/2026:** el usuario autorizó A y sus fuentes están integradas localmente. [Alcance autorizado](block-a-local.md). Los28 existentes y siete nuevos de S01 se incorporaron; cuatro SQL de referencia son fixtures autocontenidas y dos candidatos SQL locales usan definiciones explícitas. B/C, catálogo remoto, numeración final y publicación permanecen pendientes. La preparación original siguiente conserva su alcance histórico.
+
+31/10/2026 · SDD STRICT · **A integrado/probado localmente; B/C y promoción pendientes.**
+
+Objetivo: incorporar las reglas de identidad/permisos ya desarrolladas en S01 y preparar la relación entre cada cuenta existente del CRM y su conexión exacta de Composio. Gmail directo continúa activo. Registrar una asociación no cambia el transporte.
+
+| Orden                              | Entregable verificable                                                                                                              | Estado                                                                                                             |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| A — integrar la base S01           | Incorporar I01/I02 en una ventana coordinada, adaptar sus SQL preliminares y comprobar consumidores sobre001–047.                   | Integrado localmente:155 pruebas offline, TS/formato correctos; empaquetado standalone limitado por EPERM Windows. |
+| B — completar reglas de marca      | Comandos de administración/revisión, membresías, asignación explícita y snapshots/guardas antes del despacho.                       | B1 local implementado/probado; B2 y QA visual/empaquetado pendientes.                                              |
+| C — asociar Composio sin activarlo | Guardar candidato por cuenta, revisiones y evidencia de identidad obtenida por servidor; no seleccionar Composio ni crear trabajos. | Diseño y criterios preparados; implementación pendiente.                                                           |
+| Posterior — corte de un buzón      | Verificar identidad/cupo con permiso propio, conciliar pendientes y cambiar un único escritor.                                      | Fuera de esta preparación; requiere protocolo y autorización propios.                                              |
+
+Archivos del paquete: [especificación](spec.md), [diseño y asociación](design.md), [tareas](tasks.md), [aceptación](acceptance.md), [decisión](adr-002-asociacion-sin-activacion.md), [transición y reversión](rollout.md), [evidencia](verification.md), [manifiesto](integration-manifest.json).
+
+La comprobación nueva aplicó los dos SQL de sandbox de S01 sobre001–047 **solo en PGlite en memoria**: cuatro vistas y tres columnas de área presentes; catálogo de046/047 igual antes/después y tras la reversa de sandbox. No acredita integración de app, catálogo remoto ni permisos reales. [Resultado](compatibility-report.json).
+
+Se reutilizan las aceptaciones de envío, recepción, conversaciones, adjuntos, importación y verificación; no se repitieron. Instantly permanece en **43 peticiones**, C diferida. No hubo carga de env, API, envíos, migración remota, publicación o activación.

@@ -1,0 +1,294 @@
+{
+  "date": "2026-10-31",
+  "mode": "proposed_content_integration_only",
+  "codeIntegrated": false,
+  "ownershipTransferred": false,
+  "sourceReview": "docs/specs/pipeline-os/s02/s01-review.json",
+  "sourceReviewSha256": "15b6fb8d115c11259b5e16d8c56eccb123d5c2e6c9ea541450ac506d4e1ae1f8",
+  "coordinatorBase": "fb9f2015e682fc0704340530425322efc62c601b",
+  "s01ReportedBase": "ae0c42cdb36f24b2710cbe363df584f08f839f05",
+  "s01Worktree": "C:/Users/Usuario/.codex/worktrees/9349/CRM Currated",
+  "s01GitIndexCertified": false,
+  "packageA": {
+    "existingFiles": [
+      {
+        "id": "I02-E01",
+        "path": "src/lib/domain.ts",
+        "expectedCoordinatorSha256": "58d61335c3ef2e6e2d4e766c0736c0b0ea1c9051b66c9f1a591481d98a63d055",
+        "expectedS01Sha256": "c88c14a4318e2afc19db63f56b6465a0fb9c696b1745debc36fbb9e64d2049fa",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E02",
+        "path": "src/lib/conversation-threads.ts",
+        "expectedCoordinatorSha256": "3491515890d52d81f4f13239bf59a93446b3a9426c6499fb8e46baa57f2bb279",
+        "expectedS01Sha256": "04c1724c1d7e71557c5bab8cefa50102c0bd945d4520b62c1ec829d1ec20796b",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E03",
+        "path": "src/lib/server/workspace.ts",
+        "expectedCoordinatorSha256": "4d2cfa830a509ac3514b1317f530dabdf1fc83e29d608b62a5ef00b3b3e53b70",
+        "expectedS01Sha256": "3ff2f76808aeab0d98e51a7ab968a152d4f45b886b2a0dcd3ae2b95cb1f62257",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E04",
+        "path": "src/lib/server/conversation-summary.ts",
+        "expectedCoordinatorSha256": "2a5b26c32f94c347e5cef3c1261df071ba7404a4ed6a31f3ccfbd1bb5309daa4",
+        "expectedS01Sha256": "c5467464cd6ad420509885b48da095e61b6bbbb99d7ae0e35ca5b069f891dabc",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E05",
+        "path": "src/lib/server/opportunity-signals.ts",
+        "expectedCoordinatorSha256": "9faa852dbec503bc013ffa2fec2212fce55d2417420e58731c6320de21fae7d9",
+        "expectedS01Sha256": "8682f87a3df8db16b98d9dfe8fad3bee49e38f5a2810644cada412e0de67fed7",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E06",
+        "path": "src/lib/server/mail-manager.ts",
+        "expectedCoordinatorSha256": "884def20e1f718cbd933cfdffc1cfb2295d8980399846d309e92656dafa9de5e",
+        "expectedS01Sha256": "74f6f182c265ceab88f9b50c4ecde90588b5bde6aaa40efae453f43f3ea0a4fb",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E07",
+        "path": "src/lib/server/mail-actions.ts",
+        "expectedCoordinatorSha256": "93554b8f607a1950727bfee6dc229e2c319d88d284e30b9fad07916e9d7d4054",
+        "expectedS01Sha256": "6d63176e8e8f21349059a1613a1681b4bf60f42a505955504f1be8556aa915d4",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E08",
+        "path": "src/lib/server/document-review.ts",
+        "expectedCoordinatorSha256": "c2a0dd9f19e322cd600a21721ab1dcb477cf21824d4bc5e7782cf57dac577b3f",
+        "expectedS01Sha256": "e5ff3d84eed03edd1b2d72f180e1e56af49ef77862e1b89ac9e801e3c07c9433",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E09",
+        "path": "src/lib/server/documents.ts",
+        "expectedCoordinatorSha256": "8872a61895949994d8e30ac4039ca51e780fe92d67942a887800ea425e945ca8",
+        "expectedS01Sha256": "29c76484258d91f5217fba18c27d933d88f0aff935fcf298198591aefd4c7ec1",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E10",
+        "path": "src/lib/server/gmail-attachment-preview.ts",
+        "expectedCoordinatorSha256": "36b4dbeee56800f98a6f5c0bd0fc56a71f4ae487a47a3fae148270a4f43e63d2",
+        "expectedS01Sha256": "626e9636b573159c73b9c9d4ff6e078b57d9695050d8a1274510119858242486",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E11",
+        "path": "src/app/api/mail/route.ts",
+        "expectedCoordinatorSha256": "39a2b73d7ffefd4c9b00e74c9033b435a9ab1a897072327355270a44ce12d1f4",
+        "expectedS01Sha256": "37a03a5e631574bfbc7081a7874784e77650ea0675768e16823f4746132ff883",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E12",
+        "path": "src/app/api/mail/uploads/route.ts",
+        "expectedCoordinatorSha256": "fe8fec2565fcfd51164e39d59d77819bf000b7c44bac039bb1d535f359ffbf32",
+        "expectedS01Sha256": "1a08a9eeec4851c71cfcd0918db7b78d22aa8e6bbddb63a0e6ab1525e17ddbe8",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E13",
+        "path": "src/app/api/mail/uploads/[id]/route.ts",
+        "expectedCoordinatorSha256": "f6c476bc5683564449ff5db2834d8ccb44a1fb9722b111d464854d981ac5cdeb",
+        "expectedS01Sha256": "9bbd04642f1819ec7136a153bca00fe5131d8d3c9ebd2396a26ca09ba7428797",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E14",
+        "path": "src/app/api/mail/sent-files/route.ts",
+        "expectedCoordinatorSha256": "5d7475944b5d39a464881c0f3debcfabe0dfc3f5cba53450eb3f7ae0627d8505",
+        "expectedS01Sha256": "e7eef50e729c8032d6522a90a2ebe1ef520468cd433a959a095d11547a217e66",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E15",
+        "path": "src/app/api/mail/review/[id]/route.ts",
+        "expectedCoordinatorSha256": "a9272f52e21c8423381900f8ac18c74fda852c7189e00f4b2edcec1de55684f0",
+        "expectedS01Sha256": "db7af830a43495422afc1fcc69940e68b731f16ea2b4b6fe1641af0a73970bfb",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E16",
+        "path": "src/app/api/conversations/channels/route.ts",
+        "expectedCoordinatorSha256": "e9e6187839b566267cbf1c5144ffc2953f65b7c92bd6d585e226805774d7d5d5",
+        "expectedS01Sha256": "3c7d1ce8ece8d930f76238aea3dfd202dfcebfef30349b330da28af89b6c5594",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E17",
+        "path": "src/app/api/conversations/[id]/messages/route.ts",
+        "expectedCoordinatorSha256": "0603f3685499c01e2af8c8c5e21898165479cb19c86eb33fdfcdcdaeff406777",
+        "expectedS01Sha256": "6b0b8290166c49f0c841d877c78006a05e3ab32d05bf6cabdf90ef6a226f02d6",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E18",
+        "path": "src/app/api/gmail/archive/[id]/route.ts",
+        "expectedCoordinatorSha256": "d831f67e69d4e248be295e5964fdbaaf13671a31e45266da357ee63acc2f9d1d",
+        "expectedS01Sha256": "91b08b6bbf8418f3e9277d1c23e1e7a4b9fdcea0b6575d4c29495ac1ee5d9911",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E19",
+        "path": "src/app/api/gmail/archive/[id]/thread/route.ts",
+        "expectedCoordinatorSha256": "2bc5a0611e11355b899de49729d3102853790cb477544bc939b69045e5a7a345",
+        "expectedS01Sha256": "86df3d31188039659122097e2828f7cd667b4d085078d6b82920270b743fe6c1",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E20",
+        "path": "src/app/api/gmail/files/[id]/route.ts",
+        "expectedCoordinatorSha256": "08036f1d505086e1fc6f638901b2e56926b5af731ad4e46715a91008e97c480d",
+        "expectedS01Sha256": "5751501f63ca86f40b74ff0dc3feb221d141b85a8e80c91e578cb1719c1486ff",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E21",
+        "path": "src/app/api/gmail/attachments/preview/route.ts",
+        "expectedCoordinatorSha256": "e791fa401c44b338f1cff1c72507c165e8a7166e52b4d676020cd9a88677089f",
+        "expectedS01Sha256": "5db9fd06c8e040601bab6354566038d15a4fd9fbde6bc5f8b4aa4df8d5665052",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E22",
+        "path": "src/app/api/gmail/cases/[id]/route.ts",
+        "expectedCoordinatorSha256": "826726194a2701f6d5c71af23f14317b730c493d40896de06f8ad9f737a582f3",
+        "expectedS01Sha256": "d1e67004777e1bc354fac37121d9ed56e7e4b0934bfaa2a3efa567f262a49d47",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E23",
+        "path": "src/app/api/documents/[id]/route.ts",
+        "expectedCoordinatorSha256": "5d144b0a5585f5dc89f76b56e9676bda0dc47434c9acf4971146c44065213292",
+        "expectedS01Sha256": "f2d251e50a095c7613a90a3cccf428962ebfb826cc7dbd50442e3d27f13bc701",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E24",
+        "path": "src/app/api/documents/classify/route.ts",
+        "expectedCoordinatorSha256": "b4aafe5c15a0ea4a9708b6e789edf2f7f7447fcba791087e64b1bd067168f7a7",
+        "expectedS01Sha256": "704bf7956a13bb204edc7944b6d4b83ae21ef8a324a74de43221bf1f2297977c",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E25",
+        "path": "src/components/conversations-workspace.tsx",
+        "expectedCoordinatorSha256": "4db811efeecf5d26d9a135701c39736253408db036568d7708f0532e09f08921",
+        "expectedS01Sha256": "4482f560d65c49ae8eb809d956704a4a4edc7655d6b0cd46029648890b8518bd",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E26",
+        "path": "src/components/mail-composer.tsx",
+        "expectedCoordinatorSha256": "4ac3fa99a5ecb1b44f1fd3403b14ba60cb512ea56248711e4394dfa3f48f160c",
+        "expectedS01Sha256": "de645490c66adec55e3704c42a0d3f396f430dafb1977598018316b5f7da1b31",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E27",
+        "path": "tests/mail-manager.test.ts",
+        "expectedCoordinatorSha256": "a19eba77a27c83472f30bb2551bb70e6a6d35a871e914b5efa7c620f467c004b",
+        "expectedS01Sha256": "6b50a152d98d0d90ba8ef2f5837be48d92c01d0b33d1bbedad6b6c36390e06ce",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      },
+      {
+        "id": "I02-E28",
+        "path": "tests/opportunity-signals.test.ts",
+        "expectedCoordinatorSha256": "2414c493090ee89b57d85803f4d4bb19c7abfcc18b2c3d4a4d2433ae70ee8f52",
+        "expectedS01Sha256": "a9ada8524ba22fe06b458c8c7e451c6163988c80616f3013aba9048abaeb472e",
+        "action": "review_then_integrate_only_with_implementation_authorization"
+      }
+    ],
+    "newCodeAndTestFiles": [
+      {
+        "id": "I02-N01",
+        "path": "src/lib/server/mail-access.ts",
+        "expectedS01Sha256": "b20f1d7c2185885f84b1d6109df21287592ad1e58a92a9e7db0b32d4a3ac0e9e",
+        "action": "proposed_addition_not_copied"
+      },
+      {
+        "id": "I02-N02",
+        "path": "tests/pipeline-os-s01-mail-permissions.test.ts",
+        "expectedS01Sha256": "da38c31ed391992cfe67d558ac0385ec470275cf9115efd3cd40aae0d711ce17",
+        "action": "proposed_addition_not_copied"
+      },
+      {
+        "id": "I02-N03",
+        "path": "tests/pipeline-os-s01-mail-permissions-api.test.ts",
+        "expectedS01Sha256": "f9ce3cb426f4248178175b28788cbd2f2f74c699d0c613bac066c35e2b4f7ba2",
+        "action": "proposed_addition_not_copied"
+      },
+      {
+        "id": "I01-F01",
+        "path": "src/lib/pipeline-os/s01/brand-contracts.ts",
+        "expectedS01Sha256": "9d186d09896648c605005fb49c3d5f0d7c6bb9b77d62c4e8fa6e5acf12024bef",
+        "action": "proposed_addition_not_copied"
+      },
+      {
+        "id": "I01-F02",
+        "path": "src/lib/pipeline-os/s01/brand-inputs.ts",
+        "expectedS01Sha256": "fd2221afe5c138761bf01c8b70d1d353971a27d9928268a68164a22be73d1f80",
+        "action": "proposed_addition_not_copied"
+      },
+      {
+        "id": "I01-F03",
+        "path": "tests/pipeline-os-s01-brand-contracts.test.ts",
+        "expectedS01Sha256": "b210c001f052926d47094edc79289a17429bbae56e426c5f119042369622a3ef",
+        "action": "proposed_addition_not_copied"
+      },
+      {
+        "id": "I01-F04",
+        "path": "tests/pipeline-os-s01-brand-foundation.test.ts",
+        "expectedS01Sha256": "13f529a34545475d8e044ab391257b12fce51b247474faff13103939bc50864c",
+        "action": "proposed_addition_not_copied"
+      }
+    ],
+    "sandboxSqlReferencesOnly": [
+      {
+        "id": "I02-N04",
+        "path": "docs/specs/pipeline-os/s01/migrations/t01-02-i02-mail-permissions.sql",
+        "expectedS01Sha256": "3d4fac61f099b9f7b8eaee96ff6e1eeff9cdece7860daa649b741c90964fce6c",
+        "action": "reference_only_not_application_migration"
+      },
+      {
+        "id": "I02-N05",
+        "path": "docs/specs/pipeline-os/s01/migrations/t01-02-i02-mail-permissions.rollback.sql",
+        "expectedS01Sha256": "c8f6388b1e495b2da73cad469f98ec6c7955b49191c5473ff4e8f765dca07d9a",
+        "action": "reference_only_not_application_migration"
+      },
+      {
+        "id": "I01-F05",
+        "path": "docs/specs/pipeline-os/s01/migrations/t01-02-i01-foundation.sql",
+        "expectedS01Sha256": "46a4f0bb4c1be08bf31b941a44763c8019cb6f02a41ff72f7ddd3be54f7ba3e9",
+        "action": "reference_only_not_application_migration"
+      },
+      {
+        "id": "I01-F06",
+        "path": "docs/specs/pipeline-os/s01/migrations/t01-02-i01-foundation.rollback.sql",
+        "expectedS01Sha256": "77572ebd68bdbcb026aa7eef61fcf4bb39d8ca74e0922c2ab83432bce7d6f16a",
+        "action": "reference_only_not_application_migration"
+      }
+    ],
+    "finalMigrationNumber": null
+  },
+  "packagesBandC": {
+    "design": "design.md",
+    "exactImplementationPathsFrozen": false,
+    "implementationAuthorized": false
+  },
+  "protectedS02I01Manifest": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+  "migrations001To047": "unchanged",
+  "productProvider": "gmail_oauth",
+  "composioProductEnabled": false,
+  "externalRequests": 0,
+  "instantlyAccumulatedCalls": 43
+}

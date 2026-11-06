@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-31",
+  "mode": "documentation_preparation_only",
+  "implementationAuthorized": false,
+  "codeImplemented": false,
+  "head": "fb9f2015e682fc0704340530425322efc62c601b",
+  "baselinePublicFiles": 610,
+  "unchangedBaselinePublicFiles": 602,
+  "changedExistingDocuments": [
+    "docs/specs/pipeline-os/verification.md",
+    "docs/specs/pipeline-os/tasks.md",
+    "docs/specs/pipeline-os/s02/README.md",
+    "docs/specs/pipeline-os/s02/integration/tasks.md",
+    "docs/specs/pipeline-os/s02/integration/spec.md",
+    "docs/specs/pipeline-os/s02/integration/README.md",
+    "docs/specs/pipeline-os/s02/integration/design.md",
+    "docs/specs/pipeline-os/parallel-development.md"
+  ],
+  "protectedI01": 8,
+  "protectedB2Entries": 34,
+  "historicalMigrationsPreserved": 47,
+  "privateOperationalJsonPreserved": 49,
+  "requirements": 12,
+  "acceptanceScenarios": 12,
+  "tasks": 9,
+  "futureProductPaths": 12,
+  "localLinksChecked": 18,
+  "checks": {
+    "traceability": "passed",
+    "pathsAndJson": "passed",
+    "protectedHashes": "passed",
+    "links": "passed",
+    "format": "passed",
+    "diffCheck": "passed"
+  },
+  "inheritedEvidence": {
+    "B2": "118/118 previously executed; not rerun for C"
+  },
+  "notExecuted": [
+    "C functional suites",
+    "C SQL rehearsal",
+    "Application typecheck/build",
+    "Provider API/project/quota verification",
+    "Remote catalog or deploy"
+  ],
+  "externalCalls": 0,
+  "envFilesRead": false,
+  "messagesSent": 0,
+  "remoteChanges": false,
+  "instantlyConsumed": 43,
+  "productProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "next": "C1 local implementation only after request and revalidation"
+}

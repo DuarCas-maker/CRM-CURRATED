@@ -1,6 +1,5 @@
 import {
   requireUser,
-  serviceClient,
   checkDb,
   HttpError,
   jsonError,
@@ -31,8 +30,8 @@ export async function GET(
         throw new HttpError(403, "Message access required");
     }
     const archive = checkDb(
-      await serviceClient()
-        .from("gmail_archive_messages")
+      await db
+        .from("mail_archive_visible")
         .select("encrypted_payload")
         .eq("id", id)
         .single(),

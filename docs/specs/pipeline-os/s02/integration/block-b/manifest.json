@@ -1,0 +1,431 @@
+{
+  "date": "2026-10-31",
+  "mode": "b1_b2_local_implemented_release_gates_pending",
+  "implementationAuthorized": true,
+  "ownershipTransferred": true,
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "blockABaseline": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+  "packages": {
+    "B1": {
+      "existing": [
+        {
+          "path": "src/app/api/actions/route.ts",
+          "reason": "Despachar kinds de marca con validación/errores B y envelope existente.",
+          "action": "proposed_modify",
+          "baselineSha256": "5758dc1e14b88597dfb31b59aba1fc2580c3c7d9be00823b1b483c9b9af22eb6",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": false
+        },
+        {
+          "path": "src/components/integrations.tsx",
+          "reason": "Insertar sección de marcas sin rediseñar otros módulos.",
+          "action": "proposed_modify",
+          "baselineSha256": "16640975647e1214f3bb091935f5111e7d049a5577cd558d41a9308f0bdc1f2c",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": false
+        },
+        {
+          "path": "src/components/gmail-history.tsx",
+          "reason": "Seleccionar intención/marca en el formulario OAuth existente.",
+          "action": "proposed_modify",
+          "baselineSha256": "a3023545ecf7d029ed02ec0cf15093e7e6bd49460bc7117e003f2f769cefb620",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": false
+        },
+        {
+          "path": "src/components/crm.tsx",
+          "reason": "Actualizar únicamente el segundo formulario OAuth legado.",
+          "action": "proposed_modify",
+          "baselineSha256": "68d5c7e48dc016cfc7db1f7737879f0a082c6fab82b34dafe272305d970a4911",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": false
+        },
+        {
+          "path": "src/app/api/gmail/connect/route.ts",
+          "reason": "Vincular state a marca/cuenta/revisiones e identidad esperada.",
+          "action": "proposed_modify",
+          "baselineSha256": "de1ba8f5589e1403d72cf8b52ea2d9aa44b5ec520fb59f6f30a4129d7e47852d",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": false
+        },
+        {
+          "path": "src/app/api/gmail/callback/route.ts",
+          "reason": "Validar state y conservar ID/marca sin reasignación implícita.",
+          "action": "proposed_modify",
+          "baselineSha256": "0d04a59772373d94edb049597d516fded1814dafff178d3a84705b36278aa595",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": false
+        }
+      ],
+      "additions": [
+        {
+          "path": "src/lib/brand-management.ts",
+          "reason": "DTO/validadores específicos que reutilizan los tipos/parsers A.",
+          "action": "proposed_add",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "src/lib/server/brand-actions.ts",
+          "reason": "Servicio de comandos y errores B cerrados.",
+          "action": "proposed_add",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "src/app/api/brands/route.ts",
+          "reason": "GET paginado de catálogo propio/admin según RLS.",
+          "action": "proposed_add",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "src/components/brand-settings.tsx",
+          "reason": "Panel y campos de intención OAuth reutilizables.",
+          "action": "proposed_add",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-b-admin.test.ts",
+          "reason": "SQL/RLS/CAS/idempotencia administrativa.",
+          "action": "proposed_add",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-b-api.test.ts",
+          "reason": "API/MFA/origen/OAuth falsos y negativos.",
+          "action": "proposed_add",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-b-ui.test.ts",
+          "reason": "SSR/controles/estados administrativos; sin JSX necesario.",
+          "action": "proposed_add",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-management.local.sql",
+          "reason": "Candidato solo local sobre A; marcador B, no numerado.",
+          "action": "proposed_add",
+          "existsAtPreparation": false
+        }
+      ]
+    },
+    "B2": {
+      "dependsOn": "B1 accepted locally",
+      "existing": [
+        {
+          "path": "src/app/api/actions/route.ts",
+          "reason": "Añadir revisión de preparación comercial; revalidar versión posterior a B1.",
+          "action": "modified_local",
+          "baselineSha256": "5758dc1e14b88597dfb31b59aba1fc2580c3c7d9be00823b1b483c9b9af22eb6",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true,
+          "postB1Sha256": "495b66ca875f45e56b0990ecef62d689d91db130c68be07f510fff572c86333a"
+        },
+        {
+          "path": "src/lib/domain.ts",
+          "reason": "Campos aditivos de snapshot/capacidades visibles.",
+          "action": "modified_local",
+          "baselineSha256": "c88c14a4318e2afc19db63f56b6465a0fb9c696b1745debc36fbb9e64d2049fa",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/lib/server/workspace.ts",
+          "reason": "Catálogo/capacidades permitidos y filtros de remitente.",
+          "action": "modified_local",
+          "baselineSha256": "697efc5953f4c3394457c87fc2f7b81e40bbbc1e5e0abd4c7b32d4d6752615d0",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/lib/mail-manager.ts",
+          "reason": "Entrada explícita de preparación/revisiones sin confiar snapshot cliente.",
+          "action": "modified_local",
+          "baselineSha256": "c75d4de46b9cc11e90a44313ec58a3baa291112beb9d67d86ebb93b31384e332",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/lib/server/mail-manager.ts",
+          "reason": "Marca y permiso antes de firma/encolado.",
+          "action": "modified_local",
+          "baselineSha256": "74f6f182c265ceab88f9b50c4ecde90588b5bde6aaa40efae453f43f3ea0a4fb",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/lib/server/mail-actions.ts",
+          "reason": "Reply/forward/lenders con identidad de marca coherente.",
+          "action": "modified_local",
+          "baselineSha256": "a2b5343f492027c01815cfd0556f775cdafa32976641105fdf07e93f7eb6d4f0",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/lib/server/campaign-delivery.ts",
+          "reason": "Contexto de marca/preparación y errores cerrados.",
+          "action": "modified_local",
+          "baselineSha256": "9356fa315d73410bffc8828715877e7936364ef29d49b543a85f4e47a153e18c",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/app/api/mail/route.ts",
+          "reason": "Borradores/preparación y metadata autorizada.",
+          "action": "modified_local",
+          "baselineSha256": "7f0272c15c4eb5deab6106e003495af1e5460134406d03f00b8ce43b8e3f594f",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/app/api/campaigns/route.ts",
+          "reason": "Preservar prueba al operador y revisión de marca.",
+          "action": "modified_local",
+          "baselineSha256": "fda1d08d9c45b03c6a0add87b547c588f85b9d70fe026654aba9e7322d329f3c",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/app/api/campaigns/center/route.ts",
+          "reason": "Listas/capacidades de campañas de marca autorizada.",
+          "action": "retained_composed_in_sql",
+          "baselineSha256": "246a48893f7d7ca4b78ea4288418b8ee94b5387a96972e7bb957c36c57138ef8",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/app/api/conversations/channels/route.ts",
+          "reason": "Contexto/etiqueta mínima de marca con fuentes visibles.",
+          "action": "modified_local",
+          "baselineSha256": "3c7d1ce8ece8d930f76238aea3dfd202dfcebfef30349b330da28af89b6c5594",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/app/api/conversations/[id]/messages/route.ts",
+          "reason": "Snapshot histórico visible sin catálogo ajeno.",
+          "action": "retained_composed_in_sql",
+          "baselineSha256": "6b0b8290166c49f0c841d877c78006a05e3ab32d05bf6cabdf90ef6a226f02d6",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/components/mail-editor.tsx",
+          "reason": "Selección/revisión explícita, preparación obsoleta y sin remitente.",
+          "action": "modified_local",
+          "baselineSha256": "7c307e27f12554ad3922269ad6ef63e4e595d5c50812ada71b3a7c51f2e3319b",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/components/conversations-workspace.tsx",
+          "reason": "Etiqueta histórica y contexto de marca sin ampliar permisos.",
+          "action": "modified_local",
+          "baselineSha256": "4482f560d65c49ae8eb809d956704a4a4edc7655d6b0cd46029648890b8518bd",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/components/campaign-composer.tsx",
+          "reason": "Marca y revisión explícitas al crear/programar/activar.",
+          "action": "modified_local",
+          "baselineSha256": "8806fc788ae21c44018e139b5a41ba98ef8f1a423f23ae56048705858a0a3051",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/components/campaign-review.tsx",
+          "reason": "Mostrar coherencia y bloqueos/revisión requerida.",
+          "action": "modified_local",
+          "baselineSha256": "73ee75c8501214ea02573f855341234afc1793b9d71e3082351559e8c280dbbb",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "src/components/campaign-center.tsx",
+          "reason": "Evitar acciones de activación que omitan revisión vigente.",
+          "action": "modified_local",
+          "baselineSha256": "336c36f5daf12ba2a451ee881a5e57157d832782b6ba1fd996dd54710f86e2ff",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "worker/campaigns.ts",
+          "reason": "Encolado validado de servicio ligado a campaña/autorización.",
+          "action": "modified_local",
+          "baselineSha256": "bd365bff7cb25e651f2f6cd3cb8c7ff9f0cbf314d239d02e3672347f16e6ad68",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "worker/gmail.ts",
+          "reason": "Admisión final e intento único sin cambiar fachada/transporte.",
+          "action": "modified_local",
+          "baselineSha256": "607be0a11575a4642cc05918ef1b4a06a4e020ff34fa68362cd3456af86d9791",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "worker/notifications.ts",
+          "reason": "Procedencia de notificación por función de servicio acotada.",
+          "action": "modified_local",
+          "baselineSha256": "f46e4bb10491af48727022eadbfb5761ded3ccc942eee8fd4be70d7fec181080",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "tests/campaign-attachments.test.ts",
+          "reason": "Adaptar RPC/fixture de sendNext conservando adjuntos y unicidad.",
+          "action": "modified_local",
+          "baselineSha256": "b3172ad09c20dda329133bcd4b61e32e1635e44cd11c64ad6b4e57bbcae14f24",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "tests/document-package-delivery.test.ts",
+          "reason": "Adaptar guardas conservando snapshot documental.",
+          "action": "modified_local",
+          "baselineSha256": "b1f298278201479acb95635e2fe880970edfbacaffae21861d69664dc5154ad4",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "tests/mail-forward.test.ts",
+          "reason": "Adaptar guardas conservando origen/área y bytes.",
+          "action": "modified_local",
+          "baselineSha256": "74ede206832583be4c5ab6ce35925c1b033dce51b7b7a454d464590737d54a1f",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "tests/mail-send.test.ts",
+          "reason": "Adaptar guardas conservando cuotas/uncertain/no retry.",
+          "action": "modified_local",
+          "baselineSha256": "19b1037609541c7a784a9692aa69d631cad5d9e76a6f35fc67dd732915c4e332",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "tests/pipeline-os-s01-mail-permissions-api.test.ts",
+          "reason": "Componer revocación de área con nuevas guardas B sin relajar negativos.",
+          "action": "modified_local",
+          "baselineSha256": "cd35c76eaeba6cbed84ecb5294794933253860f0630694a5b50ff2b1994b0c70",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-a-api.test.ts",
+          "reason": "Componer fachada real con fixtures B válidas y fallos cerrados.",
+          "action": "modified_local",
+          "baselineSha256": "b61808f0230daf36c7bfedf2e09903d1bf8766dbb3a1141c0988d8120656353a",
+          "revalidateBeforeImplementation": true,
+          "revalidateAfterB1": true
+        },
+        {
+          "path": "tests/mail-editor-compatibility.test.ts",
+          "reason": "Adaptar fixtures revisadas de respuestas legacy/demo sin quitar aserciones; nuevos negativos sin revisión.",
+          "action": "modified_local",
+          "baselineSha256": "c4b0f4948aaa4a920b3b7dd4389c55f946a3301ab8789171f7bd9a15a8889e7e",
+          "revalidateBeforeImplementation": true
+        }
+      ],
+      "additions": [
+        {
+          "path": "src/lib/brand-delivery.ts",
+          "reason": "DTO de snapshot/preparación y motivos de bloqueo.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "src/lib/server/brand-delivery.ts",
+          "reason": "Helpers de composición sin motor paralelo ni proveedor nuevo.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-b-snapshots.test.ts",
+          "reason": "SQL/legado/snapshots/servicio/notificaciones.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-b-dispatch.test.ts",
+          "reason": "Orden de corte/revocación/intentos con barreras y HTTP falso.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-b-composition.test.ts",
+          "reason": "API/worker/fachada y regresiones cruzadas.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-delivery.local.sql",
+          "reason": "Candidato solo local B2 sobre A+B1, marcador B, no numerado.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/fixtures/pipeline-os-s02-brand-delivery.ts",
+          "reason": "Fixture compartida de instalación SQL y composición B2, sin relajar negativos previos.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        }
+      ]
+    }
+  },
+  "overlapSerialized": ["src/app/api/actions/route.ts"],
+  "protectedI01": [
+    {
+      "path": "src/lib/server/google.ts",
+      "sha256": "dcffe1b27ba7b69b24d74570798a81ad0ce26e6306955e9abac5044e0bf6674c"
+    },
+    {
+      "path": "src/lib/server/mail-transport/contract.ts",
+      "sha256": "a38920e11561fbb41680f120a51a29bdcdcf38f011e54417acb3588e9dee2b92"
+    },
+    {
+      "path": "src/lib/server/mail-transport/gmail-direct.ts",
+      "sha256": "a8c86659531d0d5f25d23d7bd352836d7253ad4c0bd5edcc011501149e1df7a0"
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "sha256": "c941726cdcfd700d8b1c45b9646be8c9374bb67d3f2eac05b31311d3297130d8"
+    },
+    {
+      "path": "src/lib/server/mail-transport/errors.ts",
+      "sha256": "9f03a63a8e650d93e1bcf7c009a93afa2afe0e81e37f74e938d533962bf13aae"
+    },
+    {
+      "path": "src/lib/server/mail-transport/factory.ts",
+      "sha256": "f33c01c21a1fc79c106b95746dc5441c1af1e58f3ebff7cbeb3b19676cee15d0"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport.test.ts",
+      "sha256": "a14fab038ff905cc3ce319107b7b40d1446231789e2a6b564ff57bfec121a11a"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-transport.ts",
+      "sha256": "379994c99179571a80ddbbc2ae2fe763748b05bd090765f29e6a48fcdebfea6d"
+    }
+  ],
+  "historicalMigrations": "001-047 byte-preserved; no final ordinal reserved",
+  "protectedS01SourceWorktree": true,
+  "noChangesTo": [
+    "package.json",
+    "pnpm-lock.yaml",
+    "next.config.ts",
+    "worker/db.ts",
+    "AGENTS.md",
+    "scripts/pipeline-os/**",
+    "docs/specs/pipeline-os/s00/**"
+  ],
+  "externalPetitionBudget": 0,
+  "instantlyConsumedPreserved": 43,
+  "productProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "authorizedPackages": ["B1", "B2"],
+  "ownershipScope": "Coordinator B1/B2 finite paths; no S01 source worktree edits",
+  "b1Evidence": "docs/specs/pipeline-os/s02/integration/block-b/b1-verification.md",
+  "b2Evidence": "docs/specs/pipeline-os/s02/integration/block-b/b2-verification.md"
+}

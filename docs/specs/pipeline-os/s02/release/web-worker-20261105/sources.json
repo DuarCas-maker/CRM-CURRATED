@@ -1,0 +1,3894 @@
+{
+  "id": "ABC-WW-20261105-sources",
+  "sourceTreeSha256": "8c9690dbe5c4421f709608f5e51062a140f42f3b62ddabd1ff586d7885ad6710",
+  "sourceFileCount": 776,
+  "selection": "public source snapshot before current review-document additions; excludes .local/.git/node_modules/.next/env files",
+  "reviewMetadataOutsideDigest": [
+    "docs/specs/pipeline-os/s02/README.md",
+    "docs/specs/pipeline-os/s02/release/tasks.md",
+    "docs/specs/pipeline-os/s02/release/abc-final/manifest.json",
+    "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/manifest.json"
+  ],
+  "files": [
+    {
+      "path": ".dockerignore",
+      "bytes": 195,
+      "sha256": "1f5aa7cce4f087632b573c8e058d745bd1bb627117070f6e7157870d3619ec5c"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 214,
+      "sha256": "15ad4f8acedbc8ce8862b4f4284758b478a75ee1601c9e9f479102040522289b"
+    },
+    {
+      "path": "Dockerfile",
+      "bytes": 1384,
+      "sha256": "e7169e2f042b548cb3a3a205b1a3278582bc1975f10ab4ec7c4aadf0cf2b760a"
+    },
+    {
+      "path": "Dockerfile.worker",
+      "bytes": 970,
+      "sha256": "31879c433f6d4726cbb665ea38c45b5c668b5a1cfd2bb5a97c0d105e06dd726b"
+    },
+    {
+      "path": "README.md",
+      "bytes": 22531,
+      "sha256": "0cc33053f42078647db69086e7fa9c4358053a69713d009a7beabeed219f6ea2"
+    },
+    {
+      "path": "docs/ACCEPTANCE.md",
+      "bytes": 6748,
+      "sha256": "71380e7ea774772e7b189d8f8caf87275a53308294ebaf9868089a59745da6d4"
+    },
+    {
+      "path": "docs/AI-USAGE.md",
+      "bytes": 4421,
+      "sha256": "ee93ebd640a1259801bb01fe496beff3f7c0cb03d84a97e234f54907704fb0c2"
+    },
+    {
+      "path": "docs/CAMPAIGNS.md",
+      "bytes": 7258,
+      "sha256": "a29a2f92ad535fcee2df6de21a93153bd934cdfae1e54c245eed29bc13331408"
+    },
+    {
+      "path": "docs/CONVERSATIONS.md",
+      "bytes": 17895,
+      "sha256": "4ab2e4fdc03c7eedf725814a8a58368371679a7601503bc7a80e79cf56dd37de"
+    },
+    {
+      "path": "docs/CRM-FLOW.md",
+      "bytes": 11010,
+      "sha256": "c04493ebaeed0925f69c82b057a6e29362e45ceea63ccf512c91950cc5113589"
+    },
+    {
+      "path": "docs/DEPLOYMENT-CHECKS.md",
+      "bytes": 18345,
+      "sha256": "12e013dc5d4ca69e6a39f550231a56b2c7b86f4b4e80bad65cbbee60832ace0b"
+    },
+    {
+      "path": "docs/DOCUMENT-APPLICATIONS.md",
+      "bytes": 11842,
+      "sha256": "83cfcc4069562ba8b09832b69ca47f631676dd3f12ddbddcc060efe6e3d93e85"
+    },
+    {
+      "path": "docs/DOCUMENT-REVIEW.md",
+      "bytes": 4499,
+      "sha256": "fe74ebde0036c8afbd1bbaa584e1c8936fcdcb367184557ae26f362b3a129a77"
+    },
+    {
+      "path": "docs/ENVIRONMENT.md",
+      "bytes": 11762,
+      "sha256": "16cc789b834198c28f0c065186f8a22d55609b5d13483e94461a9d14047a46d7"
+    },
+    {
+      "path": "docs/FINANCING-CONTROL.md",
+      "bytes": 13489,
+      "sha256": "9926ec9dd8043e3b8d515a7baa868a874141f2e1ce20594653c7088a15c98d9c"
+    },
+    {
+      "path": "docs/GMAIL-HISTORY.md",
+      "bytes": 42757,
+      "sha256": "1557886988eadcf06090e9bf696dc013b8622fdb84f6d74fe2e87ccef4a781b5"
+    },
+    {
+      "path": "docs/MAIL-MANAGER.md",
+      "bytes": 12001,
+      "sha256": "893c2c7549a0831c5492a0247d78e02c6d260fceff257129acf0a5fd6a1b12c3"
+    },
+    {
+      "path": "docs/MAIL-PILOT.md",
+      "bytes": 4240,
+      "sha256": "e8cebeeca03f472cac8a9174024e4a92244e7e7f87ae9a4719743a51710c4edc"
+    },
+    {
+      "path": "docs/PROJECT-CONTEXT.md",
+      "bytes": 46523,
+      "sha256": "5688cd7eff6cfbf6b472d51090e8980a9a38b0c877986332f1a09f29754edd76"
+    },
+    {
+      "path": "docs/UNDERWRITING-FEEDBACK.md",
+      "bytes": 14642,
+      "sha256": "b3feba46ebdfcac37938d235794a7d37b8a543db3c6ec77bfd6129009ca8be3a"
+    },
+    {
+      "path": "docs/ai-usage-en.png",
+      "bytes": 59596,
+      "sha256": "06a56483b68252670182e6bb77f774896844d6e28d30aa6e9837054ef23835d4"
+    },
+    {
+      "path": "docs/ai-usage-es.png",
+      "bytes": 63961,
+      "sha256": "1401eaaa050f27b17a520e7a80a99d84a3292ff28a0ab1f9bfacb76d68e5826e"
+    },
+    {
+      "path": "docs/crm-preview.jpg",
+      "bytes": 74041,
+      "sha256": "c3832f04d525d1141c8dee0a1817acd0766be6fffaba77121c76b354c1128a50"
+    },
+    {
+      "path": "docs/document-review-preview.jpg",
+      "bytes": 51199,
+      "sha256": "9f45fb9987077dabe7fe24676497643062379d2b3d5f59de82f49001c25a88c3"
+    },
+    {
+      "path": "docs/lender-management-preview.jpg",
+      "bytes": 51499,
+      "sha256": "d8d105ef5cedcba9b9fb77a3b351cd1258c6267d43927c8daf93a373ab2424d5"
+    },
+    {
+      "path": "docs/operational-dashboard-preview.jpg",
+      "bytes": 74091,
+      "sha256": "b8ea30f75a892badf0e5c481b87d4936650591eabcdb1c6bbb93e39c22c798cc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/design.md",
+      "bytes": 73579,
+      "sha256": "f906e90a2bf932d7df2ef07e3bf0c6a7a96f46448d44678a18e5f101f8c73fc5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/parallel-development.md",
+      "bytes": 28180,
+      "sha256": "5494dab188e7374e6187938f703c02b9e0e9e4b8459d9bf812b88e6b3eeb3f9d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/README.md",
+      "bytes": 53248,
+      "sha256": "97ed4157ac36495f55984ce8c1f9d7adc6d58a422e79e5ffc7474cd984fa40b8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/access.md",
+      "bytes": 7659,
+      "sha256": "715e2cf6ff8721023fa1bd46f7b958113964af13496ec472d98158d6204695cc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/app-deployment-validation.md",
+      "bytes": 5791,
+      "sha256": "a358035a3ce66a365c72b313cd32e6bf8a79ff886f4071e057d850740466e5fd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/campaign.example.json",
+      "bytes": 943,
+      "sha256": "d8e8452bc4ff4302b3a226cf95766d7d804805422eaa94b1542a691e7c91f854"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/composio-auto-receive.md",
+      "bytes": 32644,
+      "sha256": "0e95e6665ddf9740e823b9516492baf1b7e425c08fcb766b0a8b252411c3e56a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/composio-correction-runner.md",
+      "bytes": 10167,
+      "sha256": "f62c1d48af03dfb1f51829f2d73641e17b67a54a81d459e23c2c2a104007f50c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/composio-identity-diagnostic.md",
+      "bytes": 4015,
+      "sha256": "4d505cdeead69c4b45292c6da62cd6aa33a029fc49ec55eded85eae4eed731d8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/composio-m1-correction.md",
+      "bytes": 24493,
+      "sha256": "d7930d3e24cc7df7725a106bc9d8db855c4acbbd57374972a97d66f9eb52aa6e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/composio-observer.md",
+      "bytes": 4813,
+      "sha256": "cb718970090da820caac392596605b4bd34aea6b9464b4a52ec8129b69977288"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/composio-reconnect-runner.md",
+      "bytes": 7962,
+      "sha256": "a1c77f010c08480142f8d1c2f7674c4d8578329a3db1c49b71aeaa0554fa7458"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/composio-reconnect.md",
+      "bytes": 31663,
+      "sha256": "cc03c4ee25b2d7a37b0b22e9e5dd4c5a7c3d9040e5ff33eb62c41c4dd95f1218"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/composio-runner.md",
+      "bytes": 16250,
+      "sha256": "9b6370cc08a83bf7d1174b379341b6b32fc09fcad9206f809ef1ba121c356d66"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/composio-test-plan.md",
+      "bytes": 12539,
+      "sha256": "7a5828f73681df3007b3c5329f16b1520d7a90b773bd040a07a1bbfefe323710"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/connections.md",
+      "bytes": 17911,
+      "sha256": "696a889cd90355ca43897c9a5027ade7d6802eda5bd90af9284fa047cce5dd68"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/environment.md",
+      "bytes": 7265,
+      "sha256": "41d93791a96a97b0f397a7d40972922cc70a97f35a4f41b9d50f03ebeb56daf5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-046-release-runbook.md",
+      "bytes": 24026,
+      "sha256": "f2a32af9475fbeb02ed3d17aa2d320ab78c4f2630870be9c6b7729f30d10d5dc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-app-smoke.md",
+      "bytes": 4646,
+      "sha256": "f98157253c88c8ef10e7016b15d50b48d6af058f275ef18b51df9830f2e10f45"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-commit-manifest.json",
+      "bytes": 6182,
+      "sha256": "69363abfcbc5f833b6f4c5e61eb30cc07ba68ad31fb7fb476d0d6ebc6a93881c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-local-commit.md",
+      "bytes": 6148,
+      "sha256": "dbebfeefa1f9ecf631c2865244b9206167c64061676d5efc4ea0bc4240f38db9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-publication.md",
+      "bytes": 4778,
+      "sha256": "fec79304fb9bd9507d3ae54a4ae519df4e82423d249196582a099793425f3c13"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-release-candidate.md",
+      "bytes": 5897,
+      "sha256": "ef33bdf6b180f0b768411fa2054ef74a7b355e2b3ff73de335bc61cf561f9e31"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-release-manifest.json",
+      "bytes": 6114,
+      "sha256": "6260dfab9bd752d9036a3398ea766b446b1d6b36e79157cf26908b36c978278f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-047-release-runbook.md",
+      "bytes": 26813,
+      "sha256": "79520b70912561492ea78fc13ba54b631b9407cc70195c275e4b2dc7a9bc569f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-app-integration.md",
+      "bytes": 15894,
+      "sha256": "e940e37f7412b958208a13addba5cf06f8b36d5e1d24102917d40673867b4e74"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-b-diagnostic.md",
+      "bytes": 13353,
+      "sha256": "bc519688e907ebdc3e58cf2edb3048173f592f4f5d7d99110be905da8daf51e5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-b-recovery-from-28.md",
+      "bytes": 28921,
+      "sha256": "32f88b2a9fa2a517e878d1da358c80382259499f06947d9fa0fd5a3435b6d851"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-b-recovery-incident.md",
+      "bytes": 7979,
+      "sha256": "d647daced593ddba3f9e2fc88ce6c755661a16e248fe1c3bf0cb579014f4dae7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-b-recovery.md",
+      "bytes": 29994,
+      "sha256": "a73b7e1fe3def6065d2c2d6c100e97e00145566f7573685a0093630fc2fc4175"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-c-app-bridge.md",
+      "bytes": 32650,
+      "sha256": "595ae7791aa3a08a129d8f7096fcb432c00f437fcac7604a148e8de1ccfd1c86"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-c-app-manifest.example.json",
+      "bytes": 1891,
+      "sha256": "70d34b0874e4be9f65933778a60c06cbc6d807d9161e4bbd0df6f3b7921404fe"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-c-app-validation.md",
+      "bytes": 10954,
+      "sha256": "c50d17db6e1cea6b681aa5bf7f2c9aa5f4e9835ee71e75eeabdb6c8c7fb7253b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-config-diagnostic.md",
+      "bytes": 28654,
+      "sha256": "a6c44ed4d820fa2c82ed7cdd983c82ee74e63cd852a309b04075b4daeb8b2f1c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-optional-fields-correction.md",
+      "bytes": 13064,
+      "sha256": "f3418a63e1fd6e5e6eb2779018533fffa0dabe305c46e593d901dfbfd9f28836"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-pagination-recovery.md",
+      "bytes": 13390,
+      "sha256": "7cf2ba03f198f15f40abb0fd07448c5a4940d876e1e2dc0ad756b356cd56383e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-phase-a.md",
+      "bytes": 12716,
+      "sha256": "6010b52abab02e87d5ab6317d08d97acd6942f56cbdcebf679a2490a9fb6d3cc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-phase-b-incident.md",
+      "bytes": 5692,
+      "sha256": "d052aaccb12c8e9c2b847fcb875158a3ce86591b08bb25af71e193bd3ef1b3f0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-phase-b.md",
+      "bytes": 25468,
+      "sha256": "643fd1e4f356174c4a5ae26435b5686fd5ca5e7f417633d16bbb7382edbf2b62"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-phase-c.md",
+      "bytes": 36856,
+      "sha256": "73c491a37575b9cce2c9cc398973676b15ce0a4caa8f00fec7899606c9666768"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-sequence-contract-correction.md",
+      "bytes": 12532,
+      "sha256": "a11d34a948ffcaf2eca18bc492bf95f9dd4f198158599463f95df54fc73802cc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/instantly-validation.md",
+      "bytes": 41734,
+      "sha256": "f780b5dedf971f1e93c7af73d4a609119881a8caa1cbe4b36b36b93bc8b249c7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/inventory.md",
+      "bytes": 17934,
+      "sha256": "b01a270dbb131a8b66cf1a5ff8d20d641fd2043eddd234327fe221b2226a7366"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/lender-management-recovery.md",
+      "bytes": 10262,
+      "sha256": "3fb6aec1a8093148492de25530eb419ecc9c432813ce2095193fac3bd04d1626"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/migrations-local.json",
+      "bytes": 6436,
+      "sha256": "2494d0d392682065ed82bd7e93296ae51067c99d5e34baee5e10e626074f6946"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/release-candidate.md",
+      "bytes": 12020,
+      "sha256": "65dd9477b1264ca9541041a9d76804646eed542ab06bfd7f8ae3ebe62993e2fa"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/staging.env.example",
+      "bytes": 820,
+      "sha256": "d2971578959956957ea735a8d09a4ad5979223c2525d338bdd953336ff787517"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/supabase-catalog-comparison.json",
+      "bytes": 1051,
+      "sha256": "1410ebad533092a29d0ebca39b4400f8725b4d27a11dbccf9c697a58d0d2e1f2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/supabase-catalog-user-provided.json",
+      "bytes": 9749,
+      "sha256": "9d6dd735028f8c8d09ac2ed052e97b3a910cfa490fd8aa714696642cb2f5e67a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/supabase-lender-guidelines-postmigration-user-provided.json",
+      "bytes": 895,
+      "sha256": "8f7d55d570dd516c1e20cb18e4bf250c12c5a4384bdca2b98bb3fa8da31704cd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s00/supabase-lender-guidelines-user-provided.json",
+      "bytes": 484,
+      "sha256": "706db9458db0da6411bd1c49aae778efd671d0d42c7cfabb128c5281f2a03911"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s01/AGENTS.md",
+      "bytes": 1439,
+      "sha256": "38fe3d2b23472115f8de2583ff4f5509f7682dbf75d1899b3719b345f8a8ab57"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/README.md",
+      "bytes": 13309,
+      "sha256": "0e6791ff5c07d370299d816d676d1cce1cd8d5991a98ef13ce0603c58dafb2d9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/acceptance.md",
+      "bytes": 3459,
+      "sha256": "f2fffe7189318d0daaa7bc1e60746523757dbc5007146e353715d15381b060ce"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/adr-001-transporte-compatible.md",
+      "bytes": 2831,
+      "sha256": "d0c9da9250d0b7f69d5dd921ec086b0a018d81e33b0755a3d913d47bbc295acb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/design.md",
+      "bytes": 11114,
+      "sha256": "23a1d138049ee31d0a0f2d55f63a6654b98f4cc4a5c46203234d5bf8b36cc65a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/implementation-manifest.json",
+      "bytes": 2240,
+      "sha256": "8c7c597f9c12fbb4bdbfe34048104cc23da0b1fdeee85c438d78322026cc46fe"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/README.md",
+      "bytes": 6987,
+      "sha256": "d73390ecebd76594f6a2f12821c259ea0e3d2508110d92e781c7cb1c0f1dff79"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/acceptance.md",
+      "bytes": 4972,
+      "sha256": "ba41549b31fea83d9ca7dd2a0ac814036a2ea2a20cd13aff6cb5e9276b0452f7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/adr-002-asociacion-sin-activacion.md",
+      "bytes": 1753,
+      "sha256": "22055c58b5aa2ab7e9e913c7f55f2e9bb9001e9711a49af45a5c0405916996af"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-a-implementation.json",
+      "bytes": 15549,
+      "sha256": "ea771e5435522139635dc19cf0f92ace785717ffd3f03526de5da64534575160"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-a-local.md",
+      "bytes": 3520,
+      "sha256": "0af7c38db6a8be4b3e6e10404f5a25b841e1264feed9cfbde53408297aef5997"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/README.md",
+      "bytes": 3484,
+      "sha256": "dd08c56eb7092bbd7ab994f824cbe228336e15f388186e95179a77866f8c0335"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/acceptance.md",
+      "bytes": 7628,
+      "sha256": "fe77795a745fcc87b04b18e7c356fb1d93e672304219e0a4f1a11bd8c4843e85"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/adr-003-corte-de-autorizacion.md",
+      "bytes": 2217,
+      "sha256": "743528d75d8d51d67f1bc7d5434ceb28933ec230c1cf2b523d6369ae864c7209"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/b1-implementation.json",
+      "bytes": 3638,
+      "sha256": "f7e1adab5a5c0c2a81a87d325c6f06602b72ccb66299e65ef2afd593cd26fb4d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/b1-local.md",
+      "bytes": 2723,
+      "sha256": "b3bf1657b642abb3a50b16ec305c6d869d02f6a3835e22103962dc4ec1ef2020"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/b1-verification.md",
+      "bytes": 7733,
+      "sha256": "55c48fe31fb528e045dbd4edde5e3e1744df7e61bfe65739cbc1d0e55dd59137"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/b2-implementation.json",
+      "bytes": 9536,
+      "sha256": "2443cc5a19dca1c5859265cecf993e02865cebcda938bf975d37068236d4b4ea"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/b2-local.md",
+      "bytes": 5562,
+      "sha256": "d262f2efc4db7b204434f3a892c1d5db0a9db504b13dc5954c6077c25cc0004c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/b2-verification.md",
+      "bytes": 9669,
+      "sha256": "724b5e84861f891d6314fd72720844d9b52af55f1b4e9c07816dcf3d879b669f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/design.md",
+      "bytes": 16466,
+      "sha256": "0a0e4d7a659f5c09bc882c749b2851502dc36d433ab0784840ae2bc6793f71a9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/manifest.json",
+      "bytes": 18723,
+      "sha256": "77fb1df05e641d69ca95a14d60f4de1fff2b6618a2156d71ab42056cce4d6a4c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-delivery.local.sql",
+      "bytes": 66581,
+      "sha256": "7a24c586fe9dd7640191c8788ae19eea636ea7f06508b0786ffc61f6ec301fab"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-management.local.sql",
+      "bytes": 31070,
+      "sha256": "ff3ed9771b93c0d0ef5e6c125a60a41c70dabb1e0a3f410d917785e5dd1cc821"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/preparation-report.json",
+      "bytes": 1204,
+      "sha256": "8a029aadf3c257b185dcb89e90522d11052b687ff8bdc960aefd0d6205cc8e4f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/rollout.md",
+      "bytes": 3112,
+      "sha256": "c6020864a4db0096bc735e899eee7ab181406e60b29c7ef72220638e73a1ef10"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/spec.md",
+      "bytes": 8897,
+      "sha256": "6bcade1f1fbff9527d66c0a606320fd88d54935a70da308a8220e9c1bbf78ff8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/tasks.md",
+      "bytes": 5976,
+      "sha256": "ae3221add99d137cd7192e1791ff68787f13f76f0a1eeeaaf18edfc4e652658b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/verification.md",
+      "bytes": 3056,
+      "sha256": "64e4bd2bc1bca9eb78fbf441ee3237650b81fbada1114cf001e0c7cb6f741a47"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/README.md",
+      "bytes": 4020,
+      "sha256": "1dac5b964247338e0919a4cfddab9ccec7c540fcdcddbd1fc2669c7f6732e41f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/acceptance.md",
+      "bytes": 6695,
+      "sha256": "70c510864d92a5dcff74342f733e27cdd18542c9ef5be7dd003c62f6d0430126"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/adr-004-evidencia-sin-selector.md",
+      "bytes": 3116,
+      "sha256": "dbfb745c7406f278aaa3b5ee5bf15a848aa3f521fb1a22c7a8c34c4b0dbfb992"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c1-implementation.json",
+      "bytes": 3275,
+      "sha256": "961a5b5ddf30256ba12eda8168b2542ed54260af2c508317949e3efc3ff02d9d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c1-local.md",
+      "bytes": 3324,
+      "sha256": "bebdc4fe98e2472187287d15699ae3e3262a154bdcfceb8a4828d04e8648b496"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c1-verification.md",
+      "bytes": 9913,
+      "sha256": "f8584202adcf7dd1df0489183bf2d5c8e67e76f25e8a0573fccfb8c97a060ffc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c2-implementation.json",
+      "bytes": 2412,
+      "sha256": "df0010523a2a554e4faaa36a754e4516e747c810db003e5a9c622f3e6cf9a225"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c2-local.md",
+      "bytes": 4422,
+      "sha256": "579a1baa0696acc4fd650b645406a66cd7533dce0b9f38da4ba94973ea86b7c5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c2-verification.md",
+      "bytes": 9710,
+      "sha256": "f9777aa5b620f51b701866f36d399739d54dd8fd32a3c0dd8d5f5435c130dbf7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c3-implementation.json",
+      "bytes": 2114,
+      "sha256": "1934df605b202b829bcb358c0c2727f55b2a69fb717fa09a70654b7f6bdf134e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c3-local.md",
+      "bytes": 3401,
+      "sha256": "5694781e0be478684fe80b965170fc9c5d90266cd1e376d1672086be990f55de"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/c3-verification.md",
+      "bytes": 12063,
+      "sha256": "5bf76cf3b7dadb3ba621fb42b1130b766b5b8f4c4b04d87ddce92bafe8f76c79"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/design.md",
+      "bytes": 19559,
+      "sha256": "72755bfeb9a0dbc11fda1a4fcd8b77018a719030635f4352103f703531ff5d9d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/manifest.json",
+      "bytes": 17299,
+      "sha256": "3a47b7ca76d25fee9705084887e9d367d4456c580ae63ca127a3a7b4f228529b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/migrations/c-composio-bindings.local.sql",
+      "bytes": 37423,
+      "sha256": "c350e981fe58631aa2409757f6a5045b12eafa299b08e693070df2bf55df459c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/preparation-report.json",
+      "bytes": 1665,
+      "sha256": "b9c5cb3f46c519316f5e739d696bbfbfe7e09787d09d2b88f7a0f368b3187f02"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/rollout.md",
+      "bytes": 3085,
+      "sha256": "cfcf8851dbc60633044459e1dadf43dabd7528958e25c40465d618500a8b6b2b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/spec.md",
+      "bytes": 9198,
+      "sha256": "ec7b7289359f8d0c487629d0e7c08931b863560667e76097f254e5a969f6c2f0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/tasks.md",
+      "bytes": 6967,
+      "sha256": "d040ca4df00cef328b3e2917d10c4fd12120841ce044260d23cababd6bc8a9cb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/verification.md",
+      "bytes": 4634,
+      "sha256": "f981a66736529c8bba6684a6f07acc430257c31d4070ba0e1e01ce9ca7d4eca7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/compatibility-report.json",
+      "bytes": 789,
+      "sha256": "fb953ded1451997d53e0d8697572ca8711ea3c08534a7385c6bf2b85789618a0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/design.md",
+      "bytes": 11859,
+      "sha256": "280c55ad1e75d364b48ab322df7168777d1fb24c93ed51f903c72e4d9ca1ed14"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/integration-manifest.json",
+      "bytes": 14634,
+      "sha256": "cf5bdb1b9d0db7b0feee160045e70b3ce60976eeb7b5af0e4de8e70a82713caa"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/migrations/README.md",
+      "bytes": 1514,
+      "sha256": "dd1bb1df7373112ef958527d0ec848bb7c7550cc4b8e4a0ba5971613a74f690e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/migrations/a-brand-foundation.local.sql",
+      "bytes": 6444,
+      "sha256": "89c718bf3add80bf470b238d21e965e4efc87999bcfce2dc9c57799a8eddc910"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/migrations/a-mail-permissions.local.sql",
+      "bytes": 140522,
+      "sha256": "c4fe7156725038c1cd832d90889b44ba547171e65d0ec7c4d4b53e5a44844907"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/rollout.md",
+      "bytes": 3117,
+      "sha256": "4d67e137bd49e4141359bdf7b125c3d4ad2aba8ba90b1d80bf049ca8ecfc3e6a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/spec.md",
+      "bytes": 8999,
+      "sha256": "35dbb31eee23a76881088a22b778f15d98e6878b563c944e1eff374f6de30221"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/tasks.md",
+      "bytes": 10344,
+      "sha256": "51e00b517a716ec375134ed8764dc72b98de62e6ebf283a14e40797e5a122b19"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/verification.md",
+      "bytes": 9427,
+      "sha256": "1adbdac0a239018387d28cb880f9410f4e85fd9c159a383c563cc3b1a7c08277"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+      "bytes": 911177,
+      "sha256": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/README.md",
+      "bytes": 9232,
+      "sha256": "d139980f3b70cfa5e2bc75abdc73a504b06e65ca3a187dee0921c2bcba6e3fe9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/acceptance.md",
+      "bytes": 1540,
+      "sha256": "ce37c08402e59265c7e0d05f1ccc43f98e97396d5ce0b3d8bfe21061b550af9a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/application-postflight-received.json",
+      "bytes": 1402,
+      "sha256": "a5a4a24ba287d1cb9fe51d942101d6b4a0716a103676b6480053c659c034c1a0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/application-result-review.md",
+      "bytes": 3551,
+      "sha256": "3ed50c3777ac944f73d24563c68d852083fc0867eee7b740fbf1c0b8c31b9915"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/evidence.json",
+      "bytes": 17184,
+      "sha256": "1e5f40ff6cb0aaf2f9d5ce093fcb83de3adb067ccaf3d518ef6eb1fa4e2267f6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/manifest.json",
+      "bytes": 3261,
+      "sha256": "fd14778ded8c82dc16ff1be77c87a2e1a14abf32213ecd45ec590c134d14e14e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/prior-diagnostic-manifest.json",
+      "bytes": 2265,
+      "sha256": "7972a78726a2237706b92e7c9e9c89f68cb2a4e26cc72a679b563a37966ddad7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/spec.md",
+      "bytes": 5845,
+      "sha256": "33b155260f25566362090aed173df39417b293df3baff43caf7becc816da1f2c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/verification.json",
+      "bytes": 5082,
+      "sha256": "63fbeb9bdaed09041a521288eb764dc5893864c92bdbaf58facb3f29f8b543c4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/verification.md",
+      "bytes": 5436,
+      "sha256": "e1820a4fbea10827b0de9e0583e35424917880e723773051127fdf46d6171346"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/contract.json",
+      "bytes": 394137,
+      "sha256": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/design.md",
+      "bytes": 4272,
+      "sha256": "6ebe1a6c34e6850ce9253d8384c61f5928119ab954709f3e2cc2d6b2f01999e7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/README.md",
+      "bytes": 3818,
+      "sha256": "779b0b9313ded3c35676338e8f872c9533e6d6bb4e33f6e41b7c952310f5158d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/diagnostic.rollback.sql",
+      "bytes": 909928,
+      "sha256": "a2de43622882ffe9e1796c7b4d25ad582518121fea55010363bcee762ae33d79"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/manifest.json",
+      "bytes": 2890,
+      "sha256": "ed88aa82fa807fffd7027909340b6a558ea9d05f121bb7913b52b5ddf9c92241"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/spec.md",
+      "bytes": 5289,
+      "sha256": "203ba4733d5e2ddb4bdb1568c5a3938ebda5b1a6ee6f369c43decf6ef42c56e4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/verification.json",
+      "bytes": 3315,
+      "sha256": "97ade9c1ad6568565c32a92710356623d4f73869b3db00276e04905713134407"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/verification.md",
+      "bytes": 4856,
+      "sha256": "e29e4eed6f336775a50a9aac9fe2932df324f47cf911f49798929a95049f98d7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/inventory-r2/bugfix.md",
+      "bytes": 3403,
+      "sha256": "b7141fafd59956b46aaf8bdd0210bd23386005e9215ab71e85399724cc6c2647"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/inventory-r2/diagnostic.sql",
+      "bytes": 20935,
+      "sha256": "ea04944b508ff3ee32e70d85153660d88d5efbf0ac8a3c0f58924077b90408a1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/inventory-r2/result-review.md",
+      "bytes": 3482,
+      "sha256": "b74f67a5388a99057cc9581d789ff663300aed81fb240ce0da8b38fb0426c795"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/inventory-r2/verification.json",
+      "bytes": 3611,
+      "sha256": "621ae3d5bf15e366ce865662f5e761f5e7584faba1d25c622ef86c3063373961"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/incident.json",
+      "bytes": 1582,
+      "sha256": "d03741a0aed6771fc463ade7eae0fcbb958c4b0b54983688e9094c37c9d37b24"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/source-variants.json",
+      "bytes": 17174,
+      "sha256": "bc49a995fd3cb0bffed28b5e1ed86535c6dafec37a878ff15e8c7ada3964d444"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/spec.md",
+      "bytes": 6223,
+      "sha256": "672ab9657010fe55f6a1e064388c6aeb3b2207c3fc30b9ab651161373475385b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/verification.json",
+      "bytes": 6349,
+      "sha256": "d8410cfa1f5ee1bb655ecb90edadc0b26c226e281ce6ae731c6a9c4d0595751e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/line-endings/verification.md",
+      "bytes": 5459,
+      "sha256": "ce1d953fe65cc3f1983a18b1c77b7032e919d37630a58c3e7b838fa9d921de20"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/manifest.json",
+      "bytes": 24554,
+      "sha256": "14b7ce7e8519957c116578034097e8cab60b7d0d0916723c872964a776122fde"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/README.md",
+      "bytes": 4863,
+      "sha256": "5ecde1865ac0b67d7914b26c40b2cb223a6d878afbab928187cad46ca1306743"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/acceptance.md",
+      "bytes": 6808,
+      "sha256": "ad75e43c29aa44e280abfdb114498c02ab91828e93e0a429fd535bbbd451dd6d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/design.md",
+      "bytes": 7116,
+      "sha256": "40ecb23e23f310569744703d5cbdd5e9cda6e6fa1bf6cdfa659d58858cff849c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-runbook.md",
+      "bytes": 5063,
+      "sha256": "f2d67aa92f474f68fe3a3b5a1897d255ea5cb2213b94d4cb35dc9f8118bb2742"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-spec.md",
+      "bytes": 3765,
+      "sha256": "0f8797846561c8df8a82b41b76eb900a52e9b7a8d0929e9c1def9a52dc099177"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-verification.json",
+      "bytes": 6445,
+      "sha256": "2fbdc0a1b1d353dd969efa5955268c60c556f143bf7384f001fbc3d527dfcf13"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-verification.md",
+      "bytes": 5823,
+      "sha256": "9fe77903357f6ebcd7b9a5bfd3b313af7ad69057d48d39e01714848eee3970fb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/manifest.json",
+      "bytes": 25772,
+      "sha256": "b8adf4104cfc3d2f5e64e3897598bd072b80696c0caa75c120fcad65dcb14bcd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/spec.md",
+      "bytes": 4849,
+      "sha256": "6ef160bb1d8686a34fb268cbd6a2d5df3acc32b81505178f1feb9388423a899d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/tasks.md",
+      "bytes": 2820,
+      "sha256": "8f887239b4d44caa4fd5c103381e3b396c2b0674c82e755db744f5f550665488"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/verification.md",
+      "bytes": 3052,
+      "sha256": "c9690073fd4b3b843a08371b41d7588b13b13ff97e852048946ed35765fd1fff"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/postflight.sql",
+      "bytes": 273951,
+      "sha256": "dd192f1983ccd4a4d3f8ecf014869bf696076e75710d0b2284e92467b30456dd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/preconditions-review.json",
+      "bytes": 24262,
+      "sha256": "5f0f629b8313d99a58981381b09abb3813f8758484fa275905fa469ea54026ac"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/preconditions-review.md",
+      "bytes": 13657,
+      "sha256": "951ed53bd337f54916ff1bab4f5b4c35adbe7a6fe2b00b673acc9caefaab180b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/preflight/preflight.sql",
+      "bytes": 280605,
+      "sha256": "b39f472286b89cac22553d649adab10b722b8ea37c623ca43709ddf3428786e8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/preflight/result-review.json",
+      "bytes": 1415,
+      "sha256": "acbdeef5fc7f02d28ae9c879046ad3d64425582485440f6e0c814ba84e25723e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/preflight/spec.md",
+      "bytes": 5648,
+      "sha256": "0c74635263e78a8236c123662d3d153bc01592adc93eea2d660bb4a2b5559482"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/preflight/verification.json",
+      "bytes": 5342,
+      "sha256": "5d68fc2ca1b186bee0fee8824be8c69f7197aa2cd35d6eba5bd9606bc57808d6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/preflight/verification.md",
+      "bytes": 4831,
+      "sha256": "ff756eea5873068a31eacf8d0fe901eedeefcac2008ffd2672bfdba74f347560"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/protocol.md",
+      "bytes": 11837,
+      "sha256": "923703e8331d7bc94e46216ce4f0eb2a6acdcd73d0d508ce32fea21b08915181"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/service-role-review.json",
+      "bytes": 27575,
+      "sha256": "d33d3aa554d14933b811a05eb28aa031fedac0728ce637a58c1cca53a3386bc0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/spec.md",
+      "bytes": 3917,
+      "sha256": "1782336ad2bbf7c9000ddcbad697a3ac6c86e076ecef0251a15716fafaf7e6c2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/tasks.md",
+      "bytes": 4081,
+      "sha256": "a0bede2a958782d84619112dad2c4b71c531c9aa88868b35bd63ce3a8cd37ba8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/verification.md",
+      "bytes": 9742,
+      "sha256": "0e7ded94d4e6753b8be6990f326e6ba6f7770def429d7694863c01aa590d2559"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/acceptance.md",
+      "bytes": 2926,
+      "sha256": "8b5247143a3189046bacf21ccda36e173eea82a8fe56a86468905a59f453cfa9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/catalog-preflight.sql",
+      "bytes": 7440,
+      "sha256": "1c339aa7eb9c4ee026172db5203bb7bbe693943e21364d77e1bdde33190d59f2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/design.md",
+      "bytes": 6333,
+      "sha256": "04181fa4af92343e3dc05390b4f7e38e1e839ad0ac766a1d2473cf83f6990098"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/expected-catalog.json",
+      "bytes": 303340,
+      "sha256": "cf90be47ce89931519ef504e3c382ffe81ffe5e2ddb3186aed8687351774abe6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/manifest.json",
+      "bytes": 67380,
+      "sha256": "10ab55fc4768a0085d7b2d165668e76a43f70032bf313186171df60d05c07b34"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/README.md",
+      "bytes": 9536,
+      "sha256": "c3fa166cc031309ed4fb76034e158112cfd27996f69404412ac77e5b968fbcf9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/acceptance.md",
+      "bytes": 3044,
+      "sha256": "e90cf875052bba69c6e13ff2d4f59e9e928856febb06cf21e0d94a9a99cc673e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/changes/CR-001-real-readonly-validation.md",
+      "bytes": 2956,
+      "sha256": "9ca9a8f72585a380ef061223219a3fab02da5fbac4145a9a89bf08c0d4d304af"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/design.md",
+      "bytes": 13514,
+      "sha256": "77eec1ddf7ba462a73cfe7bbb50adcaea20daa02aa2d48b3d136542ee17c25e5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/diagnostic.sql",
+      "bytes": 59305,
+      "sha256": "e6116007a597cc67f51be3c257c19f0469da3284715a3e0ff21c2746e19fca21"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/diagnostic.template.sql",
+      "bytes": 18815,
+      "sha256": "d33ebb09347f9526763f655f8f80d03e7b3aca8dfcee0452a2817982028561b1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/implementation-design.md",
+      "bytes": 3845,
+      "sha256": "33011a44a39329b8099ca353eb99d5396b4f17e0beb497848bd514c6a19340a8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/implementation-manifest.json",
+      "bytes": 5570,
+      "sha256": "336eeb5721f54674d3ff3c974efbd79d96f2f770abe25bd89579fb844dfbad35"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/implementation-verification.md",
+      "bytes": 6393,
+      "sha256": "dc5ef2f759900d61c36cb55c6c51f85e3c40d9741d3e18f3558d4e94d4ae0c6c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/local-reference.json",
+      "bytes": 927901,
+      "sha256": "f151b0655c0a75ab1742e2311f997e5d33de95342c40cdc4c2d7ec55747e23d4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/observations.json",
+      "bytes": 63971,
+      "sha256": "60fb1a34c537e45f65c4d730336d70583819bbced91f63ed7102d87790563801"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/preparation-checks.json",
+      "bytes": 2629,
+      "sha256": "93469f015a69ae5663ab071b2973e9e60bb5b121d04fa8bb1bedf53865480139"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/result-review-checks.json",
+      "bytes": 2356,
+      "sha256": "f8906c60eb05781ceac6a8764e315840dee34eef3ca8fcb5d22a62fee124e11d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/result-review.json",
+      "bytes": 22385,
+      "sha256": "30f174c16f7efb1d7b4b40d5f43c341e343ec1be4b33cdb6d5b971ca9c9136e1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/result-review.md",
+      "bytes": 8062,
+      "sha256": "190718679b5b5005167a211636d2ecc1cb8fce9a70180c0acc9884aa1be5b1a1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/scope.json",
+      "bytes": 55904,
+      "sha256": "f576a37450d9ba2a8f1d913e43e514953c44419b28c1fc6cefb96b67286c46d6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/spec.md",
+      "bytes": 3665,
+      "sha256": "b4c2a7151ecf79c52a323b3460e76f0ddbe429d7c3f1723c02084f25e0fd80c2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/tasks.md",
+      "bytes": 3159,
+      "sha256": "b0b4572fd5a30845ffc9e4ed7eeba7cc4ffbbc94948c941a8bd6b75c4ad53ebb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-diagnostic/verification.md",
+      "bytes": 3618,
+      "sha256": "fede45b3b6e65cac29903de719db17a221b7e488652dad1d2eb32ab44035b600"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/README.md",
+      "bytes": 8108,
+      "sha256": "b486250c6b869d5816e36d8de2bae728ef558b82a34a8d87b0bb78e85653d295"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/acceptance.md",
+      "bytes": 3278,
+      "sha256": "47c1de8b405e8bbdd13a319863555eee30bfeeb719637cc560331b7c88c04c1c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/design.md",
+      "bytes": 11844,
+      "sha256": "8d634fa18e113f28e084d09e25b681c648ca05df8bb35233784eacee37f1d31c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/048_restore_scoped_public_permissions.sql",
+      "bytes": 47667,
+      "sha256": "75548207a9c465d5151c2f2a6e727fd38cafee2b185d51ff57c02509365d4dd2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/README.md",
+      "bytes": 6033,
+      "sha256": "62bca9887829d01480e2e2f5570623e3356b3aa68e0ca5d439c884acd2bb76eb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/lock-footprint.json",
+      "bytes": 6938,
+      "sha256": "c2665825a3350ae2e90b0a06bf2160106255a404cf9f77d78a6b9c282f1fa8d3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/manifest.json",
+      "bytes": 7425,
+      "sha256": "8e82cc42f191f37bb0ae99a15f357a64b8c81144dfca557c07cd756f60b57403"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/postflight.sql",
+      "bytes": 39602,
+      "sha256": "ffd5090202fecfab3bbbbf51a048693d74b486e757de6c1c3fdfea2737589db6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/protocol.md",
+      "bytes": 10207,
+      "sha256": "02b5cbd14e8a1a76ec0d95dddfe3022d9010a5d4395f14be85dddb18580f32d8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/release-contract.json",
+      "bytes": 54777,
+      "sha256": "3c883ea1c38971ac4af058c7800166d3ba0b846a97a228ad85025138b59a1a1e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/final/verification.md",
+      "bytes": 7156,
+      "sha256": "25130b3f90df313ffeaea52db146794463081ca986a2216440c8b0133822d6a4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/function-inventory.json",
+      "bytes": 43981,
+      "sha256": "21dd180ce02639c13b8a49fce22e3d900ca8909a48863ab6ba4e9bcdfd5c17ec"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/implementation-design.md",
+      "bytes": 3735,
+      "sha256": "8bb84cdd54b67a757778eb50c3ddfb053f565c56ae7946d241cd77b640c936a9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/implementation-manifest.json",
+      "bytes": 8973,
+      "sha256": "d5916a4906494c278adf59a9cb7f26ebd07dc8d3e10836f7fd3988636b72d9c9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/implementation-verification.md",
+      "bytes": 6934,
+      "sha256": "5d4d81b37cdb1ceac59d320e80533b3bc42396e4f8fe1e3a061a40d8b10943b2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/local-view-reference.json",
+      "bytes": 14134,
+      "sha256": "9c484b4e0c813b0795e3d1b53f5d89258ec96dbfb864c3ce958023db2da93d54"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/offline-runbook.md",
+      "bytes": 4123,
+      "sha256": "93672cc1c5d4fd49a49e35d14b5f8b609d60a221e2e7e74992abfa1131561c31"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/permission-correction.local.sql",
+      "bytes": 9971,
+      "sha256": "aa6a4baeec369b8df455bd36e0a04b1ad89b8fb2b8197792e364378c8ffb244a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/permissions-matrix.json",
+      "bytes": 41386,
+      "sha256": "38c17a940b1ffb6c11e1351a3f795a0337540cb7902a4fff39f01e7c5778652e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/preparation-manifest.json",
+      "bytes": 4195,
+      "sha256": "e883084aca6a97a0a60870b41105d74881b8014af352c13babe8bc4b95762fbb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/spec.md",
+      "bytes": 4264,
+      "sha256": "4c150748f9b06947715279b3190b820211e8c5d757f824047e0a5a2ed5bb071f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/tasks.md",
+      "bytes": 4617,
+      "sha256": "a5d2d2d1627b6c5acffe9f659260a65d61f6219298062d47051571358c957af0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/verification.md",
+      "bytes": 3260,
+      "sha256": "873e53187c83b224f777ad5082ad59a3b1448a73008effcc9b44d37cdf302d76"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/view-review.json",
+      "bytes": 5085,
+      "sha256": "8337b18fab5e0944bcbcfc0b667276b100181aa4ff9c6f52b7c8e16ebd6eaa01"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/view-review.sql",
+      "bytes": 5247,
+      "sha256": "dcd3f067310e1ca4c6d9965853d4f76757b2aef08a96bceb6cbf58c3fa128a35"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-comparison.json",
+      "bytes": 755,
+      "sha256": "c3d1536bdc190db3da071e6bd3732b3aeb7dd642b4ab3fcf576459dbde375646"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-observed-canonical.json",
+      "bytes": 14137,
+      "sha256": "2b0bd59b0b2043e13cd37fe9eabe7ce550272cc78dcbbff0953ddbb4280ac838"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-qualified-reference.json",
+      "bytes": 14137,
+      "sha256": "39d2b360e071851dbc74cfde662ed0247a6306be345edc983256bfb064e01d12"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-result-checks.json",
+      "bytes": 4306,
+      "sha256": "df6472a31e92940aa9c92d012a98f7be4b47d2739efa32896fb09446aab5cfbc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-result-review.json",
+      "bytes": 3344,
+      "sha256": "82a791d8bb24537a9689a0d633b069eb565a829352baa929c1fe49b5b24b869a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/permission-remediation/vr1-result-review.md",
+      "bytes": 5872,
+      "sha256": "929edd2db02884f08e1c2b853533f2b6ec7bbbfd51abdb58475a2502ec666dfd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/preparation-report.json",
+      "bytes": 1758,
+      "sha256": "6e673248ffc452f7cb96b5eae474e157987aae0d1b0a5759788d817363ab2bbb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/readiness-report.json",
+      "bytes": 8151,
+      "sha256": "f6711a0647873b0d708a4eca52ecd8db3477f66f172bc545185e5edb4c3c4563"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/readiness-review.md",
+      "bytes": 11192,
+      "sha256": "9bd04e5300fefb5d5962af2669c824a0a0dbd61c9e04a900925f60dcbf38d4e7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/runbook.md",
+      "bytes": 18966,
+      "sha256": "d6742b2ceeec6c9cd8d6f1d509952d6fc1c2aa1f0afd2244213e619198efd9ec"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/spec.md",
+      "bytes": 4404,
+      "sha256": "c39970b1980886653bd1639c6128e779e4f7e519d8b44c1411fde758d335bfdc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/tasks.md",
+      "bytes": 13346,
+      "sha256": "6a31d2b4fad6f9e017039e3b2ea9314c2eb624d04d8682a45c43dfd73f9a969e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/verification.md",
+      "bytes": 11445,
+      "sha256": "b7048db59967aed3a94caf821f26f156b5bbd6b06a298bf7961cda941a23c672"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/s01-review.json",
+      "bytes": 14915,
+      "sha256": "15b6fb8d115c11259b5e16d8c56eccb123d5c2e6c9ea541450ac506d4e1ae1f8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/spec.md",
+      "bytes": 6733,
+      "sha256": "ce7dd5d74cc3d1bf547c555e3b37a16259b87e69a83bbda139909322ff2dcd4a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/tasks.md",
+      "bytes": 3241,
+      "sha256": "e847c4e5fc548abf69b7e6de649a3353700d665430627bce4eddb6ab66b81a8e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/verification.md",
+      "bytes": 11759,
+      "sha256": "87a5373c5f120094ac11f928a3122d7ba3b40b5e92cacca4d830c2b225b0766b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/spec.md",
+      "bytes": 67511,
+      "sha256": "00dd8ae63ebed9588846328bee22acf452ede908eab0761ebfb8eca7c1a5a53f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/tasks.md",
+      "bytes": 95466,
+      "sha256": "eb8055e29a6665d4378c6ca87dd2aac69181f330e3d943bb82e54a4ebdfcd6ca"
+    },
+    {
+      "path": "docs/specs/pipeline-os/verification.md",
+      "bytes": 203928,
+      "sha256": "b042b9171aeecf036e85310510a8e90962fac46800120b623b51f031c90b5f42"
+    },
+    {
+      "path": "docs/underwriting-checklist-complete.jpg",
+      "bytes": 162800,
+      "sha256": "6cc832f842993733c3499ac2d027d73f461ebee962e7e77ac2133f787fb41016"
+    },
+    {
+      "path": "docs/underwriting-checklist-pending.jpg",
+      "bytes": 69651,
+      "sha256": "f790d5ca65f441383d8af56372188f66924a2f5ce7892fe46bf82e9a2eb86456"
+    },
+    {
+      "path": "docs/underwriting-compact-en.png",
+      "bytes": 49140,
+      "sha256": "81f0730adde7616ef3004baafe46f2bbd0de5b8eadaf1444a84c954b3760136a"
+    },
+    {
+      "path": "docs/underwriting-compact-es.png",
+      "bytes": 54389,
+      "sha256": "e4e210fbc1aba2636e75e7e6c5c0c1a359a8ea9185eac148b911b2b0ef04af9b"
+    },
+    {
+      "path": "docs/underwriting-human-review.png",
+      "bytes": 52214,
+      "sha256": "68f5adf57f200274eb947c95a8622f0081d879c4e52b74c4f84920fb9254536f"
+    },
+    {
+      "path": "docs/underwriting-preview.jpg",
+      "bytes": 57932,
+      "sha256": "b1fd0e6b674abccff04208ae3a33bfd3022aed7e0c10c6d44648970bf62124cf"
+    },
+    {
+      "path": "next.config.ts",
+      "bytes": 1501,
+      "sha256": "f33ca239a9e548e055a993b0a93687fd298661724aacbd506d8362c40aa6b1c1"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1339,
+      "sha256": "3f104d1fc5a62f4499225d7f2c5968c8bfe370dc3b1c3623933b71d1bb5a65dc"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "bytes": 73878,
+      "sha256": "a3dffb076a16a739665a750332f894bc36d17a7f103d7c2fe84e834e54871203"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "bytes": 29,
+      "sha256": "ac02d96368617c760f093cfe61fdec64b6244007ab3553e0d6621f706f54a353"
+    },
+    {
+      "path": "public/icon-180.png",
+      "bytes": 3046,
+      "sha256": "0d16d757581184401e9d756612ba12feb99fb244ab13d6b099a4ae34c1103bf6"
+    },
+    {
+      "path": "public/icon-192.png",
+      "bytes": 3354,
+      "sha256": "8f8b950e127a328b58894f41f85fcd7b000da8d4d45938a0fdccc7fdda5040ce"
+    },
+    {
+      "path": "public/icon-512.png",
+      "bytes": 13066,
+      "sha256": "cf2c9c746eed7a53f439c01d8afe34d5e81c642b578e71862b3f502f3faf131c"
+    },
+    {
+      "path": "public/icon.svg",
+      "bytes": 241,
+      "sha256": "bb193cdadbd6fc653d0c867280e6880543c5a06ece28a81e5793f80fe45e0a8e"
+    },
+    {
+      "path": "public/lender-tiers-reference.pdf",
+      "bytes": 2369,
+      "sha256": "e8483d1b69556c5fc8f27291e4e9bb0edfaf87848238d2c05cb8b5dd274aa100"
+    },
+    {
+      "path": "public/sw.js",
+      "bytes": 626,
+      "sha256": "6e7c53c403a4df7051103e947e5fb09dc164005120717e284ae892929e659180"
+    },
+    {
+      "path": "scripts/install-campaign-presets.ts",
+      "bytes": 821,
+      "sha256": "fb245e491b13be60187ef2d808688e358fab127713a071e41092ceafffe6871f"
+    },
+    {
+      "path": "scripts/pipeline-os/abc-catalog-variants.ts",
+      "bytes": 8953,
+      "sha256": "d0883b371f0d1f028813552a2ca8db7016221cefdd3f8054ca363f543c6b4fbc"
+    },
+    {
+      "path": "scripts/pipeline-os/abc-final-diagnostic.ts",
+      "bytes": 6509,
+      "sha256": "37ccce45f0ce24b4fec008d4f5be65e83c244d0056803052fb3ce179078162db"
+    },
+    {
+      "path": "scripts/pipeline-os/abc-preflight.ts",
+      "bytes": 13086,
+      "sha256": "0800000bf0b8f330251a627ea330511b43b0783079a585c90fd55e454ff09973"
+    },
+    {
+      "path": "scripts/pipeline-os/abc-source-variants.ts",
+      "bytes": 7360,
+      "sha256": "6aa74aaeb67ab2f14fdcdbbe4ce0aef4ef78bc9cf7e13eee07165e5e52ebd38d"
+    },
+    {
+      "path": "scripts/pipeline-os/catalog-permissions.ts",
+      "bytes": 17588,
+      "sha256": "1da825ec306f6a0f48109967fa29d4b0e9b82973ba2d8eea9a6ce88a6b07688b"
+    },
+    {
+      "path": "scripts/pipeline-os/permission-remediation.ts",
+      "bytes": 21119,
+      "sha256": "88f2e8e2a3cefbc08b0f8f52c46e11baac18d90fcdfb7e7fffa864cd4b79b531"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/artifacts.ts",
+      "bytes": 3821,
+      "sha256": "4ec20fab450e304fbe85038755eabdbc46771974fa4a2006c5ef04d57e96b73c"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/cli.ts",
+      "bytes": 2326,
+      "sha256": "4d63542a93e04bf2814145aa0a24d141b08ee2df73ed949d256c03c70235c276"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/fixture.ts",
+      "bytes": 10526,
+      "sha256": "51353019576daba15932bc2c723a504ef13c0b2b363861bb29209851443fecc7"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/process.ts",
+      "bytes": 11807,
+      "sha256": "3307e30df2a68b7707847ec9a40b433f14588df6b72c09972ce47ee04f88703e"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/runner.ts",
+      "bytes": 20595,
+      "sha256": "a5a29d7dfac8124a7a5f0b3a654c5858e76efe29f7beb0c9c2463a127956a4be"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/types.ts",
+      "bytes": 6263,
+      "sha256": "07314afe8f8406ce9a5259c916971df4fb764508c94aaa0033b555015e697638"
+    },
+    {
+      "path": "scripts/pipeline-os/prepare-abc-final-diagnostic.ts",
+      "bytes": 939,
+      "sha256": "8e3f894a866af01a95a85f5ed5e31dce3dbc5f669e7c3a291a86d96ee35e3280"
+    },
+    {
+      "path": "scripts/pipeline-os/prepare-abc-preflight.ts",
+      "bytes": 558,
+      "sha256": "e17407a3ee078be8ee49beeb008553e8ccd92d7866b37a19949395f496767ba7"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-common.ts",
+      "bytes": 7705,
+      "sha256": "b29886eaf0f41d87d69d45f1295bf94b2663bcb8006cad454a37aaf310ab86ee"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-correction.ts",
+      "bytes": 28642,
+      "sha256": "c7a563f43b4570398c418b10c7072a63848d6179952874b81e46914041056242"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-observer-cli.ts",
+      "bytes": 2906,
+      "sha256": "ecdc071d4382cfeaf90b454619996489477281b2cc2075b1daf3de2cb5e72482"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-observer-files.ts",
+      "bytes": 2501,
+      "sha256": "8df528132aeb842f8ac8498bf27ccff018cedf705a737c0d6d5ad75ab6be0999"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-observer.ts",
+      "bytes": 22561,
+      "sha256": "be95d77dd54818dedfd40dabead3baae6b3e8299230886e752fc287dee227714"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-reconnect-cli.ts",
+      "bytes": 5880,
+      "sha256": "929b3a11ed289b80655758797368ea1d7d27da88b78d859663ec4f3a839e01f3"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-reconnect-files.ts",
+      "bytes": 5609,
+      "sha256": "54fa580d946f903ef7881d7b88b403fd63ad6d8354b0a80d98cd2aa9230db3bb"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-reconnect.ts",
+      "bytes": 34396,
+      "sha256": "f27548aabe50a7e61ed027c81af19df3e7f232459a44a559e49bc1f929060983"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-runner-cli.ts",
+      "bytes": 3223,
+      "sha256": "cd90c2741e63dacc2506270cf5d8d704625eb4601f67d14d7a963ba4aa5e92a1"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-composio-runner.ts",
+      "bytes": 27597,
+      "sha256": "a8b93ed752618d78c301bbe3192d64249020f6fb396bd38a5006f4406722aff4"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-connections-cli.ts",
+      "bytes": 784,
+      "sha256": "a3d856be6c196f7bbdfd45c5717d9feac373c04a72430e23b53e3c7427397693"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-connections.ts",
+      "bytes": 12924,
+      "sha256": "8faf9652028691d34ef8336fb8e8b6e13ae7d8bfc69cdc96ae93ac37c3d34642"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-contract.ts",
+      "bytes": 5293,
+      "sha256": "17ba2a3834524338425b76a7e93bb55738472a7f7e24228a6d9316665c5e44f6"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-database-inventory.sql",
+      "bytes": 1568,
+      "sha256": "e4167c2dcda420a50233b928aabb220fd26db6add07539ccfb0f6b2154a74696"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-b-diagnostic.ts",
+      "bytes": 16514,
+      "sha256": "5caa31eb3098d54a8fd33307b66e7d24ca125f12cb4babb3c872e08d9ae85e9f"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-b-manifest.example.json",
+      "bytes": 926,
+      "sha256": "fa93dbbb4d76978c83bdc4b7049fb30cc57c11e97312f86808f7d68f9c88c363"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-b-recovery-from-28.ts",
+      "bytes": 23511,
+      "sha256": "f0a67544416876f85e0ef9e4d7601e98e5d0d5d40a9a32d0614f78d39be50caf"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-b-recovery.ts",
+      "bytes": 22080,
+      "sha256": "aeb542f2ec3e94e3cb61a5f5dcd197c46c9a48aa68a708bb2d93b4e31a6305c7"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-b.ts",
+      "bytes": 36274,
+      "sha256": "eab4db6f12eb6a927ef5bfbf951399eb1d9aa700b699503dd081a0cc46e5221a"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-c-app-cli.ts",
+      "bytes": 3226,
+      "sha256": "3b909dd3156f6e6efdab0271991ec5d7b892bad6bc3ca432f828b4365175374b"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-c-app-files.ts",
+      "bytes": 3843,
+      "sha256": "35a9ed8bff0fe68ed203516e15f067ea5cda6bd3e697c3f6192491dfb98865dd"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-c-app.ts",
+      "bytes": 11557,
+      "sha256": "325cc24af6c49c661f140b15e741547b0b061e4e01dc2c625c139878d1104988"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-c-receiver.ts",
+      "bytes": 3592,
+      "sha256": "6453d5bd0943d2a2852d1d3a379706864599a5bf2bd0fbbb662700562d10ffd2"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-c.ts",
+      "bytes": 31133,
+      "sha256": "ee8be835ded2cc485018e01f9a3254ac22d4fa60bc8c570df0c88edd9ffd59eb"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-config-diagnostic.ts",
+      "bytes": 22795,
+      "sha256": "ffbb261fd76fac9ea30c7837226832dfc20d5ba0c7cf3310a1780ca93af4e3db"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-control-bridge.ts",
+      "bytes": 10296,
+      "sha256": "2824cd2f63f6b618245d4e4b5db4d286c394bee26b7c2fd8b62f60b01e146cfe"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-files.ts",
+      "bytes": 14253,
+      "sha256": "eebb0e37d1ae13bd8a193aa0155d449358026a26bfb46427680c0d5061efca1a"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-recovery.ts",
+      "bytes": 20348,
+      "sha256": "17d217e32ee1ff9bd2150c6c880e5cce36cb6be504532ab15bdd670ee88f290f"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-runner-cli.ts",
+      "bytes": 20275,
+      "sha256": "f4444f1679e24abafdaa936cb1612850673a8e54c0ce48aca78d7651bc128436"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-instantly-runner.ts",
+      "bytes": 34716,
+      "sha256": "ba953ebf7f7b3dd3c691a4c37f97504355e4389e3fe07f3fefb77360451b6fc6"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-inventory-cli.ts",
+      "bytes": 550,
+      "sha256": "5ed656270e29454eade779357e811fb9e2b305f93ca6b2cb7f4c76dcc7b8472c"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-inventory.ts",
+      "bytes": 19856,
+      "sha256": "f521c56385090b52acbec3aa59e06422fbcad2972d3046b74680ae6b13afc330"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-lender-guidelines-inventory.sql",
+      "bytes": 1989,
+      "sha256": "58c87438bf11e4505e74bb4f45193a7b100578509f75c8767292c53c5a08303e"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-migration-ledger.sql",
+      "bytes": 307,
+      "sha256": "50c84398c7442e0802106580f0c9a9acc5ee0e7e046fe97d53aabc3073a95b61"
+    },
+    {
+      "path": "scripts/pipeline-os/s00-preflight.ts",
+      "bytes": 1232,
+      "sha256": "116b49e81ab48b192a4c17d87014150c2f6f85d5e40b276e02981f6e71622f88"
+    },
+    {
+      "path": "scripts/pipeline-os/view-fingerprint.ts",
+      "bytes": 3820,
+      "sha256": "2cbc12c0e201e2a486e3b1aa682bc61f310a6cb553f0a76cb1aa6e7499d770c1"
+    },
+    {
+      "path": "scripts/prepare-pdf-viewer.mjs",
+      "bytes": 606,
+      "sha256": "fde3616734e2fd6d76268a437367d86aec857f5bcd4e06833772268c1422b157"
+    },
+    {
+      "path": "src/app/api/actions/route.ts",
+      "bytes": 10457,
+      "sha256": "3e435f819ecabb1f8533dc4bae1a41f18d861ef72b19f7ea00194d158bc328a4"
+    },
+    {
+      "path": "src/app/api/ai/usage/route.ts",
+      "bytes": 1411,
+      "sha256": "67b717835b0f948fddb52fa8475e0d9b54dae55818f78faecb446dc25db5da13"
+    },
+    {
+      "path": "src/app/api/application-links/route.ts",
+      "bytes": 721,
+      "sha256": "73fd75ffdafda9e493d8849153f2fc924e1eb79f15e0ac159550a48a824ea931"
+    },
+    {
+      "path": "src/app/api/auth/logout/route.ts",
+      "bytes": 308,
+      "sha256": "82ff20e598eae1852598f9040c284fdb267789052ae0b6e5ae773756604f9331"
+    },
+    {
+      "path": "src/app/api/brands/route.ts",
+      "bytes": 1343,
+      "sha256": "0fad2c32e93befb74f45cddc503b2c612c189692dff64b6a75e57ab1224b9647"
+    },
+    {
+      "path": "src/app/api/campaign-templates/assets/route.ts",
+      "bytes": 3067,
+      "sha256": "ee84d3cf47193cba5e4d189509221af1b7306fe475409b65b528d0ebc29534a9"
+    },
+    {
+      "path": "src/app/api/campaign-templates/route.ts",
+      "bytes": 1904,
+      "sha256": "115656895de476641fd55499b431d6a79351e11de500700c36a9617a5879ae76"
+    },
+    {
+      "path": "src/app/api/campaigns/center/route.ts",
+      "bytes": 6759,
+      "sha256": "246a48893f7d7ca4b78ea4288418b8ee94b5387a96972e7bb957c36c57138ef8"
+    },
+    {
+      "path": "src/app/api/campaigns/route.ts",
+      "bytes": 2930,
+      "sha256": "d8ad7dc06b632c63ea933ed8bffa7556da33f550304cc04ec2229da10d96c2a1"
+    },
+    {
+      "path": "src/app/api/company-application/extract/route.ts",
+      "bytes": 4366,
+      "sha256": "b8badcbf871466c090e958008e20949d29c60cec21b296d55f1158edbe35e141"
+    },
+    {
+      "path": "src/app/api/company-application/route.ts",
+      "bytes": 10039,
+      "sha256": "98440e14d64f0426037b328e42fbd9a00a86870db066dd5f5989078aa5903321"
+    },
+    {
+      "path": "src/app/api/conversations/[id]/messages/route.ts",
+      "bytes": 3382,
+      "sha256": "6b0b8290166c49f0c841d877c78006a05e3ab32d05bf6cabdf90ef6a226f02d6"
+    },
+    {
+      "path": "src/app/api/conversations/channels/route.ts",
+      "bytes": 7025,
+      "sha256": "bd96245dbc01d946e9f9ae75366b1c0feaa1fd06d679e7dafdba93415f1e6151"
+    },
+    {
+      "path": "src/app/api/conversations/clients/route.ts",
+      "bytes": 3802,
+      "sha256": "7a2860b4e9fde63310b00b4a3f3065bb0a15186a439dca789ceb5ce8702d0ad8"
+    },
+    {
+      "path": "src/app/api/documents/[id]/route.ts",
+      "bytes": 1393,
+      "sha256": "f2d251e50a095c7613a90a3cccf428962ebfb826cc7dbd50442e3d27f13bc701"
+    },
+    {
+      "path": "src/app/api/documents/classify/route.ts",
+      "bytes": 6881,
+      "sha256": "704bf7956a13bb204edc7944b6d4b83ae21ef8a324a74de43221bf1f2297977c"
+    },
+    {
+      "path": "src/app/api/documents/receive-upload/route.ts",
+      "bytes": 898,
+      "sha256": "38172171963ad4ffe5606edad98b25e6dec17f0975659f61775b8e7ba6c1f58c"
+    },
+    {
+      "path": "src/app/api/documents/review/route.ts",
+      "bytes": 2812,
+      "sha256": "0a356af0e7088100d3e1d06673ccaede9928f699a009f89125157626a1f7a77a"
+    },
+    {
+      "path": "src/app/api/documents/route.ts",
+      "bytes": 1279,
+      "sha256": "555662588b24aa5e23e4255d5edbe9441b40661caa002287696537f3fd9df049"
+    },
+    {
+      "path": "src/app/api/gmail/archive/[id]/route.ts",
+      "bytes": 1629,
+      "sha256": "91b08b6bbf8418f3e9277d1c23e1e7a4b9fdcea0b6575d4c29495ac1ee5d9911"
+    },
+    {
+      "path": "src/app/api/gmail/archive/[id]/thread/route.ts",
+      "bytes": 2609,
+      "sha256": "86df3d31188039659122097e2828f7cd667b4d085078d6b82920270b743fe6c1"
+    },
+    {
+      "path": "src/app/api/gmail/attachments/preview/route.ts",
+      "bytes": 1810,
+      "sha256": "5db9fd06c8e040601bab6354566038d15a4fd9fbde6bc5f8b4aa4df8d5665052"
+    },
+    {
+      "path": "src/app/api/gmail/attachments/route.ts",
+      "bytes": 2721,
+      "sha256": "c7fe0ae87004e7398d07fa80b82b004b877690856d808dd4afd3dc5e7223020c"
+    },
+    {
+      "path": "src/app/api/gmail/callback/route.ts",
+      "bytes": 2717,
+      "sha256": "6d03a561c66c15ea720fe21045fb363427610823a19de5f660dfbdf44b267a8e"
+    },
+    {
+      "path": "src/app/api/gmail/cases/[id]/route.ts",
+      "bytes": 13176,
+      "sha256": "d1e67004777e1bc354fac37121d9ed56e7e4b0934bfaa2a3efa567f262a49d47"
+    },
+    {
+      "path": "src/app/api/gmail/config/route.ts",
+      "bytes": 585,
+      "sha256": "603da56f3f059abd8acc7fab01319565059d356787a83906bdcf30cff8ab7f85"
+    },
+    {
+      "path": "src/app/api/gmail/connect/route.ts",
+      "bytes": 2293,
+      "sha256": "dd4a5131557ec2f755aed831ab6792c55611a825cc8ad3fc55c6682f548b6e84"
+    },
+    {
+      "path": "src/app/api/gmail/files/[id]/route.ts",
+      "bytes": 2573,
+      "sha256": "5751501f63ca86f40b74ff0dc3feb221d141b85a8e80c91e578cb1719c1486ff"
+    },
+    {
+      "path": "src/app/api/gmail/history/route.ts",
+      "bytes": 12563,
+      "sha256": "65ed051b50602c49f17b48cae6623b540c7e7a0b90a940f2a61e9f4919d687c0"
+    },
+    {
+      "path": "src/app/api/gmail/push/route.ts",
+      "bytes": 2438,
+      "sha256": "caecb1d7f60dfbb6c6ed5cf3bc76d5b21cc13791136f1b59f0883baa325382aa"
+    },
+    {
+      "path": "src/app/api/gmail/team/route.ts",
+      "bytes": 1658,
+      "sha256": "2936e0493d126259cb9c75883053f90d92847dcc61480919382a903114a2cf51"
+    },
+    {
+      "path": "src/app/api/health/route.ts",
+      "bytes": 92,
+      "sha256": "0358511a64f7ce8b2d3371901d15ff57d0a3ef9cee37f3e65a01b9502e1c4dd3"
+    },
+    {
+      "path": "src/app/api/import/[id]/report/route.ts",
+      "bytes": 2084,
+      "sha256": "c4f81dc1e791885b96f9cc3402c240837dbbbcb0c9d673f790d6c087c7054262"
+    },
+    {
+      "path": "src/app/api/import/preview/route.ts",
+      "bytes": 937,
+      "sha256": "96c2f745b9257bcb319e5ad1abd12600e351e892fc075fcaeb86694814883e2e"
+    },
+    {
+      "path": "src/app/api/import/route.ts",
+      "bytes": 2572,
+      "sha256": "c9bdef83eb1a587fd209f1f2cd64c28248061407ce8afe8f2ad362405dfaac4f"
+    },
+    {
+      "path": "src/app/api/integrations/instantly/control/[nonce]/route.ts",
+      "bytes": 328,
+      "sha256": "a29a3387ae606d5ef1cd58ac1a4557e18c7bcc14f278697f3928b0a49072a0ef"
+    },
+    {
+      "path": "src/app/api/integrations/instantly/trials/[nonce]/lease/route.ts",
+      "bytes": 1280,
+      "sha256": "edc9ae1031deead59311af90d89d9a27ec5514f5e5d784a0b4a0958c695ab9f7"
+    },
+    {
+      "path": "src/app/api/integrations/instantly/trials/[nonce]/route.ts",
+      "bytes": 516,
+      "sha256": "952747c5e0d4a28fe9fe931434410bc8a78315129fa9456bf6117ddfec772754"
+    },
+    {
+      "path": "src/app/api/integrations/instantly/webhook/[nonce]/route.ts",
+      "bytes": 384,
+      "sha256": "b4e352bc0baf4420b00f3e90060cd98998363b1a8a7af726577cc13dfc0e88ed"
+    },
+    {
+      "path": "src/app/api/lenders/catalogue/route.ts",
+      "bytes": 976,
+      "sha256": "c0540353d620977df82355a3ce7f283ef5c167fcaca0b5ebee6cf7743e0a00b0"
+    },
+    {
+      "path": "src/app/api/lenders/guidelines/route.ts",
+      "bytes": 1783,
+      "sha256": "f61dcb4e645aa1c4881480a783e2c7324d2094fecd1df70571a77f1515719313"
+    },
+    {
+      "path": "src/app/api/lenders/import/route.ts",
+      "bytes": 2919,
+      "sha256": "802f4cbe2790335efde5ca7024a180a9cd4fa24f048f5f17bdac80570c3b82c8"
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/composio/route.ts",
+      "bytes": 2076,
+      "sha256": "ae9d0e3c665c4be5cca2a63a89d73b05802bf0ec50a51ef0a380c23790046929"
+    },
+    {
+      "path": "src/app/api/mail/recipient-selections/route.ts",
+      "bytes": 2974,
+      "sha256": "5e799bf9804e24ec97ca96be1a04b02bd99fef38d97902378571a844cfa9648c"
+    },
+    {
+      "path": "src/app/api/mail/review/[id]/route.ts",
+      "bytes": 2755,
+      "sha256": "db7af830a43495422afc1fcc69940e68b731f16ea2b4b6fe1641af0a73970bfb"
+    },
+    {
+      "path": "src/app/api/mail/route.ts",
+      "bytes": 10084,
+      "sha256": "0cf619259a740386aa1086fe1655e2fb4dfc57e3bb75a7abdec9dc7dcb67de3c"
+    },
+    {
+      "path": "src/app/api/mail/sent-files/route.ts",
+      "bytes": 2636,
+      "sha256": "e7eef50e729c8032d6522a90a2ebe1ef520468cd433a959a095d11547a217e66"
+    },
+    {
+      "path": "src/app/api/mail/uploads/[id]/route.ts",
+      "bytes": 1162,
+      "sha256": "9bbd04642f1819ec7136a153bca00fe5131d8d3c9ebd2396a26ca09ba7428797"
+    },
+    {
+      "path": "src/app/api/mail/uploads/route.ts",
+      "bytes": 2105,
+      "sha256": "aeb595fa8677239cd51676104c09491e230e7d1e51c90b566ade97ef0dac1162"
+    },
+    {
+      "path": "src/app/api/operations/settings/route.ts",
+      "bytes": 1670,
+      "sha256": "efb7875bf362ad140113d2d8993fd14264782dab82b4de51c18ed0051df6940e"
+    },
+    {
+      "path": "src/app/api/public/applications/[token]/route.ts",
+      "bytes": 1603,
+      "sha256": "285a464b62913052b4b4baa3eb8113a11731f8b180996689a485e559967f87dc"
+    },
+    {
+      "path": "src/app/api/public/documents/[token]/route.ts",
+      "bytes": 1302,
+      "sha256": "0c765fc52e93f5400d4e4ad28590f46f141e3e6326f6c0b2f01f07cd50cb7881"
+    },
+    {
+      "path": "src/app/api/public/unsubscribe/[token]/route.ts",
+      "bytes": 1247,
+      "sha256": "8c8e288e83f8b864f4a02aaeb41797945219997d5474445baae42c08ec16c490"
+    },
+    {
+      "path": "src/app/api/push/route.ts",
+      "bytes": 418,
+      "sha256": "da0f31f0a68bf47fd7828d2964f7de1c292defc5f361385dbdc5a3d8e114100a"
+    },
+    {
+      "path": "src/app/api/underwriting/files/route.ts",
+      "bytes": 1334,
+      "sha256": "169276859fe3fdf376a3bfea042e5c094f3f04ce5f78c524261b1711aa4841c8"
+    },
+    {
+      "path": "src/app/api/underwriting/report/route.ts",
+      "bytes": 2093,
+      "sha256": "58275b49945d10d77842be822b9bcc740ab1b2717e1ea7eb8da09a881462be80"
+    },
+    {
+      "path": "src/app/api/underwriting/route.ts",
+      "bytes": 4637,
+      "sha256": "ead42cab8715750eb91260c9510881ebba050e42d460e17e8759a0c2f3976fed"
+    },
+    {
+      "path": "src/app/api/underwriting/settings/route.ts",
+      "bytes": 2495,
+      "sha256": "60b5b8d3e64da1a282c951186c7c635efc95011fa5e534be3dc876d9c7085e2e"
+    },
+    {
+      "path": "src/app/api/workspace/route.ts",
+      "bytes": 303,
+      "sha256": "a334e6f058c55e2deaa4dc364498e52619e11f8500183376eb82b85eb60c596d"
+    },
+    {
+      "path": "src/app/apply/[token]/page.tsx",
+      "bytes": 1473,
+      "sha256": "3ae49b416556d9d2ef4a2094f44ba7d89dc220fa88d0813fe8e9589918491d42"
+    },
+    {
+      "path": "src/app/auth/confirm/route.ts",
+      "bytes": 735,
+      "sha256": "78101443fdfb74f7ed5536aec6e5cef84971fae59d91dba2431d39536d14afed"
+    },
+    {
+      "path": "src/app/auth/password/page.tsx",
+      "bytes": 1614,
+      "sha256": "9a085266741c0ce5d70e0f31e37434fa1393204f6f767aa9971dfe6a3d3e4d65"
+    },
+    {
+      "path": "src/app/demo/page.tsx",
+      "bytes": 330,
+      "sha256": "76450b64f516e77a697d0376632fe89b51faf053c97fb18f5097e32213854d4d"
+    },
+    {
+      "path": "src/app/error.tsx",
+      "bytes": 831,
+      "sha256": "9a9ccb9c745f0f75468740e864233f7fe52aaaa50c5ed50340b079e4dc82a4dc"
+    },
+    {
+      "path": "src/app/globals.css",
+      "bytes": 71266,
+      "sha256": "f7330c33e0d6fc2ca739c5c2e837dd2fd64e7e0ae45551d9f6cd733a99d62489"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "bytes": 582,
+      "sha256": "025aa84a605c2c68469104bf718b5990c6142359f32bca37c3b6daefee5435fb"
+    },
+    {
+      "path": "src/app/login/page.tsx",
+      "bytes": 259,
+      "sha256": "2f0a5e3d31edf310e1a26d426ada1685255c2f61a6a913e4a213c47a6855e298"
+    },
+    {
+      "path": "src/app/manifest.ts",
+      "bytes": 686,
+      "sha256": "5d2ac6aaf187eb5bca66b0f2182266a4b7567f2f54826bfc0e124e510f1cc5b6"
+    },
+    {
+      "path": "src/app/page.tsx",
+      "bytes": 532,
+      "sha256": "8705e10bda98965129fa0b2f3ef4b6ffc405214ec1b0f73a5c4f2651f952691a"
+    },
+    {
+      "path": "src/app/unsubscribe/[token]/page.tsx",
+      "bytes": 1177,
+      "sha256": "04c553b4a8ea546e741f93fc738ce7a42fa5232fd2ad79b588e3b15e68e7ced2"
+    },
+    {
+      "path": "src/components/ai-usage-panel.css",
+      "bytes": 271,
+      "sha256": "34cb9be7ff5773d5a6a05087961c4730d232745fbb5ee759b1f8502031b5e0d9"
+    },
+    {
+      "path": "src/components/ai-usage-panel.tsx",
+      "bytes": 8355,
+      "sha256": "04a72d8e9eeabf6d3534fb0c00d8f9e99323a144f94448610e29beedfaf6a633"
+    },
+    {
+      "path": "src/components/application-extraction.tsx",
+      "bytes": 6901,
+      "sha256": "f75b6dfc8008f3a196cff57300791f4194151b9b68046a1af692aee101878c2d"
+    },
+    {
+      "path": "src/components/application-form.tsx",
+      "bytes": 11565,
+      "sha256": "6d4901a504c1eda5998061db4fce82150854bbd3e3ca1dfa780b58b1225a7d14"
+    },
+    {
+      "path": "src/components/bank-document-management.tsx",
+      "bytes": 7181,
+      "sha256": "7b2858abd382bb0df1d2358bf30b89d098bb3348a29bf8707dc5bd670684515f"
+    },
+    {
+      "path": "src/components/brand-settings.tsx",
+      "bytes": 27664,
+      "sha256": "118ebc4a926d7e3c40ffbe6d39617e1ac2d798f3f8a280cdd01bebc517527ea3"
+    },
+    {
+      "path": "src/components/campaign-center.css",
+      "bytes": 14697,
+      "sha256": "3ac0fa2433d89637d9ad8ee8818931af3d74e1d4b7775d6ab1df17c85455e782"
+    },
+    {
+      "path": "src/components/campaign-center.tsx",
+      "bytes": 42468,
+      "sha256": "7eb353193b825f379b05c8a6a60cdba8089aefc23726f26c498ee1b15fe0e01d"
+    },
+    {
+      "path": "src/components/campaign-composer.tsx",
+      "bytes": 19112,
+      "sha256": "9755bb01a7ba8a3379887fa75757b04b74a582ec4a2408b978702db042e3dfac"
+    },
+    {
+      "path": "src/components/campaign-editor.tsx",
+      "bytes": 4309,
+      "sha256": "9844fbae1e65637e6ddfb5a44cb10739add400ed4df73aeaa803ca0897025564"
+    },
+    {
+      "path": "src/components/campaign-readiness.tsx",
+      "bytes": 12484,
+      "sha256": "699cd69fbb706334d138283e92dd55f041cf4da5b3b3c12ac4b994b3dc9fb254"
+    },
+    {
+      "path": "src/components/campaign-review.tsx",
+      "bytes": 20273,
+      "sha256": "e28d1057963847e869f52830690708df7a6959598ed709a6a52a941fa9c6b833"
+    },
+    {
+      "path": "src/components/campaign-templates.tsx",
+      "bytes": 17627,
+      "sha256": "0735579ade6cd97b4eff2b8fef69c82e66ae310356592c96bbdf83bff99746ea"
+    },
+    {
+      "path": "src/components/case-activity-timeline.tsx",
+      "bytes": 1504,
+      "sha256": "3c96e7001c8dd8d5a446cc32475f1bc8e7eea68082fecd62329d4e382b99850e"
+    },
+    {
+      "path": "src/components/case-mail-history.tsx",
+      "bytes": 31562,
+      "sha256": "25603b5f65f6c845347c3a1c1dc433289ec2883c310b94c259cff99895526c94"
+    },
+    {
+      "path": "src/components/company-application-actions.tsx",
+      "bytes": 1505,
+      "sha256": "af7e78c3fd3d2ba4ae40faadc67addd7e5ee0c25c8aacc9c5f2f38b9603b8e53"
+    },
+    {
+      "path": "src/components/company-application.css",
+      "bytes": 825,
+      "sha256": "777a18c79a4eb4dbd8b0947e9ac9f5dba565649d22523c42059488249a3f6f1d"
+    },
+    {
+      "path": "src/components/company-application.tsx",
+      "bytes": 30517,
+      "sha256": "a9b76599605e0679cf9f34a370089df1eda03bb1b76ed0bac71bb08d569a6953"
+    },
+    {
+      "path": "src/components/composio-account-bindings.tsx",
+      "bytes": 21349,
+      "sha256": "10add3adb579319e364e7c134264c4a4774bb8116e0a3c06bd746efff75cedd0"
+    },
+    {
+      "path": "src/components/conversations-workspace.css",
+      "bytes": 24123,
+      "sha256": "30b8e493bc081a23e3dc400dde2019c2e8ce875a5fab166122187dc39c685a72"
+    },
+    {
+      "path": "src/components/conversations-workspace.tsx",
+      "bytes": 59722,
+      "sha256": "9600ef8a2939d60c4b55ae2ac1d15c724cdac80a66bf91de6115b11f2a839390"
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "bytes": 123641,
+      "sha256": "8f3f78ec8e766feeef6cd87ec7625fde6803658535911082bd7fe43976d00b2b"
+    },
+    {
+      "path": "src/components/document-create.tsx",
+      "bytes": 3974,
+      "sha256": "b334b17a7e1e7d3fded62cf67e6bbaea521fed64cce2002f38155ac764e813e9"
+    },
+    {
+      "path": "src/components/document-intake.tsx",
+      "bytes": 13467,
+      "sha256": "d2a30a65fc0c4ecc2ae1d0c55eaff1c2e736dcb081e6d11e9119cbd1af3f3717"
+    },
+    {
+      "path": "src/components/document-review.tsx",
+      "bytes": 18337,
+      "sha256": "c72181871542dfb3ca507d2bbc521cad06e8b64b9243e4ebbec1613efd2404ad"
+    },
+    {
+      "path": "src/components/document-upload.tsx",
+      "bytes": 4516,
+      "sha256": "5e9a40308a8b0076a20da33b1c11885a9c15d40e7a986287a08543ee31c38f17"
+    },
+    {
+      "path": "src/components/financing-control-dashboard.css",
+      "bytes": 12911,
+      "sha256": "0ad98214faed9d69a51be30a20d91e79bd21fd2236cb1ad0177121de457d70f4"
+    },
+    {
+      "path": "src/components/financing-control-dashboard.tsx",
+      "bytes": 19870,
+      "sha256": "bd99f0ed8073b1512243102255dc412cbc9fc4df04e5ae6a6bd1ba150aab65b9"
+    },
+    {
+      "path": "src/components/financing-tracking-table.tsx",
+      "bytes": 28237,
+      "sha256": "78d75e5d56fcde608086a8b77913f283cdc9f733de8aafedfeb053b954108437"
+    },
+    {
+      "path": "src/components/gmail-analysis-progress.tsx",
+      "bytes": 4219,
+      "sha256": "76ff2b7992f59f582a13cd0242de053e9107e01a2f1d8c60c0d7ca34f1cdd86d"
+    },
+    {
+      "path": "src/components/gmail-attachments.tsx",
+      "bytes": 17159,
+      "sha256": "263d66f1c8c838dc0cd75a8afd158abe0d8420822f0e8e1c5f8b4e3d2505e0f0"
+    },
+    {
+      "path": "src/components/gmail-history.tsx",
+      "bytes": 61249,
+      "sha256": "3bb7c9464379091d030965305dd47c7f6247ab738e889a0309ad41f7b850a020"
+    },
+    {
+      "path": "src/components/gmail-pdf-preview.tsx",
+      "bytes": 5471,
+      "sha256": "f5a040405357e0713d57fd1d9326d4d817b266fa27b4a153137fbafcd0c1f587"
+    },
+    {
+      "path": "src/components/gmail-team.tsx",
+      "bytes": 21524,
+      "sha256": "b8d31d7966f5e535208da01ce624bacf3458dbcca81e93b3184791b15d8c0dd9"
+    },
+    {
+      "path": "src/components/import-wizard.tsx",
+      "bytes": 8817,
+      "sha256": "90f2ba6d52797df6c6d46173a098ed063831ba0550dc14efe8f7a7711e5d4618"
+    },
+    {
+      "path": "src/components/instantly-trial-control.tsx",
+      "bytes": 4954,
+      "sha256": "34e05f85838fed6c8a57efb947451039ca2097be7903516a37a061a472262223"
+    },
+    {
+      "path": "src/components/integrations.tsx",
+      "bytes": 13855,
+      "sha256": "30e2cfe35b4032f1604bca2bbd065ed689b9d755ed81e8115fcef16fcdb65eab"
+    },
+    {
+      "path": "src/components/lead-preparation-tracking.tsx",
+      "bytes": 6995,
+      "sha256": "dff99fad7d89f2a2e50d648f82968472ecceffd575168a68861b4e0a8ad4733e"
+    },
+    {
+      "path": "src/components/lender-contacts.tsx",
+      "bytes": 3282,
+      "sha256": "5019bbae769c656621bf5f25690b6ee9b641ec7feb4f05f3c84e694a5fc3e1ec"
+    },
+    {
+      "path": "src/components/lender-directory.tsx",
+      "bytes": 7493,
+      "sha256": "bd7329ac2c60c7a7fd391932bea0fd637cdfbd2754b4e5fd723d71346ee66737"
+    },
+    {
+      "path": "src/components/lender-form.tsx",
+      "bytes": 2925,
+      "sha256": "3063dae5582a6e7335b724390a3d9fcc30233256db374a5f2abdab1ede7f80a7"
+    },
+    {
+      "path": "src/components/lender-management.tsx",
+      "bytes": 18449,
+      "sha256": "f2114af73fb0fcdec615c1349dc82ca5490fe563eab08eac6439b5cf69c3b823"
+    },
+    {
+      "path": "src/components/login.tsx",
+      "bytes": 6088,
+      "sha256": "9f47e9d120bd338757d92dde1a5223bf1393459d83e2119f28e827c0ee87c379"
+    },
+    {
+      "path": "src/components/mail-attachments.tsx",
+      "bytes": 3318,
+      "sha256": "ea88c4a3bc38fa3f1165739e174bd8aebdbef2cd232f4b88959354b14f2857ba"
+    },
+    {
+      "path": "src/components/mail-bubble.tsx",
+      "bytes": 943,
+      "sha256": "048666d54f49cde03f3474ba1a4d060eeee186374a2be61e5a0abc6908b7f5d2"
+    },
+    {
+      "path": "src/components/mail-client-picker.tsx",
+      "bytes": 7659,
+      "sha256": "8765c5b5eef2a2886838f661dd274d3e06eb50e09fd6c9e25ff9700f42168d64"
+    },
+    {
+      "path": "src/components/mail-composer.tsx",
+      "bytes": 2949,
+      "sha256": "de645490c66adec55e3704c42a0d3f396f430dafb1977598018316b5f7da1b31"
+    },
+    {
+      "path": "src/components/mail-editor.tsx",
+      "bytes": 44123,
+      "sha256": "b2e251f31a54f30d955f97221e0da7f6e72e6563c3cf105cf3e45c31f78d8f52"
+    },
+    {
+      "path": "src/components/mail-evidence.tsx",
+      "bytes": 3668,
+      "sha256": "7a30636e019af74dbff481c7ef86423dc67fbff85c604d7b0f8910f4636ec0d7"
+    },
+    {
+      "path": "src/components/mail-inbox.tsx",
+      "bytes": 95,
+      "sha256": "2ae503b59faf9d6f7b99f13341f952790d5544fd39620cda82630d88b2b7b93a"
+    },
+    {
+      "path": "src/components/mail-lender-recipients.tsx",
+      "bytes": 21407,
+      "sha256": "f99492c96ad4bd2904433cc4edeffb3b78195d78617739a25d585922d188c5f4"
+    },
+    {
+      "path": "src/components/mail-message.tsx",
+      "bytes": 5753,
+      "sha256": "4a420ad0e4eb46e87208e483b9e9dac6b2cfe0b1d48db79771fb9b82b364e149"
+    },
+    {
+      "path": "src/components/mail-order.tsx",
+      "bytes": 777,
+      "sha256": "5ca8cd8466eeeffb0cf3c04c94e12f90d1e39d999b37804822241f7ffbc4e85f"
+    },
+    {
+      "path": "src/components/mailbox-status.tsx",
+      "bytes": 20838,
+      "sha256": "51297aa13ec2c16175ea51815499568c8c25f3d94f50e2aaa39498ec90976d5d"
+    },
+    {
+      "path": "src/components/operational-dashboard.tsx",
+      "bytes": 13930,
+      "sha256": "82ffbcf29e4f2e375e844d004c31bbbc366ce7524a13af4c6b6326621224aec0"
+    },
+    {
+      "path": "src/components/opportunity-detail.tsx",
+      "bytes": 57815,
+      "sha256": "8d9bbdbbf78572459acb3a2b85eae874079aea19727712162dd98543c80e3bfa"
+    },
+    {
+      "path": "src/components/opportunity-signals.css",
+      "bytes": 2445,
+      "sha256": "f8fe0237956710327c2239f1cdba05147cc572d2d788e9a226ff202bba7e8ac5"
+    },
+    {
+      "path": "src/components/opportunity-signals.tsx",
+      "bytes": 3722,
+      "sha256": "9ba7ef4a9c300459bf14293e604349aa33bd31e15ab55182e7d857b8c188b81c"
+    },
+    {
+      "path": "src/components/signature-pad.tsx",
+      "bytes": 2828,
+      "sha256": "32b5030b1c788de6a65cd493280e5142557b25f217b02db35f0c015573dcf2e8"
+    },
+    {
+      "path": "src/components/ui.tsx",
+      "bytes": 4538,
+      "sha256": "f8f9034ff1b123466e6f443db1bcd9e1dd380a4209c8801226896da99cf6cf48"
+    },
+    {
+      "path": "src/components/underwriting-compact-report.tsx",
+      "bytes": 1469,
+      "sha256": "470446efb6a40b24bdb669be5e2f19c3111fc07ef0ca233c1d1a754a787fc1b9"
+    },
+    {
+      "path": "src/components/underwriting-notices.tsx",
+      "bytes": 1936,
+      "sha256": "53d871551752ca316c147923b18d245b2bb3afb3993e6b675ab97c9ae2375d15"
+    },
+    {
+      "path": "src/components/underwriting-observations.tsx",
+      "bytes": 2030,
+      "sha256": "c1f88a00b95def1ebb13d1189ac6265dd8eb7585910ba67068fe3814b8fd97a2"
+    },
+    {
+      "path": "src/components/underwriting-readiness.tsx",
+      "bytes": 8990,
+      "sha256": "f05f9604c19283b43e80c60378cecd738fa7f7f53e15bd7b6b8305854cf58572"
+    },
+    {
+      "path": "src/components/underwriting-settings.tsx",
+      "bytes": 15502,
+      "sha256": "204cf5740766e008ba029ac260be64fcfe2fed1673efa5892a5a4acd81176a1e"
+    },
+    {
+      "path": "src/components/underwriting-workspace.tsx",
+      "bytes": 40269,
+      "sha256": "636165138d3b1a30eb77aa8d7ad5b283016b798b332feede1769867574f5ff1b"
+    },
+    {
+      "path": "src/components/unsaved-changes.tsx",
+      "bytes": 9104,
+      "sha256": "753b0e67ccb6d113b7926f57c59941ab9b8cb13d32238ba5d165f05b0b38f1c3"
+    },
+    {
+      "path": "src/lib/activity-groups.ts",
+      "bytes": 1544,
+      "sha256": "55eb7b079bb533713cc5ae99a5b6a0943ddffd7739077d3e9f85983e710b9066"
+    },
+    {
+      "path": "src/lib/ai-usage.ts",
+      "bytes": 1327,
+      "sha256": "7a1d2949e21f19e707394e638e4a56caccab13dd512a5b60ad8183b196546945"
+    },
+    {
+      "path": "src/lib/application-extraction.ts",
+      "bytes": 6567,
+      "sha256": "fd099f3f1f0b0ddc35f25baaec740a2e1511f1eebbdf21720c987dbdf34fa10d"
+    },
+    {
+      "path": "src/lib/application.ts",
+      "bytes": 1672,
+      "sha256": "89717adfdd0c1888bd50b7d4a4671832eb20daa9516bf1546521add5e2eccacb"
+    },
+    {
+      "path": "src/lib/attachment-processing.ts",
+      "bytes": 1147,
+      "sha256": "30c6a3a4142aef4a125c325161cc6b25c9220bbdd408eaff753300849597dff8"
+    },
+    {
+      "path": "src/lib/bank-document-management.ts",
+      "bytes": 2038,
+      "sha256": "aee5563e6af8f57706823e85e9feacda1256fd95fd71a6bb33d87a5bdfdfa569"
+    },
+    {
+      "path": "src/lib/brand-delivery.ts",
+      "bytes": 3656,
+      "sha256": "2246a537b4ecebb82124a74f65915f4c57f066141576fb1eb30183ec991bee5c"
+    },
+    {
+      "path": "src/lib/brand-management.ts",
+      "bytes": 9214,
+      "sha256": "d459ad1f6ae0f4c020a326a611e00cdfc978a8c8eb479c71720df54c5627cec3"
+    },
+    {
+      "path": "src/lib/campaign-center.ts",
+      "bytes": 3307,
+      "sha256": "3dd6d0a9f8602b9e13bca56bba03155d0712d4c88d1854b8ab6d82b082bab4b1"
+    },
+    {
+      "path": "src/lib/campaign-content.ts",
+      "bytes": 6840,
+      "sha256": "6fd781023d7fa2694e6f3693129ac20531670ed658a314dfe6cd34f4ce41e850"
+    },
+    {
+      "path": "src/lib/campaign-delivery.ts",
+      "bytes": 1784,
+      "sha256": "121a1bcd7cd20ff6b7a96b5650bc73976011434ddba3a9f3c2eff0a841778c15"
+    },
+    {
+      "path": "src/lib/campaign-presets.ts",
+      "bytes": 2638,
+      "sha256": "d7c9e2fc49f00e31ac73e8b90539eb2561c9d8bdde676932f658e8e5f6d69540"
+    },
+    {
+      "path": "src/lib/campaign-templates.ts",
+      "bytes": 2866,
+      "sha256": "cb9daa32a3a0cf2dfe24136c32fc1a559cf384184567e8e0a0b9004f74789ffa"
+    },
+    {
+      "path": "src/lib/company-application.ts",
+      "bytes": 7909,
+      "sha256": "d6a4479064fc8757adee080b00ecb11488333ace7e9e3f67582117d35b540f09"
+    },
+    {
+      "path": "src/lib/composio-bindings.ts",
+      "bytes": 7015,
+      "sha256": "a4e9ed08fb2cda57a8a73a23fae299a67b787d599f75bee6d5ec1fe8ff0669b2"
+    },
+    {
+      "path": "src/lib/conversation-threads.ts",
+      "bytes": 12898,
+      "sha256": "04c1724c1d7e71557c5bab8cefa50102c0bd945d4520b62c1ec829d1ec20796b"
+    },
+    {
+      "path": "src/lib/demo-actions.ts",
+      "bytes": 28872,
+      "sha256": "443c0e1f2dc290525e393790d9ae953e9ba57f53a3f73c8eb81553ea8fd5a9de"
+    },
+    {
+      "path": "src/lib/demo.ts",
+      "bytes": 13608,
+      "sha256": "3c57373ff684941758d44442bb5318e1c0ac7caf8380ac7788bc6e0642028576"
+    },
+    {
+      "path": "src/lib/document-intake.ts",
+      "bytes": 4051,
+      "sha256": "b9ce93365296fa6accad6fa216c887206609f04bad3689010873143db7d4d3d3"
+    },
+    {
+      "path": "src/lib/document-labels.ts",
+      "bytes": 1856,
+      "sha256": "abc73567def5268e21f81d0ead535cc42b988fd2d81e6c962281a40d847c6f68"
+    },
+    {
+      "path": "src/lib/document-review.ts",
+      "bytes": 1275,
+      "sha256": "c0000fff0fd549f9aa92c5a99cf87ea76b8e917a67bda46adc9669a7c299e143"
+    },
+    {
+      "path": "src/lib/domain.ts",
+      "bytes": 14401,
+      "sha256": "1b3c67d34cc1d882352c5e2728cc0c239d910c705c7faa519aa2f691c1e896fb"
+    },
+    {
+      "path": "src/lib/financing-control.ts",
+      "bytes": 11912,
+      "sha256": "eeeb7f40451562e6a2fec3d0bba75a259d384f7d431e9e8037da8c1c81cad527"
+    },
+    {
+      "path": "src/lib/financing-history.ts",
+      "bytes": 1202,
+      "sha256": "87f05dcc8ce8f978d304fc0f8e059e3fe2f3e7dcc0ed531f8173993104a2b527"
+    },
+    {
+      "path": "src/lib/gmail-analysis-progress.ts",
+      "bytes": 1210,
+      "sha256": "267722f966305dc4acc0625d74a21954bf1cc1f638a5eed45e9b0e31c1b553b9"
+    },
+    {
+      "path": "src/lib/gmail-attachments.ts",
+      "bytes": 1185,
+      "sha256": "93cbe217a0e2365523c3728d69a73da7090662b728f322853127550770ac8821"
+    },
+    {
+      "path": "src/lib/gmail-candidate-filters.ts",
+      "bytes": 3122,
+      "sha256": "354eec2bc028ec2a6eb50cf90ca122681d49cc75333cf901c38507607c65ce75"
+    },
+    {
+      "path": "src/lib/gmail-errors.ts",
+      "bytes": 4480,
+      "sha256": "29465ba78a4b802bc1dd9bb090ad8a5e73c466f336498d2e59cb05fdfc21b136"
+    },
+    {
+      "path": "src/lib/gmail-feature.ts",
+      "bytes": 162,
+      "sha256": "834fbb955867e48f68c8e05a4612d2429b3a45417d2fc5183c4a5b9725ee6b22"
+    },
+    {
+      "path": "src/lib/gmail-history-refresh.ts",
+      "bytes": 3936,
+      "sha256": "4bf14f79ff462f43a751795319690a604c5967b0ab24e7cb72d7a4951c748c99"
+    },
+    {
+      "path": "src/lib/gmail-history.ts",
+      "bytes": 7761,
+      "sha256": "0abc5f4f21d24d10129749d0b7ca2282d05adc59f38f7282499831ee6becfa76"
+    },
+    {
+      "path": "src/lib/gmail-quota.ts",
+      "bytes": 2832,
+      "sha256": "5279de856b6e470bd618933e084ec70aa5cc7f1e68689121f4e2fa6f71dcb735"
+    },
+    {
+      "path": "src/lib/gmail-sync.ts",
+      "bytes": 389,
+      "sha256": "e3d1b27bde78b04526d720b4add4df338bfff17bddb61f8fa4efbef9a524193f"
+    },
+    {
+      "path": "src/lib/gmail-team.ts",
+      "bytes": 765,
+      "sha256": "af895bee53051f3be4d1fabedbcb06420ef2c2891c0e1d0325f8bd75ca81fc65"
+    },
+    {
+      "path": "src/lib/imports.ts",
+      "bytes": 1635,
+      "sha256": "a1d383c8705262b6f47b1a2fc47e363d58d0951a4cfcf029e1dba4f7468519e3"
+    },
+    {
+      "path": "src/lib/lead-preparation.ts",
+      "bytes": 1183,
+      "sha256": "6d0a1ec14e363c04efdcba63f3d082f0febbd56a7102beb2d0c9bd8eca7f4735"
+    },
+    {
+      "path": "src/lib/lead-tabs.ts",
+      "bytes": 1271,
+      "sha256": "d376043768ed01ddefc40b1854638b0368ef0ff39c7ff476bc07f2bd36ef019b"
+    },
+    {
+      "path": "src/lib/lender-catalogue.ts",
+      "bytes": 1813,
+      "sha256": "ddb378d42a16ab682eca5c5e15b0043bed44a0d4ec341d4b302c2bee0b983772"
+    },
+    {
+      "path": "src/lib/lender-directory.ts",
+      "bytes": 2239,
+      "sha256": "045a9a061a065b1bbafc6212723082473ad15d15a3622682a786954cdcf94bec"
+    },
+    {
+      "path": "src/lib/lender-mail.ts",
+      "bytes": 3582,
+      "sha256": "cb51ca1dabd221a05d587a06cccd841e86c0de93677b8e7d50b6f5f2c3b048d2"
+    },
+    {
+      "path": "src/lib/lender-management.ts",
+      "bytes": 3824,
+      "sha256": "90dc5e0d000c12eb61f3eabab3a94225f523883d76676225a8752e12a61d84d0"
+    },
+    {
+      "path": "src/lib/mail-chat.ts",
+      "bytes": 2607,
+      "sha256": "8f87e6cd4a4ac2222c4a55ea604e7aa261e2b9160666d22b18d136f28ea8e328"
+    },
+    {
+      "path": "src/lib/mail-display.ts",
+      "bytes": 4152,
+      "sha256": "b8a64a39ba58444908db00dc83b1611fe0adef4cf95642b18f2ddcc5526cab3a"
+    },
+    {
+      "path": "src/lib/mail-editor-attachments.ts",
+      "bytes": 1427,
+      "sha256": "442b1e03d22d738c794d9e9b40210d8650f6f5ede4ef69e321211eda7a48082d"
+    },
+    {
+      "path": "src/lib/mail-files.ts",
+      "bytes": 325,
+      "sha256": "0079799446951fedfef164bb036d63a48723640442292c215777d7a96c058b18"
+    },
+    {
+      "path": "src/lib/mail-interest.ts",
+      "bytes": 3418,
+      "sha256": "33894d55ab1bc334e89afd6c6be6dbd9fce9e039d515561bcf30b5dbd275ac46"
+    },
+    {
+      "path": "src/lib/mail-manager.ts",
+      "bytes": 3746,
+      "sha256": "8435a920df343765d68d2776f8f87c95317399f158332f0b3586de7f9c5c6a02"
+    },
+    {
+      "path": "src/lib/mail-recipient-selections.ts",
+      "bytes": 3425,
+      "sha256": "17abd011f985b717f8c96b467b917e9bd1551a30623833c5e85d603878ad9aff"
+    },
+    {
+      "path": "src/lib/operations.ts",
+      "bytes": 9432,
+      "sha256": "99e534d464770ef14b347af7e2a3743d718dea4a86ed4b0f0ecc10b793336bcc"
+    },
+    {
+      "path": "src/lib/opportunity-signals.ts",
+      "bytes": 5101,
+      "sha256": "0ab7719d726ec3fdd5ebc3187ccb33d086066891e6f2ee7b7d8cb0a6ea4dc62c"
+    },
+    {
+      "path": "src/lib/pipeline-os/s01/brand-contracts.ts",
+      "bytes": 1751,
+      "sha256": "9d186d09896648c605005fb49c3d5f0d7c6bb9b77d62c4e8fa6e5acf12024bef"
+    },
+    {
+      "path": "src/lib/pipeline-os/s01/brand-inputs.ts",
+      "bytes": 3866,
+      "sha256": "fd2221afe5c138761bf01c8b70d1d353971a27d9928268a68164a22be73d1f80"
+    },
+    {
+      "path": "src/lib/server/ai-usage.ts",
+      "bytes": 3100,
+      "sha256": "aa630bf0212368d1b0d4cc4315a313c8808de59418e0487ddf066f8a22258eda"
+    },
+    {
+      "path": "src/lib/server/application-extraction.ts",
+      "bytes": 5846,
+      "sha256": "827d3a91c18efbee93fbcee3600d4ae949e52a3931547995d7e445330d47ac86"
+    },
+    {
+      "path": "src/lib/server/application-links.ts",
+      "bytes": 1460,
+      "sha256": "26510babbe60c9216342849206a87bffe6ad453c13b8f73d588e9de4b40bc5ad"
+    },
+    {
+      "path": "src/lib/server/attachment-processing.ts",
+      "bytes": 3019,
+      "sha256": "5a39fda415d2eaf486ebe1503d487cd26f906f63fb6a8f739975a3940dd39941"
+    },
+    {
+      "path": "src/lib/server/body.ts",
+      "bytes": 906,
+      "sha256": "a17b57ee215ee6c925ab3f3567d6d35b4c1ecb66ff368d5f660bf2c024c32a5e"
+    },
+    {
+      "path": "src/lib/server/brand-actions.ts",
+      "bytes": 2135,
+      "sha256": "a229d9d895f92c1585a9188a7e7e535d7bdac6d26563a0a0b69020c18ed8fbb4"
+    },
+    {
+      "path": "src/lib/server/brand-delivery.ts",
+      "bytes": 3068,
+      "sha256": "b312b224e873616277012bb7da90e02560c7062ede557ac5ba43fabd34776b97"
+    },
+    {
+      "path": "src/lib/server/campaign-delivery.ts",
+      "bytes": 1244,
+      "sha256": "59e611dcb92564c5c8a888730d57136841b52d0daa64abf4c7d568cd8126686d"
+    },
+    {
+      "path": "src/lib/server/company-application-pdf.ts",
+      "bytes": 7681,
+      "sha256": "ca5b05e8b584046c34cc959bdf7ce2b8e36841d5200ad4c7d660184d35c20da8"
+    },
+    {
+      "path": "src/lib/server/conversation-summary.ts",
+      "bytes": 3657,
+      "sha256": "c5467464cd6ad420509885b48da095e61b6bbbb99d7ae0e35ca5b069f891dabc"
+    },
+    {
+      "path": "src/lib/server/crm-readiness.ts",
+      "bytes": 781,
+      "sha256": "6697f9b344815e2ce11ef99494f499b9b84d5dbb75c266d03804b3e5a9232b69"
+    },
+    {
+      "path": "src/lib/server/crypto.ts",
+      "bytes": 1203,
+      "sha256": "edd69c1e00966304a424d8be9256e0967c1d6b8d00416e6555274ae66e230bd5"
+    },
+    {
+      "path": "src/lib/server/document-checklist.ts",
+      "bytes": 1465,
+      "sha256": "ef70bc244f46b210afc6b6a1ed30a9ed80adf99b9011a1034bf8aaa2e78ccdd3"
+    },
+    {
+      "path": "src/lib/server/document-classification.ts",
+      "bytes": 2896,
+      "sha256": "ea30e2401682b59cb0e1f74ad0c50d4d5a3f86bcfe44f19782965bae5122b021"
+    },
+    {
+      "path": "src/lib/server/document-filename.ts",
+      "bytes": 1069,
+      "sha256": "ef33b5c53e13113322bc402818007397df7477acffacc158ef81d23f3c9452ab"
+    },
+    {
+      "path": "src/lib/server/document-intake.ts",
+      "bytes": 3043,
+      "sha256": "a687d77a6c59813cb8623a126873d404089f97915077fed92190d277ae93dbe1"
+    },
+    {
+      "path": "src/lib/server/document-review.ts",
+      "bytes": 5951,
+      "sha256": "e5ff3d84eed03edd1b2d72f180e1e56af49ef77862e1b89ac9e801e3c07c9433"
+    },
+    {
+      "path": "src/lib/server/documents.ts",
+      "bytes": 2132,
+      "sha256": "29c76484258d91f5217fba18c27d933d88f0aff935fcf298198591aefd4c7ec1"
+    },
+    {
+      "path": "src/lib/server/gmail-attachment-preview.ts",
+      "bytes": 2029,
+      "sha256": "626e9636b573159c73b9c9d4ff6e078b57d9695050d8a1274510119858242486"
+    },
+    {
+      "path": "src/lib/server/gmail-history-actions.ts",
+      "bytes": 10544,
+      "sha256": "6bc6e8b8880c134cb2f8d1a40734983549ecab0a5d357d2dfd40c851a6139b78"
+    },
+    {
+      "path": "src/lib/server/gmail-team.ts",
+      "bytes": 786,
+      "sha256": "8b790a2b25fb581efb931bec03625a21f7245f980a3470b39b5366974018cf61"
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "bytes": 4389,
+      "sha256": "dcffe1b27ba7b69b24d74570798a81ad0ce26e6306955e9abac5044e0bf6674c"
+    },
+    {
+      "path": "src/lib/server/install-campaign-presets.ts",
+      "bytes": 2153,
+      "sha256": "f2c3c56888c1c67b8913ac9df88907019826ac1776a362022023d28d0e6a5382"
+    },
+    {
+      "path": "src/lib/server/instantly/control-contract.ts",
+      "bytes": 4373,
+      "sha256": "72bc55798d2846f3a5659bff90f0319a9eca66573e88997fdd42c7a9e7b75d78"
+    },
+    {
+      "path": "src/lib/server/instantly/control-endpoints.ts",
+      "bytes": 8344,
+      "sha256": "8d37e18cf5a23093056ae57f282dc975da8f4d86cc0b48e4432e003120d2fe12"
+    },
+    {
+      "path": "src/lib/server/instantly/endpoints.ts",
+      "bytes": 9467,
+      "sha256": "ba7e91e6bb7670c3442c92a43c54dd5b8a2927bb4ba1476d5bea4265b9df10d6"
+    },
+    {
+      "path": "src/lib/server/instantly/receiver.ts",
+      "bytes": 10969,
+      "sha256": "156a608c8c73a77f2b18cf6736a91220aeca1b3a138db37f50f3059e828c874f"
+    },
+    {
+      "path": "src/lib/server/instantly/store.ts",
+      "bytes": 5512,
+      "sha256": "e270644f9701a25ae5434d5476a6d0f197c224e1cf9c3441c2b25e4c5ba9c877"
+    },
+    {
+      "path": "src/lib/server/lender-catalogue-pdf.ts",
+      "bytes": 3426,
+      "sha256": "9f96c8409d44a8e8dc42430020239068e8131d758474a7862cb55914147f008d"
+    },
+    {
+      "path": "src/lib/server/mail-access.ts",
+      "bytes": 1814,
+      "sha256": "b20f1d7c2185885f84b1d6109df21287592ad1e58a92a9e7db0b32d4a3ac0e9e"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding.ts",
+      "bytes": 7921,
+      "sha256": "7430dcd9b9aea3cb8e2ba5d93124e26803e03f19117204ad351266ffd0a6d35c"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+      "bytes": 9694,
+      "sha256": "4d1069390167a03e6cf31257ba90f23c4f4d8790cf79f06cfe675a5788206776"
+    },
+    {
+      "path": "src/lib/server/mail-actions.ts",
+      "bytes": 20026,
+      "sha256": "860125145118b9fcf4d18d05d2a8b1bc540028e91842f3653deb6219aec027ca"
+    },
+    {
+      "path": "src/lib/server/mail-manager.ts",
+      "bytes": 7854,
+      "sha256": "61a13684e14f7c3ce2a48aa456af0757de9bf791bbfbbe2ef16053d6793f4427"
+    },
+    {
+      "path": "src/lib/server/mail-recipient-selections.ts",
+      "bytes": 838,
+      "sha256": "b33d490a7f7dfa1f1edbd35b267260c33a5b8f02292d169f8166d3c2e92bd102"
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "bytes": 15654,
+      "sha256": "c941726cdcfd700d8b1c45b9646be8c9374bb67d3f2eac05b31311d3297130d8"
+    },
+    {
+      "path": "src/lib/server/mail-transport/contract.ts",
+      "bytes": 1085,
+      "sha256": "a38920e11561fbb41680f120a51a29bdcdcf38f011e54417acb3588e9dee2b92"
+    },
+    {
+      "path": "src/lib/server/mail-transport/errors.ts",
+      "bytes": 785,
+      "sha256": "9f03a63a8e650d93e1bcf7c009a93afa2afe0e81e37f74e938d533962bf13aae"
+    },
+    {
+      "path": "src/lib/server/mail-transport/factory.ts",
+      "bytes": 867,
+      "sha256": "f33c01c21a1fc79c106b95746dc5441c1af1e58f3ebff7cbeb3b19676cee15d0"
+    },
+    {
+      "path": "src/lib/server/mail-transport/gmail-direct.ts",
+      "bytes": 1026,
+      "sha256": "a8c86659531d0d5f25d23d7bd352836d7253ad4c0bd5edcc011501149e1df7a0"
+    },
+    {
+      "path": "src/lib/server/openai-underwriting.ts",
+      "bytes": 15058,
+      "sha256": "d3562342ea1932f3f27caf8cfa7500bd79e6c1cb744e57118693902db833e228"
+    },
+    {
+      "path": "src/lib/server/opportunity-signals.ts",
+      "bytes": 2431,
+      "sha256": "8682f87a3df8db16b98d9dfe8fad3bee49e38f5a2810644cada412e0de67fed7"
+    },
+    {
+      "path": "src/lib/server/parse-import.ts",
+      "bytes": 2161,
+      "sha256": "7162d246c7c1ea7b1104202a88474f05ae9573e90c11ffb822a194ed0379811d"
+    },
+    {
+      "path": "src/lib/server/supabase.ts",
+      "bytes": 4590,
+      "sha256": "181bac97bd9e80e74066628ec52850629974aa56f78b3768b176882348c096ca"
+    },
+    {
+      "path": "src/lib/server/workspace-mail-files.ts",
+      "bytes": 800,
+      "sha256": "f6868e1f178e2b0174da36d852212f2482ca10012a79f3856f34a8d0bc7fc9f3"
+    },
+    {
+      "path": "src/lib/server/workspace-mail.ts",
+      "bytes": 1802,
+      "sha256": "df3b1df687e0ef9e2ecd9fabfe8b31954581a6b55c01829386a53eb758220264"
+    },
+    {
+      "path": "src/lib/server/workspace.ts",
+      "bytes": 14350,
+      "sha256": "9ea0c707b33a997b4d38182893c2b8a53ff6d6638535c7bf7a9abcf839abfa9f"
+    },
+    {
+      "path": "src/lib/underwriting-compact-demo.ts",
+      "bytes": 4601,
+      "sha256": "695735a83c08bb3fce44fc411572e93bbe9d5e2952b01132d009c0d177f1ec2e"
+    },
+    {
+      "path": "src/lib/underwriting-compact.ts",
+      "bytes": 11761,
+      "sha256": "1b3cbe37286a75757836fa325cf9666c551be40d2d1c314cd443d9e1d0aca93a"
+    },
+    {
+      "path": "src/lib/underwriting-document.ts",
+      "bytes": 9685,
+      "sha256": "1cece5d660b7ab9d6784b554f34f0d1d28232881f3b088fe9d4308b68a4e064f"
+    },
+    {
+      "path": "src/lib/underwriting-pdf.ts",
+      "bytes": 7843,
+      "sha256": "bcb7e631a21b8f55fe9eb0723e9de8384740191c951adaec90a0fbfb6ca08488"
+    },
+    {
+      "path": "src/lib/underwriting-status.ts",
+      "bytes": 10598,
+      "sha256": "a854d334d04f40f2d563f7348406b075b941ed1a9979b1f3b2a0eacb2d7ab4c9"
+    },
+    {
+      "path": "src/lib/underwriting.ts",
+      "bytes": 20237,
+      "sha256": "34e7f5d73241d0595ae643574442865ce0f70f774c7bdbb6b4a7785b4663d0e3"
+    },
+    {
+      "path": "src/lib/unsaved-changes.ts",
+      "bytes": 985,
+      "sha256": "470f0f10f9952285493af43538748086643e57ac614d2860df37358ef19ace9e"
+    },
+    {
+      "path": "supabase/install/curated-initial.sql",
+      "bytes": 87711,
+      "sha256": "552b6ac26254d6b0337e45acde0d0fc0c0a51eafebd62656eedf7aeaf3f3b0af"
+    },
+    {
+      "path": "supabase/install/gmail-history.sql",
+      "bytes": 58057,
+      "sha256": "14e8a2924fa4d4214849f767cec7656a3cec53568910bcf6d368389715b77693"
+    },
+    {
+      "path": "supabase/migrations/001_core.sql",
+      "bytes": 24991,
+      "sha256": "d289f241a98ed4faa5430df044c2256c913f9dcbe38d478ee500722ebc8a10da"
+    },
+    {
+      "path": "supabase/migrations/002_commands.sql",
+      "bytes": 26736,
+      "sha256": "c82248d334efddd9f405f68138dba4c02020fe18699a9fbe8b7fd7cd6bcdef56"
+    },
+    {
+      "path": "supabase/migrations/003_service_workflows.sql",
+      "bytes": 16822,
+      "sha256": "0ecb45220e2b203bfc1272809802c08392bc497f3f2ed6207d3928e9c3f96cbc"
+    },
+    {
+      "path": "supabase/migrations/004_integrations.sql",
+      "bytes": 3931,
+      "sha256": "e2f4f9b6b92ff3abf17ee8adad9bff993257b0a508acd6f17d6b3886aa40478a"
+    },
+    {
+      "path": "supabase/migrations/005_mail_visibility.sql",
+      "bytes": 2010,
+      "sha256": "46b8c322564b2631ff7500b260a78c60f6b089b93fc942f0d2487d4e1981d790"
+    },
+    {
+      "path": "supabase/migrations/006_metrics.sql",
+      "bytes": 3207,
+      "sha256": "1277bfb3b2da187d28ccebd4bdab51f1b469f164c58ee78c4d58e79e88746b10"
+    },
+    {
+      "path": "supabase/migrations/007_history.sql",
+      "bytes": 8465,
+      "sha256": "fcb453683cd9c25f26021d189bb950f03233e2fb2cc95ec30e74d7f878d19709"
+    },
+    {
+      "path": "supabase/migrations/008_lead_preparation.sql",
+      "bytes": 15729,
+      "sha256": "96f1ea110e3b8aab0b4b896d82c3fc988ba1a29e3a6639cfbd5fb36cadf0e167"
+    },
+    {
+      "path": "supabase/migrations/009_gmail_archive.sql",
+      "bytes": 9836,
+      "sha256": "215986597240c9cd472cd96ea2cb534dcb7cc784e0f784d6a6952adbd281b2f9"
+    },
+    {
+      "path": "supabase/migrations/010_gmail_history_cases.sql",
+      "bytes": 20533,
+      "sha256": "02937e6f0e104696bd8c61758260e63033a80012a3ffd4addfef83c1e8c587cb"
+    },
+    {
+      "path": "supabase/migrations/011_gmail_evidence.sql",
+      "bytes": 6913,
+      "sha256": "d489a8275494274d4d55680cb3bf0502d6e3ef17de09d424cbad0eaafe54f0a6"
+    },
+    {
+      "path": "supabase/migrations/012_gmail_preview.sql",
+      "bytes": 4129,
+      "sha256": "a8882c1bb43b5b035399d8764b2c4d7aa8ea4c47fdef520dd36a6373ffc74110"
+    },
+    {
+      "path": "supabase/migrations/013_financing_history.sql",
+      "bytes": 8708,
+      "sha256": "17fb8c6d424a699ffab7a4edb080becdee02a097d9437c86f8fb604874309452"
+    },
+    {
+      "path": "supabase/migrations/014_gmail_reply_files.sql",
+      "bytes": 97,
+      "sha256": "18188bddb4e0928ed42760231d45c19128c2631e75721e5c43d34b13b2cbc960"
+    },
+    {
+      "path": "supabase/migrations/015_gmail_continuous.sql",
+      "bytes": 7167,
+      "sha256": "156958cf5619d1f0b030f1a52c46fc5906688dc0bc303d5669823546f34f427c"
+    },
+    {
+      "path": "supabase/migrations/016_manual_email.sql",
+      "bytes": 8589,
+      "sha256": "62f5fdfaca8f02e99df26ff847035ae2d1cfc2ce833cbcd235f372e8d00b654f"
+    },
+    {
+      "path": "supabase/migrations/017_gmail_team.sql",
+      "bytes": 33102,
+      "sha256": "c2b16fb4cdc9de7edb4f9466d88d441cd6b2f75d3540029211ebaea0174ba5a7"
+    },
+    {
+      "path": "supabase/migrations/018_gmail_attachment_selection.sql",
+      "bytes": 12295,
+      "sha256": "03a806b7cd0e28afd8d20fc1013f64fd20ad9ac194f586b6de85a1e47acedf6b"
+    },
+    {
+      "path": "supabase/migrations/019_incremental_gmail.sql",
+      "bytes": 19132,
+      "sha256": "53c7e87f0a5f1fb8fbfc5408ea257bc84a6953abbd0db5f2103ab25fe337d5fc"
+    },
+    {
+      "path": "supabase/migrations/020_mail_channels.sql",
+      "bytes": 18181,
+      "sha256": "3b4f6ecb7310f665cc9d6b84a30f0cf2709756019daff627faf7d113eb319cf9"
+    },
+    {
+      "path": "supabase/migrations/021_mail_manager.sql",
+      "bytes": 36642,
+      "sha256": "0774fbebfd4c3c01e79dd3764ced73a15ef0af5d6adc4e2c83e8c637f708eceb"
+    },
+    {
+      "path": "supabase/migrations/022_lender_company_conversations.sql",
+      "bytes": 17128,
+      "sha256": "2a50c5761176ea286b4aa2236ddbdaf31e2ce3d4a983e6d5f82e5054f0bd1d35"
+    },
+    {
+      "path": "supabase/migrations/023_lender_directory_portals.sql",
+      "bytes": 22433,
+      "sha256": "f982d4cd05d6de7f1249ebe74708049611d01f5db9c7ae7b3776931a5a187cb3"
+    },
+    {
+      "path": "supabase/migrations/024_reply_engagement.sql",
+      "bytes": 34126,
+      "sha256": "d06a9a21ef91263e9e3d65e4b644640fc7493709dd3bfa16127dad1943a28df1"
+    },
+    {
+      "path": "supabase/migrations/025_document_review.sql",
+      "bytes": 10271,
+      "sha256": "e177b2e7a118f2e6e7e87cb079da0ffe592ffb8ff09bb17d21de727dbea6f170"
+    },
+    {
+      "path": "supabase/migrations/026_gmail_import_thread_attachments.sql",
+      "bytes": 7726,
+      "sha256": "266d68431e93a65fcc56adb07e5480499e3b67f973c9ed3b9f5377b20e14e446"
+    },
+    {
+      "path": "supabase/migrations/027_underwriting.sql",
+      "bytes": 19655,
+      "sha256": "6eb85b64cce8793b0a731bdee27face886bb01cc7ac7c3d8b68ed9c2858ca2d9"
+    },
+    {
+      "path": "supabase/migrations/028_underwriting_settings.sql",
+      "bytes": 5877,
+      "sha256": "56c6a3fb644e5ac37afb7a5c5a84ca9ffd7d0427ff0150a30f9c832d537eb139"
+    },
+    {
+      "path": "supabase/migrations/029_campaign_templates.sql",
+      "bytes": 9951,
+      "sha256": "5b41062cda8c643a65235845bdba081af001fb6e4f9319c2a10367fd5a0573f5"
+    },
+    {
+      "path": "supabase/migrations/030_lender_management.sql",
+      "bytes": 7750,
+      "sha256": "1a2c917d128a7c61bedf6f85e529eeaaf6ff4ddfa99165158ec696aeccfeef3d"
+    },
+    {
+      "path": "supabase/migrations/031_operational_dashboard.sql",
+      "bytes": 12587,
+      "sha256": "b0a7a8afbcd9b31c61a1b89862c90d7d2da4170bcf2d55ebb550194949dbeef8"
+    },
+    {
+      "path": "supabase/migrations/032_bank_documents.sql",
+      "bytes": 11067,
+      "sha256": "fc5f6ec77ee153d398cd07d0fe51db15724f15ccf0a7b7759004810a5ef8d4dd"
+    },
+    {
+      "path": "supabase/migrations/033_company_applications.sql",
+      "bytes": 6413,
+      "sha256": "546d0e99ef24db795d6a22d8962609c7a693d0a9200b6e9f6b44bcacb8c2dfc1"
+    },
+    {
+      "path": "supabase/migrations/034_lender_document_packages.sql",
+      "bytes": 4530,
+      "sha256": "836e3b92cbe5f376d6b8614e5f1248b21210b6179bcceb17732ea74c9d343a00"
+    },
+    {
+      "path": "supabase/migrations/035_bank_document_management.sql",
+      "bytes": 5363,
+      "sha256": "f996444c75b2e9b350f87d35ca34e3232b478953b948bbfffbcaa060e7109f8b"
+    },
+    {
+      "path": "supabase/migrations/036_document_intake.sql",
+      "bytes": 6558,
+      "sha256": "2d131f806f8c01bbe95a73f4530ef3f814067bd5f1d148f91aa9add862e01977"
+    },
+    {
+      "path": "supabase/migrations/037_underwriting_progress.sql",
+      "bytes": 4598,
+      "sha256": "07e5bf51541c32e4a34d332051ca3768b58fdd64bcea62bb5d0268238640f72c"
+    },
+    {
+      "path": "supabase/migrations/038_underwriting_human_review.sql",
+      "bytes": 3557,
+      "sha256": "60a91689e3847973cca2de594d3b9ee010cb82ac1045e8895eba8a01986deebf"
+    },
+    {
+      "path": "supabase/migrations/039_campaign_delivery_controls.sql",
+      "bytes": 31216,
+      "sha256": "5e39c7ce4a71df5dd43d4ddad70e69ad5e1cadd8e0e092e4aec22f11937bd8d1"
+    },
+    {
+      "path": "supabase/migrations/040_mail_recipient_selections.sql",
+      "bytes": 994,
+      "sha256": "0482fbdb10c75796c8e4e1cc05bf9f96644c75b6bb65bbc8ea03079ebfc0f4ee"
+    },
+    {
+      "path": "supabase/migrations/041_ai_service_usage.sql",
+      "bytes": 5139,
+      "sha256": "f8c13ba16407b269107e7e9d40eec1fe614c98fc157e2461193fc45aa87df108"
+    },
+    {
+      "path": "supabase/migrations/042_financing_control_dashboard.sql",
+      "bytes": 24364,
+      "sha256": "640a1f6a4a04e21af3fdc9346446d0146a3d140c6b1c7c73480af4569cdb8e08"
+    },
+    {
+      "path": "supabase/migrations/043_campaign_first_contact.sql",
+      "bytes": 30306,
+      "sha256": "7008a4a6488f62b61d34aae8f819debb4a0714d2f16aaf37aeab332ff41462d0"
+    },
+    {
+      "path": "supabase/migrations/044_lead_preparation_tracking.sql",
+      "bytes": 4537,
+      "sha256": "489db7d36d46f8dbdd74f5ce4779e61fa4d2b1c7fec1637e34499ef46748b033"
+    },
+    {
+      "path": "supabase/migrations/045_campaign_readiness.sql",
+      "bytes": 6760,
+      "sha256": "a6bc0238184188ad2ff583f802b95759190119a18a482d488f6f77bf25b5f1bc"
+    },
+    {
+      "path": "supabase/migrations/046_instantly_webhook_trials.sql",
+      "bytes": 10602,
+      "sha256": "3e820cf5fb087a645bbaa91c8c37205df069d8b076aee96ad1385dd36cebed81"
+    },
+    {
+      "path": "supabase/migrations/047_instantly_webhook_control_leases.sql",
+      "bytes": 10439,
+      "sha256": "7a3cc068d3216e558d97cb240cd326496fa49324b627f9ee9bbe11e457662559"
+    },
+    {
+      "path": "supabase/rollbacks/042_financing_control_dashboard.sql",
+      "bytes": 632,
+      "sha256": "17af3ff6c797a2256dfb4cdad38c6d77eec94a6021368dbab03554fb2b02984d"
+    },
+    {
+      "path": "supabase/rollbacks/045_campaign_readiness.sql",
+      "bytes": 2730,
+      "sha256": "40110a0fdabd270e9e2b8a899df22e3b2374dcb3edadd3521556cce5cea2c2b0"
+    },
+    {
+      "path": "tests/ai-usage.test.ts",
+      "bytes": 11539,
+      "sha256": "1d3d9107305e3fdd86a0dc64770518c926310afc82fa72d8d3d341bb349a3593"
+    },
+    {
+      "path": "tests/application-extraction.test.ts",
+      "bytes": 8714,
+      "sha256": "d2d5e0ffa06870153825b3fc2ac21c5d2537e4dcd5be3150af7d5032dc852e7b"
+    },
+    {
+      "path": "tests/attachment-processing.test.ts",
+      "bytes": 2897,
+      "sha256": "bd502f260f514c8447771ed4ad01d27e151ecc04e4cadf65511d2664088b71b5"
+    },
+    {
+      "path": "tests/bank-document-management.test.ts",
+      "bytes": 4913,
+      "sha256": "0682c2014f2162027c49e60aa55dfe24717dd6ca577f1c99af35703be6a5fcd4"
+    },
+    {
+      "path": "tests/bank-documents.test.ts",
+      "bytes": 5349,
+      "sha256": "df1b69c0aae556c8998a10c58537aeb46c41ace197c32611d1c855d5de50cd8c"
+    },
+    {
+      "path": "tests/campaign-attachments.test.ts",
+      "bytes": 5393,
+      "sha256": "fd8a4c16dc010def01ae0614b39bcdfe1b20a96a7de227e42b1213705b360182"
+    },
+    {
+      "path": "tests/campaign-center.test.ts",
+      "bytes": 17556,
+      "sha256": "b68e021da91f8fa598c74af2cb442010b59b931e55f9fa9c6b00cba6c526bbe3"
+    },
+    {
+      "path": "tests/campaign-delivery.test.ts",
+      "bytes": 13684,
+      "sha256": "200816a6e861041d4a673e64024e759664cd4ed73e0fc95e23a2bda8e44c2882"
+    },
+    {
+      "path": "tests/campaign-migration-compatibility.test.ts",
+      "bytes": 4143,
+      "sha256": "03a2f67e8386ebf474df84050d2c324ad8500fc8da1d81d2f407fa8c4e92e6f6"
+    },
+    {
+      "path": "tests/campaign-presets.test.ts",
+      "bytes": 6959,
+      "sha256": "ff289291c4e5346d5020555c2f6afbb2f0e390e9d71b1948ccafc0a512a7b417"
+    },
+    {
+      "path": "tests/campaign-readiness.test.ts",
+      "bytes": 7379,
+      "sha256": "2984b8103b2c49f00a99043d5024ca83829ce1481f558c1d7581f766ada70a6c"
+    },
+    {
+      "path": "tests/campaign-templates.test.ts",
+      "bytes": 5448,
+      "sha256": "a445495fbd0aac5f2ca71451dbf49441442531579c4c10eff5af0c7c8efb04e6"
+    },
+    {
+      "path": "tests/company-application-actions.test.ts",
+      "bytes": 3581,
+      "sha256": "74eeb856720049fbfa04d115e7674bb5195ac8a9aa6068ba3e65a2fbee7106e6"
+    },
+    {
+      "path": "tests/company-application.test.ts",
+      "bytes": 7970,
+      "sha256": "471af886d34c055724435aca6d0dd9333a4c2bafa0eee8e35a9b527fb25bd37f"
+    },
+    {
+      "path": "tests/content-security.test.ts",
+      "bytes": 1128,
+      "sha256": "04b2f2672c2ada81c76e16391dc0b8e587b7a49eddb2340c7cb89a84f53ee36b"
+    },
+    {
+      "path": "tests/conversation-threads.test.ts",
+      "bytes": 4638,
+      "sha256": "57b9c42de7353eaa42ac1eda3dc450fedd129749af599cd7708740df5225bc9b"
+    },
+    {
+      "path": "tests/crm-readiness.test.ts",
+      "bytes": 1858,
+      "sha256": "904652560e0bf6574b61ebfd229d69b9c36468e268e69c09e70ef1f1593251ae"
+    },
+    {
+      "path": "tests/database.ts",
+      "bytes": 28265,
+      "sha256": "66c0449047eaef90a16f1a519850034a6dae76fd0cb67a8a4d1a78d10dc856fc"
+    },
+    {
+      "path": "tests/document-checklist.test.ts",
+      "bytes": 3788,
+      "sha256": "60e5fee683b2e230aa99f9e91741d13ceb3d14b420bde917dc8684b962e8c9b9"
+    },
+    {
+      "path": "tests/document-intake.test.ts",
+      "bytes": 11611,
+      "sha256": "c268b4be0f90a1891c35a1afaaa9baf15ea80660b1c2b228a002c19b41ead747"
+    },
+    {
+      "path": "tests/document-package-delivery.test.ts",
+      "bytes": 5490,
+      "sha256": "8da2088da5b8164e4e2918816e6b870dd5a013d4675b387c81c52a3b76b4849a"
+    },
+    {
+      "path": "tests/document-review.test.ts",
+      "bytes": 12104,
+      "sha256": "7782b4ccbc5b12b7e6a920a871f82dcb806731dd89950bc4f083a422d35dcd54"
+    },
+    {
+      "path": "tests/domain.test.ts",
+      "bytes": 6241,
+      "sha256": "1d3bd765fbb3f91dfe818ae88d7d88069a3105b3063824ff392a463db1431a0d"
+    },
+    {
+      "path": "tests/engagement-worker.test.ts",
+      "bytes": 3553,
+      "sha256": "887d26dc80c6521ed1db836d5ce3a8c220f3e40c1f8ab34c7be9a3f940b72fac"
+    },
+    {
+      "path": "tests/feature-database.ts",
+      "bytes": 2549,
+      "sha256": "4f9a8b2c814c2a58b8ad137f65234b3270587f915c64367f401caae6e6adec0f"
+    },
+    {
+      "path": "tests/financing-control.test.ts",
+      "bytes": 19779,
+      "sha256": "2180e3ac1fbe7a265ed50e28aed257f83ea47fb9fba7517ce61f875fd3482e77"
+    },
+    {
+      "path": "tests/fixtures/compact-underwriting.ts",
+      "bytes": 2693,
+      "sha256": "a76c33e4f6c95a1990085e37d4c6e5cc9535680267280d2c81525dec88661b68"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-abc-final.ts",
+      "bytes": 8132,
+      "sha256": "a9e54495f78d5af797f0669d7e37433a8c28ca5ba26828cc58a63337df28924e"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-catalog-permissions.ts",
+      "bytes": 1123,
+      "sha256": "222fe6ea98508a53c592103ef91271d19c9cee95863ea276633048402c4046a2"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-composio.ts",
+      "bytes": 11113,
+      "sha256": "4e90e178c6e82f76a273e6cd277a38fe582040ec994a85cbb2dddae2de9f5f55"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-instantly-b-diagnostic.ts",
+      "bytes": 1427,
+      "sha256": "fcd0fbf506681f3a9b0a678fc434de480708beeaa6c8f3c1c5837d7cf2549610"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-instantly-b-recovery-from-28.ts",
+      "bytes": 1628,
+      "sha256": "bf549c7b06594cbcd0be843e8f33ec6f16cd15a6b91079de43f734c0a17bc994"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-instantly-b-recovery.ts",
+      "bytes": 1476,
+      "sha256": "af198cd37e33359a5cbd5bd02d20b4962261a13160667591d4420cade2dc5e38"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-instantly-b.ts",
+      "bytes": 9717,
+      "sha256": "c02ba405238afcd2eee0c41be1a2192dbd67da04f005008e1799eacb6fbb76dd"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-instantly-c-app.ts",
+      "bytes": 2466,
+      "sha256": "ecb69137c3a36b467f75a7fa17a5f9058abf272c8d712da8a94509ec5bcb37c3"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-instantly-c.ts",
+      "bytes": 2275,
+      "sha256": "1e51ef5264f4aade82bb7dbc58086a549d0a7799033e8d0d5e76bab97e4e570d"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-instantly-config-diagnostic.ts",
+      "bytes": 1624,
+      "sha256": "4937c7e547b07890b3702c509a00f3746f9237bab734638a248c9abe698890bf"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-permission-remediation.ts",
+      "bytes": 6682,
+      "sha256": "d55e49981c4bec9ff364ce3344b7caf9f801638c2d88f1f4c7413f3c8675adde"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-pg15-executor.ts",
+      "bytes": 10203,
+      "sha256": "2518f67012e0cd4806f18fc461b214b4acd19a1fc7f7a811b9cba7be9f40a918"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s01/t01-02-i01-foundation.rollback.sql",
+      "bytes": 735,
+      "sha256": "77572ebd68bdbcb026aa7eef61fcf4bb39d8ca74e0922c2ab83432bce7d6f16a"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s01/t01-02-i01-foundation.sql",
+      "bytes": 6435,
+      "sha256": "46a4f0bb4c1be08bf31b941a44763c8019cb6f02a41ff72f7ddd3be54f7ba3e9"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s01/t01-02-i02-mail-permissions.rollback.sql",
+      "bytes": 2869,
+      "sha256": "c8f6388b1e495b2da73cad469f98ec6c7955b49191c5473ff4e8f765dca07d9a"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s01/t01-02-i02-mail-permissions.sql",
+      "bytes": 38213,
+      "sha256": "3d4fac61f099b9f7b8eaee96ff6e1eeff9cdece7860daa649b741c90964fce6c"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-brand-delivery.ts",
+      "bytes": 3950,
+      "sha256": "fe894f6f1b5bca72b03efec0e2e7aa9608db150ad6b19ec764c443ac6ad1b558"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-composio-bindings.ts",
+      "bytes": 3818,
+      "sha256": "1b08593a42840ff6ee0a07c102db02c149aa05cf5a354c670f725e3152de02bb"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-transport.ts",
+      "bytes": 2501,
+      "sha256": "379994c99179571a80ddbbc2ae2fe763748b05bd090765f29e6a48fcdebfea6d"
+    },
+    {
+      "path": "tests/gmail-analysis-progress.test.ts",
+      "bytes": 1881,
+      "sha256": "a8e716a60d61f032b8977cbe161f7636b34f0b9c86274ae46e312216638a9e11"
+    },
+    {
+      "path": "tests/gmail-attachments.test.ts",
+      "bytes": 14111,
+      "sha256": "6eb00aa0b4870be5f6592837ebfd88466f5fd3222b5b9c014bdf9f32be3139fc"
+    },
+    {
+      "path": "tests/gmail-candidate-filters.test.ts",
+      "bytes": 5640,
+      "sha256": "23f6582d5ae02da398f51fac8ab193669e2f440f8719d8ea5c040a1c3a4e3ac4"
+    },
+    {
+      "path": "tests/gmail-database.test.ts",
+      "bytes": 28963,
+      "sha256": "68c901d086eb8825f4f670041fa294eac81321e31027ad2d6158dac083d573f9"
+    },
+    {
+      "path": "tests/gmail-history.test.ts",
+      "bytes": 5048,
+      "sha256": "9eb715c2d12be93c9c0f3880f2761c8c462ac0ac4efb2b2bbbd8ee193e520249"
+    },
+    {
+      "path": "tests/gmail-import-scope-worker.test.ts",
+      "bytes": 2383,
+      "sha256": "86645c38a82897c9a78b7131808b99eefbfefcedc5c75a3472e5cd87b2d9f628"
+    },
+    {
+      "path": "tests/gmail-recovery.test.ts",
+      "bytes": 14876,
+      "sha256": "ecd92e28a45f54de14eaf8ffa00bfdc57558184ce2c4e8fa4dba77ed88ce683f"
+    },
+    {
+      "path": "tests/gmail-refresh.test.ts",
+      "bytes": 6862,
+      "sha256": "0e187cf44b1c83b5fa94cb734479aaac68714a25781ed495c4f79a6c0df8aab8"
+    },
+    {
+      "path": "tests/gmail-sending-usage.test.ts",
+      "bytes": 4618,
+      "sha256": "f5af5effd95a5d96a30ce6a68ef0bfb4a69c3ec26a3f96281d7662146fb12f8d"
+    },
+    {
+      "path": "tests/gmail-sync.test.ts",
+      "bytes": 6044,
+      "sha256": "1c41ac2fda8b358ecf6e6ca1c997c401ea1d893156d591c8aa1481207059a0b8"
+    },
+    {
+      "path": "tests/gmail-team.test.ts",
+      "bytes": 20578,
+      "sha256": "f2f2391ed3dfa2a932217562d3815037c2063e285db9e8abd126a48fcf6be90d"
+    },
+    {
+      "path": "tests/gmail-thread-attachments.test.ts",
+      "bytes": 10937,
+      "sha256": "9b37da702c55ae3f489c5e151ec8b0be580222da4525017ae6b9d933c2e3dc70"
+    },
+    {
+      "path": "tests/import-load.ts",
+      "bytes": 159,
+      "sha256": "24231fc8d4048d786ae8ae4aba25311ca0105f72081ffdb8a7307d549a6c81ae"
+    },
+    {
+      "path": "tests/incremental-mail-database.test.ts",
+      "bytes": 16668,
+      "sha256": "794b8da881d1ad247615dbffb9fd90ee8ea1687498f75ae7ccea59d9b0aca471"
+    },
+    {
+      "path": "tests/instantly-control.test.ts",
+      "bytes": 18482,
+      "sha256": "c8ff699891c3e2b1661603175910d244d6fd251abb947cd2a794dc378eb2cabb"
+    },
+    {
+      "path": "tests/instantly-webhook-app.test.ts",
+      "bytes": 24875,
+      "sha256": "92978b08ff95094ccaa5a3af4243c394a14892612d6056855f8e259fc4022f14"
+    },
+    {
+      "path": "tests/lead-migration.test.ts",
+      "bytes": 5740,
+      "sha256": "18b27d5c15a16ea47fd57c19407c1d31a7f43a2faa7622e19ef36fb6508be64b"
+    },
+    {
+      "path": "tests/lead-preparation-tracking.test.ts",
+      "bytes": 9024,
+      "sha256": "d6706f0bcf5135fdf7fb9dee41d4e4802e52993e4ac617abaaeeb63f96dc5f14"
+    },
+    {
+      "path": "tests/lead-tabs.test.ts",
+      "bytes": 3784,
+      "sha256": "d009c0391fa40264af7326347470c92cdd8be2a9a1a0119968e433749b45f715"
+    },
+    {
+      "path": "tests/lender-conversations.test.ts",
+      "bytes": 5554,
+      "sha256": "f371d66762870c5fc8170449eb33ed7bb63071792d9e8353849b4d47890c0df2"
+    },
+    {
+      "path": "tests/lender-create.test.ts",
+      "bytes": 5026,
+      "sha256": "b6ad95fdb0a7d263fd7c7578fbaf2f5e2d660b2bfc0bd8824bb51d05dc0e82e0"
+    },
+    {
+      "path": "tests/lender-database.test.ts",
+      "bytes": 16708,
+      "sha256": "ca8ced630e28889a5d76f310a12d0467fc92088e660d0458b41a0a1a07f5e3ca"
+    },
+    {
+      "path": "tests/lender-directory.test.ts",
+      "bytes": 2858,
+      "sha256": "1c0fc993eb65b5a9d46b87e388a2eb8ea074edd846d794e23bb183a9444d60f6"
+    },
+    {
+      "path": "tests/lender-management.test.ts",
+      "bytes": 5934,
+      "sha256": "42882004374ccc5b62e0b31933fd907397ad453ca5c9534afe1748d861085cb3"
+    },
+    {
+      "path": "tests/mail-channels.test.ts",
+      "bytes": 5114,
+      "sha256": "030dc6d2f6a3d666294177e101de1200d0a1689b79a3cad8d6b95fa5095917c8"
+    },
+    {
+      "path": "tests/mail-chat.test.ts",
+      "bytes": 3406,
+      "sha256": "62a3bc9f070711faec7c284467923a98ac8d366bf9a11dfe6a41dc85f1b69334"
+    },
+    {
+      "path": "tests/mail-compose-database.test.ts",
+      "bytes": 9106,
+      "sha256": "90e51f2b6e916c10513e112170f170d3f93301abd7f2f16a5b78d95ba92d4b59"
+    },
+    {
+      "path": "tests/mail-editor-compatibility.test.ts",
+      "bytes": 3920,
+      "sha256": "d7125051c8490cf51851042cc3e9727d1a2729bb8591194fc93a511c6cff8571"
+    },
+    {
+      "path": "tests/mail-forward.test.ts",
+      "bytes": 5810,
+      "sha256": "0b2a051c832bc148e27e7de34bb39982e997a3cbb20f514642ddde2328d45653"
+    },
+    {
+      "path": "tests/mail-interest.test.ts",
+      "bytes": 6312,
+      "sha256": "2941497e13dfaa6a0eff9ddee278cd04a92afe481eef2097fc34837063ee03cf"
+    },
+    {
+      "path": "tests/mail-live.test.ts",
+      "bytes": 6921,
+      "sha256": "38d92e7520bb650e51d8b8f5550158d7b7b715bbcf1865e873046bd7f6ed88b7"
+    },
+    {
+      "path": "tests/mail-manager.test.ts",
+      "bytes": 26294,
+      "sha256": "dc23e1d17da0fbcd00170bacc240bc5e667a37cf032cf1c545fef44d6281b993"
+    },
+    {
+      "path": "tests/mail-readable-outlook.test.ts",
+      "bytes": 934,
+      "sha256": "de9121ef407ea4702714e7966e742300ef7b4196baf2326cc6a63b0884a8fb3c"
+    },
+    {
+      "path": "tests/mail-recipient-selections-database.test.ts",
+      "bytes": 3577,
+      "sha256": "22a4cfd3aa514231097ce8b59b3340103bb0b357e018ba7ed2c3eab0abaf7061"
+    },
+    {
+      "path": "tests/mail-recipient-selections.test.ts",
+      "bytes": 7558,
+      "sha256": "57a5f9274551e6f98461d0ef4d4388a0e45dda42be8f593681e22553a254ec74"
+    },
+    {
+      "path": "tests/mail-send.test.ts",
+      "bytes": 6860,
+      "sha256": "912eecefc61f4bbad05de1578054c75580afe1b2763e79c5493d312691b32537"
+    },
+    {
+      "path": "tests/operations.test.ts",
+      "bytes": 9127,
+      "sha256": "f35230aa61ca9ba298b5c9762691bbbc88ae2af2c07566ef0068fc1044bc8714"
+    },
+    {
+      "path": "tests/opportunity-presentation.test.ts",
+      "bytes": 11352,
+      "sha256": "cc919da211b6c8bf82ebaaa8a23c1fdec1576b4a0cc5cc7abc5cc10489069d70"
+    },
+    {
+      "path": "tests/opportunity-signals.test.ts",
+      "bytes": 7604,
+      "sha256": "a9ada8524ba22fe06b458c8c7e451c6163988c80616f3013aba9048abaeb472e"
+    },
+    {
+      "path": "tests/pipeline-os-abc-catalog-variants.test.ts",
+      "bytes": 10054,
+      "sha256": "d71aa3026255cb8b0d925de27268b7c1d1ef853ffab0314217b855bf0f0c4766"
+    },
+    {
+      "path": "tests/pipeline-os-abc-final-diagnostic.test.ts",
+      "bytes": 10254,
+      "sha256": "05c41a8252aae343a0a88f74a61479d7d636be8e6c10d94b5eb45b6e34c4917e"
+    },
+    {
+      "path": "tests/pipeline-os-abc-final-sql.test.ts",
+      "bytes": 12721,
+      "sha256": "3b77b2197491671213871cc0443adf7268122dff601a1def64f8a8fe067ad17c"
+    },
+    {
+      "path": "tests/pipeline-os-abc-inventory-order.test.ts",
+      "bytes": 5553,
+      "sha256": "46d2efd2993e291316e5cbd0b8605cd6d540ab9654c9e4685215fca92ec338ae"
+    },
+    {
+      "path": "tests/pipeline-os-abc-line-endings.test.ts",
+      "bytes": 9115,
+      "sha256": "6e0f89e9b5eaafb7d97f818591d2490c4c49f769bcd961eb054f59a34cf009a7"
+    },
+    {
+      "path": "tests/pipeline-os-abc-preflight.test.ts",
+      "bytes": 13789,
+      "sha256": "12051dcca03ea03ec56889176910870da9fa92186203131f5b61ae5fa03ee874"
+    },
+    {
+      "path": "tests/pipeline-os-catalog-permissions.test.ts",
+      "bytes": 19985,
+      "sha256": "6ef70fdea7e6387afa01c210a5e460d352ca2740ad98b2dcfeb8b8ac5769b487"
+    },
+    {
+      "path": "tests/pipeline-os-permission-finalization.test.ts",
+      "bytes": 11397,
+      "sha256": "7f8dde71fc0ea99b08a1265738d2309b9c05edc26b462e32a1f61922be5edc83"
+    },
+    {
+      "path": "tests/pipeline-os-permission-remediation.test.ts",
+      "bytes": 19944,
+      "sha256": "6c64ebb6a8b24fc9f62afb0964d4e76d89005aad976c2f1491f24a1b02a0bfdc"
+    },
+    {
+      "path": "tests/pipeline-os-pg15-executor.test.ts",
+      "bytes": 18929,
+      "sha256": "61fc53c43ae18d0cbc0e6878a37ed67217ed0cd7785a33c8d25913745def8395"
+    },
+    {
+      "path": "tests/pipeline-os-s00-composio-correction.test.ts",
+      "bytes": 36598,
+      "sha256": "43612fa2bdb59cae06a22bdfc1880d1e64f7689b92f8cb26ea77d03e36cfefd4"
+    },
+    {
+      "path": "tests/pipeline-os-s00-composio-observer.test.ts",
+      "bytes": 30701,
+      "sha256": "cf161d635d40e871b34bdf0284aac575f568b2869e2e28c6c60c0ab0299092e0"
+    },
+    {
+      "path": "tests/pipeline-os-s00-composio-reconnect.test.ts",
+      "bytes": 36505,
+      "sha256": "ee53e22600917bc59700336c8be15509a32d3d4fc7d4c40bf481f1f1329cb1f9"
+    },
+    {
+      "path": "tests/pipeline-os-s00-composio-runner.test.ts",
+      "bytes": 27079,
+      "sha256": "1f7a621eda2c6b166b6399f435d3c07967ffc30dc4a937ccdde2b16c7e93ddca"
+    },
+    {
+      "path": "tests/pipeline-os-s00-connections.test.ts",
+      "bytes": 16361,
+      "sha256": "25d301745982767e3525e4d7e7669b86b695f1cb53bae06189e3832f249de59b"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-b-diagnostic.test.ts",
+      "bytes": 26005,
+      "sha256": "898a6048bd454a9fa8f6ca33cddf729dee3b48875faab7fbf654ba776c30f67b"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-b-recovery-from-28.test.ts",
+      "bytes": 29145,
+      "sha256": "9ecf8ca9d52f7b56ec5362088efa5bcbb3db17d33b40447ba36d1da150dcdc95"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-b-recovery.test.ts",
+      "bytes": 28008,
+      "sha256": "86250ec075fc9578e0992476d7ac254b583916ce5049348d4a8dfa2f611c9f66"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-b.test.ts",
+      "bytes": 34926,
+      "sha256": "4f489fff20450a1c477244346a4324cf6e22a6a4082bdfa25c3b84b62a64d66e"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-c-app.test.ts",
+      "bytes": 20741,
+      "sha256": "e7bcf45f6b8f81be2a62010bf82e26fa03f03335fd71c55d484b7eff0c69f44f"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-c.test.ts",
+      "bytes": 42639,
+      "sha256": "8f7eb474991f788b767121b0187a9ba6ea701e35778a9e01e7326778685739a7"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-config-diagnostic.test.ts",
+      "bytes": 28723,
+      "sha256": "70d0c4fd859ac3075eb541ccf9513598fc27f2addb57d88f8cd0f4b6dc05443c"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-recovery.test.ts",
+      "bytes": 30126,
+      "sha256": "b128c18f83562395de6a78abf8581c70014f91ea3da0f5fd6760616fd1bd997e"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-runner.test.ts",
+      "bytes": 31654,
+      "sha256": "5b3875d06f85c62407ea2b9ba0e3f5269f2832bbcab1acf813704bb48a7bcd3c"
+    },
+    {
+      "path": "tests/pipeline-os-s00-instantly-sequence-contract.test.ts",
+      "bytes": 12127,
+      "sha256": "85d8c8cbe258987c9d4d9485c7a7c4c512a9f0bdebf4f61db5cec3aeee63b588"
+    },
+    {
+      "path": "tests/pipeline-os-s00-inventory.test.ts",
+      "bytes": 15194,
+      "sha256": "5e8360f475936d085b7f8806c0bea6e7fedc9471d9adef89b4741d2c0cec5b2e"
+    },
+    {
+      "path": "tests/pipeline-os-s00.test.ts",
+      "bytes": 7671,
+      "sha256": "670fba827089c7cb42bb4ac3bb39e8eede5e1812d753573a66f934c9da22d59a"
+    },
+    {
+      "path": "tests/pipeline-os-s01-brand-contracts.test.ts",
+      "bytes": 6057,
+      "sha256": "b210c001f052926d47094edc79289a17429bbae56e426c5f119042369622a3ef"
+    },
+    {
+      "path": "tests/pipeline-os-s01-brand-foundation.test.ts",
+      "bytes": 20150,
+      "sha256": "899542558d0181c010984b2e878155bcf6d9056cf60a90d5e1e23347fe649ca1"
+    },
+    {
+      "path": "tests/pipeline-os-s01-mail-permissions-api.test.ts",
+      "bytes": 21051,
+      "sha256": "e49ee641c4e66821c006e7f8eb5d45f22c8e2482fd0a84c59551401b1d78dbb8"
+    },
+    {
+      "path": "tests/pipeline-os-s01-mail-permissions.test.ts",
+      "bytes": 30356,
+      "sha256": "aaad5f552f70d6e46221db6e31b04ab02dfdadb53c1dc13c1b638d3173db60e8"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-a-api.test.ts",
+      "bytes": 11844,
+      "sha256": "ddaad03ad3b310c1c0832931f6e5177fb9b1d538399ea549b219be7ccbb9b6dd"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-a.test.ts",
+      "bytes": 9265,
+      "sha256": "438cde259b543db891b64b06036a632b2c0b04714ad8deebf30d267e5352f559"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-admin.test.ts",
+      "bytes": 18335,
+      "sha256": "134f662f2cf9030ce739e518ed235b9b6cfc36cf2edb3daca6f164e2541bbb56"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-api.test.ts",
+      "bytes": 21028,
+      "sha256": "63f28defca860cb9dcbe58beb8e2812f151152a640147f040e3b29701d69ddaa"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-composition.test.ts",
+      "bytes": 8339,
+      "sha256": "3e91ac65c2c960bec212987302c9726809c84c753a1166b75f8babdc407d0fc4"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-dispatch.test.ts",
+      "bytes": 14323,
+      "sha256": "3eac17bc48cab1341c834a6d7209a26cb0e1299267085812deeb5fad6c2e0da0"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-snapshots.test.ts",
+      "bytes": 19732,
+      "sha256": "ad0336ad7edc08f0632e4f04722fffac4c48b60a0bad4fa8b901c84575874499"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-ui.test.ts",
+      "bytes": 6228,
+      "sha256": "81960c233539c279ab5a9c3d326f82499ca66839914543127b15d6ee54e2bb10"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-api.test.ts",
+      "bytes": 12099,
+      "sha256": "4e778e673df3bd212b918caad145ef6f0932cca1335fde99b9a3a234abcfd6f4"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-bindings.test.ts",
+      "bytes": 18012,
+      "sha256": "10a45d5757a43937f05d61138a5792344351b024f6fa249b8dcfe4259282a523"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-composition.test.ts",
+      "bytes": 32488,
+      "sha256": "e397c5bf72e6f9f9206e5f40422aedf0592dfb55a3e696a4f1deef8d161b44fe"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-ui.test.ts",
+      "bytes": 7650,
+      "sha256": "7c7c791b33f50293c399a89bb8b47416f889b97d697444bc7c26430019d7a1c6"
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-c-verifier.test.ts",
+      "bytes": 43570,
+      "sha256": "976fe3aba2fa9933d97abaa2c54b7bd196ec27a53b7bb3c4f9fa7558a969dcce"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport.test.ts",
+      "bytes": 24498,
+      "sha256": "a14fab038ff905cc3ce319107b7b40d1446231789e2a6b564ff57bfec121a11a"
+    },
+    {
+      "path": "tests/reply-engagement-database.test.ts",
+      "bytes": 14904,
+      "sha256": "668eacc0c95a154ae31831bb55c715eb8d31e8646a9196b138b9ac76447a01a4"
+    },
+    {
+      "path": "tests/request-origin.test.ts",
+      "bytes": 3568,
+      "sha256": "b2c3fe37da08bd56b040b8afdbce3f755204fe385b118adf77c5a6dfa5a785c4"
+    },
+    {
+      "path": "tests/underwriting-compact.test.ts",
+      "bytes": 7277,
+      "sha256": "1b07cc9b5007bce3b829dd3ad4d884168b3021e0e8679376900e96af45cae866"
+    },
+    {
+      "path": "tests/underwriting-feedback.test.ts",
+      "bytes": 16394,
+      "sha256": "07fd1b59c0c1757ddc02f0d571675326227cfcdc0adcfa68b726eebf67284769"
+    },
+    {
+      "path": "tests/underwriting-human-review.test.ts",
+      "bytes": 15925,
+      "sha256": "f9a27b82533468544ac63eccb6c9d38dfc65fa56f26b7d4137266be655c271bb"
+    },
+    {
+      "path": "tests/underwriting-stream.test.ts",
+      "bytes": 6442,
+      "sha256": "627d73b35a4b1238e039e0e6e864590f68a02c941b2d121f6ffaf5c28483bd9c"
+    },
+    {
+      "path": "tests/underwriting.test.ts",
+      "bytes": 20673,
+      "sha256": "ddce3da1ffea38ac4535689a41a57145dfc27294ca6e092d4cdc5c134dac53e6"
+    },
+    {
+      "path": "tests/unsaved-changes.test.ts",
+      "bytes": 3573,
+      "sha256": "07c9cfe74abb2ab3c4e81ecc24ca295015429e87b3801688c5ab054b381491c3"
+    },
+    {
+      "path": "tests/workspace-errors.test.ts",
+      "bytes": 1598,
+      "sha256": "bd29f230614d41db763e7d7cf6105106e7df726e7312e525bfc7f3c8d1dcf231"
+    },
+    {
+      "path": "tests/workspace-mail-files.test.ts",
+      "bytes": 3119,
+      "sha256": "3f109caff8e1407b42aefa97ea90d26fd7f603566d7551c5f0f7c2224875a07d"
+    },
+    {
+      "path": "tests/workspace-mail.test.ts",
+      "bytes": 4217,
+      "sha256": "15f1b3659e7c90920150f37bf79f1e3f15fe2cb01baa481e33d5773976095438"
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 695,
+      "sha256": "d1908c2f22d6ebdf6fefc2c37db6d975e569e121c07108ee2a9e25504719bc80"
+    },
+    {
+      "path": "worker/bouncer.ts",
+      "bytes": 4256,
+      "sha256": "b659e3296e1d5348ee6d6e3c1fa7cccd93ddf20c17bd236546c09eca079c814d"
+    },
+    {
+      "path": "worker/campaigns.ts",
+      "bytes": 6403,
+      "sha256": "a799b156111d0231e432ed1621e27da437cd73655fc7a613a0afac3a46e34b22"
+    },
+    {
+      "path": "worker/db.ts",
+      "bytes": 1003,
+      "sha256": "8221325dff6733253a95aa679100b0a708da146300cc51f7b39390299a869d0c"
+    },
+    {
+      "path": "worker/gmail-archive.ts",
+      "bytes": 19925,
+      "sha256": "d72fb0fbc750674b72cfb8490a61b549ccc83b41d086e67b8b359b30bdeb6e2e"
+    },
+    {
+      "path": "worker/gmail-engagement.ts",
+      "bytes": 3620,
+      "sha256": "918f4cee214ad72821d636438aa64fb988bc9386c3b6b90bb21bea7a8bc58f82"
+    },
+    {
+      "path": "worker/gmail-import-scope.ts",
+      "bytes": 1080,
+      "sha256": "339b8990117c5cf7c3d1d19a46748c62c965de254b1f6ede5d5463412971ebfd"
+    },
+    {
+      "path": "worker/gmail-schedule.ts",
+      "bytes": 1024,
+      "sha256": "2409525f6dfe99076a4018c0bb1c869150e881316716cc26c84ee22c87fa03ef"
+    },
+    {
+      "path": "worker/gmail-sending-usage.ts",
+      "bytes": 4085,
+      "sha256": "33d6b7e59e03c3182a342d5979e8eaeb8c9862d5cea15f1290520be59dc724d6"
+    },
+    {
+      "path": "worker/gmail.ts",
+      "bytes": 33780,
+      "sha256": "99f0d3df722f6f1014d7a5e0c0d5bf01b9046302b42c4186e02144625ebd0e56"
+    },
+    {
+      "path": "worker/index.ts",
+      "bytes": 9892,
+      "sha256": "2ccaf511afca490e25f84ad79cb6a02b683d5b90a795e43838a096c3fb77ea1a"
+    },
+    {
+      "path": "worker/mime.ts",
+      "bytes": 5651,
+      "sha256": "03e36738665dbd6cad4e5afc094aa9cc9bf43c0a98a18af1dabfcc752d3cbbdb"
+    },
+    {
+      "path": "worker/notifications.ts",
+      "bytes": 2696,
+      "sha256": "6ee19cb0dce6e971a02cc9875c0f9fea52517ab19f92f9fe2f65305cb5a10eee"
+    },
+    {
+      "path": "worker/pdf.ts",
+      "bytes": 4212,
+      "sha256": "92dd1a5dee5e264ea5a48716afbc4432660560b4922698c751f34eb9f3b3bdcd"
+    },
+    {
+      "path": "worker/underwriting.ts",
+      "bytes": 4977,
+      "sha256": "c4b421b8f661d1682b4c28488cab8cd057cbd2f659afac93f1f5b454abe1c1fa"
+    }
+  ]
+}

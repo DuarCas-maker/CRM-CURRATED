@@ -84,30 +84,12 @@ export async function deliverNotification(notificationId: string) {
         .single(),
     )!;
     if (!recipient.active) return;
-    const admin = checked(
-      await client
-        .from("profiles")
-        .select("id")
-        .eq("role", "superadmin")
-        .eq("active", true)
-        .limit(1)
-        .single(),
-    )!;
     checked(
-      await client.from("outbox").upsert(
-        {
-          notification_id: n.id,
-          account_id: process.env.NOTIFICATION_GMAIL_ACCOUNT_ID,
-          to_email: recipient.email,
-          subject: "Your Curated Financial workspace has an update",
-          body: `You have a new update. Sign in to your secure workspace to review it.\n\n${process.env.APP_ORIGIN}`,
-          area: "general",
-          message_id_header: `<notification.${n.id}@crm.curated.local>`,
-          requested_by: admin.id,
-          request_key: `notification:${n.id}`,
-        },
-        { onConflict: "request_key", ignoreDuplicates: true },
-      ),
+      await client.rpc("queue_brand_notification", {
+        notification: n.id,
+        account: process.env.NOTIFICATION_GMAIL_ACCOUNT_ID,
+        origin: process.env.APP_ORIGIN,
+      }),
     );
   }
 }

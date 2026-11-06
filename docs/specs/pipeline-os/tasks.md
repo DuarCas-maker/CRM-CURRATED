@@ -1,5 +1,47 @@
 # Plan de sprints y tareas de Pipeline OS
 
+**05/11/2026 — prioridad operativa actual:** [R01–R08 y reparto entre chats](parallel-roadmap-20261105.md). Ruta inmediata: cerrar publicación A/B/C → asignaciones revisadas → piloto Gmail directo → reanudación gradual. En paralelo se puede preparar **S02-CONNECT-T01: alta Gmail con Composio desde el CRM**, seguida de un corte por buzón separado; Instantly C/D continúa como frente posterior independiente, desde43. 049/postflight ya aceptados; no repetirlos. La planificación no crea chats, transfiere código o autoriza APIs/despliegue. Los párrafos siguientes conservan su alcance histórico y no sustituyen esta priorización.
+
+Versión conjunta ABC-20261031-prep1 preparada31/10/2026: [runbook y cierre de QA](s02/release/runbook.md).100 fuentes conciliadas (63 aplicación/32 pruebas/5 SQL de ensayo),5 comprobaciones nuevas del catálogo READ ONLY en memoria;139/139 C3 heredadas con las mismas fuentes, no reejecutadas. No publicable aún: catálogo/QA visual/build/PostgreSQL/migraciones finales/control del worker pendientes. Próximo paso REL-T03: lectura autorizada del catálogo y metadatos, no SQL de cambio o deploy. Producto/47 SQL/49 registros operativos/HEAD intactos; Gmail directo activo, Composio deshabilitado e Instantly43/0 nuevas. Las constancias previas conservan su alcance histórico.
+
+C3 compuesto/probado offline31/10/2026 por continuación humana: [evidencia](s02/integration/block-c/c3-verification.md),14 nuevas/125 regresión/TS correctos. Un test nuevo, sin cambios a producto/SQL/fixtures C1/C2/A/B/I01. C1/C2/C3 funcionales locales; siguiente: preparar versión conjunta A/B/C y cierre de gates INT-T04/T00-02-I. QA visual/build/contención, catálogo y promoción siguen pendientes. Directo activo, Composio deshabilitado, Instantly43/0 nuevas; sin APIs/envíos/remoto/push/deploy. Las constancias anteriores conservan su alcance histórico.
+
+C2 local implementado/probado31/10/2026 por autorización humana: [evidencia](s02/integration/block-c/c2-verification.md),28 nuevas/97 regresión/TS correctos. Dos fuentes C1 extendidas/dos adiciones; identidad/permisos y evidencia sellada con dependencias falsas, aprobación humana sin activar transporte. C3 y promoción pendientes; Gmail directo activo, Composio deshabilitado, Instantly43/0 nuevas. Sin env reales/API/envíos/SQL remoto/push/deploy o cambios del checkout S01. Las constancias previas conservan su alcance histórico.
+
+Actualización C1 implementada31/10/2026: [entrega y límites](s02/integration/block-c/c1-verification.md),24 pruebas nuevas/73 regresión/TS correctos. Registro/API/panel/revocación de candidatos y SQL en memoria, sin evidencia positiva o selector Composio. I01/A/B/47 SQL/49 hashes operativos conservados fuera del único compartido permitido; Instantly43 y0 API/envíos/remoto/push/deploy. Siguiente incremento: C2, verificador inyectable offline y protocolo de evidencia, bajo solicitud; visual/build/contención/catálogo y promoción siguen pendientes.
+
+## Bloque C preparado —31/10/2026
+
+[Asociación técnica revisada](s02/integration/block-c/README.md): C1 registro/API/UI, C2 verificador falso/evidencia/aprobación, C3 composición.12 FR/12 AC/nueve tareas, uno existente/nueve nuevos C1; dos nuevos/dos propios compartidos C2; un test nuevo C3. Solo documentos y huellas; código/SQL/pruebas funcionales C pendientes. Siguiente paso C1 local cuando se solicite. Gmail directo activo, Composio apagado, Instantly43 y0 APIs/envíos/remoto.
+
+## B2 implementado localmente —31/10/2026
+
+[Entrega B2](s02/integration/block-b/b2-verification.md): guardas de preparación/snapshot/claim/admisión, campañas/notificaciones y conciliación;118/118 pruebas seleccionadas, TS/formato correctos. Gmail directo fijo, Composio deshabilitado, Instantly43 y0 APIs/envíos/remoto. B1/B2 funcional local; visual/teclado/build/catálogo/contención siguen pendientes antes de publicar. Próximo incremento de producto: C, asociación técnica revisada de cuentas Composio, sin activar.
+
+## Bloque B preparado —31/10/2026
+
+[Paquete B](s02/integration/block-b/README.md): FR01–12/AC01–12 y B-T01–10, B1 seis existentes/ocho nuevos propuestos; B2 veintiséis existentes/seis nuevos, con actions serializado y huellas a revalidar después de B1. B1 administra y revisa asignaciones; B2 completa snapshot/servicio/claim/corte y no altera backoff de cuotas conocidas. Solo planificación, sin código o SQL nuevo; siguiente incremento B1 local. A/I01 y43 Instantly preservados, Composio apagado y directo fijo. No publicar B1 sin B2, catálogo y gates de release.
+
+## Bloque A integrado localmente —31/10/2026
+
+[Resultado A](s02/integration/verification.md): I01/I02 incorporados en este checkout, candidatos SQL locales con definiciones explícitas y155 pruebas offline correctas (37 S01 +111 regresión +7 composición), TS/formato correctos. INT-T03 implementada localmente; empaquetado standalone pendiente por EPERM Windows, T04 remoto/B/C/promoción siguen pendientes. S02-I01/directo preservados, Composio deshabilitado,43 Instantly. Siguiente entregable: B, comandos/revisión de marca y snapshots/guardas; congelar sus paths antes de implementar. No se habilita Composio por completar A.
+
+## Próximo bloque — integración S01 y asociación Composio preparada
+
+31/10/2026: [paquete SDD](s02/integration/README.md) y [tareas INT-T01–10](s02/integration/tasks.md). Orden A: incorporar base S01 local; B: completar administración/guardas de marca; C: asociación técnica revisada sin selector Composio. Preparación y coexistencia SQL en memoria completas; implementación/integración app y gates remotos pendientes. No cambia el estado completado local de S02-I01, no repite aceptaciones ni activa capacidades. Directo fijo y43 Instantly preservadas.
+
+## S02-I01: implementado y probado localmente — 31/10/2026
+
+Por instrucción del usuario Instantly C queda pendiente y [S02-I01](s02/README.md) está implementado offline: ocho paths de código/tests,33/33 pruebas nuevas, TS/formato correctos y49 JSON privados intactos. Fachada conserva Gmail directo activo y Composio solo inyectable, sin selección real/migración/servicios. S01 revisado pero no integrado; T01-02 completo/T01-03/04 pendientes. [Tareas y dependencias](s02/tasks.md). La aceptación existente de correo/adjuntos y PRUEBA/Bouncer se conserva sin repetir. Instantly43 intactas; activación por cuenta exige integrar los contratos S01, resolvedor durable y autorización de corte posterior. T03–06 del incremento completadas localmente, no S02 completo.
+
+## R47-T05a completada: seis HTTP de smoke, sin activar
+
+Usuario autorizó hasta6 y se ejecutaron6/6 correctas con guardas/budget durable: health/login200, webhook/trial/control/lease404 vacíos/no-store y headers previstos. [Evidencia](s00/instantly-047-app-smoke.md).43/12 privados/código preservados,0 Instantly/SQL/envíos/deploy/activación. No repetir tráfico con el permiso agotado. R47-T05 conserva pendientes manuales de sesión/vistas e imagen recuperable posterior al deploy; C real/D/S00 permanecen abiertos. Documentación solo local, sin otra publicación.
+
+## R47-T04 completada: publicación verificada y despliegue reportado
+
+Usuario autorizó fb9f201/main/autodeploy; remoto0af77b7 compatible, push normal de un commit y lectura posterior verifican mainfb9f201. Operador confirma Success/Finished/healthy. [Evidencia y límites](s00/instantly-047-publication.md). Sin nuevos deploy manuales, SQL, activación, envíos o consumo de43;12 privados intactos. R47-T05 smoke app/sesión/retención posterior sigue pendiente, igual que C real/D/S00. Documentos de cierre solo locales, sin otro push o cambio de SHA publicado.
+
 ## R47-T04a: registro local del candidato autorizado
 
 Solicitud posterior autoriza el commit definitivo, con43 y prohibiciones remotas conservadas. [Cierre R47-C-T01–04](s00/instantly-047-local-commit.md): revisar contenido/QA/privados, documentar serialización LF del repo, preparar selección explícita y comprobar blobs/commit. El SHA resultante se identifica en Git y en la entrega, sin autorreferencia documental. No cambia el payload de20 archivos, ni aplica SQL, toca S01 o autoriza publicación. R47-T04 publicación/R47-T05 smoke y C siguen pendientes, aunque el incremento quede registrado localmente.

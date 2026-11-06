@@ -1,0 +1,136 @@
+{
+  "id": "AF-PRE-r1",
+  "date": "2026-11-02",
+  "sdd": "STRICT",
+  "publicationReady": false,
+  "readyForRemoteSql": false,
+  "artifacts": {
+    "previous049Sha256": "ba65aa6d0a9d63b0c949d72ad4fbae091339f8d3ae1a56aabb1d6eff55c82187",
+    "sql049Sha256": "e4626cb612868f4cd13ebce98ca3a6b5fea0e51f7d73b05f0e4935dd3be0b604",
+    "preflightSha256": "04c0f304409c4c6b2ca59a6c6ec9a00f77a591c68863d718ac099a8a29046e4a",
+    "contractSha256": "8fafee3c08c3aea1941b91058fcc9594560d280ede7b66724583b5167f932321",
+    "postflightSha256": "bae5b6653aee9eeb928e1ee1079adf52a7492bd9065595e40c67de5f74088e10"
+  },
+  "comparator": {
+    "preBlocksChanged": 2,
+    "finalComparatorChanged": false,
+    "contractChanged": false,
+    "acceptedView": "public.campaign_workspace",
+    "acceptedRawHashes": [
+      "f0ac44d1f4e3fb6738d3593c70279216",
+      "321f987da7339d43e9de9d6b45cf5b63"
+    ],
+    "otherFieldsRemainExact": true,
+    "pg15MetadataVariantTest": "simulated hash in exact comparator; not native PG15"
+  },
+  "preflight": {
+    "prepared": true,
+    "executedRemotely": false,
+    "transaction": "REPEATABLE READ READ ONLY",
+    "searchPath": "pg_catalog, pg_temp",
+    "statementTimeoutMs": 15000,
+    "lockTimeoutMs": 2000,
+    "detailLimit": 200,
+    "source": "exact logical snapshot SQL from reviewed049",
+    "existingFunctions": 47,
+    "existingRelations": 14,
+    "existingColumns": 221,
+    "existingPolicies": 6,
+    "checks": [
+      "context",
+      "role_flags_memberships_public_usage_create",
+      "accepted048_table_rights",
+      "exact_function_inventory_set",
+      "all_contract_pre_objects_fields_and_expected_absence",
+      "function_direct_execute_and_grant_option",
+      "delta_column_acl_including_PUBLIC_and_other048_human_columns",
+      "six_policy_hashes_in_same_context",
+      "sending_and_fixed_legacy_aggregates"
+    ],
+    "outputs": "catalog identifiers and field names/booleans/counts; no source or customer rows",
+    "publicationReadyAlwaysFalse": true
+  },
+  "verification": {
+    "newTests": { "passed": 12, "failed": 0, "skipped": 0 },
+    "migrationRegression": {
+      "passed": 15,
+      "failed": 0,
+      "reason": "049 pre-guard changed"
+    },
+    "distinctCases": 27,
+    "offlineRuntime": "Node22.23.4 PGlite0.5.8 PG180003",
+    "initialFailure": "synthetic fixture UUID/text parameter reused; corrected fixture, no skipped/relaxed cases",
+    "typeScript": "passed --noEmit --incremental false",
+    "format": "passed for new TS/Markdown and modified docs; SQL deterministic generation",
+    "json": "passed",
+    "links": 108,
+    "gitDiff": "passed",
+    "review": "safe-code-review local delta; no additional confirmed blocking findings",
+    "nativePg15": false,
+    "networkDeniedByPreload": true
+  },
+  "preservation": {
+    "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "payload": 100,
+    "buildSupport": 10,
+    "migrations": 47,
+    "operationalHashes": 49,
+    "prepared048Unchanged": true,
+    "contractAndPostflightUnchanged": true,
+    "acceptedInventoryAndVr1NotReexecuted": true,
+    "applicationWorkerAndDependenciesUnchanged": true,
+    "originalFilesExamined": 732,
+    "changedExisting": [
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/runbook.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+      "docs/specs/pipeline-os/s02/release/abc-final/verification.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/tasks.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/README.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/protocol.md",
+      "docs/specs/pipeline-os/s02/README.md"
+    ],
+    "newFiles": [
+      "scripts/pipeline-os/abc-preflight.ts",
+      "scripts/pipeline-os/prepare-abc-preflight.ts",
+      "tests/pipeline-os-abc-preflight.test.ts",
+      "docs/specs/pipeline-os/s02/release/abc-final/preflight/spec.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/preflight/preflight.sql",
+      "docs/specs/pipeline-os/s02/release/abc-final/preflight/verification.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/preflight/verification.json"
+    ],
+    "unexpectedChanges": []
+  },
+  "operations": {
+    "remoteSql": 0,
+    "remoteChanges": 0,
+    "apiCalls": 0,
+    "deploys": 0,
+    "pushes": 0,
+    "sends": 0,
+    "serviceStarts": 0,
+    "credentialFilesRead": 0,
+    "instantly": { "consumed": 43, "new": 0 },
+    "gmailDirect": "active preserved by unchanged accepted sources; no live flag query",
+    "composio": "disabled by unchanged scope; no live flag query"
+  },
+  "futureBudget": {
+    "proposedManualReadOnlyScripts": 1,
+    "retries": 0,
+    "newInstantlyRequests": 0,
+    "authorized": false,
+    "application049Authorized": false
+  },
+  "remainingGates": [
+    "nativePG15_migration_and_final_postflight",
+    "independent_contention_and_mixed_versions",
+    "visual_QA_and_Linux_build",
+    "installer_inventory048049",
+    "current_destination_ordinal_backup_recovery",
+    "worker_producers_autorestart_DDL_DCL_exclusion_window_bootstrap",
+    "exact_commit_and_publication_authorization"
+  ],
+  "nextStep": "Propose one authorized manual full preflight read in CRM self-hosted; no049/048/VR1 or standalone inventory replay."
+}

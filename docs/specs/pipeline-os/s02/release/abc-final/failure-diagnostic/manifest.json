@@ -1,0 +1,71 @@
+{
+  "id": "AF-FDIAG-r1",
+  "date": "2026-11-04",
+  "publicationReady": false,
+  "remoteExecutionAuthorized": false,
+  "sourceInputs": {
+    "049_integrate_mail_identity_brands_and_bindings.sql": "19548594e04d95167ed23957264f25d796a0f5f02e9427c75bf1f53f4fd390aa",
+    "contract.json": "6fc8d3de046552f2f066abfb814b1929141ea2c3547d6762e0e7e1bfb820e4af",
+    "postflight.sql": "c3dd51e27a1818ed821ea915ff398f16956bf13efeca6fc8cd715ab28c13f679",
+    "preflight/preflight.sql": "8ac0093cba7a3330a062380b9b0ab4506ce17973286b138ad49502a02e59b852"
+  },
+  "diagnosticSha256": "a2de43622882ffe9e1796c7b4d25ad582518121fea55010363bcee762ae33d79",
+  "files": [
+    {
+      "path": "scripts/pipeline-os/abc-final-diagnostic.ts",
+      "bytes": 6509,
+      "sha256": "37ccce45f0ce24b4fec008d4f5be65e83c244d0056803052fb3ce179078162db"
+    },
+    {
+      "path": "scripts/pipeline-os/prepare-abc-final-diagnostic.ts",
+      "bytes": 939,
+      "sha256": "8e3f894a866af01a95a85f5ed5e31dce3dbc5f669e7c3a291a86d96ee35e3280"
+    },
+    {
+      "path": "tests/pipeline-os-abc-final-diagnostic.test.ts",
+      "bytes": 10254,
+      "sha256": "05c41a8252aae343a0a88f74a61479d7d636be8e6c10d94b5eb45b6e34c4917e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/spec.md",
+      "bytes": 5289,
+      "sha256": "203ba4733d5e2ddb4bdb1568c5a3938ebda5b1a6ee6f369c43decf6ef42c56e4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/README.md",
+      "bytes": 3818,
+      "sha256": "779b0b9313ded3c35676338e8f872c9533e6d6bb4e33f6e41b7c952310f5158d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/verification.md",
+      "bytes": 4856,
+      "sha256": "e29e4eed6f336775a50a9aac9fe2932df324f47cf911f49798929a95049f98d7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/diagnostic.rollback.sql",
+      "bytes": 909928,
+      "sha256": "a2de43622882ffe9e1796c7b4d25ad582518121fea55010363bcee762ae33d79"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/verification.json",
+      "bytes": 3315,
+      "sha256": "97ade9c1ad6568565c32a92710356623d4f73869b3db00276e04905713134407"
+    },
+    {
+      "path": "scripts/pipeline-os/abc-catalog-variants.ts",
+      "bytes": 8953,
+      "sha256": "d0883b371f0d1f028813552a2ca8db7016221cefdd3f8054ca363f543c6b4fbc"
+    }
+  ],
+  "previousBindingManifest": {
+    "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/prior-diagnostic-manifest.json",
+    "sha256": "7972a78726a2237706b92e7c9e9c89f68cb2a4e26cc72a679b563a37966ddad7"
+  },
+  "sourceBindingRevision": {
+    "id": "AF-CVAR-r1",
+    "diagnosticSqlUnchanged": true,
+    "sourceInputsRemainHistorical": true,
+    "restoresPriorArtifactBeforeGeneration": true,
+    "remoteAttemptConsumed": true
+  }
+}

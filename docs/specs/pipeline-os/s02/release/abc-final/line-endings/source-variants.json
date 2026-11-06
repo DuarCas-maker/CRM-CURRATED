@@ -1,0 +1,488 @@
+{
+  "id": "AF-EOL-r1",
+  "postSourceVariants": {
+    "brand_b1.\"normalize\"(text, jsonb)": [
+      "1cdb239ee89299a50c55d9030c0fda2c",
+      "d3793fa44351ce0b87a7ce22b98e3a20"
+    ],
+    "brand_b1.admin_actor()": [
+      "23484c995ab23f97372a0111acc4adf7",
+      "9ab4330445533e88a6a4591db2137f19"
+    ],
+    "brand_b1.command(text, jsonb, uuid)": [
+      "191b14c92d3278d89564d6353a2cfca1",
+      "a1022a9955289f7e26eb48d5e96ac83f"
+    ],
+    "brand_b1.impact(uuid)": [
+      "de1a49dcc91a6d3ddd38ec04d4469190",
+      "3b506ee079a163b543e671da7dbb5d48"
+    ],
+    "brand_b1.oauth_context(text, uuid, boolean)": [
+      "61208f2803d98513d355470c33183b94",
+      "a64d412b47f52eee1be6fce5505ab355"
+    ],
+    "brand_b1.ref(text)": [
+      "f26fedeb89135e635a894337375e983f",
+      "13fec9d430a3222b1284850a6d1bf27a"
+    ],
+    "brand_b1.rev(jsonb, text, boolean)": [
+      "cf810212a352e706b6b130fef17a5861",
+      "4af719d5cbd50b064d13dd60ac132fc3"
+    ],
+    "brand_b2.campaign_guard()": [
+      "caa5673f64b8be725ade43fd361e6a13",
+      "7252c9a7309e8fb714cc0cd642b013a9"
+    ],
+    "brand_b2.can_campaign(uuid)": [
+      "38636ada28b19bb166f352c62b4c64fa",
+      "96b2155fe32285ff2a0a11ead03ef0a8"
+    ],
+    "brand_b2.can_sender(uuid)": [
+      "953abc1ccf7631142663a55b6ddb5832",
+      "34fa7c5c9279a20a1344310bfd91b8af"
+    ],
+    "brand_b2.claim(boolean)": [
+      "0aec6d3a26c490d986324f2f1fc7d50f",
+      "af7c1fc96146e021fc235714b686b5b6"
+    ],
+    "brand_b2.context(uuid, uuid, text, uuid)": [
+      "8b83c5e580235de5f19f1ea00df4bbe2",
+      "97bc432510cacb7f13bd19ffe049b2a7"
+    ],
+    "brand_b2.delivery_allowed(public.outbox)": [
+      "bd3cf9f876591793d4dd3e1f1047e2ab",
+      "bf1954292871e1d16ddc96be25b65d45"
+    ],
+    "brand_b2.draft_guard()": [
+      "f15c0babaafb9956e1ec5da780ff3bb7",
+      "d09342c3c4554b6261e083fc3d447f64"
+    ],
+    "brand_b2.expected(jsonb, jsonb)": [
+      "b9229268be346a72059a7f0afbcc3ab8",
+      "d37c954f629acc405b5ea73a2cfd159c"
+    ],
+    "brand_b2.message_guard()": [
+      "d5ad74259e37ed92765d7384a9450475",
+      "c03f31df1dd7633aefe9dccd341b2152"
+    ],
+    "brand_b2.outbox_guard()": [
+      "f9a3ebc6717e957b124c3039b6e6d40e",
+      "bb4ea33957852e79d0e03ed9f966c49c"
+    ],
+    "brand_b2.revision()": [
+      "e5cab27c6010879c15a47036f80e904a",
+      "451c562645034ebc3133b47d3e96ad86"
+    ],
+    "brand_b2.revoke_permission()": [
+      "98b5f2d81059b9ee97def6258b99aea0",
+      "25f4c4edafdd5e8b47c00da19b53075e"
+    ],
+    "brand_b2.same_revision(jsonb, jsonb)": [
+      "98dba9af9fceabbaf3da7020d4d23304",
+      "b3194fd6499a8634272987de50fc2850"
+    ],
+    "brand_b2.validate_snapshot(jsonb, uuid, uuid, text)": [
+      "1806981ddd1593bd08f5669e9df5b5c1",
+      "9fc83ee76aec72784a5f4b208abef9f3"
+    ],
+    "composio_c1.approval_current(public.mail_provider_bindings, jsonb)": [
+      "9843065f0b47b2ce4c8a4984b3e90946",
+      "9ef32eac341c2448df047e787c02b1a8"
+    ],
+    "composio_c1.check_current(public.mail_provider_binding_checks, jsonb, public.mail_provider_binding_heads, public.mail_provider_bindings)": [
+      "54338942249348eaa2b80da60036e319",
+      "27b963bdd94efd8543793452e69b80ef"
+    ],
+    "composio_c1.context_locked(uuid, uuid)": [
+      "73d2b803767f4d3f2a3ea461c37e8f4a",
+      "381023e09ea71a688c639ea93bcb09e5"
+    ],
+    "composio_c1.context(uuid)": [
+      "c8952321951759aba2374321ac6e1589",
+      "b263e692cd69e56126c3a1ea24b45d4f"
+    ],
+    "composio_c1.facts_pass(jsonb)": [
+      "66a0907db95c17d6703af93e8e428473",
+      "0a11bafcc3f1a5d88e07fa2fb125211e"
+    ],
+    "composio_c1.facts_valid(jsonb)": [
+      "101fb7c2198a7721e73dc720e7c84b7e",
+      "03e9d1cac971af853ca1226d20fd67bd"
+    ],
+    "composio_c1.guard()": [
+      "8323c3492789afca4ab60dbef3e9ad20",
+      "1324e88c69e0af0bccd9017d9b1f14b7"
+    ],
+    "composio_c1.mask(text)": [
+      "3ce371658b2eca672b775856705af03e",
+      "50f71da5bc4cdd58672885cd9c182af8"
+    ],
+    "composio_c1.payload(text, jsonb)": [
+      "ff0a216c79041c5ba66d502050320f68",
+      "58a0ed6522e2eb646fa56aeb100f53c3"
+    ],
+    "composio_c1.row_dto(public.mail_provider_bindings, jsonb)": [
+      "181449deee9fdcaa480a71d4de344c74",
+      "914650dfa20be7ccee87e37c5a2652a6"
+    ],
+    "composio_c1.ticket(uuid, text, text)": [
+      "cffee478164572655079ee8760c6ade5",
+      "6b4a6d5b4281b019d95d2b8da16db12a"
+    ],
+    "public.account_delivery_usage(uuid)": [
+      "3381d635a6d79022e7f7a6dc5c592861",
+      "a528db44bccfc9b2063feb8bb0492570"
+    ],
+    "public.admit_brand_dispatch(uuid, uuid)": [
+      "3e3934d794660b1785008228bf2ffb1c",
+      "dbc5cdaa050238cf48b3f7760e4d3244"
+    ],
+    "public.associate_live_mail_v23(uuid, uuid, uuid, uuid)": [
+      "28a7c80718cb117cb7e3df94cda1b987",
+      "650424daeb7b33aa37eab2dbe5b12285"
+    ],
+    "public.associate_live_mail(uuid, uuid, uuid, uuid)": [
+      "36426f6eea4cbc8929d92198c71c3bf7",
+      "aaf49be029cee7c77fda31866d7bea1c"
+    ],
+    "public.brand_campaign_ready(uuid)": [
+      "e2ed68ecbcb97b429c7b12f21fa1b7c5",
+      "ddfd9be0aeb42b2eff90afb119668926"
+    ],
+    "public.brand_dispatch_uncertain(uuid, uuid)": [
+      "31970486d6b0fd4b64c2c7e3fc703872",
+      "8d0d2742587573848fae3f8b6b9c9cba"
+    ],
+    "public.brand_management_page(text, text, integer)": [
+      "d70344497bb8de8e4e2b74fdeaf62f51",
+      "b18ef206f696909f851f698ba5aa349c"
+    ],
+    "public.brand_oauth_begin(text, text, jsonb)": [
+      "ece4c476197f146d0f4532d158de474e",
+      "a75fd92c0504d9270727d8ca7b597e55"
+    ],
+    "public.brand_oauth_claim(text, uuid)": [
+      "4061ba739b2017aa38cd36ffbc3b94dd",
+      "16332ff79a0903f79028e2f249dcd444"
+    ],
+    "public.brand_oauth_finish(text, uuid, text, text, boolean)": [
+      "1c76951445b48565b562270ea3dd917c",
+      "d72b5a8db7ea8de9b1d03414fd6ba986"
+    ],
+    "public.brand_prepare_context(uuid, jsonb, text, uuid)": [
+      "362bf10b8b8f39290850a3a63e9a6a18",
+      "21f2e6a9cee010c08cff1cbdce38d29f"
+    ],
+    "public.brand_queue_mail(text, jsonb, jsonb)": [
+      "85b4de04b62f442266907a4d66490824",
+      "f2fed74b87c5f477a7a17f06c53f35be"
+    ],
+    "public.brand_sender_capabilities()": [
+      "148025c5af22946a20015c3cbce603fd",
+      "e74d7cf7443b8a644492b47991d5386b"
+    ],
+    "public.brand_signature_allowed(uuid, uuid)": [
+      "b0144170d928d6ec10d454ba2f39eea9",
+      "488e41001e2d65c912b7cd3cdf55d1c5"
+    ],
+    "public.campaign_activity_page(integer)": [
+      "bb57a796dae71392de64d0a086adb994",
+      "6a94a79835bd445680b4c45c854257d3"
+    ],
+    "public.campaign_audience(uuid)": [
+      "a49d4e32629e6c00ec4172db52fcad51",
+      "abb33ed37fd6e46f321abd20052c3ede"
+    ],
+    "public.campaign_center(text, integer, text)": [
+      "5c9f83acf7a231f2bd0064ab86f60312",
+      "dda6df2bf7b5b4792c0b2b03d2845d30"
+    ],
+    "public.campaign_contact_facts(uuid)": [
+      "9d74cd7780d2a2dfea98a3088d12ee03",
+      "71710d082199af0ebe68f1e9dddd44d2"
+    ],
+    "public.campaign_delivery_stats(uuid)": [
+      "2544c97f18359cc32d9ab6af650a1674",
+      "8cf8adb24bef324a71043fdd179573a7"
+    ],
+    "public.campaign_leads_page(uuid, uuid, text, integer)": [
+      "f886543bbf6de9ca62117bb314661ecd",
+      "f0230d2991d40bf1fff7aca962898914"
+    ],
+    "public.campaign_reply_rows(uuid)": [
+      "2e4ed1a889b9632b85d52d408ba2a6a6",
+      "879c4759f2283cd1ad8d2ff36da5fde1"
+    ],
+    "public.campaign_sending_budgets()": [
+      "99a00135d3c6a15fad7066f8ff2325af",
+      "5cbceb7b6e5069d9cd06c92a3eaf3aeb"
+    ],
+    "public.case_document_command_internal(text, jsonb, uuid)": [
+      "e768c3d0399f6c913f99a6d8ea05e84f",
+      "cbd3496aaafd9d37a59e4fbfb845c78c"
+    ],
+    "public.claim_outbox_v15()": [
+      "0367c23cab39a9a57306d13b6ea4676c",
+      "59311baa1125b7edf1626848e9e3de9b"
+    ],
+    "public.claim_outbox_v7()": [
+      "1322b1f041606bb80230ce368d5d0112",
+      "0c64172a590e0757c700ce67b95c8785"
+    ],
+    "public.composio_binding_check_begin(uuid, uuid, jsonb, text, text, uuid)": [
+      "8dd7c83b1214af1f6da6763549214f56",
+      "983b5ea2699c86fb260d91d1d07acdce"
+    ],
+    "public.composio_binding_check_context(uuid, text)": [
+      "f31ec049712b345bf633688131e9a842",
+      "db8344f86effd2cb79c7386b2ff78d98"
+    ],
+    "public.composio_binding_check_finish(uuid, text, text, jsonb)": [
+      "a0606779bc6caa493ebd59a427a0adac",
+      "a98233ce0da6e0b7bffe23e1714c259f"
+    ],
+    "public.composio_binding_check_snapshot(uuid, text, text)": [
+      "6c4a4f750992f7bccd5f91d00e17da9c",
+      "f3796c93f743d872f053a7d8b9a44e9c"
+    ],
+    "public.composio_binding_command(uuid, text, jsonb, uuid)": [
+      "d1c92a967d085ca57f087eedd91c02e6",
+      "439adbb3e554c9aac48c2997fa4f00e2"
+    ],
+    "public.composio_binding_page(uuid, text, integer)": [
+      "88040fc34a595bb332051904c8ccbda4",
+      "8a2c569ef35a19ab7816254bc3218256"
+    ],
+    "public.crm_command_before_brand_b1(text, jsonb, uuid)": [
+      "f0dc61300b01d6935ce2a50b84ebf21e",
+      "29fc554f61a69e672a7f2bd627a03580"
+    ],
+    "public.crm_command_before_brand_b2(text, jsonb, uuid)": [
+      "3c1f1a5279b897f541222e153322ca9a",
+      "519131e115275376bf21e4a693a41499"
+    ],
+    "public.crm_command_v18(text, jsonb, uuid)": [
+      "c189a3f3ed279670cda20dc6fb47f7f7",
+      "288b2bb16a4a944f97f3c33fa7fd2c33"
+    ],
+    "public.crm_command_v20(text, jsonb, uuid)": [
+      "ef8b687f8d49bd976e9fbb391283fc81",
+      "80d7f2809bdaccfa7bebd98631f0d43b"
+    ],
+    "public.crm_command_v24_documents(text, jsonb, uuid)": [
+      "9458badb3533bd833ef37885851e1d72",
+      "4fcbfdfd28db561dba44d657bfc9c052"
+    ],
+    "public.crm_command_v26_underwriting(text, jsonb, uuid)": [
+      "e416f78f8918f5bbeb7e74288e2e6921",
+      "d1bf31adb15fb2fb99c478a7d2a906c3"
+    ],
+    "public.crm_command_v28_campaign_templates(text, jsonb, uuid)": [
+      "23561e8ab3219a04993b351d166d1eed",
+      "4dcc732f0bc83e724d1c362ddb65d60b"
+    ],
+    "public.crm_command_v31_banks(text, jsonb, uuid)": [
+      "3001b3d7470ba2b9de4c2a1e99ae680b",
+      "79f0bd5c9d6d390cff0bb0c385e301a3"
+    ],
+    "public.crm_command_v37_campaign_delivery(text, jsonb, uuid)": [
+      "a7efebb20073364efbdce0a6ff7a569f",
+      "98ca9e36848e74f36c178a9e4681674d"
+    ],
+    "public.crm_command_v42_first_contact(text, jsonb, uuid)": [
+      "c26067abaa32090e1d1be03b68e54cc5",
+      "7a4378859bd6101361912ba7922e73a8"
+    ],
+    "public.crm_command_v7(text, jsonb, uuid)": [
+      "1e192ba9c5145e2ee825841e401fe7ca",
+      "af2d95b25171d67ab4a6aa151b495084"
+    ],
+    "public.crm_command(text, jsonb, uuid)": [
+      "f519770bcd945aa7bc51c2a2bb722788",
+      "019e048ca3c09c1aecee80ebe1ca1d23"
+    ],
+    "public.defer_gmail_send(uuid, integer, text)": [
+      "1f5e2db59d33133a565dc3a8d814ff59",
+      "843f31014df3ef57120f4737264b9aed"
+    ],
+    "public.gmail_followups()": [
+      "82b3cab70c592cad1b944609f619496e",
+      "6b860b1540e137e2e98e2cb1fc37834a"
+    ],
+    "public.mail_access_context(uuid)": [
+      "61d5a21980e0af1767f6b06739419b86",
+      "6c6315b24822df9c93643792c1629090"
+    ],
+    "public.mail_document_write_allowed(uuid, uuid)": [
+      "301289389bdb54f06eb00871cb1f2e4a",
+      "5c909c2776433a44231f1185796fa117"
+    ],
+    "public.mail_pending_threads(integer)": [
+      "7f15a1f0281b15a275c02ab50b887dc8",
+      "d10e1266ad78c2994cf007bf864ca966"
+    ],
+    "public.mail_snapshot_allowed(uuid, uuid)": [
+      "161f657151d87440560d81d127ec913e",
+      "6312b28a97b3dff30798fc0a004cee63"
+    ],
+    "public.mark_sent(uuid, text, text)": [
+      "780b0f5a9d055203e411173f20050c87",
+      "aae7950764d1abeb54ac0f4dc96c26f6"
+    ],
+    "public.notify_user(uuid, text, text)": [
+      "e57b2efdeda0f6c916ffd7f18504deed",
+      "dbf0c40a9fcc2e52d7c49255b42ed6af"
+    ],
+    "public.queue_brand_campaign_test(uuid, uuid, text, text, text, uuid, jsonb)": [
+      "725628dc8a29d87a0b658dc98b522374",
+      "71282f180f622a325bc18c6cb4ed2eb8"
+    ],
+    "public.queue_brand_notification(uuid, uuid, text)": [
+      "2a47a82bfe4429223add0fcba9695d3e",
+      "ead10a1867851d24b3636b36e5a7183d"
+    ],
+    "public.queue_lender_emails(uuid, uuid, uuid, jsonb, text, text, uuid[], uuid[], uuid)": [
+      "f86886df16c5d101163b45e87a5e51b5",
+      "ac6f7257a07adf92d59a077d884c88ce"
+    ],
+    "public.queue_lender_reply(jsonb)": [
+      "ad4b95b1d908f10b64afac1347772e8e",
+      "418b03235f964da767e13e8d75354a73"
+    ],
+    "public.queue_mail_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid[], text[], text[], uuid, uuid, uuid, uuid, text, text, uuid)": [
+      "fe427f4026ddf2205b0c65e98aaeb27f",
+      "f5a7ffae39589b8b54bfae2d259ad086"
+    ],
+    "public.queue_mail_forward(jsonb)": [
+      "15da141b4eb2fec3b94489be8c065703",
+      "4d862451b48df965f120554812b8fe93"
+    ],
+    "public.queue_mail_lenders(jsonb)": [
+      "8f693159025eb7a2506f5ac78c551849",
+      "b4bad479f66bb2fd43450ba697201642"
+    ],
+    "public.queue_manual_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid)": [
+      "b4ff538ca116ca68f29aa98b44bb20e8",
+      "93f95d6adebc1df5adfaa93feb3f007d"
+    ],
+    "public.recheck_outbox_delivery_before_brand_b2(uuid)": [
+      "e81ecd5e083959302a607c8199c3798d",
+      "7152ddf41754d6df809117ea2781447d"
+    ],
+    "public.recheck_outbox_delivery_v42(uuid)": [
+      "cb8281da3a543fa5e72ae772e3c87050",
+      "32871365be75fb8631752af3c9724e32"
+    ],
+    "public.register_document(uuid, text, text, text, uuid)": [
+      "5a5f17252970b4dd7ae3c2e680233096",
+      "b8e244effa31d7ef121c50a82f922969"
+    ],
+    "public.register_mail_contact(uuid, text, text, uuid)": [
+      "464a52b0beb62945777189a1a22232b7",
+      "0dab8d213bb80ba7148e7242950aa953"
+    ],
+    "public.s01_i01_guard_confirmed_review()": [
+      "e375d441ddc50fb39374d2fabb6ed9f9",
+      "a561356ebcf44aca42a68fa62baaf8c7"
+    ],
+    "s01_i02.actor_can_read(uuid, uuid, public.case_area)": [
+      "8719e4f4b7a02f1b2601a260a22f2635",
+      "135fe49027787c2e25aa0c7c680acf7a"
+    ],
+    "s01_i02.actor_can_write(uuid, uuid, public.case_area, uuid)": [
+      "9db7969cc58edb93f1be46c76f3ba870",
+      "90645f95f305d2dda12d5d946750d8fb"
+    ],
+    "s01_i02.actor_notification_allowed(uuid, text)": [
+      "a4089b4520c39511de94634d9d7d3a4d",
+      "c8fa73df17cd134fbf9bec615bcf6f2c"
+    ],
+    "s01_i02.actor_snapshot_allowed(uuid, uuid, jsonb)": [
+      "a06f6f53b115fbd8c2e47bbf5e4a77e0",
+      "237f3ccf2182c06919423bdf227bcd6e"
+    ],
+    "s01_i02.assert_sources(uuid, uuid[], uuid[], uuid[], uuid)": [
+      "53d1ab1c7c959cc2bb0e246524cef054",
+      "6ab5dcdc268a5a47d18cbdc0eb6b2934"
+    ],
+    "s01_i02.assert_write(uuid)": [
+      "86def27d45a4406682e4226585ef788a",
+      "33b75c4782de36d648d9dd142a2935dc"
+    ],
+    "s01_i02.can_archive(uuid)": [
+      "f934327cb9ecb18cf6a4be0b92327ec0",
+      "3deef78aa3213d84711b6c258c53f9b6"
+    ],
+    "s01_i02.can_content(uuid, public.case_area)": [
+      "7615ebf421a97b0bd7721d95b4acc16d",
+      "a082f2c0c4afd3b1e52d428da6c5c0d4"
+    ],
+    "s01_i02.can_conversation(uuid)": [
+      "e4b47f53fbd57c9c36f74e2bc570b567",
+      "fd92eca554b0170b6d2679f6a059896f"
+    ],
+    "s01_i02.can_message(uuid)": [
+      "1958e4f6db412b72af3cb75322f6962d",
+      "02f8bd57d40c60ae673a17c341040f17"
+    ],
+    "s01_i02.can_outbox(uuid)": [
+      "b0489876ee33718b0692e2ece6bc0615",
+      "ea2e193fd2d756aeb411649e5601ec54"
+    ],
+    "s01_i02.can_source(text, uuid, text)": [
+      "384736f26fd22ad910a1d789e283828b",
+      "3fd5614f13d78c8139e0be019b1370b6"
+    ],
+    "s01_i02.delivery_allowed(uuid)": [
+      "d267773853e0d57bed6fceb1eb9e1bcc",
+      "25cf6bcab874054de12fe956335b57d5"
+    ],
+    "s01_i02.phase(uuid)": [
+      "a31b5e8e021f24e700fb4a17d16767bd",
+      "d9ea918398bd62fcdfd05c48fdc6371f"
+    ],
+    "s01_i02.scope_content()": [
+      "a5973d37a5346b35cbf3800574220f2c",
+      "051b0358e0b589be08c098894395bbcc"
+    ],
+    "s01_i02.visible_admin_outbox()": [
+      "d5cd3fbc4de56e94cf5ad65e079da215",
+      "31430a93a22a707e3cc07b2c722be6af"
+    ],
+    "s01_i02.visible_archive()": [
+      "d691abd03acbc809bfdde4ed8c9130b8",
+      "4969b859aa611686d6ce0f4faab71e43"
+    ],
+    "s01_i02.visible_conversations()": [
+      "5d1073d37d13e6a60fb8a48cc7506c1c",
+      "084a8b1c0f058da519cfbfa5e1e1f762"
+    ],
+    "s01_i02.visible_notification(text)": [
+      "9efed9f923c5032f409fbc6175cd8b71",
+      "d1ed8d7df5ed9d2c4fe9615599c1de24"
+    ],
+    "s01_i02.visible_phase(uuid)": [
+      "2f7c446f0642cd64666feaf8b50a0538",
+      "af69c5e216a66c09b3ccd5e47edd6125"
+    ],
+    "s01_i02.visible_processes()": [
+      "530f87962f0572b761017e65962174b0",
+      "c4f4643c2910342f10b6f582bc75f04b"
+    ]
+  },
+  "functions": 117,
+  "multilineQuotedFunctions": 0,
+  "provenance": "observed canonical LF and whole-script CRLF in independent disposable PGlite fixtures; no real source text persisted; not nativePG15",
+  "protectedSourceVariants": {
+    "public.campaign_contact_summary(uuid)": [
+      "b8f9606439d7f2de2e5503d7ae7b62bc",
+      "c22c306a005634a037cc4e5a82535649"
+    ],
+    "public.campaign_contacts_page(uuid, text, text, integer)": [
+      "caace654d95304c43ebb9f9230812440",
+      "2d555fcb11caec8804d47e823952300c"
+    ]
+  },
+  "protectedFunctions": 2,
+  "totalVariantFunctions": 119
+}

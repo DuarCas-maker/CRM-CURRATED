@@ -1,0 +1,424 @@
+{
+  "date": "2026-10-31",
+  "mode": "c1_c2_c3_local_verified_promotion_pending",
+  "implementationAuthorized": true,
+  "ownershipTransferred": true,
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "scope": "Coordinator local C1+C2+C3 finite scope only; C3 adds one test and own docs, no existing product/SQL modification, provider or remote authorization",
+  "preparation": {
+    "newDocumentationRoot": "docs/specs/pipeline-os/s02/integration/block-c/",
+    "referenceDocuments": [
+      "docs/specs/pipeline-os/s02/README.md",
+      "docs/specs/pipeline-os/s02/integration/README.md",
+      "docs/specs/pipeline-os/s02/integration/spec.md",
+      "docs/specs/pipeline-os/s02/integration/design.md",
+      "docs/specs/pipeline-os/s02/integration/tasks.md",
+      "docs/specs/pipeline-os/tasks.md",
+      "docs/specs/pipeline-os/verification.md",
+      "docs/specs/pipeline-os/parallel-development.md"
+    ],
+    "productFilesModified": 0,
+    "productSqlCreated": 0
+  },
+  "packages": {
+    "C1": {
+      "dependsOn": [
+        "A local",
+        "B1 local",
+        "B2 local",
+        "C-T01",
+        "authorization C1"
+      ],
+      "existing": [
+        {
+          "path": "src/components/integrations.tsx",
+          "reason": "Insertar únicamente sección C; conservar GmailHistory/BrandSettings/OAuth.",
+          "action": "modified_local",
+          "baselineSha256": "aca056c39abb4c6bf72264508b53a6de03a31f146a6c2610688bdeb1130fa61c",
+          "revalidateBeforeImplementation": true
+        }
+      ],
+      "additions": [
+        {
+          "path": "src/lib/composio-bindings.ts",
+          "reason": "DTO/parsers/errores C estrictos y saneados, sin resolver transporte.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "src/lib/server/mail-accounts/composio-binding.ts",
+          "reason": "Composición humana/RPC acotada y DTO, sin proveedor o env.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "src/app/api/mail/accounts/[id]/composio/route.ts",
+          "reason": "GET/POST administrativo con MFA/Origin/cursor/límites.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "src/components/composio-account-bindings.tsx",
+          "reason": "Panel autocontenido ES/EN de asociación técnica sin activación.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "docs/specs/pipeline-os/s02/integration/block-c/migrations/c-composio-bindings.local.sql",
+          "reason": "Candidato aditivo C1 protegido, solo en memoria y sin ordinal remoto.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-c-bindings.test.ts",
+          "reason": "SQL/estados/permisos/CAS/idempotencia/legado/rollback.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-c-api.test.ts",
+          "reason": "Rutas/errores/Origin/DTO y ausencia de proveedor.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-c-ui.test.ts",
+          "reason": "Estados/roles/SSR/ES-EN y verificación visual acotada futura.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        },
+        {
+          "path": "tests/fixtures/pipeline-os-s02-composio-bindings.ts",
+          "reason": "Fixtures ficticios sobre A+B1+B2, sin privados S00.",
+          "action": "added_local",
+          "existsAtPreparation": false
+        }
+      ]
+    },
+    "C2": {
+      "dependsOn": ["C1 reviewed", "authorization C2"],
+      "existing": [
+        {
+          "path": "docs/specs/pipeline-os/s02/integration/block-c/migrations/c-composio-bindings.local.sql",
+          "action": "modified_local_after_C1",
+          "existsAtPreparation": false,
+          "revalidateAfterC1": true,
+          "reason": "Completar protocolo de evidencia sin añadir ejecución real.",
+          "postC1Sha256": "f06276b1d5b0d659815e0853d2167dafa2c45c60dfcc3a7ff37321146a6a6dd0",
+          "postC2Sha256": "c350e981fe58631aa2409757f6a5045b12eafa299b08e693070df2bf55df459c"
+        },
+        {
+          "path": "src/lib/server/mail-accounts/composio-binding.ts",
+          "action": "modified_local_after_C1",
+          "existsAtPreparation": false,
+          "revalidateAfterC1": true,
+          "reason": "Completar protocolo de evidencia sin añadir ejecución real.",
+          "postC1Sha256": "5d67a868efa13570521d89937a607fdfef1449f86d7ff0501dd69a1624cf43b1",
+          "postC2Sha256": "7430dcd9b9aea3cb8e2ba5d93124e26803e03f19117204ad351266ffd0a6d35c"
+        }
+      ],
+      "additions": [
+        {
+          "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+          "reason": "Dependencias inyectadas falsas, normalización/evidencia y cero runtime de red.",
+          "action": "added_local",
+          "existsAtPreparation": false,
+          "sha256": "4d1069390167a03e6cf31257ba90f23c4f4d8790cf79f06cfe675a5788206776"
+        },
+        {
+          "path": "tests/pipeline-os-s02-block-c-verifier.test.ts",
+          "reason": "Identidad/config/owner/proyecto/scopes y nonce/CAS/respuesta tardía.",
+          "action": "added_local",
+          "existsAtPreparation": false,
+          "sha256": "976fe3aba2fa9933d97abaa2c54b7bd196ec27a53b7bb3c4f9fa7558a969dcce"
+        }
+      ]
+    },
+    "C3": {
+      "dependsOn": ["C1", "C2", "authorization C3"],
+      "existing": [],
+      "additions": [
+        {
+          "path": "tests/pipeline-os-s02-block-c-composition.test.ts",
+          "reason": "Composición de asociación con directo/B2 e invariantes de no activación.",
+          "action": "added_local",
+          "existsAtPreparation": false,
+          "sha256": "e397c5bf72e6f9f9206e5f40422aedf0592dfb55a3e696a4f1deef8d161b44fe"
+        }
+      ]
+    }
+  },
+  "overlapSerialized": [
+    "C1->C2: own SQL candidate and server binding module; no simultaneous edits"
+  ],
+  "protectedI01": [
+    {
+      "path": "src/lib/server/google.ts",
+      "sha256": "dcffe1b27ba7b69b24d74570798a81ad0ce26e6306955e9abac5044e0bf6674c"
+    },
+    {
+      "path": "src/lib/server/mail-transport/contract.ts",
+      "sha256": "a38920e11561fbb41680f120a51a29bdcdcf38f011e54417acb3588e9dee2b92"
+    },
+    {
+      "path": "src/lib/server/mail-transport/gmail-direct.ts",
+      "sha256": "a8c86659531d0d5f25d23d7bd352836d7253ad4c0bd5edcc011501149e1df7a0"
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "sha256": "c941726cdcfd700d8b1c45b9646be8c9374bb67d3f2eac05b31311d3297130d8"
+    },
+    {
+      "path": "src/lib/server/mail-transport/errors.ts",
+      "sha256": "9f03a63a8e650d93e1bcf7c009a93afa2afe0e81e37f74e938d533962bf13aae"
+    },
+    {
+      "path": "src/lib/server/mail-transport/factory.ts",
+      "sha256": "f33c01c21a1fc79c106b95746dc5441c1af1e58f3ebff7cbeb3b19676cee15d0"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport.test.ts",
+      "sha256": "a14fab038ff905cc3ce319107b7b40d1446231789e2a6b564ff57bfec121a11a"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-transport.ts",
+      "sha256": "379994c99179571a80ddbbc2ae2fe763748b05bd090765f29e6a48fcdebfea6d"
+    }
+  ],
+  "protectedB2": [
+    {
+      "path": "src/app/api/actions/route.ts",
+      "baselineSha256": "495b66ca875f45e56b0990ecef62d689d91db130c68be07f510fff572c86333a",
+      "sha256": "3e435f819ecabb1f8533dc4bae1a41f18d861ef72b19f7ea00194d158bc328a4",
+      "changed": true
+    },
+    {
+      "path": "src/lib/domain.ts",
+      "baselineSha256": "c88c14a4318e2afc19db63f56b6465a0fb9c696b1745debc36fbb9e64d2049fa",
+      "sha256": "1b3c67d34cc1d882352c5e2728cc0c239d910c705c7faa519aa2f691c1e896fb",
+      "changed": true
+    },
+    {
+      "path": "src/lib/server/workspace.ts",
+      "baselineSha256": "697efc5953f4c3394457c87fc2f7b81e40bbbc1e5e0abd4c7b32d4d6752615d0",
+      "sha256": "9ea0c707b33a997b4d38182893c2b8a53ff6d6638535c7bf7a9abcf839abfa9f",
+      "changed": true
+    },
+    {
+      "path": "src/lib/mail-manager.ts",
+      "baselineSha256": "c75d4de46b9cc11e90a44313ec58a3baa291112beb9d67d86ebb93b31384e332",
+      "sha256": "8435a920df343765d68d2776f8f87c95317399f158332f0b3586de7f9c5c6a02",
+      "changed": true
+    },
+    {
+      "path": "src/lib/server/mail-manager.ts",
+      "baselineSha256": "74f6f182c265ceab88f9b50c4ecde90588b5bde6aaa40efae453f43f3ea0a4fb",
+      "sha256": "61a13684e14f7c3ce2a48aa456af0757de9bf791bbfbbe2ef16053d6793f4427",
+      "changed": true
+    },
+    {
+      "path": "src/lib/server/mail-actions.ts",
+      "baselineSha256": "a2b5343f492027c01815cfd0556f775cdafa32976641105fdf07e93f7eb6d4f0",
+      "sha256": "860125145118b9fcf4d18d05d2a8b1bc540028e91842f3653deb6219aec027ca",
+      "changed": true
+    },
+    {
+      "path": "src/lib/server/campaign-delivery.ts",
+      "baselineSha256": "9356fa315d73410bffc8828715877e7936364ef29d49b543a85f4e47a153e18c",
+      "sha256": "59e611dcb92564c5c8a888730d57136841b52d0daa64abf4c7d568cd8126686d",
+      "changed": true
+    },
+    {
+      "path": "src/app/api/mail/route.ts",
+      "baselineSha256": "7f0272c15c4eb5deab6106e003495af1e5460134406d03f00b8ce43b8e3f594f",
+      "sha256": "0cf619259a740386aa1086fe1655e2fb4dfc57e3bb75a7abdec9dc7dcb67de3c",
+      "changed": true
+    },
+    {
+      "path": "src/app/api/campaigns/route.ts",
+      "baselineSha256": "fda1d08d9c45b03c6a0add87b547c588f85b9d70fe026654aba9e7322d329f3c",
+      "sha256": "d8ad7dc06b632c63ea933ed8bffa7556da33f550304cc04ec2229da10d96c2a1",
+      "changed": true
+    },
+    {
+      "path": "src/app/api/campaigns/center/route.ts",
+      "baselineSha256": "246a48893f7d7ca4b78ea4288418b8ee94b5387a96972e7bb957c36c57138ef8",
+      "sha256": "246a48893f7d7ca4b78ea4288418b8ee94b5387a96972e7bb957c36c57138ef8",
+      "changed": false
+    },
+    {
+      "path": "src/app/api/conversations/channels/route.ts",
+      "baselineSha256": "3c7d1ce8ece8d930f76238aea3dfd202dfcebfef30349b330da28af89b6c5594",
+      "sha256": "bd96245dbc01d946e9f9ae75366b1c0feaa1fd06d679e7dafdba93415f1e6151",
+      "changed": true
+    },
+    {
+      "path": "src/app/api/conversations/[id]/messages/route.ts",
+      "baselineSha256": "6b0b8290166c49f0c841d877c78006a05e3ab32d05bf6cabdf90ef6a226f02d6",
+      "sha256": "6b0b8290166c49f0c841d877c78006a05e3ab32d05bf6cabdf90ef6a226f02d6",
+      "changed": false
+    },
+    {
+      "path": "src/components/mail-editor.tsx",
+      "baselineSha256": "7c307e27f12554ad3922269ad6ef63e4e595d5c50812ada71b3a7c51f2e3319b",
+      "sha256": "b2e251f31a54f30d955f97221e0da7f6e72e6563c3cf105cf3e45c31f78d8f52",
+      "changed": true
+    },
+    {
+      "path": "src/components/conversations-workspace.tsx",
+      "baselineSha256": "4482f560d65c49ae8eb809d956704a4a4edc7655d6b0cd46029648890b8518bd",
+      "sha256": "9600ef8a2939d60c4b55ae2ac1d15c724cdac80a66bf91de6115b11f2a839390",
+      "changed": true
+    },
+    {
+      "path": "src/components/campaign-composer.tsx",
+      "baselineSha256": "8806fc788ae21c44018e139b5a41ba98ef8f1a423f23ae56048705858a0a3051",
+      "sha256": "9755bb01a7ba8a3379887fa75757b04b74a582ec4a2408b978702db042e3dfac",
+      "changed": true
+    },
+    {
+      "path": "src/components/campaign-review.tsx",
+      "baselineSha256": "73ee75c8501214ea02573f855341234afc1793b9d71e3082351559e8c280dbbb",
+      "sha256": "e28d1057963847e869f52830690708df7a6959598ed709a6a52a941fa9c6b833",
+      "changed": true
+    },
+    {
+      "path": "src/components/campaign-center.tsx",
+      "baselineSha256": "336c36f5daf12ba2a451ee881a5e57157d832782b6ba1fd996dd54710f86e2ff",
+      "sha256": "7eb353193b825f379b05c8a6a60cdba8089aefc23726f26c498ee1b15fe0e01d",
+      "changed": true
+    },
+    {
+      "path": "worker/campaigns.ts",
+      "baselineSha256": "bd365bff7cb25e651f2f6cd3cb8c7ff9f0cbf314d239d02e3672347f16e6ad68",
+      "sha256": "a799b156111d0231e432ed1621e27da437cd73655fc7a613a0afac3a46e34b22",
+      "changed": true
+    },
+    {
+      "path": "worker/gmail.ts",
+      "baselineSha256": "607be0a11575a4642cc05918ef1b4a06a4e020ff34fa68362cd3456af86d9791",
+      "sha256": "99f0d3df722f6f1014d7a5e0c0d5bf01b9046302b42c4186e02144625ebd0e56",
+      "changed": true
+    },
+    {
+      "path": "worker/notifications.ts",
+      "baselineSha256": "f46e4bb10491af48727022eadbfb5761ded3ccc942eee8fd4be70d7fec181080",
+      "sha256": "6ee19cb0dce6e971a02cc9875c0f9fea52517ab19f92f9fe2f65305cb5a10eee",
+      "changed": true
+    },
+    {
+      "path": "tests/campaign-attachments.test.ts",
+      "baselineSha256": "b3172ad09c20dda329133bcd4b61e32e1635e44cd11c64ad6b4e57bbcae14f24",
+      "sha256": "fd8a4c16dc010def01ae0614b39bcdfe1b20a96a7de227e42b1213705b360182",
+      "changed": true
+    },
+    {
+      "path": "tests/document-package-delivery.test.ts",
+      "baselineSha256": "b1f298278201479acb95635e2fe880970edfbacaffae21861d69664dc5154ad4",
+      "sha256": "8da2088da5b8164e4e2918816e6b870dd5a013d4675b387c81c52a3b76b4849a",
+      "changed": true
+    },
+    {
+      "path": "tests/mail-forward.test.ts",
+      "baselineSha256": "74ede206832583be4c5ab6ce35925c1b033dce51b7b7a454d464590737d54a1f",
+      "sha256": "0b2a051c832bc148e27e7de34bb39982e997a3cbb20f514642ddde2328d45653",
+      "changed": true
+    },
+    {
+      "path": "tests/mail-send.test.ts",
+      "baselineSha256": "19b1037609541c7a784a9692aa69d631cad5d9e76a6f35fc67dd732915c4e332",
+      "sha256": "912eecefc61f4bbad05de1578054c75580afe1b2763e79c5493d312691b32537",
+      "changed": true
+    },
+    {
+      "path": "tests/pipeline-os-s01-mail-permissions-api.test.ts",
+      "baselineSha256": "cd35c76eaeba6cbed84ecb5294794933253860f0630694a5b50ff2b1994b0c70",
+      "sha256": "e49ee641c4e66821c006e7f8eb5d45f22c8e2482fd0a84c59551401b1d78dbb8",
+      "changed": true
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-a-api.test.ts",
+      "baselineSha256": "b61808f0230daf36c7bfedf2e09903d1bf8766dbb3a1141c0988d8120656353a",
+      "sha256": "ddaad03ad3b310c1c0832931f6e5177fb9b1d538399ea549b219be7ccbb9b6dd",
+      "changed": true
+    },
+    {
+      "path": "tests/mail-editor-compatibility.test.ts",
+      "baselineSha256": "c4b0f4948aaa4a920b3b7dd4389c55f946a3301ab8789171f7bd9a15a8889e7e",
+      "sha256": "d7125051c8490cf51851042cc3e9727d1a2729bb8591194fc93a511c6cff8571",
+      "changed": true
+    },
+    {
+      "path": "src/lib/brand-delivery.ts",
+      "baselineSha256": null,
+      "sha256": "2246a537b4ecebb82124a74f65915f4c57f066141576fb1eb30183ec991bee5c",
+      "changed": true
+    },
+    {
+      "path": "src/lib/server/brand-delivery.ts",
+      "baselineSha256": null,
+      "sha256": "b312b224e873616277012bb7da90e02560c7062ede557ac5ba43fabd34776b97",
+      "changed": true
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-snapshots.test.ts",
+      "baselineSha256": null,
+      "sha256": "ad0336ad7edc08f0632e4f04722fffac4c48b60a0bad4fa8b901c84575874499",
+      "changed": true
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-dispatch.test.ts",
+      "baselineSha256": null,
+      "sha256": "3eac17bc48cab1341c834a6d7209a26cb0e1299267085812deeb5fad6c2e0da0",
+      "changed": true
+    },
+    {
+      "path": "tests/pipeline-os-s02-block-b-composition.test.ts",
+      "baselineSha256": null,
+      "sha256": "3e91ac65c2c960bec212987302c9726809c84c753a1166b75f8babdc407d0fc4",
+      "changed": true
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-delivery.local.sql",
+      "baselineSha256": null,
+      "sha256": "7a24c586fe9dd7640191c8788ae19eea636ea7f06508b0786ffc61f6ec301fab",
+      "changed": true
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-brand-delivery.ts",
+      "baselineSha256": null,
+      "sha256": "fe894f6f1b5bca72b03efec0e2e7aa9608db150ad6b19ec764c443ac6ad1b558",
+      "changed": true
+    }
+  ],
+  "protectedA": "All current code/SQL unchanged during preparation; future C does not edit A",
+  "historicalMigrations": "001-047 unchanged; no final ordinal reserved",
+  "noChangesTo": [
+    "AGENTS.md",
+    "package.json",
+    "pnpm-lock.yaml",
+    "next.config.ts",
+    "supabase/migrations/**",
+    "scripts/pipeline-os/**",
+    "worker/**",
+    "src/lib/server/google.ts",
+    "src/lib/server/mail-transport/**",
+    "src/app/api/actions/route.ts",
+    "src/lib/server/supabase.ts",
+    "docs/specs/pipeline-os/s00/**",
+    "docs/specs/pipeline-os/s01/**",
+    ".env*",
+    ".local operational journals",
+    "S01 source worktree"
+  ],
+  "externalPetitionBudget": 0,
+  "instantlyConsumedPreserved": 43,
+  "productProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "realVerificationProtocol": "not authorized; project/quota/API contract gates pending",
+  "evidence": "docs/specs/pipeline-os/s02/integration/block-c/verification.md",
+  "authorizedPackages": ["C1", "C2", "C3"],
+  "c1Evidence": "docs/specs/pipeline-os/s02/integration/block-c/c1-verification.md",
+  "c2Evidence": "docs/specs/pipeline-os/s02/integration/block-c/c2-verification.md",
+  "c3Evidence": "docs/specs/pipeline-os/s02/integration/block-c/c3-verification.md"
+}

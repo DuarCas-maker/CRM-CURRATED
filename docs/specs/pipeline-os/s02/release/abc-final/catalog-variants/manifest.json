@@ -1,0 +1,77 @@
+{
+  "id": "AF-CVAR-r1",
+  "currentArtifacts": {
+    "migration": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39",
+    "postflight": "dd192f1983ccd4a4d3f8ecf014869bf696076e75710d0b2284e92467b30456dd",
+    "contract": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c",
+    "preflight": "b39f472286b89cac22553d649adab10b722b8ea37c623ca43709ddf3428786e8"
+  },
+  "publicationReady": false,
+  "readyForRemoteSql": false,
+  "files": [
+    {
+      "path": "scripts/pipeline-os/abc-catalog-variants.ts",
+      "bytes": 8953,
+      "sha256": "d0883b371f0d1f028813552a2ca8db7016221cefdd3f8054ca363f543c6b4fbc"
+    },
+    {
+      "path": "tests/pipeline-os-abc-catalog-variants.test.ts",
+      "bytes": 10054,
+      "sha256": "d71aa3026255cb8b0d925de27268b7c1d1ef853ffab0314217b855bf0f0c4766"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/spec.md",
+      "bytes": 5845,
+      "sha256": "33b155260f25566362090aed173df39417b293df3baff43caf7becc816da1f2c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/evidence.json",
+      "bytes": 17184,
+      "sha256": "1e5f40ff6cb0aaf2f9d5ce093fcb83de3adb067ccaf3d518ef6eb1fa4e2267f6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/verification.md",
+      "bytes": 5436,
+      "sha256": "e1820a4fbea10827b0de9e0583e35424917880e723773051127fdf46d6171346"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/verification.json",
+      "bytes": 5082,
+      "sha256": "63fbeb9bdaed09041a521288eb764dc5893864c92bdbaf58facb3f29f8b543c4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/prior-diagnostic-manifest.json",
+      "bytes": 2265,
+      "sha256": "7972a78726a2237706b92e7c9e9c89f68cb2a4e26cc72a679b563a37966ddad7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/application-postflight-received.json",
+      "bytes": 1402,
+      "sha256": "a5a4a24ba287d1cb9fe51d942101d6b4a0716a103676b6480053c659c034c1a0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/application-result-review.md",
+      "bytes": 3551,
+      "sha256": "3ed50c3777ac944f73d24563c68d852083fc0867eee7b740fbf1c0b8c31b9915"
+    }
+  ],
+  "acceptedApplicationAndPostflight": {
+    "id": "AF-CVAR-r1-remote-catalog-accepted",
+    "reviewedOn": "2026-11-05",
+    "source": "operator_pasted_application_then_read_only_postflight",
+    "evidencePath": "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/application-postflight-received.json",
+    "contractSha256": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c",
+    "protectedFingerprint": "6bb4165d697a9688d01aed2962f57cac",
+    "rolesOk": true,
+    "targetsOk": true,
+    "protectedMatches": true,
+    "catalogAccepted": true,
+    "migrationHistoryNotQueried": true,
+    "explicitSuccessAnswerReceived": false,
+    "nativeIsolatedQaCompleted": false,
+    "agentRemoteCalls": 0,
+    "instantlyConsumed": 43,
+    "instantlyNew": 0,
+    "nextStep": "Prepare joint web/worker release and installer reconciliation; do not repeat 048/049 or accepted diagnostics."
+  }
+}

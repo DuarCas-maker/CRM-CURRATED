@@ -1,0 +1,720 @@
+{
+  "id": "AF-PRE-REVIEW-r1",
+  "date": "2026-11-01",
+  "sdd": "STRICT",
+  "mode": "review_and_documentation_only",
+  "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+  "publicationReady": false,
+  "readyForRemoteSql": false,
+  "artifacts": {
+    "sqlSha256": "ba65aa6d0a9d63b0c949d72ad4fbae091339f8d3ae1a56aabb1d6eff55c82187",
+    "postflightSha256": "bae5b6653aee9eeb928e1ee1079adf52a7492bd9065595e40c67de5f74088e10",
+    "contractSha256": "8fafee3c08c3aea1941b91058fcc9594560d280ede7b66724583b5167f932321",
+    "unchanged": true
+  },
+  "sources": {
+    "pdSha256": "9aaaaf19fc497169b54b710866bc0af99f106ab88c73c681a69cc59ca404d430",
+    "olderAbcSha256": "1b16483ac1a36328846121b5775fac0687b3fee8d59f82146ae68109e80b9f2b",
+    "inventory": "AF-INV-r2 operator read accepted206/206,0 missing/extra; not repeated",
+    "vr1": "Accepted operator PG15 metadata and exact local derivation, not repeated",
+    "freshness": "No new live metadata. Historical projections do not attest current state."
+  },
+  "knownBlockingFinding": {
+    "key": "public.campaign_workspace",
+    "expectedBy049": "f0ac44d1f4e3fb6738d3593c70279216",
+    "acceptedPg15RawHash": "321f987da7339d43e9de9d6b45cf5b63",
+    "equals": false,
+    "scope": "Known accepted representation mismatch, not a new live query",
+    "remedy": "Propose an explicit per-view whitelist of the two already accepted raw hashes, preserving every other field; no view recreation, source normalization or guard bypass.",
+    "status": "confirmed_against_accepted_snapshot_not_fixed_in_this_review",
+    "requirement": "AF-FR02"
+  },
+  "offlineComparison": {
+    "existingFunctions": 47,
+    "existingRelations": 14,
+    "columns": 221,
+    "existingPolicies": 6,
+    "policyExpressionHashesUnverifiedInMatchingContext": 6,
+    "functionDifferences": [],
+    "relationDifferences": [],
+    "policyDifferences": [],
+    "knownViewRepresentationMismatches": 1,
+    "functions": [
+      {
+        "key": "public.account_delivery_usage(uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.associate_live_mail(uuid, uuid, uuid, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.associate_live_mail_v23(uuid, uuid, uuid, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.campaign_activity_page(integer)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.campaign_audience(uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.campaign_center(text, integer, text)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.campaign_contact_facts(uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.campaign_delivery_stats(uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.campaign_leads_page(uuid, uuid, text, integer)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.campaign_reply_rows(uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.campaign_sending_budgets()",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.case_document_command_internal(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.claim_notification_outbox()",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.claim_notification_outbox_v15()",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.claim_outbox()",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.claim_outbox_v15()",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.claim_outbox_v7()",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command_v18(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command_v20(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command_v24_documents(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command_v26_underwriting(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command_v28_campaign_templates(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command_v31_banks(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command_v37_campaign_delivery(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command_v42_first_contact(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.crm_command_v7(text, jsonb, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.defer_gmail_send(uuid, integer, text)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.gmail_followups()",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.mail_pending_threads(integer)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.mark_sent(uuid, text, text)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.mark_sent_v15(uuid, text, text)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.mark_sent_v19(uuid, text, text)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.mark_sent_v23(uuid, text, text)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.mark_sent_v37_campaign_delivery(uuid, text, text)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.notify_user(uuid, text, text)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.queue_campaign_test(uuid, uuid, text, text, text, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.queue_lender_emails(uuid, uuid, uuid, jsonb, text, text, uuid[], uuid[], uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.queue_lender_reply(jsonb)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.queue_mail_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid[], text[], text[], uuid, uuid, uuid, uuid, text, text, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.queue_mail_forward(jsonb)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.queue_mail_lenders(jsonb)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.queue_manual_email(uuid, uuid, text, text, text, uuid[], uuid[], uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.recheck_outbox_delivery(uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.recheck_outbox_delivery_v42(uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.register_document(uuid, text, text, text, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      },
+      {
+        "key": "public.register_mail_contact(uuid, text, text, uuid)",
+        "checkedAttributesMatch": true,
+        "limits": [
+          "argument_names_not_independently_exported",
+          "PUBLIC_EXECUTE_not_exported_for_all_PD_functions",
+          "not_fresh"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "public.campaign_workspace",
+        "columns": 27,
+        "provenance": "older_metadata_plus_human_acl_post048_accepted_projection_not_fresh"
+      },
+      {
+        "key": "public.campaigns",
+        "columns": 25,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.conversations",
+        "columns": 14,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.document_versions",
+        "columns": 9,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.documents",
+        "columns": 16,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.mail_accounts",
+        "columns": 16,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.mail_drafts",
+        "columns": 5,
+        "provenance": "older_metadata_plus_human_acl_post048_accepted_projection_not_fresh"
+      },
+      {
+        "key": "public.mail_permissions",
+        "columns": 3,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.mail_uploads",
+        "columns": 9,
+        "provenance": "older_metadata_plus_human_acl_post048_accepted_projection_not_fresh"
+      },
+      {
+        "key": "public.messages",
+        "columns": 15,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.oauth_states",
+        "columns": 5,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.opportunities",
+        "columns": 33,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.outbox",
+        "columns": 38,
+        "provenance": "older_metadata_only_not_fresh"
+      },
+      {
+        "key": "public.profiles",
+        "columns": 6,
+        "provenance": "older_metadata_only_not_fresh"
+      }
+    ],
+    "policies": [
+      {
+        "key": "public.case_events.shared_mail_events",
+        "context": "older_ABC_default_search_path",
+        "command": true,
+        "permissive": true,
+        "roles": true,
+        "usingHash": "requires_same_context_check",
+        "checkHash": "requires_same_context_check"
+      },
+      {
+        "key": "public.document_reviews.document_reviews_read",
+        "context": "older_ABC_default_search_path",
+        "command": true,
+        "permissive": true,
+        "roles": true,
+        "usingHash": "requires_same_context_check",
+        "checkHash": "requires_same_context_check"
+      },
+      {
+        "key": "public.document_versions.document_versions_read",
+        "context": "older_ABC_default_search_path",
+        "command": true,
+        "permissive": true,
+        "roles": true,
+        "usingHash": "requires_same_context_check",
+        "checkHash": "requires_same_context_check"
+      },
+      {
+        "key": "public.gmail_saved_attachments.shared_mail_files",
+        "context": "older_ABC_default_search_path",
+        "command": true,
+        "permissive": true,
+        "roles": true,
+        "usingHash": "requires_same_context_check",
+        "checkHash": "requires_same_context_check"
+      },
+      {
+        "key": "public.mail_waits.shared_mail_waits",
+        "context": "older_ABC_default_search_path",
+        "command": true,
+        "permissive": true,
+        "roles": true,
+        "usingHash": "requires_same_context_check",
+        "checkHash": "requires_same_context_check"
+      },
+      {
+        "key": "public.tasks.shared_mail_tasks",
+        "context": "older_ABC_default_search_path",
+        "command": true,
+        "permissive": true,
+        "roles": true,
+        "usingHash": "requires_same_context_check",
+        "checkHash": "requires_same_context_check"
+      }
+    ],
+    "expectedAbsence": {
+      "relations": { "count": 11, "presentInOlderSnapshot": [] },
+      "functions": { "count": 85, "presentInOlderSnapshot": [] },
+      "policies": { "count": 23, "presentInOlderSnapshot": [] },
+      "triggers": { "count": 15, "presentInOlderSnapshot": [] },
+      "constraints": { "count": 97, "presentInOlderSnapshot": [] },
+      "indexes": { "count": 27, "presentInOlderSnapshot": [] },
+      "schemas": { "count": 4, "presentInOlderSnapshot": [] }
+    },
+    "roleEvidence": [
+      { "key": "anon", "inherit": true, "superuser": false, "bypass": false },
+      {
+        "key": "authenticated",
+        "inherit": true,
+        "superuser": false,
+        "bypass": false
+      },
+      {
+        "key": "service_role",
+        "inherit": true,
+        "superuser": false,
+        "bypass": true
+      }
+    ],
+    "appMemberships": [],
+    "publicSchemaAccess": {
+      "anon": { "usage": true, "create": false },
+      "authenticated": { "usage": true, "create": false },
+      "service_role": { "usage": true, "create": false }
+    },
+    "limits": [
+      "Older sources were captured before048; no freshness attestation.",
+      "Human table ACL for affected048 objects projected from accepted postflight, not silently changing evidence.",
+      "No live sending state, explicit column ACL refresh, worker/autodeploy, backup or window metadata verified.",
+      "Argument names and all PUBLIC EXECUTE flags not separately exported in every PD record.",
+      "Zero differences for inspected fields excludes the separately identified view-hash blocker and six unverified policy expression hashes."
+    ]
+  },
+  "pendingLiveBaseChecks": [
+    "context_and_role_freshness",
+    "47_full_function_records_including_argument_names_and_all_explicit_ACL",
+    "14_relation_and221_column_metadata_including_direct_column_ACL",
+    "six_policy_expression_hashes_under_matching_search_path",
+    "absence_of_partial_install_or_name_collision",
+    "outbox_sending_and_legacy_aggregate_state"
+  ],
+  "publicationGates": {
+    "visualQa": false,
+    "linuxBuild": false,
+    "nativePg15MigrationAndPostflight": false,
+    "independentContentionAndMixedVersions": false,
+    "installerInventory048049": false,
+    "currentCoolifyVersionsAndRecoveryImages": false,
+    "backupRecoveryEvidence": false,
+    "workerProducerAndAutoRestartControl": false,
+    "windowDdlDclExclusion": false,
+    "approvedBootstrap": false,
+    "exactCommitAndAuthorization": false
+  },
+  "plan": [
+    "AF-P01: propose and implement only accepted-view variant comparator after instruction",
+    "AF-P02: prepare one full READ ONLY preflight offline, then request its own execution authorization",
+    "AF-P03: isolated visual/Linux/PG15/independent-connection QA",
+    "AF-P04: reconcile installer/inventory048049 without replay048",
+    "AF-P05: operational evidence, exact manifest/commit and coordinated authorization"
+  ],
+  "budgets": {
+    "executedSqlScripts": 0,
+    "externalApiCalls": 0,
+    "newInstantlyRequests": 0,
+    "proposedFutureFullPreflight": {
+      "sqlScripts": 1,
+      "authorized": false,
+      "preparedSql": false
+    },
+    "existingApplicationBudgetUnchanged": {
+      "normalScripts": 2,
+      "conditionalRollbackIfExplicitlyAuthorized": 1,
+      "retries": 0,
+      "authorized": false
+    }
+  },
+  "checksThisReview": {
+    "metadataComparison": "completed within declared fields",
+    "json": "passed",
+    "links": 95,
+    "gitDiff": "passed",
+    "testsRun": 0,
+    "acceptedTestsNotRerun": true,
+    "typeScript": "not repeated: documentation-only changes",
+    "buildOrServiceRun": false,
+    "credentialFilesRead": 0,
+    "installation": false
+  },
+  "preservation": {
+    "payload": 100,
+    "buildSupport": 10,
+    "migrations": 47,
+    "operationalHashes": 49,
+    "prepared048Unchanged": true,
+    "prepared049AndPostflightUnchanged": true,
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "applicationAndWorkerUnchanged": true,
+    "changedExistingDocs": [
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/runbook.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/verification.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/tasks.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/README.md",
+      "docs/specs/pipeline-os/s02/README.md"
+    ],
+    "unexpectedChanges": []
+  },
+  "operations": {
+    "remoteSql": 0,
+    "remoteChanges": 0,
+    "deploys": 0,
+    "pushes": 0,
+    "sends": 0,
+    "instantly": { "consumed": 43, "new": 0 },
+    "gmailDirect": "preserved by unchanged accepted source",
+    "composio": "disabled by preserved scope; no live flag query"
+  },
+  "nextStep": "Prepare scoped view-comparator correction and a single full read-only preflight locally; no049/048 replay or live read authorization implied."
+}

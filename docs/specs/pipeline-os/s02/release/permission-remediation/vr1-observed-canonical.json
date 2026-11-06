@@ -1,0 +1,581 @@
+{
+  "protocol": "VR1",
+  "scopeSha256": "72df8f3480d7779879ebcf373008d3df8d7746c3bc0a0c2109dfd25b8d6279a3",
+  "context": {
+    "version": "150008",
+    "sqlRole": "supabase_admin",
+    "readOnly": "on",
+    "searchPath": "pg_catalog, pg_temp",
+    "standardStrings": "on"
+  },
+  "objectsOk": true,
+  "views": [
+    {
+      "key": "public.campaign_workspace",
+      "kind": "v",
+      "owner": "supabase_admin",
+      "security": ["security_invoker=true"],
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "name",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "account_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "seller_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_by",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "status",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "daily_limit",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "timezone",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "start_hour",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "end_hour",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "subject",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "body",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "steps",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "batch_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "template_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "template_version",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "requires_application",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "asset_snapshot",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "body_format",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "excluded_contact_ids",
+          "type": "pg_catalog._uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "audience_count",
+          "type": "pg_catalog.int4",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "delivery_stats",
+          "type": "pg_catalog.jsonb",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "first_contact",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "selected_contact_ids",
+          "type": "pg_catalog._uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "scheduled_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "activated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        }
+      ],
+      "definition": {
+        "rawHash": "321f987da7339d43e9de9d6b45cf5b63",
+        "lfHash": "321f987da7339d43e9de9d6b45cf5b63",
+        "lexical": {
+          "status": "complete",
+          "count": 148,
+          "hash": "2667b14cca6fb80ac0eccbe13d4c2b4b",
+          "quotedHash": "d41d8cd98f00b204e9800998ecf8427e"
+        }
+      },
+      "dependencies": {
+        "count": 27,
+        "unsupported": 0,
+        "hash": "6617f073ad8b63a0002f0cc1955fe283"
+      }
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "kind": "v",
+      "owner": "supabase_admin",
+      "security": ["security_invoker=true"],
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "industry",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "product",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "seller_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "closer_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "stage",
+          "type": "public.case_stage",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_contact",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "summary",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_signed",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_complete",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "handed_off_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "campaign_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "archived_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "funded_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_lender_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "email",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "phone",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "verification",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        }
+      ],
+      "definition": {
+        "rawHash": "8828ed34ceab6746923f6a5159f236d1",
+        "lfHash": "8828ed34ceab6746923f6a5159f236d1",
+        "lexical": {
+          "status": "complete",
+          "count": 152,
+          "hash": "a36dec841758de8fd5b1fcbad854dd66",
+          "quotedHash": "d41d8cd98f00b204e9800998ecf8427e"
+        }
+      },
+      "dependencies": {
+        "count": 30,
+        "unsupported": 0,
+        "hash": "b97a2a2d0d9a8b7e4d757fbc47e408f8"
+      }
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "kind": "v",
+      "owner": "supabase_admin",
+      "security": ["security_invoker=true"],
+      "columns": [
+        {
+          "name": "id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "company",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "industry",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "product",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "seller_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "closer_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "stage",
+          "type": "public.case_stage",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "last_contact",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "summary",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "next_action_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_signed",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "application_complete",
+          "type": "pg_catalog.bool",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "handed_off_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "campaign_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "archived_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_amount",
+          "type": "pg_catalog.numeric",
+          "typmod": 1048582,
+          "notNull": false
+        },
+        {
+          "name": "funded_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "funded_lender_id",
+          "type": "pg_catalog.uuid",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "created_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "updated_at",
+          "type": "pg_catalog.timestamptz",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "contact",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "email",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "phone",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        },
+        {
+          "name": "verification",
+          "type": "pg_catalog.text",
+          "typmod": -1,
+          "notNull": false
+        }
+      ],
+      "definition": {
+        "rawHash": "c74d30a32132dd00a1f9e4c526d1eeee",
+        "lfHash": "c74d30a32132dd00a1f9e4c526d1eeee",
+        "lexical": {
+          "status": "complete",
+          "count": 153,
+          "hash": "110295aa7fe91d1673099897fd991a76",
+          "quotedHash": "4586f3dcc62a385d0074ba6ece92d634"
+        }
+      },
+      "dependencies": {
+        "count": 30,
+        "unsupported": 0,
+        "hash": "b49f31b281f667f1bde320404e3ae341"
+      }
+    }
+  ]
+}

@@ -1,5 +1,9 @@
 # CAPP-REL: publicar el puente y 047 con entrada apagada
 
+**Smoke posterior autorizado y completado:** [R47-T05a6/6 correctas](instantly-047-app-smoke.md), health/login200 y webhook/trial/control/lease404 vacíos/no-store con headers previstos.43 conservadas,0 Instantly/SQL/envíos/activación/deploy; permiso6 consumido sin retries. R47-T05 manual/retención y C siguen pendientes; no volver a ejecutar los pasos HTTP históricos con esa autorización.
+
+**Publicación posterior autorizada:** [fb9f201 en main verificado; Coolify Success/Finished/healthy confirmado por operador](instantly-047-publication.md). R47-T04 completada con límites de esa evidencia; no repetir push/deploy/047 por los pasos históricos siguientes. R47-T05/smoke y C real permanecen pendientes,43 conservadas y sin activación o envíos.
+
 **Commit local autorizado como incremento separado:** [cierre R47-T04a](instantly-047-local-commit.md) y [serialización Git-LF](instantly-047-commit-manifest.json). El commit que contiene ese cierre fija el candidato para futura aprobación de publicación. No hereda permiso de push/deploy o smoke;047 ya aplicada/postflight conforme, sin repetir SQL. Los apartados de preparación siguientes son cronológicos.
 
 **Estado posterior del operador:**047 autorizada/aplicada por usuario con Success y postflight conforme; tabla/constraints/RLS/grants/cuatro funciones correctas, owner supabase_admin, helper privado y046 con tres huellas conservadas. [Resultado y baseline](../verification.md). R47-T03 completada para aplicación reportada/catálogo, sin ejecución RPC en vivo o publicación del código. Flag ausente e imágenes/retención ya observados; no se hizo rollback. La ficha y secuencia originales siguientes conservan la preparación y no implican repetir047. Commit/publicación/smoke/activación continúan pendientes de su permiso.

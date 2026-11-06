@@ -1,3 +1,4 @@
+import { mailAccess } from "@/lib/server/mail-access";
 import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import {
@@ -19,6 +20,7 @@ export async function POST(request: Request) {
       .parse(new URL(request.url).searchParams.get("case"));
     if (!checkDb(await db.rpc("can_mail_case", { case_id: caseId })))
       throw new HttpError(403, "Case access required");
+    await mailAccess(db, caseId, true);
     const bytes = await readBounded(request, 18 * 1024 * 1024);
     if (!bytes.length) throw new HttpError(400, "Empty attachment");
     const name = z
@@ -44,18 +46,16 @@ export async function POST(request: Request) {
           upsert: false,
         }),
     );
-    const inserted = await service
-      .from("mail_uploads")
-      .insert({
-        id,
-        opportunity_id: caseId,
-        uploaded_by: profile.id,
-        name,
-        mime_type: mime,
-        size: bytes.length,
-        storage_path: path,
-        content_hash: contentHash,
-      });
+    const inserted = await service.from("mail_uploads").insert({
+      id,
+      opportunity_id: caseId,
+      uploaded_by: profile.id,
+      name,
+      mime_type: mime,
+      size: bytes.length,
+      storage_path: path,
+      content_hash: contentHash,
+    });
     if (inserted.error) {
       await service.storage.from("gmail-documents").remove([path]);
       checkDb(inserted);

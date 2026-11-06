@@ -1,3 +1,4 @@
+import { requireMailSource } from "@/lib/server/mail-access";
 import {
   requireUser,
   serviceClient,
@@ -20,6 +21,7 @@ export async function GET(
       throw new HttpError(400, "Invalid file");
     const { db } = await requireUser();
     // RLS checks the case and message phase before any privileged download or Gmail call.
+    await requireMailSource(db, "saved", id);
     const file = checkDb(
       await db
         .from("gmail_saved_attachments")

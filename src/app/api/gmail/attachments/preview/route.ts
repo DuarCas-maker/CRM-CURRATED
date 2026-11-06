@@ -28,6 +28,7 @@ export async function GET(request: Request) {
     if (profile.role !== "superadmin" && !files.length)
       throw new HttpError(403, "Attachment access required");
     const { bytes, name } = await readArchiveAttachment(
+      db,
       message,
       part,
       files[0]?.storage_path,

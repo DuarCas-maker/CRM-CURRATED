@@ -1,5 +1,6 @@
 "use client";
 import { ProtectedForm } from "./unsaved-changes";
+import { BrandConnectionFields } from "./brand-settings";
 import { useEffect, useRef, useState } from "react";
 import type { Workspace, Locale } from "@/lib/domain";
 import { dateLabel } from "@/lib/domain";
@@ -374,13 +375,10 @@ export function GmailHistory({
                 ))}
               </select>
             </label>
-            <button
-              type="submit"
-              className="button"
-              disabled={!organizations.length}
-            >
-              {t(locale, "Autorizar con Google", "Authorize with Google")}
-            </button>
+            <BrandConnectionFields
+              locale={locale}
+              disabled={busy || !organizations.length}
+            />
           </ProtectedForm>
           {!organizations.length && (
             <p className="muted">

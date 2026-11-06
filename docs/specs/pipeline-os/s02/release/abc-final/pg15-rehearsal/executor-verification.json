@@ -1,0 +1,167 @@
+{
+  "id": "PG-EXEC-r1",
+  "date": "2026-11-04",
+  "sdd": "STRICT",
+  "mode": "implementation_and_offline_tests",
+  "executorImplemented": true,
+  "readyForNativeExecution": false,
+  "nativeTestsExecuted": 0,
+  "publicationReady": false,
+  "files": [
+    {
+      "path": "scripts/pipeline-os/pg15/types.ts",
+      "bytes": 6263,
+      "sha256": "07314afe8f8406ce9a5259c916971df4fb764508c94aaa0033b555015e697638"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/artifacts.ts",
+      "bytes": 3821,
+      "sha256": "f72e18f242eada40f2f4ac41f4d1a0734f55a87d006aaa967592229137175b70"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/fixture.ts",
+      "bytes": 10526,
+      "sha256": "51353019576daba15932bc2c723a504ef13c0b2b363861bb29209851443fecc7"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/process.ts",
+      "bytes": 11807,
+      "sha256": "3307e30df2a68b7707847ec9a40b433f14588df6b72c09972ce47ee04f88703e"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/runner.ts",
+      "bytes": 20595,
+      "sha256": "a5a29d7dfac8124a7a5f0b3a654c5858e76efe29f7beb0c9c2463a127956a4be"
+    },
+    {
+      "path": "scripts/pipeline-os/pg15/cli.ts",
+      "bytes": 2326,
+      "sha256": "4d63542a93e04bf2814145aa0a24d141b08ee2df73ed949d256c03c70235c276"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-pg15-executor.ts",
+      "bytes": 10200,
+      "sha256": "4bbf2e480988b5a58974c56760770c8017fd64e5847276c6b68fd77f56608d29"
+    },
+    {
+      "path": "tests/pipeline-os-pg15-executor.test.ts",
+      "bytes": 18929,
+      "sha256": "61fc53c43ae18d0cbc0e6878a37ed67217ed0cd7785a33c8d25913745def8395"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-spec.md",
+      "bytes": 3765,
+      "sha256": "0f8797846561c8df8a82b41b76eb900a52e9b7a8d0929e9c1def9a52dc099177"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-runbook.md",
+      "bytes": 4725,
+      "sha256": "34123fa35623329cd45433dce72d6bc15955680a4f8fefc40dc5bd95cca6cb4d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/executor-verification.md",
+      "bytes": 5823,
+      "sha256": "9fe77903357f6ebcd7b9a5bfd3b313af7ad69057d48d39e01714848eee3970fb"
+    }
+  ],
+  "coverage": {
+    "newTests": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "simulatedPlannedScenarios": 16,
+    "simulatedScenariosPassed": 16,
+    "nativeRuntime": "not installed or invoked",
+    "sqlSupportRuntime": "PGlite0.5.8 PG180003 in memory; not native15",
+    "cases": [
+      "configuration_and_target_identity_rejection_before_writes",
+      "sealed_bundle_and_base_migration_tamper",
+      "all16_scenarios_through_simulated_Engine",
+      "exit_code_duplicate_receipt_postflight_failure",
+      "restore_drift_and_unobserved_contention_fail",
+      "separate_cluster_shutdown_confirmation",
+      "no_inherited_DSN_or_provider_environment",
+      "known_header_parser_and_sanitized_stderr",
+      "stream_frames_busy_timeout_targeted_child_cleanup",
+      "stub_binary_hash_version_and_identity",
+      "native_fixture_SQL_source_backfill_and_original_rows_in_memory",
+      "controller_MFA_RLS_probes_against_synthetic_SQL"
+    ]
+  },
+  "cliPlan": {
+    "passed": true,
+    "fixtureSteps": 52,
+    "plannedCases": 16,
+    "processStarts": 0,
+    "nativeTestsExecuted": 0
+  },
+  "checks": {
+    "typeScript": "passed --noEmit --incremental false",
+    "format": "passed",
+    "json": "passed",
+    "links": 151,
+    "diff": "passed",
+    "networkDeniedByPreload": true,
+    "review": "safe-code-review local delta; no additional confirmed offline blockers",
+    "initialFailures": "fake SQL model misread function definitions as inserts; in-memory test actor context and TS environment/stream types corrected",
+    "laterCorrections": [
+      "explicit role per psql fixture session",
+      "preserve attachment-choice gate by seeding its synthetic included choice",
+      "loopback/HBA/minor-version gates",
+      "execution.json path checked before and after realpath"
+    ],
+    "previousPilotSuitesNotRepeated": true
+  },
+  "preservation": {
+    "baseCommit": "fb9f2015e682fc0704340530425322efc62c601b",
+    "headUnchanged": true,
+    "indexEmpty": true,
+    "originalPublicFilesChecked": 747,
+    "payloadFiles": 100,
+    "buildSupportFiles": 10,
+    "migrations": 47,
+    "operationalHashes": 49,
+    "prepared048049ContractsPreflightPostflightAndOperatorResultUnchanged": true,
+    "productWorkerDependenciesAndOldTestsUnchanged": true,
+    "changedExistingDocs": [
+      "docs/specs/pipeline-os/s02/README.md",
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/runbook.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/verification.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/tasks.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/README.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/protocol.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/README.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/spec.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/verification.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/tasks.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/manifest.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/manifest.json"
+    ],
+    "unexpectedChanges": []
+  },
+  "operations": {
+    "nativePostgresProcesses": 0,
+    "realPsqlProcesses": 0,
+    "syntheticProcessTests": true,
+    "installations": 0,
+    "downloads": 0,
+    "newRemoteSql": 0,
+    "remoteChanges": 0,
+    "apiCalls": 0,
+    "sends": 0,
+    "deploys": 0,
+    "pushes": 0,
+    "realCredentialFilesRead": 0,
+    "instantly": { "consumed": 43, "new": 0 },
+    "gmailDirect": "active preserved by unchanged sources",
+    "composio": "disabled by preserved scope; no live flags read"
+  },
+  "pending": [
+    "PG-T02 runtime package provenance/version/license/hashes and two exclusively local clusters",
+    "PG-T04 native15 DDL/postflight/contention/dump-restore",
+    "PG-T05 native evidence review",
+    "visual_Linux_build_mixed_binary_compatibility_installer_and_production_cutover_gates"
+  ],
+  "nextStep": "Prepare local PG15 runtime/cluster enablement under its own explicit scope; do not apply049 or repeat accepted remote preflight."
+}

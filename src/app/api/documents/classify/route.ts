@@ -1,3 +1,4 @@
+import { mailAccess } from "@/lib/server/mail-access";
 import { z } from "zod";
 import {
   checkOrigin,
@@ -48,6 +49,14 @@ export async function POST(request: Request) {
       !checkDb(await db.rpc("can_edit_case", { case_id: source.opportunityId }))
     )
       throw new HttpError(403, "Case is read-only");
+    await mailAccess(db, source.opportunityId, true);
+    // Verify the exact bytes before reading a privileged classification cache.
+    const file =
+      p.source === "upload"
+        ? { bytes: Buffer.from(await upload!.arrayBuffer()) }
+        : await documentBytes(db, p.source, p.id);
+    if (hash(file.bytes) !== p.expected_hash)
+      throw new HttpError(409, "File changed; reopen it.");
     const service = serviceClient();
     const query = () =>
       service
@@ -80,10 +89,7 @@ export async function POST(request: Request) {
         503,
         "Configura D_OPENAI_API_KEY en Runtime del servicio web. / Configure D_OPENAI_API_KEY at runtime on the web service.",
       );
-    const file =
-      p.source === "upload"
-        ? { bytes: Buffer.from(await upload!.arrayBuffer()) }
-        : await documentBytes(db, p.source, p.id);
+
     if (hash(file.bytes) !== p.expected_hash)
       throw new HttpError(
         409,

@@ -1,0 +1,93 @@
+{
+  "id": "AF-FDIAG-r1",
+  "date": "2026-11-04",
+  "sdd": "STRICT",
+  "mode": "offline_diagnostic_preparation",
+  "publicationReady": false,
+  "remoteExecutionAuthorized": false,
+  "operatorEvidence": {
+    "confirmedNewComplete049": "A",
+    "error": "ABC_FINAL_CONTRACT_MISMATCH",
+    "sqlState": "P0001",
+    "exactSubmittedBytesVerified": false,
+    "remoteAfterFailureStateVerified": false,
+    "exclusiveCauseConfirmed": false,
+    "newReadPermissionGranted": false
+  },
+  "checks": {
+    "tests": {
+      "distinctCases": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "fullSuitePassed": true,
+      "protectedGuardExpansionRerunPassed": true
+    },
+    "typeScript": "passed --noEmit --incremental false",
+    "runtime": "PGlite0.5.8 PG18 in memory with network-denying preload",
+    "nativePg15TestsExecuted": 0,
+    "covered": [
+      "pinned_inputs_deterministic_generation_exact_reverse",
+      "LF_CRLF_success_path_rolls_back_catalog_and_synthetic_rows",
+      "code_ACL_view_column_differences_metadata_only",
+      "inventory_only_count_and_bounded_names",
+      "field_detail_truncation_keeps_failure",
+      "context_and_protected_metadata_original_guards"
+    ],
+    "qaFindingsResolved": [
+      "lc_collate GUC not available in synthetic runtime; use pg_database.datcollate",
+      "test mutation targeted brand_b1.ref, corrected expected object"
+    ],
+    "limits": [
+      "remote root cause unconfirmed",
+      "no nativePG15 or physical locks test",
+      "rolled-back diagnosis still requires backup and operational exclusion before any future real execution"
+    ]
+  },
+  "preservation": {
+    "publicExistingFilesChecked": 766,
+    "existingFilesChanged": [],
+    "operationalHashesChecked": 49,
+    "instantlyConsumed": 43,
+    "instantlyNew": 0,
+    "gmailDirect": "active preserved, no source/config change",
+    "composio": "disabled preserved, no live query",
+    "head": "fb9f2015e682fc0704340530425322efc62c601b",
+    "indexEmpty": true,
+    "prepared049AndBindingsUnchanged": true,
+    "realMigrationCount": 47
+  },
+  "diagnostic": {
+    "sha256": "a2de43622882ffe9e1796c7b4d25ad582518121fea55010363bcee762ae33d79",
+    "inputHashes": {
+      "049_integrate_mail_identity_brands_and_bindings.sql": "19548594e04d95167ed23957264f25d796a0f5f02e9427c75bf1f53f4fd390aa",
+      "contract.json": "6fc8d3de046552f2f066abfb814b1929141ea2c3547d6762e0e7e1bfb820e4af",
+      "postflight.sql": "c3dd51e27a1818ed821ea915ff398f16956bf13efeca6fc8cd715ab28c13f679",
+      "preflight/preflight.sql": "8ac0093cba7a3330a062380b9b0ab4506ce17973286b138ad49502a02e59b852"
+    },
+    "fieldsLimit": 40,
+    "inventoryNamesLimit": 20,
+    "allowsCommit": false,
+    "retainsErrorsAndGuards": true,
+    "requiresTransactionCleanupOnError": true,
+    "containsTransientDDL": true,
+    "readOnly": false,
+    "proposedRemoteBudget": {
+      "maxScripts": 3,
+      "diagnosticAttempts": 1,
+      "remoteAuthorizationsConsumed": 0
+    }
+  },
+  "operations": {
+    "apiCalls": 0,
+    "remoteSql": 0,
+    "remoteChanges": 0,
+    "pushes": 0,
+    "deployments": 0,
+    "installs": 0,
+    "nativePgStarts": 0,
+    "messagesSent": 0,
+    "realEnvFilesRead": 0
+  },
+  "nextStep": "Review separate protocol and decide on authorized isolated nativePG15 diagnosis; no remote execution implied."
+}

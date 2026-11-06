@@ -1,9 +1,4 @@
-import {
-  requireUser,
-  checkDb,
-  jsonError,
-  serviceClient,
-} from "@/lib/server/supabase";
+import { requireUser, checkDb, jsonError } from "@/lib/server/supabase";
 import { z } from "zod";
 import { teamLabels } from "@/lib/server/gmail-team";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
@@ -18,7 +13,7 @@ export async function GET(
     const id = z.uuid().parse((await params).id);
     const conversation = checkDb(
       await db
-        .from("conversations")
+        .from("mail_conversations_visible")
         .select("id,opportunity_id")
         .eq("id", id)
         .single(),
@@ -82,10 +77,10 @@ export async function GET(
         messages: messages.reverse(),
         attachments: processed.attachments,
         files: processed.files,
-        // The user's RLS-protected conversation lookup above authorizes this exact case/thread.
+        // Outbox RLS independently checks each send and its attachment sources.
         sends:
           checkDb(
-            await serviceClient()
+            await db
               .from("outbox")
               .select(
                 "id,conversation_id,reply_message_id,account_id,to_email,cc_emails,body,subject,status,message_id_header,gmail_message_id,created_at,sent_at,last_error",

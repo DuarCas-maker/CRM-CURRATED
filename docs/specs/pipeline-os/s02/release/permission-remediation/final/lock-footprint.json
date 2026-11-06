@@ -1,0 +1,272 @@
+{
+  "derived": "base47 synthetic pg_rewrite/pg_depend relation closure; not a new remote capture",
+  "roots": [
+    "public.campaign_assets",
+    "public.campaign_events",
+    "public.campaign_workspace",
+    "public.company_contacts",
+    "public.company_primary_cases",
+    "public.conversation_lenders",
+    "public.document_reviews",
+    "public.email_template_versions",
+    "public.email_templates",
+    "public.gmail_api_slots",
+    "public.gmail_api_usage",
+    "public.gmail_candidate_directory",
+    "public.gmail_pending_associations",
+    "public.gmail_sent_usage",
+    "public.lead_workspace",
+    "public.lender_contacts",
+    "public.lender_guideline_versions",
+    "public.mail_drafts",
+    "public.mail_recipient_selections",
+    "public.mail_uploads",
+    "public.operational_settings",
+    "public.opportunity_inbox",
+    "public.opportunity_tasks",
+    "public.opportunity_workspace",
+    "public.process_state_history",
+    "public.underwriting_runs",
+    "public.underwriting_setting_versions",
+    "public.underwriting_settings"
+  ],
+  "totalRelations": 39,
+  "relations": [
+    {
+      "key": "public.campaign_assets",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.campaign_enrollments",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.campaign_events",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.campaign_workspace",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.campaigns",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.company_contacts",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.company_primary_cases",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.contacts",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.conversation_lenders",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.conversations",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.document_reviews",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.email_template_versions",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.email_templates",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.gmail_api_slots",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.gmail_api_usage",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.gmail_candidate_directory",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.gmail_candidates",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.gmail_pending_associations",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.gmail_runs",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.gmail_sent_usage",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.lead_workspace",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.leads",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.lender_contacts",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.lender_guideline_versions",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.mail_drafts",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.mail_recipient_selections",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.mail_uploads",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.operational_settings",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.opportunities",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.opportunity_workspace",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.process_state_history",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.suppressions",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.tasks",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.underwriting_runs",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.underwriting_setting_versions",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.underwriting_settings",
+      "directTarget": true,
+      "DCLTarget": true,
+      "lockMode": "AccessExclusiveLock"
+    },
+    {
+      "key": "public.verifications",
+      "directTarget": false,
+      "DCLTarget": false,
+      "lockMode": "AccessExclusiveLock"
+    }
+  ],
+  "concurrencyVerifiedAcrossIndependentConnections": false,
+  "liveDDLExclusionConfirmed": false
+}

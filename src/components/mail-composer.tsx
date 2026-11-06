@@ -12,7 +12,19 @@ export function MailComposer(props: {
   close: () => void;
   opportunity?: Opportunity;
 }) {
-  return <MailEditor {...props} />;
+  const writable = (id: string) =>
+    props.data.demo || props.data.mail_access?.[id]?.can_write === true;
+  if (props.opportunity && !writable(props.opportunity.id))
+    return (
+      <p role="status">
+        {t(props.locale, "Expediente de solo lectura", "Read-only case")}
+      </p>
+    );
+  const data = {
+    ...props.data,
+    opportunities: props.data.opportunities.filter((o) => writable(o.id)),
+  };
+  return <MailEditor {...props} data={data} />;
 }
 
 export function MailSendStatus({

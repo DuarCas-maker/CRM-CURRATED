@@ -1,0 +1,136 @@
+{
+  "id": "PRM-20261101",
+  "date": "2026-11-01",
+  "mode": "planning_only_not_executable",
+  "source": "../permission-diagnostic/result-review.json",
+  "inputSha256": "9aaaaf19fc497169b54b710866bc0af99f106ab88c73c681a69cc59ca404d430",
+  "externalCalls": 0,
+  "instantly": {
+    "consumed": 43,
+    "new": 0
+  },
+  "requirement": "PRM-FR04",
+  "status": "three_definition_hashes_unresolved; six_dependency_descriptors_explained",
+  "dependencyReview": [
+    {
+      "key": "view:public.campaign_workspace:n:e6e947314fab25e79f486d99b13a1e2e",
+      "object": "public.campaign_workspace",
+      "kind": "view_self_relation_dependency_candidate",
+      "localExpectedHash": "e6e947314fab25e79f486d99b13a1e2e",
+      "matchesSelfRelation": true,
+      "interpretation": "metadata only; not a proof of equal view definition"
+    },
+    {
+      "key": "view:public.gmail_candidate_directory:n:313c32839e40868cded47827d3f8b030",
+      "object": "public.gmail_candidate_directory",
+      "kind": "view_self_relation_dependency_candidate",
+      "localExpectedHash": "313c32839e40868cded47827d3f8b030",
+      "matchesSelfRelation": true,
+      "interpretation": "metadata only; not a proof of equal view definition"
+    },
+    {
+      "key": "view:public.lead_workspace:n:01e48f732769d1013cb58a91511129ad",
+      "object": "public.lead_workspace",
+      "kind": "view_self_relation_dependency_candidate",
+      "localExpectedHash": "01e48f732769d1013cb58a91511129ad",
+      "matchesSelfRelation": true,
+      "interpretation": "metadata only; not a proof of equal view definition"
+    },
+    {
+      "key": "view:public.opportunity_inbox:n:07922de0200b8d8a5bd60e76845f82d0",
+      "object": "public.opportunity_inbox",
+      "kind": "view_self_relation_dependency_candidate",
+      "localExpectedHash": "07922de0200b8d8a5bd60e76845f82d0",
+      "matchesSelfRelation": true,
+      "interpretation": "metadata only; not a proof of equal view definition"
+    },
+    {
+      "key": "view:public.opportunity_tasks:n:80cd742ee157f9b50c72f130fb945e0c",
+      "object": "public.opportunity_tasks",
+      "kind": "view_self_relation_dependency_candidate",
+      "localExpectedHash": "80cd742ee157f9b50c72f130fb945e0c",
+      "matchesSelfRelation": true,
+      "interpretation": "metadata only; not a proof of equal view definition"
+    },
+    {
+      "key": "view:public.opportunity_workspace:n:436da91da38d677ee3c134751275ffc0",
+      "object": "public.opportunity_workspace",
+      "kind": "view_self_relation_dependency_candidate",
+      "localExpectedHash": "436da91da38d677ee3c134751275ffc0",
+      "matchesSelfRelation": true,
+      "interpretation": "metadata only; not a proof of equal view definition"
+    }
+  ],
+  "views": [
+    {
+      "key": "public.campaign_workspace",
+      "expectedSource": "supabase/migrations/043_campaign_first_contact.sql",
+      "supersedes": ["029", "039"],
+      "preserve": [
+        "explicit_campaign_columns",
+        "enrollment_count",
+        "campaign_delivery_stats",
+        "first_contact",
+        "selected_contact_ids",
+        "scheduled_at",
+        "activated_at"
+      ],
+      "futureLocalB2NotCurrentReference": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-delivery.local.sql"
+    },
+    {
+      "key": "public.opportunity_inbox",
+      "expectedSource": "supabase/migrations/024_reply_engagement.sql",
+      "supersedes": ["007"],
+      "preserve": [
+        "opportunity_workspace_columns",
+        "exists_conversation_for_opportunity",
+        "inbox_activated_at_IS_NOT_NULL"
+      ]
+    },
+    {
+      "key": "public.opportunity_tasks",
+      "expectedSource": "supabase/migrations/007_history.sql",
+      "preserve": [
+        "opportunity_workspace_columns",
+        "exists_task_for_opportunity",
+        "status_open"
+      ]
+    }
+  ],
+  "proposedVR1": {
+    "implemented": false,
+    "authorization": "not_granted",
+    "executions": 1,
+    "retries": 0,
+    "readOnly": true,
+    "rollback": true,
+    "statementTimeoutMs": 15000,
+    "lockTimeoutMs": 2000,
+    "searchPath": "pg_catalog",
+    "output": "pipeline_os_abc_view_review",
+    "metadataOnly": true,
+    "productFunctionCalls": false,
+    "outputViewSql": false,
+    "outputCustomerRows": false,
+    "definitionComparison": [
+      "pg_get_viewdef_false_hash_raw_and_LF",
+      "conservative_lexical_fingerprint_with_complete_coverage_not_yet_implemented"
+    ],
+    "lexicalRules": [
+      "preserve_quoted_identifiers_and_literal_bytes",
+      "preserve_token_order_names_casts_operators_parentheses",
+      "normalize_only_unquoted_case_and_external_whitespace",
+      "unsupported_quoting_or_escape_means_incomplete",
+      "same_algorithm_in_SQL_PG15_and_local_reference"
+    ],
+    "unresolvedMeans": "stop_no_recreate_view_no_claim_of_semantic_equivalence",
+    "optionalFreshness": "only_metadata_of_same_28_relations_preconditions"
+  },
+  "futureBudget": {
+    "now": 0,
+    "readOnlyPreflight": 1,
+    "correctiveScriptSeparatelyAuthorized": 1,
+    "readOnlyPostflightSeparatelyAuthorized": 1,
+    "httpRequestsNotEstimated": true
+  }
+}

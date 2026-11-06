@@ -1,0 +1,106 @@
+{
+  "id": "AF-INV-r2",
+  "date": "2026-11-01",
+  "mode": "local_bugfix_and_proposed_read_only_diagnosis",
+  "operatorError": "P0001 ABC_BASE_FUNCTION_INVENTORY_MISMATCH before ABC DDL",
+  "confirmedDefect": "Order-sensitive list comparison across JS codepoint and PostgreSQL database collation",
+  "remoteExclusiveCauseConfirmed": false,
+  "historicalInventory": {
+    "expected": 206,
+    "observed": 206,
+    "missing": 0,
+    "extra": 0,
+    "source": "previous operator catalog, not a current query"
+  },
+  "simulation": {
+    "sameSignatures": 206,
+    "localeOrderPositionsChanged": 41,
+    "locale": "Intl.Collator en-US; not remote locale evidence"
+  },
+  "correction": {
+    "expressionsChanged": 3,
+    "comparison": "JSONB exact signature set",
+    "contractUnchanged": true,
+    "functionBodiesUnchanged": true,
+    "previousHashes": {
+      "049_integrate_mail_identity_brands_and_bindings.sql": "c453ca4c9e4cdfe049fec21b0ed7008e1107efa473e9538c0fb22d70fa3367c7",
+      "postflight.sql": "7bb753b17faf23dfd618042f404269b1b659d28f8baa8295460a5a5becfac287",
+      "manifest.json": "8dd0844548a0efe1d0603b3d315f61b7ef0007e3b7765f3bf7b128f29309e98b"
+    },
+    "currentSqlSha256": "ba65aa6d0a9d63b0c949d72ad4fbae091339f8d3ae1a56aabb1d6eff55c82187",
+    "currentPostflightSha256": "bae5b6653aee9eeb928e1ee1079adf52a7492bd9065595e40c67de5f74088e10"
+  },
+  "verification": {
+    "newTests": 4,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "test": "tests/pipeline-os-abc-inventory-order.test.ts",
+    "previous15NotRerun": true,
+    "typecheck": "passed",
+    "runtime": "PGlite0.5.8/PostgreSQL180003, network blocked",
+    "readOnlyDiagnosticSynthetic": "passed; actual extra function detected"
+  },
+  "preservation": {
+    "payload": 100,
+    "migrations": 47,
+    "privateOperationalHashes": 49,
+    "headAndIndex": true
+  },
+  "operations": {
+    "apiCalls": 0,
+    "remoteSql": 0,
+    "deploys": 0,
+    "instantlyConsumed": 43,
+    "instantlyNew": 0,
+    "gmailDirect": "preserved",
+    "composio": "disabled"
+  },
+  "proposedReadOnlyBudget": {
+    "sqlScripts": 1,
+    "retries": 0,
+    "mutations": 0,
+    "authorizationPending": true
+  },
+  "nextStep": "Inventory diagnosis accepted; do not repeat read/048 or replay049. Close remaining PG15/independent-contention/visual/build/cutover and publication approval gates.",
+  "operatorReadResult": {
+    "observed": {
+      "sqlRole": "supabase_admin",
+      "version": "150008",
+      "protocol": "AF-INV-r2",
+      "readOnly": "on",
+      "collation": "en_US.UTF-8",
+      "extraCount": 0,
+      "actualCount": 206,
+      "extraFirst25": [],
+      "missingCount": 0,
+      "exactSetMatch": true,
+      "expectedCount": 206,
+      "missingFirst25": [],
+      "orderedArrayMatch": true
+    },
+    "source": "Semantic transcription of operator chat output; not byte-exact original input",
+    "authorizedManualExecutions": 1,
+    "agentRemoteQueries": 0,
+    "retries": 0,
+    "authorizationConsumed": true,
+    "inventoryAcceptedWithinScope": true
+  },
+  "collationTrace": {
+    "directCatalogFormat": "C",
+    "jsonObjectKey": "default",
+    "operatorDatabaseDefault": "en_US.UTF-8",
+    "localProbe": "pg_collation_for confirms distinct identities on PG180003",
+    "diagnosticOrderedTrueDoesNotTestJsonKeyOrder": true,
+    "notNativePg15ExpressionProbe": true
+  },
+  "followUpVerification": {
+    "file": "tests/pipeline-os-abc-inventory-order.test.ts",
+    "selectedPattern": "collation identity",
+    "passed": 1,
+    "failed": 0,
+    "previous4NotRerun": true,
+    "original15NotRerun": true,
+    "sqlAndContractUnchanged": true
+  }
+}

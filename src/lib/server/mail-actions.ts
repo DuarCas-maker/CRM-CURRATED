@@ -1,3 +1,5 @@
+import { mailAccess } from "./mail-access";
+import { deliveryContext, queueBrandMail } from "./brand-delivery";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile } from "../domain";
@@ -18,29 +20,30 @@ export async function mailAction(
     const input = outgoingMailSchema.parse(p);
     if (input.mode !== "reply" || !input.lender_id)
       throw new HttpError(400, "Choose the lender reply");
-    const result = checkDb(
-      await db.rpc("queue_lender_reply", {
-        input: {
-          case_id: input.opportunity_id,
-          account: input.account_id,
-          lender: input.lender_id,
-          conversation: input.conversation_id,
-          reply_message: input.reply_message_id,
-          recipient: input.to_email,
-          copies: input.cc_emails,
-          hidden_copies: input.bcc_emails,
-          subject_text: input.subject,
-          body_text: input.body,
-          process: input.process_id || null,
-          submission: input.submission_id || null,
-          files: input.attachment_ids,
-          gmail_files: input.gmail_file_ids,
-          uploads: input.upload_ids,
-          signature: "",
-          display_name: "",
-          request: requestKey,
-        },
-      }),
+    const result = await queueBrandMail(
+      db,
+      "queue_lender_reply",
+      {
+        case_id: input.opportunity_id,
+        account: input.account_id,
+        lender: input.lender_id,
+        conversation: input.conversation_id,
+        reply_message: input.reply_message_id,
+        recipient: input.to_email,
+        copies: input.cc_emails,
+        hidden_copies: input.bcc_emails,
+        subject_text: input.subject,
+        body_text: input.body,
+        process: input.process_id || null,
+        submission: input.submission_id || null,
+        files: input.attachment_ids,
+        gmail_files: input.gmail_file_ids,
+        uploads: input.upload_ids,
+        signature: "",
+        display_name: "",
+        request: requestKey,
+      },
+      p.brand_preparation,
     );
     return { ok: true, result };
   }
@@ -88,8 +91,10 @@ export async function mailAction(
         gmail_file_ids: z.array(z.uuid()).max(10).default([]),
       })
       .parse(p);
-    return checkDb(
-      await db.rpc("queue_lender_emails", {
+    return queueBrandMail(
+      db,
+      "queue_lender_emails",
+      {
         case_id: input.opportunity_id,
         account: input.account_id,
         process: input.process_id,
@@ -99,7 +104,8 @@ export async function mailAction(
         files: input.attachment_ids,
         gmail_files: input.gmail_file_ids,
         request: requestKey,
-      }),
+      },
+      p.brand_preparation,
     );
   }
   if (kind === "compose_email") {
@@ -122,8 +128,10 @@ export async function mailAction(
         gmail_file_ids: z.array(z.uuid()).max(10).default([]),
       })
       .parse(p);
-    const id = checkDb(
-      await db.rpc("queue_manual_email", {
+    const id = await queueBrandMail(
+      db,
+      "queue_manual_email",
+      {
         case_id: input.opportunity_id,
         account: input.account_id,
         recipient: input.to_email,
@@ -132,7 +140,8 @@ export async function mailAction(
         files: input.attachment_ids,
         gmail_files: input.gmail_file_ids,
         request: requestKey,
-      }),
+      },
+      p.brand_preparation,
     );
     return { ok: true, id };
   }
@@ -152,7 +161,7 @@ export async function mailAction(
       .parse(p);
     const co = checkDb(
       await db
-        .from("conversations")
+        .from("mail_conversations_visible")
         .select("*")
         .eq("id", input.conversation_id)
         .single(),
@@ -164,6 +173,7 @@ export async function mailAction(
       !checkDb(await db.rpc("can_edit_case", { case_id: co.opportunity_id }))
     )
       throw new HttpError(403, "Case is read-only");
+    await mailAccess(db, co.opportunity_id, true);
     const o = checkDb(
       await db
         .from("opportunities")
@@ -172,6 +182,13 @@ export async function mailAction(
         .single(),
     )!;
     const account = input.account_id || o.primary_account_id || co.account_id;
+    await deliveryContext(
+      db,
+      account,
+      p.brand_preparation,
+      "mail",
+      co.opportunity_id,
+    );
     if (!checkDb(await db.rpc("can_send", { account })))
       throw new HttpError(403, "Sender permission required");
     const contact = checkDb(
@@ -391,51 +408,35 @@ export async function mailAction(
       message_id_header: `<${requestKey}@crm.curated.local>`,
       requested_by: profile.id,
       request_key: requestKey,
-      gmail_thread_id: account === co.account_id ? co.gmail_delivery_thread_id || co.gmail_thread_id : null,
+      gmail_thread_id:
+        account === co.account_id
+          ? co.gmail_delivery_thread_id || co.gmail_thread_id
+          : null,
     };
-    const previous = checkDb(
-      await service
-        .from("outbox")
-        .select("*")
-        .eq("request_key", requestKey)
-        .maybeSingle(),
+    await queueBrandMail(
+      db,
+      "queue_mail_email",
+      {
+        case_id: message.opportunity_id,
+        account,
+        recipient: message.to_email,
+        subject_text: message.subject,
+        body_text: message.body,
+        files: message.attachment_ids,
+        gmail_files: message.gmail_file_ids,
+        uploads: [],
+        copies: message.cc_emails,
+        hidden_copies: [],
+        process: message.process_id,
+        conversation: message.conversation_id,
+        reply_message: message.reply_message_id,
+        submission: message.submission_id,
+        signature: "",
+        display_name: "",
+        request: requestKey,
+      },
+      p.brand_preparation,
     );
-    const identity = {
-      requested_by: profile.id,
-      opportunity_id: co.opportunity_id,
-      conversation_id: co.id,
-      subject: co.subject,
-      body: message.body,
-      account_id: account,
-      to_email: recipient,
-      submission_id: submissionId,
-      process_id: co.process_id || null,
-      reply_message_id: replyMessage?.id || null,
-      cc_emails: cc,
-      attachment_ids: input.attachment_ids,
-      gmail_file_ids: input.gmail_file_ids,
-    };
-    const same = (stored: Record<string, unknown>) =>
-      Object.entries(identity).every(
-        ([key, value]) =>
-          JSON.stringify(stored[key] ?? null) === JSON.stringify(value ?? null),
-      );
-    if (previous && !same(previous))
-      throw new HttpError(409, "Request key reused with different input");
-    checkDb(
-      await service
-        .from("outbox")
-        .upsert(message, { onConflict: "request_key", ignoreDuplicates: true }),
-    );
-    const accepted = checkDb(
-      await service
-        .from("outbox")
-        .select("*")
-        .eq("request_key", requestKey)
-        .single(),
-    )!;
-    if (!same(accepted))
-      throw new HttpError(409, "Request key reused with different input");
     return { ok: true };
   }
   if (kind === "associate_thread") {
@@ -475,6 +476,7 @@ export async function mailAction(
         400,
         "Choose the lender submission, not only the case",
       );
+    await mailAccess(db, opportunity.id, true);
     const msg = await gmail<{
       id: string;
       threadId: string;
@@ -562,7 +564,7 @@ export async function mailAction(
     )!;
     const conversation = checkDb(
       await db
-        .from("conversations")
+        .from("mail_conversations_visible")
         .select("*")
         .eq("id", message.conversation_id)
         .single(),
@@ -628,22 +630,28 @@ export async function mailAction(
         .eq("id", input.opportunity_id)
         .single(),
     )!;
+    await deliveryContext(
+      db,
+      input.account_id,
+      p.brand_preparation,
+      "mail",
+      opportunity.id,
+    );
     const link = await makeApplicationLink(opportunity.id, profile.id);
-    checkDb(
-      await service.from("outbox").upsert(
-        {
-          account_id: input.account_id,
-          opportunity_id: opportunity.id,
-          to_email: opportunity.email,
-          subject: "Documents for your financing request",
-          body: `${input.body}\n\nUpload your documents securely:\n${link}`,
-          area: opportunity.handed_off_at ? "closer" : "seller",
-          message_id_header: `<${requestKey}@crm.curated.local>`,
-          requested_by: profile.id,
-          request_key: requestKey,
-        },
-        { onConflict: "request_key", ignoreDuplicates: true },
-      ),
+    await queueBrandMail(
+      db,
+      "queue_manual_email",
+      {
+        case_id: opportunity.id,
+        account: input.account_id,
+        recipient: opportunity.email,
+        subject_text: "Documents for your financing request",
+        body_text: `${input.body}\n\nUpload your documents securely:\n${link}`,
+        files: [],
+        gmail_files: [],
+        request: requestKey,
+      },
+      p.brand_preparation,
     );
     return { ok: true };
   }

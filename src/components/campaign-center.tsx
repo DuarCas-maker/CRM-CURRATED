@@ -259,6 +259,7 @@ export function CampaignCenterWorkspace({
   const authorizedAccounts = data.accounts.filter(
     (a) =>
       manage &&
+      !!a.brand_context?.can_campaign &&
       (data.profile.role === "superadmin" ||
         data.sender_account_ids?.includes(a.id)),
   );

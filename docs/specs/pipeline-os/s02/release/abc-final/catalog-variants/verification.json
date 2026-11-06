@@ -1,0 +1,121 @@
+{
+  "id": "AF-CVAR-r1",
+  "sdd": "STRICT",
+  "cause": {
+    "operatorDiagnosticProtocol": "AF-FDIAG-r1",
+    "sourceMigrationSha256": "19548594e04d95167ed23957264f25d796a0f5f02e9427c75bf1f53f4fd390aa",
+    "sourceContractSha256": "6fc8d3de046552f2f066abfb814b1929141ea2c3547d6762e0e7e1bfb820e4af",
+    "observedDifferences": 14,
+    "explainedDifferences": 14,
+    "inheritedFunctions": 9,
+    "qualifiedViews": 5,
+    "inventoryExact": true,
+    "operatorVersion": "150008",
+    "operatorCollation": "en_US.UTF-8",
+    "exactFieldFingerprintsMatched": true,
+    "cleanupConfirmed": false
+  },
+  "currentArtifacts": {
+    "migration": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39",
+    "postflight": "dd192f1983ccd4a4d3f8ecf014869bf696076e75710d0b2284e92467b30456dd",
+    "contract": "e9b0928a431e8bb8106d8004d42b057ae3d66607d21050c25dc4804d4e36083c",
+    "preflight": "b39f472286b89cac22553d649adab10b722b8ea37c623ca43709ddf3428786e8"
+  },
+  "publicationReady": false,
+  "readyForRemoteSql": false,
+  "checks": {
+    "newCases": 5,
+    "newCasesPassed": 5,
+    "regression": {
+      "finalMigration": 15,
+      "preflight": 12,
+      "executor": 12,
+      "historicalEol": 6,
+      "historicalDiagnostic": 6,
+      "passed": 51,
+      "failed": 0,
+      "skipped": 0
+    },
+    "distinctCases": 56,
+    "typeScript": "passed --noEmit --incremental false",
+    "cliPlan": { "passed": true, "processStarts": 0, "nativeTestsExecuted": 0 },
+    "runtime": "PGlite0.5.8 PG18 in memory; observed PG15 view rendering explicitly simulated",
+    "nativePg15Executed": false,
+    "parserRoundtrips": 10,
+    "reverseByteExact": true,
+    "unknownSourceAndViewLogicStillRejected": true,
+    "metadataAndACLStillExact": true,
+    "guardSetUnchanged": true,
+    "review": "safe-code-review local; scoped fixed maps, post-only view branch, historical bindings reconstructed and hashed"
+  },
+  "preservation": {
+    "basePublicFiles": 776,
+    "payload": 100,
+    "support": 10,
+    "realMigrations": 47,
+    "operationalHashes": 49,
+    "head": "fb9f2015e682fc0704340530425322efc62c601b",
+    "indexEmpty": true,
+    "productAndFiveDdlBodiesUnchanged": true,
+    "prepared048Unchanged": true,
+    "previousDiagnosticSqlUnchanged": true,
+    "previousDiagnosticReportUnchanged": true,
+    "previousDiagnosticManifestArchived": true,
+    "changedExisting": [
+      "tests/pipeline-os-abc-line-endings.test.ts",
+      "tests/pipeline-os-abc-final-diagnostic.test.ts",
+      "scripts/pipeline-os/abc-final-diagnostic.ts",
+      "scripts/pipeline-os/prepare-abc-final-diagnostic.ts",
+      "scripts/pipeline-os/pg15/artifacts.ts",
+      "docs/specs/pipeline-os/s02/README.md",
+      "docs/specs/pipeline-os/s02/release/tasks.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/contract.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/README.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/protocol.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/spec.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+      "docs/specs/pipeline-os/s02/release/abc-final/postflight.sql",
+      "docs/specs/pipeline-os/s02/release/abc-final/preflight/preflight.sql",
+      "docs/specs/pipeline-os/s02/release/abc-final/pg15-rehearsal/manifest.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/manifest.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/failure-diagnostic/manifest.json"
+    ],
+    "added": [
+      "scripts/pipeline-os/abc-catalog-variants.ts",
+      "tests/pipeline-os-abc-catalog-variants.test.ts",
+      "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/evidence.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/verification.md",
+      "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/verification.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/manifest.json",
+      "docs/specs/pipeline-os/s02/release/abc-final/catalog-variants/prior-diagnostic-manifest.json"
+    ]
+  },
+  "operations": {
+    "agentApiCalls": 0,
+    "agentRemoteSql": 0,
+    "agentRemoteChanges": 0,
+    "instantlyConsumed": 43,
+    "instantlyNew": 0,
+    "gmailDirect": "active preserved",
+    "composio": "disabled preserved",
+    "sends": 0,
+    "pushes": 0,
+    "deploys": 0,
+    "installs": 0,
+    "nativePgStarts": 0,
+    "realEnvFilesRead": 0
+  },
+  "operatorDecisions": {
+    "fullPauseConfirmed": true,
+    "backupWaivedExplicitly": true,
+    "requestedDirectProductionMigration": true,
+    "diagnosticAttemptConsumed": true,
+    "cleanupResultNotReceived": true
+  },
+  "pending": [
+    "nativePG15 runtime/concurrency/dump_restore not executed",
+    "real application and postflight of this revision not observed",
+    "publication/build/visual/installer controls remain open"
+  ],
+  "nextStep": "Use only the newly bound migration for the operator-directed application; retain complete-script success and then compare its postflight. No automatic remote action or diagnostic replay."
+}

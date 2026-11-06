@@ -630,7 +630,7 @@ test("live mail works before historical import, requires manual new-thread assoc
       (await db.query<{ id: string }>("select id from claim_outbox()")).rows[0]
         .id,
       forwardId,
-      "The assigned seller may deliver authorized case mail after handoff",
+      "Characterization of 021 before I02: assigned seller incorrectly delivers mail after handoff",
     );
     const hidden = (
       await db.query<{ participants: { role: string }[] }>(
@@ -752,6 +752,48 @@ test("live mail works before historical import, requires manual new-thread assoc
         randomUUID(),
       ]),
       /historial de Gmail/,
+    );
+    // Keep the legacy workflow above as characterization, then prove that the
+    // approved local security delta deliberately changes this 021 behavior.
+    await db.exec("reset role;set pipeline_os.i02_sandbox='in_memory_test'");
+    await db.exec(
+      await readFile(
+        "tests/fixtures/pipeline-os-s01/t01-02-i02-mail-permissions.sql",
+        "utf8",
+      ),
+    );
+    await db.query(
+      "update outbox set status='queued',available_at=now() where id=$1",
+      [forwardId],
+    );
+    assert.equal(
+      (await db.query("select * from claim_outbox()")).rows.length,
+      0,
+    );
+    assert.equal(
+      (
+        await db.query<{ status: string }>(
+          "select status from outbox where id=$1",
+          [forwardId],
+        )
+      ).rows[0].status,
+      "paused",
+    );
+    await asUser(seller);
+    await assert.rejects(queue({ request: randomUUID() }), /area access/);
+    await assert.rejects(
+      db.query("select subject from conversations where opportunity_id=$1", [
+        caseId,
+      ]),
+      /permission denied/,
+    );
+    assert.ok(
+      (
+        await db.query(
+          "select id from mail_conversations_visible where opportunity_id=$1",
+          [caseId],
+        )
+      ).rows.length,
     );
   } finally {
     await db.close();
