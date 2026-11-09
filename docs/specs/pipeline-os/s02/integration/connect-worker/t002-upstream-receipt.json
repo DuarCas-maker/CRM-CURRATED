@@ -1,0 +1,96 @@
+{
+  "id": "S02-CONNECT-T002-NATIVE-20261108",
+  "date": "2026-11-08",
+  "mode": "authorized_offline_database_slice",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "node": "v22.23.4",
+  "pnpm": "11.19.0",
+  "postgres": "15.19",
+  "nativeTestsExecuted": true,
+  "subtestsPassed": 17,
+  "nodeTestRunnerPassed": 18,
+  "failed": 0,
+  "durationMs": 28079.8312,
+  "checks": [
+    "local marker required before any DDL",
+    "RLS and deny direct SELECT/DML including service_role; private helpers are not public",
+    "superadmin AAL2 and live session required; no-session/seller/AAL1 rejected",
+    "durable subject, idempotent begin and payload conflict without duplicate audits",
+    "provider observation restricted to service capability and exact identity",
+    "new account stays inactive, creates no token/permissions/jobs and preserves C1 ready",
+    "same session/browser required, including replay after completion",
+    "revoked session and expired/inactive policies reject otherwise valid JWT",
+    "cancel and deadline win before delayed observation or registration",
+    "brand mutation after explicit adoption rejects stale registration",
+    "actual two PostgreSQL connections contend on same subject; only one attempt commits",
+    "existing account reconnects in place, keeps owner/history and supersedes only after valid registration",
+    "occupied connection rejects the whole register transaction without replacing the first binding",
+    "ambiguous creation remains uncertain and blocks a fresh attempt after deadline",
+    "inactive or changed actor cannot reuse an old authorization or service capability",
+    "configuration rotation invalidates pending state without touching prior candidates",
+    "catalog and operational state preserved; additive reversal is isolated"
+  ],
+  "catalogAndAclPreserved": true,
+  "preexistingOperationalFixturePreserved": true,
+  "additiveRollbackPassed": true,
+  "ownClusterStopped": true,
+  "providerRequests": 0,
+  "realAuthProviderTested": false,
+  "realOAuthTested": false,
+  "applicationRoutesImplemented": false,
+  "sharedProductFilesModified": [],
+  "typecheck": {
+    "command": "Node22 node_modules/typescript/bin/tsc --noEmit --incremental false",
+    "exitCode": 0
+  },
+  "format": {
+    "command": "Node22 prettier --check tests/pipeline-os-s02-connect-db.test.ts",
+    "exitCode": 0
+  },
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t002.local.sql",
+      "bytes": 28089,
+      "sha256": "f26ebb769644cd233cacd2dddcb2d44a667c4459c9c84a26a24177d63b2db08b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t002.rollback.sql",
+      "bytes": 787,
+      "sha256": "89adcf1db93f3ff8d67f79b412e95c944cd07dcbbeda8b6e6f1314bbd7a0979b"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-db.test.ts",
+      "bytes": 34426,
+      "sha256": "fab560e36f7cd4e55cc202bbb2323a84c15b539f1b913bf9aa3637c12281a22d"
+    }
+  ],
+  "toolchains": [
+    {
+      "name": "Node22.23.4",
+      "url": "https://nodejs.org/dist/v22.23.4/node-v22.23.4-win-x64.zip",
+      "sha256": "cbc74b5e0982c9dbb41525fd8fb5dcd32fbee237863f7829072f4639a1ce5f20",
+      "publisherSha256Compared": true
+    },
+    {
+      "name": "PostgreSQL15.19 EDB",
+      "url": "https://get.enterprisedb.com/postgresql/postgresql-15.19-1-windows-x64-binaries.zip",
+      "sha256": "cc54e2d349f48c7743ad0c509b755ea565ff04bb5c5e71745d114074cab0c453",
+      "publisherSha256Compared": false,
+      "provenance": "HTTPS publisher archive, download hash recorded and native version checked"
+    }
+  ],
+  "limitations": [
+    "Synthetic Auth sessions/JWT context and provider observations; not a GoTrue or real-provider integration test",
+    "Cookies, HTTP state/navigation and full external phase recovery belong to later increments",
+    "Uncertain attempts stay blocked pending explicitly authorized reconciliation; no remote cleanup implemented",
+    "Native two-connection test covers subject contention; exhaustive B/C/R05 interleavings remain T-007",
+    "SQL is local-fixture-only, no final migration ordinal or release authorization"
+  ],
+  "nativeOptInRequired": true,
+  "nativeOptInVariable": "PIPELINE_OS_CONNECT_T002_NATIVE=1",
+  "defaultMode": {
+    "exitCode": 0,
+    "skipped": 1,
+    "clustersCreated": 0
+  }
+}

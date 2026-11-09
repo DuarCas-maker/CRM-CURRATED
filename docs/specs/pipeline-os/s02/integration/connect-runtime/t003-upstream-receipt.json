@@ -1,0 +1,79 @@
+{
+  "id": "S02-CONNECT-T003-OFFLINE-20261108",
+  "date": "2026-11-08",
+  "mode": "authorized_offline_engine_with_injected_doubles",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "node": "v22.23.4",
+  "unitTestsExecuted": true,
+  "passed": 27,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "durationMs": 815.7299,
+  "command": "Node22 --import tsx --test tests/pipeline-os-s02-connect-contract.test.ts",
+  "clock": "virtual",
+  "store": "in-memory fake, no PostgreSQL transaction claims",
+  "provider": "injected fake, no network",
+  "realFetchCalls": 0,
+  "providerRequests": 0,
+  "newServicesStarted": 0,
+  "realAuthProviderTested": false,
+  "realOAuthTested": false,
+  "realDatabaseAdapterTested": false,
+  "applicationRoutesImplemented": false,
+  "transportActivated": false,
+  "t002SourceHashesUnchanged": true,
+  "t002NativeTestsRepeated": false,
+  "typecheck": {
+    "command": "Node22 node_modules/typescript/bin/tsc --noEmit --incremental false",
+    "exitCode": 0
+  },
+  "format": {
+    "command": "Node22 prettier --check <four authorized files>",
+    "exitCode": 0
+  },
+  "files": [
+    {
+      "path": "src/lib/composio-connect.ts",
+      "bytes": 12712,
+      "sha256": "0f2ce283a5703cbb9e24f464e2bf98e0309ba462c16bf545609a88c646ee5f49"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/session.ts",
+      "bytes": 1964,
+      "sha256": "2703ac18a441dddf07b88f8a40cec673e44e4e7213b0901e42ae943672d61813"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/orchestrator.ts",
+      "bytes": 23525,
+      "sha256": "dfdf0c846917eea9e2f5d0b9b2be387db9b2f8414acf485ef8334fb88226235a"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-contract.test.ts",
+      "bytes": 32827,
+      "sha256": "c7e283bff27b00442e1e1b52de58d91a843c8d9abeec8a98e86e0487d6985a16"
+    }
+  ],
+  "scenarios": [
+    "T003-UT01",
+    "T003-UT02",
+    "T003-UT03",
+    "T003-UT04",
+    "T003-UT05",
+    "T003-UT06",
+    "T003-UT07",
+    "T003-UT08",
+    "T003-UT09",
+    "T003-UT10",
+    "T003-UT11",
+    "T003-UT12"
+  ],
+  "limitations": [
+    "No real session/JWT verification; trusted session port is required and future DB must revalidate atomically",
+    "T-002 SQL does not implement these durable network phases, leases or private callback-state storage; SQL extension and real store tests are prerequisites to HTTP integration",
+    "Normalized provider facts and hosted URL policy are offline contracts, not evidence of a real REST response or compatible project configuration",
+    "No provider/config/HTTP/UI/worker caller, real links, live credentials, API requests or transport activation",
+    "Unknown outcomes remain blocked pending explicit reconciliation; no automatic provider retry or cleanup",
+    "27 engine tests do not complete 24 integrated acceptance scenarios or general coordinator G2"
+  ]
+}

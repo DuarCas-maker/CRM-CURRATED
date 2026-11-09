@@ -1,5 +1,6 @@
 "use client";
 import { BrandConnectionFields } from "./brand-settings";
+import { connectReturnAttempt } from "@/lib/composio-connect-http";
 import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
@@ -156,6 +157,17 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const { requestLeave, confirmation } = useLeaveConfirmation(locale);
   const [view, setView] = useState<View>("overview");
   const [settingsSection, setSettingsSection] = useState("general");
+  useEffect(() => {
+    if (
+      !initial.demo &&
+      initial.profile.active &&
+      initial.profile.role === "superadmin" &&
+      connectReturnAttempt(new URLSearchParams(window.location.search))
+    ) {
+      setView("settings");
+      setSettingsSection("general");
+    }
+  }, [initial.demo, initial.profile.active, initial.profile.role]);
   const [attentionFilter, setAttentionFilter] = useState("all");
   const [processState, setProcessState] = useState("");
   const [stalled, setStalled] = useState("");

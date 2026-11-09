@@ -1,4 +1,13 @@
-import { createHash } from "node:crypto";
+import {
+  verificationContextSchema,
+  verificationContextHash,
+  type VerificationContext,
+} from "../mail-transport/verification-context";
+export {
+  verificationContextSchema,
+  verificationContextHash,
+  type VerificationContext,
+} from "../mail-transport/verification-context";
 import { performance } from "node:perf_hooks";
 import { z } from "zod";
 
@@ -19,16 +28,6 @@ export const requiredComposioScopes = [
   "https://www.googleapis.com/auth/gmail.readonly",
   "https://www.googleapis.com/auth/gmail.send",
 ] as const;
-export const verificationContextSchema = z.strictObject({
-  composio_project_id: id,
-  credential_version: text,
-  google_quota_project_id: id,
-  auth_config_revision: text,
-  provenance_reference: text,
-  project_provenance: z.literal("server_reviewed"),
-  quota_provenance: z.literal("oauth_client_reviewed"),
-});
-export type VerificationContext = z.infer<typeof verificationContextSchema>;
 export const verificationTargetSchema = z.strictObject({
   account_id: z.uuid(),
   binding_id: z.uuid(),
@@ -110,25 +109,6 @@ const realTiming: VerificationTiming = {
     return () => clearTimeout(timer);
   },
 };
-export function verificationContextHash(input: unknown): string | null {
-  const parsed = verificationContextSchema.safeParse(input);
-  if (!parsed.success) return null;
-  // Explicit order, independent of input key order; never a hash of credentials.
-  const c = parsed.data;
-  return createHash("sha256")
-    .update(
-      JSON.stringify([
-        c.composio_project_id,
-        c.credential_version,
-        c.google_quota_project_id,
-        c.auth_config_revision,
-        c.provenance_reference,
-        c.project_provenance,
-        c.quota_provenance,
-      ]),
-    )
-    .digest("hex");
-}
 export function incompleteVerification(
   reason: VerificationFacts["reason"] = "verification_incomplete",
 ): VerificationFacts {

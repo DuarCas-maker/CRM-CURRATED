@@ -6,9 +6,21 @@ import { serviceClient, checkDb, HttpError } from "./supabase";
 import { GmailError, isGmailQuotaError } from "../gmail-errors";
 import { GmailQuotaPacer, gmailRequestCost } from "../gmail-quota";
 import { createMailTransport } from "./mail-transport/factory";
+import {
+  mailRoutingActive,
+  executeRuntimeMail,
+} from "./mail-transport/runtime-context";
+import {
+  authorizeWorkerRequest,
+  inWorkerPilot,
+  pilotAccessToken,
+} from "./worker-request-control";
 export { GmailError } from "../gmail-errors";
 const quotaPacer = new GmailQuotaPacer();
 const quotaProjects = new Map<string, string>();
+function preparedDirectTransport(accessToken: string) {
+  return createMailTransport({ provider: "gmail_oauth", accessToken });
+}
 const organizationSchema = z.array(
   z.object({
     id: z.string(),
@@ -42,6 +54,9 @@ const tokenClients = new Map<
   { credential: string; client: OAuth2Client }
 >();
 export async function gmailToken(accountId: string) {
+  // Deny foreign/closed pilot contexts before credential reads or SDK refresh.
+  if (inWorkerPilot())
+    await authorizeWorkerRequest("oauth", accountId, "", "POST");
   const db = serviceClient();
   const account = checkDb(
     await db.from("mail_accounts").select("*").eq("id", accountId).single(),
@@ -71,7 +86,19 @@ export async function gmailToken(accountId: string) {
   const client = cached.client;
   let access;
   try {
-    access = await client.getAccessToken();
+    if (inWorkerPilot()) {
+      const bounded = await pilotAccessToken(
+        accountId,
+        client.credentials,
+        org,
+      );
+      client.setCredentials({
+        ...client.credentials,
+        access_token: bounded.token,
+        expiry_date: bounded.expiry,
+      });
+      access = { token: bounded.token };
+    } else access = await client.getAccessToken();
   } catch (error) {
     const response = (
       error as { response?: { status?: number; data?: { error?: string } } }
@@ -103,6 +130,58 @@ export async function gmail<T>(
   init: RequestInit = {},
   beforeRequest?: () => Promise<void>,
 ): Promise<T> {
+  if (mailRoutingActive()) {
+    try {
+      return await executeRuntimeMail<T>(
+        { account: accountId, path, init, beforeRequest },
+        {
+          direct: async () => {
+            const accessToken = await gmailToken(accountId);
+            const quotaProjectId = quotaProjects.get(accountId);
+            if (!quotaProjectId)
+              throw new Error("GMAIL_QUOTA_PROJECT_REQUIRED");
+            return {
+              transport: preparedDirectTransport(accessToken),
+              quotaProjectId,
+            };
+          },
+          quota: async (project) => {
+            await quotaPacer.wait(
+              accountId,
+              gmailRequestCost(path, init.method),
+            );
+            const reserved = checkDb(
+              await serviceClient().rpc("reserve_gmail_api", {
+                account: accountId,
+                project,
+                units: gmailRequestCost(path, init.method),
+              }),
+            );
+            if (reserved === -1)
+              throw new GmailError(403, "dailyLimitExceeded", 3600);
+            if (
+              typeof reserved !== "number" ||
+              !Number.isFinite(reserved) ||
+              reserved < 0
+            )
+              throw new Error("GMAIL_QUOTA_RESERVATION_FAILED");
+            if (reserved > 0) await delay(reserved);
+          },
+        },
+      );
+    } catch (error) {
+      if (isGmailQuotaError(error))
+        error.unitsPerMinute = quotaPacer.throttle(accountId);
+      throw error;
+    }
+  }
+  if (inWorkerPilot())
+    await authorizeWorkerRequest(
+      "gmail_oauth",
+      accountId,
+      path,
+      init.method ?? "GET",
+    );
   const access = await gmailToken(accountId);
   await quotaPacer.wait(accountId, gmailRequestCost(path, init.method));
   const reserved = checkDb(
@@ -121,12 +200,17 @@ export async function gmail<T>(
     throw new Error("GMAIL_QUOTA_RESERVATION_FAILED");
   if (reserved > 0) await delay(reserved);
   await beforeRequest?.();
+  if (inWorkerPilot())
+    await authorizeWorkerRequest(
+      "gmail_oauth",
+      accountId,
+      path,
+      init.method ?? "GET",
+      true,
+    );
   try {
-    // I01 deliberately has no Composio selector, env flag or binding lookup.
-    return await createMailTransport({
-      provider: "gmail_oauth",
-      accessToken: access,
-    }).execute<T>({ path, init });
+    // Compatibility mode retains direct Gmail; no per-account fallback on routing errors.
+    return await preparedDirectTransport(access).execute<T>({ path, init });
   } catch (error) {
     if (isGmailQuotaError(error))
       error.unitsPerMinute = quotaPacer.throttle(accountId);

@@ -16,8 +16,8 @@
   "files": [
     {
       "path": "docs/specs/pipeline-os/parallel-development.md",
-      "bytes": 29362,
-      "sha256": "3e588af2dec9cdf588e568fc14b64fb462a922f0853aaa907539cf2d85ce33fe"
+      "bytes": 38219,
+      "sha256": "dc69c1d5ba5b47093f90e84d223e1600cc14d87486588382c7918f8c4a87560b"
     },
     {
       "path": "docs/specs/pipeline-os/s02/README.md",
@@ -431,8 +431,8 @@
     },
     {
       "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/runbook.md",
-      "bytes": 7015,
-      "sha256": "a142cc0e76a35771e18e62a8fd4e8b8f656eebb53aeb715e00250cde05eeafe4"
+      "bytes": 9941,
+      "sha256": "bac93211037d03443fe32a71315d8c9c018825283f910d4c56759ed374385b64"
     },
     {
       "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/verification.md",
@@ -446,8 +446,8 @@
     },
     {
       "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/manifest.json",
-      "bytes": 6098,
-      "sha256": "f015697c8a45a7f4cea99c0a4afb8a777c50673e0806d9206722543cb1f5d692"
+      "bytes": 9987,
+      "sha256": "01a0355af89cba161c6bb639c32ea5832ca2dbf3d59fb511d2fbd395d0d61e6b"
     },
     {
       "path": "docs/specs/pipeline-os/parallel-roadmap-20261105.md",
@@ -478,6 +478,821 @@
       "path": "docs/specs/pipeline-os/parallel-common-base-20261105.manifest.json",
       "bytes": 244130,
       "sha256": "dcff12257e263d89ad2839df88651606d65b6661a53ca62c1cf04f6a8229b99e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/parallel-common-base-20261105-result.md",
+      "bytes": 2410,
+      "sha256": "b76c41930a01f4bcf8a3e7195d72eda8537a4b4a41cd95541dddadc811f6aa7a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/parallel-common-base-20261105-result.json",
+      "bytes": 2058,
+      "sha256": "734bc2abcc2114d709e701054a007115c0962566f99f92f4fcc13de6eeea93b4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/spec.md",
+      "bytes": 5316,
+      "sha256": "6d082b16fe09e3434340a807e9a4dd94cb31d2c0640f5b05cbe20f6ab34845d0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/design.md",
+      "bytes": 6539,
+      "sha256": "cfbfd5fa36a731a733b96f3bc390d8587f35aef0909f3d087a959b1c7d52f5c4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/tasks.md",
+      "bytes": 1491,
+      "sha256": "ccde17847beb7f3638902006928dcb011a102de529786ecc7f9b9d51c15c8a62"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/acceptance.md",
+      "bytes": 2964,
+      "sha256": "10f079a2bea969d461935f3cc9b23afe5eb39d8634ebd3d3875fcec1d3923227"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/protocol.md",
+      "bytes": 12480,
+      "sha256": "a3059c160ff733db576bf7d4a7bb39c7fc68107aaf44288edc00eaca5cb8b92a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/verification.md",
+      "bytes": 4439,
+      "sha256": "6f82ad67e4fc0811349437e8fda635f6ac2b661f67d2517cd61bab8f0a8ca922"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/manifest.json",
+      "bytes": 4294,
+      "sha256": "d74fadbb93316f9fb429eb58624bb4c9ed1a1caccac7bf7bf1face287d0c304f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/launch-roadmap-20261108.md",
+      "bytes": 14755,
+      "sha256": "9b751add5b241adf324ed514d8127849c9380c132e50f8da2470a79af7a9b85f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/spec.md",
+      "bytes": 3129,
+      "sha256": "5ee8c9f830c67ddf37da13d1afa86726e0b29562ef22bc431136e413ffb9a312"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/design.md",
+      "bytes": 2946,
+      "sha256": "de7971249b149b5301706ff67d4a9d9ab3ee3d10d62a335473491b90f5fc8f90"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/tasks.md",
+      "bytes": 1105,
+      "sha256": "cb12c36c495b39de91c0fc209a1ff0a5f0ce31cf06118b6baa9d295f07c53521"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/acceptance.md",
+      "bytes": 1063,
+      "sha256": "5764f7c3fb5cd9d696d36cccdd4c04a4d67b86d88ec0868a7f22523a8daccaad"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/verification.md",
+      "bytes": 6049,
+      "sha256": "22f4af35b867d9d161efd3819f0b7598675d06e82b217aeca0a7e8666386c4c1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/runbook.md",
+      "bytes": 5451,
+      "sha256": "25d48bf795edef6dca0abedff99e32829d3190420d731f31b91f775df3ec9435"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/migrations/worker-control.local.sql",
+      "bytes": 15354,
+      "sha256": "b987a590a3e69abcd9159aeeab2d5d1cb4325150f3fd15f7216916b163ac143a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/manifest.json",
+      "bytes": 6381,
+      "sha256": "220f135f777d6509cfc000f552f9e3a8dea808dda6152811061b42921df6d4e6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/spec.md",
+      "bytes": 2141,
+      "sha256": "127f52e38a73a864c7ee3e304328f26b8f88265f043a206c00678c9fbe76221f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/design.md",
+      "bytes": 1639,
+      "sha256": "d7da23615cd2c98260acbc3346085fcaa172034be0555b278e2a1f2404575d49"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/tasks.md",
+      "bytes": 560,
+      "sha256": "2afdbe50e27583336886c3b7c7d9fd7594ce00f343ffbac29ac01e6b5d59775b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/acceptance.md",
+      "bytes": 999,
+      "sha256": "b6bd3cd985cf4b92ddd324f3e007b7db0ef43514df55e4578691b021eb53e23d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/bugfix.md",
+      "bytes": 1546,
+      "sha256": "4c533608d4003b3f5cb432a9d8474ad2466f0a057d030761e46e96b5bdf7757b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/verification.md",
+      "bytes": 4734,
+      "sha256": "a1e720dbd379ad257bebfd6b742d8f7c9acc493045fb33d36cfc8e0e93fba0fb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/f3-handoff.md",
+      "bytes": 3899,
+      "sha256": "96a187a0b5123d186a242bb126929ab3f3a97b109dbbc7aa5b47b98c582ae036"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/t002-upstream-receipt.json",
+      "bytes": 4342,
+      "sha256": "a098288cd73f6e4e03a5c2b9120105c42ffc62ee2ded9b102a481efaf17ff989"
+    },
+    {
+      "path": "tests/worker-onboarding-composition.test.ts",
+      "bytes": 12984,
+      "sha256": "7dd852ac1fc77486a87602330a64ea7b8fb49f83154f01e9465121983cfe7e7c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t002.local.sql",
+      "bytes": 28219,
+      "sha256": "37421175ae296c753d507fa2f2a662533b3ccfd9e4e166b82a2ddea4e0dbbfdc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t002.rollback.sql",
+      "bytes": 787,
+      "sha256": "89adcf1db93f3ff8d67f79b412e95c944cd07dcbbeda8b6e6f1314bbd7a0979b"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-db.test.ts",
+      "bytes": 34426,
+      "sha256": "fab560e36f7cd4e55cc202bbb2323a84c15b539f1b913bf9aa3637c12281a22d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/manifest.json",
+      "bytes": 7360,
+      "sha256": "9f3be045694a5dbe7c1824d4bb69631102beb5e9815aa874b66898f71432c04c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/spec.md",
+      "bytes": 5855,
+      "sha256": "95b00b3bd1f382dbf7604a5d963655f0ccd69804cd9c331f74138d1f0d9d947f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/design.md",
+      "bytes": 16863,
+      "sha256": "c3e7e29b41a41f434c1662aea1437fe3965c4e23d6dd26526df5bf7a292c15da"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/tasks.md",
+      "bytes": 8946,
+      "sha256": "130ade3a9faa40189fbcd5f03e50419f3b7300a3e1e85427145368cbe526689a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/acceptance.md",
+      "bytes": 5412,
+      "sha256": "a66daf591909a8e80c225cbd2eb81836188f168bcc7564e83609b50da6fe9804"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/verification.md",
+      "bytes": 4452,
+      "sha256": "650b57b6e12ba1ce41efe1315687336e25b4fb0fba04f96571e16fc8cf50167d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/manifest.json",
+      "bytes": 10842,
+      "sha256": "fd28b746edf85c855011c958a6713e8e4d56d7408d2cdf39b18ab988e4e5a0cb"
+    },
+    {
+      "path": "src/lib/mail-transport-selection.ts",
+      "bytes": 2619,
+      "sha256": "77a16fec7d2c039a1510f3da7de2b3061b9ebb5cfc9e2946470af48c371287b7"
+    },
+    {
+      "path": "src/lib/server/mail-transport/selection.ts",
+      "bytes": 5760,
+      "sha256": "7810a9452e1b8b9f3d40ba87e7d1e33e4f93933d1ff0150121bfb7dcaaca2e55"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06.local.sql",
+      "bytes": 29841,
+      "sha256": "3602ff6ed10e313d412828cd552d79ed7518f783b2562217218037c1d0982e79"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-selection.test.ts",
+      "bytes": 11329,
+      "sha256": "8f8a2e45ddab8072294e090122fb1ef4bfe8d32de719dc2f559f74033d846b47"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-selection-db.test.ts",
+      "bytes": 24474,
+      "sha256": "f79106293c93adb537bb4d5da7bbbf35c908fd51ace4e95b9f703e1094dfcb37"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-transport-selection.ts",
+      "bytes": 11920,
+      "sha256": "63c1e42855cbd7563a3f2d3b5dc11a713230e791c7552625b5c4c6b36731b8c3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i01-design.md",
+      "bytes": 5212,
+      "sha256": "213c7133a5d0c89d36bb98d5c6343a43cb9f697eed9c21f5e8ae0fec8bc69181"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i01-verification.md",
+      "bytes": 7373,
+      "sha256": "967d51fde27d06dff4908dfe85d14da9410bca8b64c0ca24a8410c29a9797595"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i01-runbook.md",
+      "bytes": 4430,
+      "sha256": "d131414a7f1af6c9a6b63b272edc8421780c13e8f5cb81a60160b6866260003b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/preparation-manifest.json",
+      "bytes": 8104,
+      "sha256": "84ffb10acced8f9772ac3c8e664b04fa57fc5828cb859771d6d2d0739e1efec1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i01-implementation.json",
+      "bytes": 8848,
+      "sha256": "e64902c2657239d794e3a72617d4e5ea0c5f6d5657aee25f321c4e91310cd393"
+    },
+    {
+      "path": ".env.example",
+      "bytes": 3386,
+      "sha256": "0520346e31042a0f5f547710bc1f8e19320914b2298a91f019276b057bc8da16"
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "bytes": 6995,
+      "sha256": "4d0ded0610847d0ae4933922a75ff6827f52626aeee6a35d14ccb4403eb7874d"
+    },
+    {
+      "path": "worker/gmail.ts",
+      "bytes": 35857,
+      "sha256": "b692ab869aa5ede80bcd78878e964e9845ce898597655f45c26042589da038ea"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+      "bytes": 8944,
+      "sha256": "a2dd644670aae1d3389b06a71ace0dfe9381d36bdbe21f05ba28ed236093ad5f"
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-context.ts",
+      "bytes": 13309,
+      "sha256": "2ceed1905ef85f3114e4ae934409361ef61c6f6ebb1f67a6c7db025576c62e8c"
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-service.ts",
+      "bytes": 1174,
+      "sha256": "dec95adc76f303de709f789c4f8bd17a4ca04bcf2d4d79757e7173c52fdeecb3"
+    },
+    {
+      "path": "src/lib/server/mail-transport/verification-context.ts",
+      "bytes": 1219,
+      "sha256": "e15761aba7fef34dbee88217de3cf02b4552223f68784befc953cbb68800dc22"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/transport-selection.ts",
+      "bytes": 3903,
+      "sha256": "becdc8f32b3db5b1d062771588a8e9ca9ad85d45cb9babba0f560842fa8071f7"
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/transport/route.ts",
+      "bytes": 2391,
+      "sha256": "fa0b5f022f35d3ae500cca9a2f154e1404b167d7a4036962e78377fc78ceb3a3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06-i02.local.sql",
+      "bytes": 6999,
+      "sha256": "91480eda69c2d0839326eb79c56a20e5277980b965b60043a8024dbad7206bb3"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-transport-runtime.ts",
+      "bytes": 2670,
+      "sha256": "4b01ced581a0706dd842f11229df2b41643d010049e73e9af2f35f8269139b96"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-runtime.test.ts",
+      "bytes": 16168,
+      "sha256": "a6fe61933e6d5d2811217e391c38df6b0160df4459e6e2c2536d4b112cd6168d"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-runtime-db.test.ts",
+      "bytes": 9464,
+      "sha256": "597664c145c29fcff90a5b5364ed6a930bbc716e5511d537287407a12dbea2be"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-runtime-api.test.ts",
+      "bytes": 13923,
+      "sha256": "d8b3ed423b18dd4098ade60c0e6395b7f61d68cb6661d7c03777ff62faed9ff0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i02-design.md",
+      "bytes": 6333,
+      "sha256": "1faaf2206a37c8c549263a9ff70bb934eb2bab2a59ce65844cb264fc74d87d97"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i02-verification.md",
+      "bytes": 6734,
+      "sha256": "2c364ac7f731cc9e48d684566dacb3bdac22a552f18b737d07e5b64dc55be256"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i02-runbook.md",
+      "bytes": 4505,
+      "sha256": "54067d30d255c6d625b4ecf4b000ce161d8945c0890cc8bf307a9dca93cc9725"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i02-implementation.json",
+      "bytes": 10109,
+      "sha256": "ee870b6561ed55e079431b90c6b9b8b2ff7a93a8b68026f97181ea574d69682b"
+    },
+    {
+      "path": "worker/index.ts",
+      "bytes": 11477,
+      "sha256": "8f6b708581078e44aed14635099328300bc793cf9ce36f8df9af189ad9ea3a8d"
+    },
+    {
+      "path": "worker/gmail-schedule.ts",
+      "bytes": 1350,
+      "sha256": "f1a7428040982b8a2cf53337c7a0cac808fa70990c3f3050bf84da108b7b3619"
+    },
+    {
+      "path": "src/app/api/gmail/push/route.ts",
+      "bytes": 3072,
+      "sha256": "0e23c25fee7118d1cc69f8587f75daa576184e634bed861d3f263a3fee632201"
+    },
+    {
+      "path": "src/components/integrations.tsx",
+      "bytes": 14420,
+      "sha256": "eee826a47f6d7a7b1b69da710edb69abbec6a0276b9ff876a974cf637efb9ab6"
+    },
+    {
+      "path": "src/components/composio-account-bindings.tsx",
+      "bytes": 21418,
+      "sha256": "c24e37fbf52dab7b510aa9f3ab844b1c823d281a09fcde8121f6cb2bf7c45d0f"
+    },
+    {
+      "path": "src/lib/server/mail-transport/mailbox-context.ts",
+      "bytes": 800,
+      "sha256": "89d660f12e6f859909ba268099dd4347e84eba1c2f67d27dd92c04605da9769c"
+    },
+    {
+      "path": "src/lib/server/mail-transport/mailbox-sync.ts",
+      "bytes": 6354,
+      "sha256": "9fb408d38f528cf225f13d45a51c8d821ea7fec1dfa07de37fbf7fdd49b85bf4"
+    },
+    {
+      "path": "src/lib/server/mail-transport/mailbox-schedule.ts",
+      "bytes": 1520,
+      "sha256": "0b96b74f2acf6e51f41919180969dd020cc655d1bc41a799996c99faaed8a6bc"
+    },
+    {
+      "path": "src/components/mail-transport-settings.tsx",
+      "bytes": 12930,
+      "sha256": "903d6dfdd2100c8b7358d8cb448b82c31fd0b701337bfac3639283ef02c6a920"
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/transport/review/route.ts",
+      "bytes": 1129,
+      "sha256": "1d714ccab966f11ff2b74c9574264507589ab75f887332c4b07becb5aa65f3e1"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-mailbox-runtime.ts",
+      "bytes": 1680,
+      "sha256": "53b3cbf5d973c2f0a72498688caf3ef403e6dc6b2288f69605e1f6aa5123b24e"
+    },
+    {
+      "path": "tests/pipeline-os-s02-mailbox-runtime-db.test.ts",
+      "bytes": 17550,
+      "sha256": "55069e98b606830d4e127bdbb958f32617bacec29874e85c90761262f820889e"
+    },
+    {
+      "path": "tests/pipeline-os-s02-mailbox-runtime.test.ts",
+      "bytes": 9043,
+      "sha256": "4fe61eb66ecf6e6f72547ca4c2c7df450cee71e5bcda00bfa1f19bbee5654fd0"
+    },
+    {
+      "path": "tests/pipeline-os-s02-mailbox-ui.test.ts",
+      "bytes": 4726,
+      "sha256": "36d58223e1f4391f5d8eabcb5bab144aac10817fc1e57bb04a66f416bbbd3882"
+    },
+    {
+      "path": "tests/pipeline-os-s02-mailbox-runtime-api.test.ts",
+      "bytes": 6457,
+      "sha256": "16d0f1289dac5f2df0617e83b93896f260e8110efda460a0ebf807a1a8cc6256"
+    },
+    {
+      "path": "tests/pipeline-os-s02-mailbox-push.test.ts",
+      "bytes": 5198,
+      "sha256": "d906a7c29de8755825a3244eff01c4f2ff2468ca743d2cde1284795174d00d68"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06-i03.local.sql",
+      "bytes": 15528,
+      "sha256": "d04995e04df3e0409eff434430d04688cf4245c72414cac83130baf4037ec403"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i03-design.md",
+      "bytes": 4094,
+      "sha256": "f9334a3ae8c67a5905ed04b083830a917daed69300cfe37ae9c03348fbd448af"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i03-verification.md",
+      "bytes": 6557,
+      "sha256": "cda7a663ec67930f3929d3fd7e9839df7a9ffe3f1a865a80673f23830d6339a8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i03-runbook.md",
+      "bytes": 4494,
+      "sha256": "db315f3deef240ebe647387bda8f99bfe7178db5914e63b059d6be4eff7cf551"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i03-implementation.json",
+      "bytes": 11954,
+      "sha256": "8de3515b02bb457fa320db530fcce2a10e48fbcff48101ca23f0626055f1e4e9"
+    },
+    {
+      "path": "src/lib/composio-connect.ts",
+      "bytes": 12712,
+      "sha256": "0f2ce283a5703cbb9e24f464e2bf98e0309ba462c16bf545609a88c646ee5f49"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/session.ts",
+      "bytes": 1964,
+      "sha256": "2703ac18a441dddf07b88f8a40cec673e44e4e7213b0901e42ae943672d61813"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/orchestrator.ts",
+      "bytes": 23525,
+      "sha256": "dfdf0c846917eea9e2f5d0b9b2be387db9b2f8414acf485ef8334fb88226235a"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-contract.test.ts",
+      "bytes": 32827,
+      "sha256": "c7e283bff27b00442e1e1b52de58d91a843c8d9abeec8a98e86e0487d6985a16"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/config.ts",
+      "bytes": 2025,
+      "sha256": "70a3265dfdd4d438487f60f2c2334800a8ab677f2af3c7cdcceb5f28efac96e5"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/provider.ts",
+      "bytes": 11502,
+      "sha256": "c4697d591a048e9b26780a1515d719030a173467ab588a9c08e4cb8ad2bc3ed3"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-provider.test.ts",
+      "bytes": 25803,
+      "sha256": "d4b88cebc36b4651671a20db03922b43d39e7bf944363c4da5515ddf0292d78e"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-connect-composition.ts",
+      "bytes": 10232,
+      "sha256": "de8b255943f364df1da05c5c0785543f9113e3b32e93c1ed02536d260ab5ea51"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-composition.test.ts",
+      "bytes": 7487,
+      "sha256": "e05d6832fe02af9c1ef3aae37005ac326fb24e5eeedc4ea610b4eb9fd4002c9b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/spec.md",
+      "bytes": 2705,
+      "sha256": "a07709beb6a684bfac57d8340741257c34a57fe5c8870ea2c099bf218fcfbe13"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/design.md",
+      "bytes": 2535,
+      "sha256": "ae5cdaa129850f1153c4844b58b49ca1674f8677a7bc530173dd7e8ae531d1ca"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/tasks.md",
+      "bytes": 1568,
+      "sha256": "a6f92dab358fdd1b2c5f1fbba5599b91d06171a1f6bff4797e236099130f2f93"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/acceptance.md",
+      "bytes": 984,
+      "sha256": "ae0270f32f8482036c66320dd932c9ac4738ff662e3b9af652ee55fe9c6cea7e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/verification.md",
+      "bytes": 2973,
+      "sha256": "c6a197c48d07efd660611436c113d6ea6325dd2e26877674b48ea887b5729884"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/runbook.md",
+      "bytes": 2980,
+      "sha256": "5d0c6fb55bbdc96de0aa27a584a30ea6a9c5beef9e8e79186ea4dc6b0c1f40a3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/f3-handoff.md",
+      "bytes": 2019,
+      "sha256": "0c12d80d02e9b0f87de1e5aade7dd06b75dbcd3484565845d09f888b416277e3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/t003-upstream-receipt.json",
+      "bytes": 2875,
+      "sha256": "a08c6371e6abe20f3f430d5a83ce85abbbe36f61e78967a4452baba0aa7e613b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/t004-upstream-receipt.json",
+      "bytes": 2705,
+      "sha256": "48108151ed53af13b3ab51dc25bae06af3af8c1e3dc2860179a46a4d112a7730"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/manifest.json",
+      "bytes": 7872,
+      "sha256": "07d69554e7e874ee7581b1174c19b274f1c891fa12f3b4106d162115dd17d8d2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t009.local.sql",
+      "bytes": 45672,
+      "sha256": "c485c50ea15e104ef06224bda1c28079b5bb8ae6b1e6c9f8a9a1e3536cdc2377"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t009.rollback.sql",
+      "bytes": 2676,
+      "sha256": "e8c67811d79d4c1ec29c22cd91ce146d7690a76c11fd21621a03b69d52fa58af"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/secrets.ts",
+      "bytes": 3858,
+      "sha256": "5c14c9b1f41234bb2e7c013f11b68d53cd54e3679f0938b67dcdb636d00c3df9"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/store.ts",
+      "bytes": 16203,
+      "sha256": "ad111d6bf1cfd61e86b6c966fa561f589536dbaadb7639f423979bc1002570b3"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-store.test.ts",
+      "bytes": 15356,
+      "sha256": "830e0ce647e253d404486a451261f46945f0b260f13b7846511c63a3e95adfa9"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-store-db.test.ts",
+      "bytes": 44224,
+      "sha256": "29ce5718149af480a0b31ecfa79a77957dd8472cf2d5ff9bcb5fbec5b3e8b900"
+    },
+    {
+      "path": "src/lib/composio-connect-http.ts",
+      "bytes": 3123,
+      "sha256": "fd2fafe8dad399b6f1bb9b5c7beeb9ae0f7aab4a35258d4e5bccd0bc384fae7b"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "bytes": 21848,
+      "sha256": "42bc462040023cb843bfd377daa6f2a26cf8ed13362dbd14f9652b438b09fd82"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http-correlation.ts",
+      "bytes": 1386,
+      "sha256": "096739b4e845bcbb547d0deb7d86e2212b3562a3e24d1ac20914549f2eaa25c7"
+    },
+    {
+      "path": "src/components/composio-connect.tsx",
+      "bytes": 21695,
+      "sha256": "39213b15441d864e819a3936177390e16705e0f5cc4eaad96d50ff67f1ddaa41"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/route.ts",
+      "bytes": 117,
+      "sha256": "2a0c6da6264da06d7436b315297d1b9b374b534f1523da55247fff360220a829"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/[id]/route.ts",
+      "bytes": 249,
+      "sha256": "06c1dd8827c95ecb06e84c4d2992f16b9bf82591c3d4a187ef8833fda3484d83"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/[id]/[action]/route.ts",
+      "bytes": 283,
+      "sha256": "9211d4903a5be99f2d11ef499e8e1a74e373152b63f1dd5d995c03ab259ecccc"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/callback/route.ts",
+      "bytes": 91,
+      "sha256": "3d2493c274fef6fee17fe3fb5123285d8f37e6aaa874941a97efb3d759054a55"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-connect-store-composition.ts",
+      "bytes": 12614,
+      "sha256": "126d405be4718d134e09543e25235f35fcf1f5cb2f8127f38871a96eba1dd397"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-store-composition.test.ts",
+      "bytes": 5803,
+      "sha256": "183cd47edffde91922ddfb3d94d233e91eac89a32015f267aca7fb94b40b981e"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-connect-http.ts",
+      "bytes": 8542,
+      "sha256": "88f29f241a40ac3c919272ed08950dc84c3dec8fb85d465168e66ee65afa21d4"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-http.test.ts",
+      "bytes": 10020,
+      "sha256": "21098542462693e94686aafc303ab1221595eb6d083e6b6c1e14028491698f2f"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-http-ui.test.ts",
+      "bytes": 5536,
+      "sha256": "2e99619232f4c347b9f8fe02fe4a26fd34d7dd20436f54d58d7a4982b0eff657"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-http-session.test.ts",
+      "bytes": 2541,
+      "sha256": "cc0e588590af76b1572cbdea672b4cc8c140a0b4ebe379c459f45544817810b1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/spec.md",
+      "bytes": 2890,
+      "sha256": "c6cf603de2f4c79a4411bd37693d7c681e8b553fa67964bf0bc819ed9e724272"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/design.md",
+      "bytes": 4667,
+      "sha256": "5eb35735836a9551315207fa4bcf07c66f2a586358c07210a640df92dbc71f92"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/tasks.md",
+      "bytes": 781,
+      "sha256": "6d2980bfc5d43ac353c6d6836afa48f4321cd21dffa526962d671d38c2127d23"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/acceptance.md",
+      "bytes": 1170,
+      "sha256": "72bbe850274b7a4c18f47e442e4db3b1732abc8e9658c84153860ba6cd15a4e0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/verification.md",
+      "bytes": 1809,
+      "sha256": "7354ad9e6eeae8429b38c59c1a4af16b61f1744fd74593edee49c3f9ddeaa0c7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/runbook.md",
+      "bytes": 2464,
+      "sha256": "631708c701718e369265190660e60e82d9f24a923eade4ce5867912b2a39246a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/spec.md",
+      "bytes": 1948,
+      "sha256": "781686060fbe96af73d40abc0ca66cac7d2e81e09a697a30228e989b14f63864"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/design.md",
+      "bytes": 2409,
+      "sha256": "418d0891ff998cb64c7f05b67221a5e9d632f932f01dd1b613b22a12b0a4a9c8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/verification.md",
+      "bytes": 1829,
+      "sha256": "89d995d7a659eca7e4939c13aae00de3d7c2e0e13106a3ba43115513f8be5206"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/runbook.md",
+      "bytes": 847,
+      "sha256": "55971cfd71dc794119df2a064929742ca0f227a9f154cfed4f4e00e03c483530"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/t009-upstream-receipt.json",
+      "bytes": 4797,
+      "sha256": "416da0312ab41b2c5fb168f35a7a45572fc00d9ca7be2a1bf4aab89eee513709"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/manifest.json",
+      "bytes": 5583,
+      "sha256": "b39ef70a889ddaeaf304f526f7840cf00974981f9d53d0630f1403bea5e5ce8e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/manifest.json",
+      "bytes": 11095,
+      "sha256": "3fa570c5ce9e7f3a3b1e7545f0435086bf5955a0e0d5849a06f85e292f7dc548"
+    },
+    {
+      "path": "scripts/pipeline-os/mail-runtime-release.ts",
+      "bytes": 18117,
+      "sha256": "41a33e17d9c4ac15d127042350378d17582f46dc73594b15d3596dc72f23a23c"
+    },
+    {
+      "path": "scripts/pipeline-os/prepare-mail-runtime-release.ts",
+      "bytes": 5427,
+      "sha256": "d0de4b90917694555d6fa55cba926632df3b28f46c780cb31d81583ceda4bd22"
+    },
+    {
+      "path": "scripts/pipeline-os/package-mail-runtime-release.ts",
+      "bytes": 3724,
+      "sha256": "502b4674b46ca149e0b6257401227cf0db9bd3303a38a483d379cd59cb2e318c"
+    },
+    {
+      "path": "tests/pipeline-os-mail-runtime-release.test.ts",
+      "bytes": 11002,
+      "sha256": "78fc52c25b60b079188b8d9f2b887792eb5aa524519b7dffd0ef7863ce941696"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/acceptance.md",
+      "bytes": 1917,
+      "sha256": "ac3c0c7776343d2baa6ba796e6aae02c6d81a3947a347e8a232454b22ff0217a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/design.md",
+      "bytes": 2468,
+      "sha256": "bdcda0b0e0cf6aab66f8966d61bfd4cc99061cfe7726989d75457179ff88db38"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/README.md",
+      "bytes": 1479,
+      "sha256": "ad52fb83d1c7cc65d7ff1b523657eefbc1e947817f44a0c1f8a6fb3418953c8f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/runbook.md",
+      "bytes": 8982,
+      "sha256": "4364faf1ff9539415fda83491ffe7818b548ac7eb6cdd2c28033ea6aa5d7b006"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/spec.md",
+      "bytes": 2392,
+      "sha256": "953b7b949c984d8d0049fc576cb4818c75408122ef5bdc869bcdb80b8e3e956d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/verification.md",
+      "bytes": 4032,
+      "sha256": "e378ea65fa7a13d9f4e68f855ec4ec81133fa9525c28e4c433928e8f467b02c0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/contract.json",
+      "bytes": 189996,
+      "sha256": "2482d33acb4f33e1228915bbe3261030998aa5b363f936aa1b15ba1942c30cb7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/050_integrate_mail_runtime_and_connect.sql",
+      "bytes": 383245,
+      "sha256": "ad56aed6bc11c1775bc8a036d7cd367c367432a9ca1a9d1f63ab80d0f4ec61d5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/preflight.sql",
+      "bytes": 122039,
+      "sha256": "61438b86b3cf4c1af8661f336294817573a163de43ba02839ddb491d029cbea8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/postflight.sql",
+      "bytes": 121116,
+      "sha256": "40a3a8a01ca8571d5a956db3449f8f09fc9bbbb9ab38156ec7fb5c60c35e7504"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/manifest.json",
+      "bytes": 16589,
+      "sha256": "5531a816a8021a76746cd3102a0a77d12a9ca911c7be46bd1b79bc892a96a28b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/sources.json",
+      "bytes": 169925,
+      "sha256": "26e5f6df4d7ef119b71d8a2910dd494a80303f114174a023dc12134b629821bf"
+    },
+    {
+      "path": "tests/pipeline-os-mail-runtime-auth-compat.test.ts",
+      "bytes": 8656,
+      "sha256": "d31e7f6c78448fd365e42187f0ffadaae3b1e6d39275b44330d301886e01b838"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/auth-session-bugfix.md",
+      "bytes": 2716,
+      "sha256": "8f42c9abbb655959462fe3dd8b219d0cd59ff10caaef7c756a01cc8da2c3e104"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/auth-context-result.json",
+      "bytes": 1148,
+      "sha256": "0d0dc29abefa9b78529f9b960ac1bde20d0d5d5bcf7a81dc95bd845d62c031dc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/050-application/protocol.md",
+      "bytes": 3385,
+      "sha256": "0f65c18da1693add1eb72709619796d047b00969537a4ce8eb81cb72fb34c861"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/050-application/manifest.json",
+      "bytes": 3160,
+      "sha256": "9751fde258d59a0795b0ca7adcf3a7cca410b4ba9b031ab42a04d83577a2d821"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/050-application/preflight-result-review.json",
+      "bytes": 896,
+      "sha256": "174a499a193929f5e9b177f0865a9e73a154591eb7c7c796923013e3a7aeab22"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/050-application/application-result-review.json",
+      "bytes": 1325,
+      "sha256": "4ee8661d39964474e11fe8ff3276089beb9695ee6bee36e8cbb8b6044399cb40"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/050-application/result-review.md",
+      "bytes": 1749,
+      "sha256": "e83719f453ed21832efadeea376bcce96b8896ee89dbaa0156bb87cb03db6ad1"
     }
   ],
   "sqlSha256": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39",
@@ -718,6 +1533,50 @@
   "isolatedPlanningBase": {
     "id": "BASE2-20261105",
     "manifest": "docs/specs/pipeline-os/parallel-common-base-20261105.manifest.json",
-    "planningOnly": true
+    "planningOnly": true,
+    "result": "docs/specs/pipeline-os/parallel-common-base-20261105-result.md"
+  },
+  "workerControlDelta": {
+    "id": "WC-I01-20261108",
+    "manifest": "docs/specs/pipeline-os/s02/worker-control/manifest.json",
+    "separateRuntimeDelta": true,
+    "historicalSqlContractUnchanged": true
+  },
+  "connectWorkerIntegration": {
+    "id": "CW-I01-20261108",
+    "manifest": "docs/specs/pipeline-os/s02/integration/connect-worker/manifest.json",
+    "historicalSqlContractUnchanged": true
+  },
+  "r06Preparation": {
+    "id": "R06-20261108",
+    "manifest": "docs/specs/pipeline-os/s02/transport-selection/manifest.json",
+    "implementation": "docs/specs/pipeline-os/s02/transport-selection/i03-implementation.json",
+    "historicalSqlContractUnchanged": true,
+    "composioProductOperationEnabled": false
+  },
+  "connectRuntimeIntegration": {
+    "id": "CW-I02-20261108",
+    "manifest": "docs/specs/pipeline-os/s02/integration/connect-runtime/manifest.json",
+    "historicalSqlContractUnchanged": true,
+    "readyForProduction": false
+  },
+  "onboardingHttp": {
+    "path": "docs/specs/pipeline-os/s02/onboarding-http/manifest.json",
+    "bytes": 11095,
+    "sha256": "3fa570c5ce9e7f3a3b1e7545f0435086bf5955a0e0d5849a06f85e292f7dc548",
+    "historicalSqlContractUnchanged": true,
+    "readyForProduction": false
+  },
+  "finalRuntimeRelease": {
+    "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/manifest.json",
+    "bytes": 16589,
+    "sha256": "5531a816a8021a76746cd3102a0a77d12a9ca911c7be46bd1b79bc892a96a28b",
+    "accepted049Unchanged": true,
+    "readyForProduction": false
+  },
+  "application050": {
+    "path": "docs/specs/pipeline-os/s02/release/050-application/manifest.json",
+    "bytes": 3160,
+    "sha256": "9751fde258d59a0795b0ca7adcf3a7cca410b4ba9b031ab42a04d83577a2d821"
   }
 }

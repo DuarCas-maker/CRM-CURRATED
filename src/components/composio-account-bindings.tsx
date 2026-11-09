@@ -120,8 +120,8 @@ export function ComposioAccountBindingsView(p: ViewProps) {
       <p>
         {t(
           locale,
-          "Transporte activo: Gmail directo. Registrar un candidato no cambia el envío ni conecta otra cuenta.",
-          "Active transport: direct Gmail. Registering a candidate does not change delivery or connect another account.",
+          "Registrar un candidato no cambia el transporte ni conecta otra cuenta. La selección de transporte se revisa por separado para cada buzón.",
+          "Registering a candidate does not switch transport or connect another account. Transport selection is reviewed separately for each mailbox.",
         )}
       </p>
       {!p.allowed ? (

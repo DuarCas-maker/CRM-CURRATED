@@ -23,11 +23,18 @@ import {
 import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
 import { gmailSyncMode } from "../src/lib/gmail-sync";
 import { scheduleMailboxJobs } from "./gmail-schedule";
+import {
+  mailRoutingActive,
+  mailRuntimeDependencies,
+} from "../src/lib/server/mail-transport/runtime-context";
+import { selectedMailboxSchedule } from "../src/lib/server/mail-transport/mailbox-schedule";
 import { reconcileEngagement, linkEngagementThread } from "./gmail-engagement";
 import { reconcileImportAttachments } from "./gmail-import-scope";
 import { scheduleSendingUsage, syncSendingUsage } from "./gmail-sending-usage";
 import { setTimeout as delay } from "node:timers/promises";
 import { writeFile } from "node:fs/promises";
+import { workerExecutionMode, startWorkerPilot } from "./pilot-runtime";
+const executionMode = workerExecutionMode(process.env.WORKER_EXECUTION_MODE);
 let stopping = false;
 process.on("SIGTERM", () => {
   stopping = true;
@@ -63,6 +70,9 @@ async function importBatch(batchId: string) {
 }
 async function schedule() {
   const client = db();
+  const routed = mailRoutingActive()
+    ? await selectedMailboxSchedule(await mailRuntimeDependencies())
+    : null;
   const bucket = Math.floor(Date.now() / 300000);
   let connectedQuery = client
     .from("mail_accounts")
@@ -72,9 +82,14 @@ async function schedule() {
     connectedQuery = connectedQuery.eq("live_enabled", true);
   const connected = checked(await connectedQuery) || [];
   await scheduleSendingUsage(
-    checked(
-      await client.from("mail_accounts").select("id").eq("status", "connected"),
-    ) || [],
+    routed
+      ? routed.map((a) => ({ id: a.account_id }))
+      : checked(
+          await client
+            .from("mail_accounts")
+            .select("id")
+            .eq("status", "connected"),
+        ) || [],
   );
   const verifications =
     checked(
@@ -117,7 +132,8 @@ async function schedule() {
       ),
     );
   const credentials =
-    checked(
+    routed ??
+    (checked(
       await client
         .from("mail_credentials")
         .select("account_id,watch_expires_at")
@@ -125,7 +141,8 @@ async function schedule() {
           "account_id",
           connected.map((a) => a.id),
         ),
-    ) || [];
+    ) ||
+      []);
   await scheduleMailboxJobs(credentials, async (job) => {
     if (job.kind === "gmail_sync") {
       const pending =
@@ -151,11 +168,22 @@ async function schedule() {
   await reconcileUncertain();
 }
 let lastSchedule = 0;
-db(); // Fail fast on missing deployment configuration.
+if (executionMode !== "paused") db(); // Paused must not touch DB or providers.
 const syncMode = gmailSyncMode(); // Reject configuration errors before processing jobs.
+const pilot =
+  executionMode === "pilot"
+    ? await startWorkerPilot(process.env.WORKER_PILOT_ID, {
+        rpc: async (name, parameters) =>
+          checked(await db().rpc(name, parameters)),
+        send: sendNext,
+        readThread: syncLiveThread,
+        stopRequested: () => stopping,
+      })
+    : null;
 console.log(
-  `Curated CRM worker starting. Gmail sync mode: ${syncMode}. Logs exclude contact and application data.`,
+  `Curated CRM worker starting. Execution mode: ${executionMode}. Gmail sync mode: ${syncMode}. Logs exclude contact and application data.`,
 );
+let pilotClosedReported = false;
 const processHeartbeat = setInterval(() => {
   writeFile(
     process.env.WORKER_HEARTBEAT_FILE || ".local-worker-heartbeat",
@@ -168,6 +196,22 @@ while (!stopping) {
       process.env.WORKER_HEARTBEAT_FILE || ".local-worker-heartbeat",
       new Date().toISOString(),
     );
+    if (executionMode === "paused") {
+      await delay(3000);
+      continue;
+    }
+    if (pilot) {
+      try {
+        if ((await pilot.cycle()) === "closed" && !pilotClosedReported) {
+          pilotClosedReported = true;
+          console.log("WORKER_PILOT_CLOSED");
+        }
+      } catch {
+        console.error("WORKER_PILOT_HELD");
+      }
+      await delay(3000);
+      continue;
+    }
     if (Date.now() - lastSchedule > 60000) {
       try {
         await schedule();
@@ -224,7 +268,7 @@ while (!stopping) {
           await pollScrub(job.payload.batch_id);
           break;
         case "gmail_sync":
-          await syncMailbox(job.payload.account_id);
+          await syncMailbox(job.payload.account_id, job.payload.route_revision);
           break;
         case "gmail_live_thread":
           await syncLiveThread(job.payload.account_id, job.payload.thread_id);
@@ -249,7 +293,7 @@ while (!stopping) {
           await syncMessage(job.payload.account_id, job.payload.message_id);
           break;
         case "gmail_watch":
-          await renewWatch(job.payload.account_id);
+          await renewWatch(job.payload.account_id, job.payload.route_revision);
           break;
         case "pdf":
           await generatePdf(job.payload.application_id);
@@ -322,4 +366,11 @@ while (!stopping) {
   }
 }
 clearInterval(processHeartbeat);
+if (pilot) {
+  try {
+    await pilot.stop();
+  } catch {
+    console.error("WORKER_PILOT_CLOSE_REQUIRED");
+  }
+}
 console.log("Curated CRM worker stopped.");

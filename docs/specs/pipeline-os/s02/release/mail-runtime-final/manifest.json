@@ -1,0 +1,424 @@
+{
+  "id": "MR-FINAL-r1",
+  "date": "2026-11-08",
+  "sdd": "STRICT",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "mode": "auth_timestamp_compatibility_corrected_offline_no_remote_retry",
+  "ordinal": "050",
+  "ordinalReservation": "coordinator_local_only_check_again_before_publication",
+  "readyForReview": true,
+  "readyForRemoteSql": false,
+  "readyForProduction": false,
+  "remoteSql": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "realProviderRequests": 0,
+  "messages": 0,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "gmailDefaultProvider": "gmail_oauth",
+  "composioProductOperationEnabled": false,
+  "connectDefaultEnabled": false,
+  "routingDefaultEnabled": false,
+  "accepted049": {
+    "path": "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+    "bytes": 911177,
+    "sha256": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39"
+  },
+  "contractSha256": "2482d33acb4f33e1228915bbe3261030998aa5b363f936aa1b15ba1942c30cb7",
+  "artifacts": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/contract.json",
+      "bytes": 189996,
+      "sha256": "2482d33acb4f33e1228915bbe3261030998aa5b363f936aa1b15ba1942c30cb7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/050_integrate_mail_runtime_and_connect.sql",
+      "bytes": 383245,
+      "sha256": "ad56aed6bc11c1775bc8a036d7cd367c367432a9ca1a9d1f63ab80d0f4ec61d5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/preflight.sql",
+      "bytes": 122039,
+      "sha256": "61438b86b3cf4c1af8661f336294817573a163de43ba02839ddb491d029cbea8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/postflight.sql",
+      "bytes": 121116,
+      "sha256": "40a3a8a01ca8571d5a956db3449f8f09fc9bbbb9ab38156ec7fb5c60c35e7504"
+    }
+  ],
+  "inputComponents": [
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t002.local.sql",
+      "sha256": "37421175ae296c753d507fa2f2a662533b3ccfd9e4e166b82a2ddea4e0dbbfdc",
+      "bytes": 28219,
+      "transformation": "replace_disposable_host_wrapper_and_transaction_plus_declared_MR_AUTH_overlay"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/migrations/worker-control.local.sql",
+      "sha256": "b987a590a3e69abcd9159aeeab2d5d1cb4325150f3fd15f7216916b163ac143a",
+      "bytes": 15354,
+      "transformation": "remove_only_fixture_marker_line"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06.local.sql",
+      "sha256": "3602ff6ed10e313d412828cd552d79ed7518f783b2562217218037c1d0982e79",
+      "bytes": 29841,
+      "transformation": "remove_only_fixture_marker_line"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06-i02.local.sql",
+      "sha256": "91480eda69c2d0839326eb79c56a20e5277980b965b60043a8024dbad7206bb3",
+      "bytes": 6999,
+      "transformation": "remove_only_fixture_marker_line"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06-i03.local.sql",
+      "sha256": "d04995e04df3e0409eff434430d04688cf4245c72414cac83130baf4037ec403",
+      "bytes": 15528,
+      "transformation": "remove_only_fixture_marker_line"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t009.local.sql",
+      "sha256": "c485c50ea15e104ef06224bda1c28079b5bb8ae6b1e6c9f8a9a1e3536cdc2377",
+      "bytes": 45672,
+      "transformation": "replace_disposable_host_wrapper_and_transaction_plus_declared_MR_AUTH_overlay"
+    }
+  ],
+  "changedObjectCounts": {
+    "indexes": 28,
+    "schemas": 4,
+    "policies": 0,
+    "triggers": 5,
+    "functions": 69,
+    "relations": 14,
+    "constraints": 102
+  },
+  "dependencyCounts": { "relations": 17, "functions": 7 },
+  "newTooling": [
+    {
+      "path": "scripts/pipeline-os/mail-runtime-release.ts",
+      "bytes": 18117,
+      "sha256": "41a33e17d9c4ac15d127042350378d17582f46dc73594b15d3596dc72f23a23c"
+    },
+    {
+      "path": "scripts/pipeline-os/prepare-mail-runtime-release.ts",
+      "bytes": 5427,
+      "sha256": "d0de4b90917694555d6fa55cba926632df3b28f46c780cb31d81583ceda4bd22"
+    },
+    {
+      "path": "scripts/pipeline-os/package-mail-runtime-release.ts",
+      "bytes": 3724,
+      "sha256": "502b4674b46ca149e0b6257401227cf0db9bd3303a38a483d379cd59cb2e318c"
+    },
+    {
+      "path": "tests/pipeline-os-mail-runtime-release.test.ts",
+      "bytes": 11002,
+      "sha256": "78fc52c25b60b079188b8d9f2b887792eb5aa524519b7dffd0ef7863ce941696"
+    },
+    {
+      "path": "tests/pipeline-os-mail-runtime-auth-compat.test.ts",
+      "bytes": 8656,
+      "sha256": "d31e7f6c78448fd365e42187f0ffadaae3b1e6d39275b44330d301886e01b838"
+    }
+  ],
+  "existingProductDelta": [
+    {
+      "path": "next.config.ts",
+      "bytes": 1531,
+      "sha256": "49ec50a47f430c596118be1cbd8a7ea27a7ca37c59be55169f9d517ff858d02b"
+    },
+    {
+      "path": "tests/content-security.test.ts",
+      "bytes": 1187,
+      "sha256": "55e8f08ae73336280c7b546ab2ce9579d765bbe5660491d7045da4b1bb15145d"
+    }
+  ],
+  "sourceReconstruction": {
+    "nextConfigBefore": "f33ca239a9e548e055a993b0a93687fd298661724aacbd506d8362c40aa6b1c1",
+    "nextConfigOnlyChange": "exact consent host and comment",
+    "securityTestBefore": "04b2f2672c2ada81c76e16391dc0b8e587b7a49eddb2340c7cb89a84f53ee36b",
+    "securityTestOnlyChange": "matching expected host list/title",
+    "bothMatched": true
+  },
+  "documents": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/acceptance.md",
+      "bytes": 1917,
+      "sha256": "ac3c0c7776343d2baa6ba796e6aae02c6d81a3947a347e8a232454b22ff0217a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/auth-session-bugfix.md",
+      "bytes": 2716,
+      "sha256": "8f42c9abbb655959462fe3dd8b219d0cd59ff10caaef7c756a01cc8da2c3e104"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/design.md",
+      "bytes": 2468,
+      "sha256": "bdcda0b0e0cf6aab66f8966d61bfd4cc99061cfe7726989d75457179ff88db38"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/README.md",
+      "bytes": 1479,
+      "sha256": "ad52fb83d1c7cc65d7ff1b523657eefbc1e947817f44a0c1f8a6fb3418953c8f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/runbook.md",
+      "bytes": 8982,
+      "sha256": "4364faf1ff9539415fda83491ffe7818b548ac7eb6cdd2c28033ea6aa5d7b006"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/spec.md",
+      "bytes": 2392,
+      "sha256": "953b7b949c984d8d0049fc576cb4818c75408122ef5bdc869bcdb80b8e3e956d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/verification.md",
+      "bytes": 4032,
+      "sha256": "e378ea65fa7a13d9f4e68f855ec4ec81133fa9525c28e4c433928e8f467b02c0"
+    }
+  ],
+  "sourceInventory": {
+    "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/sources.json",
+    "bytes": 169925,
+    "sha256": "26e5f6df4d7ef119b71d8a2910dd494a80303f114174a023dc12134b629821bf"
+  },
+  "archive": {
+    "path": ".local/pipeline-os/mail-runtime-release-20261108/mail-runtime-web-worker-sources.tar.gz",
+    "bytes": 3565416,
+    "sha256": "3b55ccb8bcfaa29fb9f1c8c8e20017e6dbe2e47a167b30263c83d3c558e52d1e"
+  },
+  "sourceTreeSha256": "8517adcf28425733652b84ffbabe34f125768a4a35cae4be90bd050fa85e5068",
+  "sourceContextFiles": 935,
+  "sourceContextExcludes": "real env, .local, .git, dependencies, build output and manifest/source receipts",
+  "dependencies": [
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/manifest.json",
+      "bytes": 11095,
+      "sha256": "3fa570c5ce9e7f3a3b1e7545f0435086bf5955a0e0d5849a06f85e292f7dc548"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/manifest.json",
+      "bytes": 5583,
+      "sha256": "b39ef70a889ddaeaf304f526f7840cf00974981f9d53d0630f1403bea5e5ce8e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i03-implementation.json",
+      "bytes": 11954,
+      "sha256": "8de3515b02bb457fa320db530fcce2a10e48fbcff48101ca23f0626055f1e4e9"
+    }
+  ],
+  "checks": {
+    "node": "22.23.4",
+    "selectedFiles": 35,
+    "casesIncludingGroups": 371,
+    "passed": 369,
+    "failed": 0,
+    "skipped": 2,
+    "newReleaseScenarios": 10,
+    "typescript": "passed --noEmit --incremental false",
+    "network": "real fetch/http/https/socket/TLS/DNS denied; fake providers only",
+    "nativePostgresInRoot": false,
+    "nativeSkipReasons": ["T002 opt-in runner", "T009 opt-in runner"],
+    "preflightDoesNotMutate": true,
+    "transactionRollbackRestoresCatalogRowsAndAcl": true,
+    "finalFailureAtomic": true,
+    "commitAndFreshPostflight": true,
+    "lfCrlfVerified": true,
+    "sourcePinsRetained": true,
+    "publicPrivilegesAndExtraPrivateObjectDetected": true,
+    "productSourcesMatchingSuccessfulIsolatedBuild": 301,
+    "productBuildInputSha256": "10b3af257eadb53e0b9d55a0e254b9aad5bf41e2ada9ca7141b7b247fe2e9da3",
+    "isolatedNextBuild": {
+      "exitCode": 0,
+      "platform": "win32",
+      "next": "16.3.8",
+      "compiler": "webpack",
+      "staticPages": 49,
+      "noRealEnv": true,
+      "networkDenied": true,
+      "linuxImage": false,
+      "buildContextInputTree": "7d96f4231fb8c7a2ba02f0d3a74df1da2616aeeb5de907606f6db7bc9058b8e2",
+      "finalContextDiff": "release tooling/docs/receipts; application/worker/config/dependency product bytes matched"
+    },
+    "workerPausedSmoke": {
+      "mode": "paused",
+      "heartbeat": true,
+      "credentialsProvided": false,
+      "network": "denied",
+      "databasePermitted": false,
+      "platform": "win32",
+      "production": false
+    },
+    "linuxImageBuilt": false,
+    "remoteSmoke": false,
+    "format": true,
+    "localLinks": 14,
+    "priorSourcesPreserved": 930,
+    "privateOperationalHashesPreserved": 49,
+    "sql049Unchanged": true,
+    "headAndIndexPreserved": true,
+    "authCompatibilityCasesIncludingGroups": 14,
+    "focusedReleaseAndAuthCasesPassed": 24,
+    "typeCompatibility": [
+      "timestamp without time zone",
+      "timestamp with time zone"
+    ],
+    "unchangedTypes": ["id/user_id UUID", "created_at/not_after timestamptz"],
+    "timeZones": ["UTC", "America/Bogota", "Asia/Tokyo"],
+    "utcRefreshNormalization": true,
+    "nullRefreshCreatedAtFallback": true,
+    "maxAgeInactivityNotAfterRevocationActorGuardsRetained": true,
+    "originalSixSourcesUnchanged": true,
+    "authSchemaOrDataChangedInProductSql": false,
+    "generatedCatalogEqualForBothAuthTypes": true,
+    "previousProductBuildNotRepeatedForSqlOnlyChange": true
+  },
+  "privateEvidence": [
+    {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/qa-final.tap",
+      "bytes": 87132,
+      "sha256": "fbfbf65f142ab8d2911fce0d91c3f2cb2901c93540d2abf243de57fc688df4b6"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/qa-new.tap",
+      "bytes": 2424,
+      "sha256": "fe4a523433fd709b2813a182605103bb947af60bc86815d1bfab64dd3cd39b78"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/generate.log",
+      "bytes": 339,
+      "sha256": "65f04839f156d059c98d7dad3d6ba553c0b4b3606b916f9351b0bca361d12aae"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/build-offline.json",
+      "bytes": 304,
+      "sha256": "451c535616e36e2f39ec6b2a9a5adcbace34e9c732ce35fdc4e4b6e71b1eb7fc"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/build-offline.log",
+      "bytes": 2941,
+      "sha256": "a4ab0d744733ef129ca562225cf7ca23ede888a7727a68ea97cd260cefee60aa"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/build-inputs.json",
+      "bytes": 172338,
+      "sha256": "f870d4e7b02e2849cf408d3232443258ad98e1a0d7ad0042400d04cbce733fee"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/worker-paused.json",
+      "bytes": 174,
+      "sha256": "caad55a2f8415a21e3e31e93ac4ab08e7a7c212afaf2a0ea222aac6b1502c76c"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/worker-paused.log",
+      "bytes": 122,
+      "sha256": "df58403fff212fef03b09aefaac2f55bf2490b0eb4421d9ad3d4b93584af7280"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-auth-20261108/qa-final.tap",
+      "bytes": 90345,
+      "sha256": "b77f5778b679aa3b2a65a9234c6c8589a51d889194aa9d6e3e3e96cff77e017c"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-auth-20261108/qa-new.tap",
+      "bytes": 5899,
+      "sha256": "a8a6beff445dc87391a9843dbdc45054bda07629afd39a1d75802959eeff78a0"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-auth-20261108/generate.log",
+      "bytes": 339,
+      "sha256": "0b33c2559aa6a2bcb9750b8ce809beb7c2d5a30e147dc8afd7129f77785b5385"
+    },
+    {
+      "path": ".local/pipeline-os/mail-runtime-auth-20261108/typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "pending": [
+    "physical PostgreSQL15 rehearsal of exact050 and postflight including locks/Auth/collation",
+    "current destination/pause/drain/recovery and ordinal validation",
+    "reviewed Git publication and Linux build/health of BOTH existing Coolify resources",
+    "real descriptor/project/identity/assignments, separately budgeted enablement and operational pilot"
+  ],
+  "revision": "MR-AUTH-r1",
+  "authCompatibility": {
+    "revision": "MR-AUTH-r1",
+    "naiveRefreshedAtZone": "UTC",
+    "originalSourcesUnchanged": true,
+    "overlay": [
+      "two private refreshed_at_utc overloads before T002 digest",
+      "T002 live_actor inactivity expression",
+      "T009 session_limit inactivity expression"
+    ]
+  },
+  "supersedes": {
+    "contractSha256": "83eb40c5821b5e3885a96f553e6ae5911fbf9d9558e5ff00f35930a9eb01c63c",
+    "artifacts": [
+      {
+        "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/contract.json",
+        "bytes": 188067,
+        "sha256": "83eb40c5821b5e3885a96f553e6ae5911fbf9d9558e5ff00f35930a9eb01c63c"
+      },
+      {
+        "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/050_integrate_mail_runtime_and_connect.sql",
+        "bytes": 379932,
+        "sha256": "0d022c731ccdb701664e5f553584999bcbbff062e142ab9ec2be4165c2116332"
+      },
+      {
+        "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/preflight.sql",
+        "bytes": 120604,
+        "sha256": "9a2c450a3a04f327454eaa12b80f3c59c337cc0d2238d944694deeffa4a76a8f"
+      },
+      {
+        "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/postflight.sql",
+        "bytes": 119681,
+        "sha256": "fd4546f7d692950e2bb7c572632e73a729470e8f3dce28f03eea86b016fdc640"
+      }
+    ],
+    "archive": {
+      "path": ".local/pipeline-os/mail-runtime-release-20261108/mail-runtime-web-worker-sources.tar.gz",
+      "bytes": 3558313,
+      "sha256": "b2bf171f794c628b68b8220ec602f7d634e54654059410cfbd0c42039f531041"
+    },
+    "privateCopies": [
+      {
+        "path": ".local/pipeline-os/mail-runtime-auth-20261108/prior-manifest.json",
+        "bytes": 11766,
+        "sha256": "28089b15c76a329c43f1a87352db1a956a7114a89858d105d6a62144ffe38d43"
+      },
+      {
+        "path": ".local/pipeline-os/mail-runtime-auth-20261108/prior-contract.json",
+        "bytes": 188067,
+        "sha256": "83eb40c5821b5e3885a96f553e6ae5911fbf9d9558e5ff00f35930a9eb01c63c"
+      },
+      {
+        "path": ".local/pipeline-os/mail-runtime-auth-20261108/prior-050.sql",
+        "bytes": 379932,
+        "sha256": "0d022c731ccdb701664e5f553584999bcbbff062e142ab9ec2be4165c2116332"
+      },
+      {
+        "path": ".local/pipeline-os/mail-runtime-auth-20261108/prior-sources.tar.gz",
+        "bytes": 3558313,
+        "sha256": "b2bf171f794c628b68b8220ec602f7d634e54654059410cfbd0c42039f531041"
+      },
+      {
+        "path": ".local/pipeline-os/mail-runtime-auth-20261108/prior-sources.json",
+        "bytes": 169316,
+        "sha256": "f106c6c0b28fe22caa9005f0b89bde28e2d264743b942237d4390614b789776c"
+      }
+    ]
+  },
+  "receivedIncident": {
+    "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/auth-context-result.json",
+    "bytes": 1148,
+    "sha256": "0d0dc29abefa9b78529f9b960ac1bde20d0d5d5bcf7a81dc95bd845d62c031dc"
+  }
+}

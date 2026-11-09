@@ -1,0 +1,269 @@
+{
+  "id": "R06-I02-20261108",
+  "date": "2026-11-08",
+  "timezone": "America/Bogota",
+  "sdd": "STRICT",
+  "mode": "implemented_tested_offline_composio_product_disabled",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "readyForReview": true,
+  "readyForI03Integration": true,
+  "readyForProduction": false,
+  "readyForRemoteSql": false,
+  "gmailDefaultProvider": "gmail_oauth",
+  "routingDefaultEnabled": false,
+  "composioProductOperationEnabled": false,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "realProviderRequests": 0,
+  "remoteSql": 0,
+  "messages": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "existingDelta": [
+    {
+      "path": ".env.example",
+      "bytes": 3133,
+      "sha256": "5a088c887c8e191d7e191d0748d9ec457e381bd77fc906846028faec1c02b560",
+      "baseSha256": "75b4fec69a38d8ade734f9a6f3c8d9580d49026b223a87160d1d4d8c2c481029"
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "bytes": 6995,
+      "sha256": "4d0ded0610847d0ae4933922a75ff6827f52626aeee6a35d14ccb4403eb7874d",
+      "baseSha256": "77724314e2cb4fc9b54ccd5858b68ab5d936fb7f449d94764f3c2e50aa96e95b"
+    },
+    {
+      "path": "worker/gmail.ts",
+      "bytes": 35045,
+      "sha256": "035b210c6f655208499e8c0dd82f6683ade919a360cd58814425afc917832df7",
+      "baseSha256": "a465c2a41b1dfc5699232ff206521b108ac0ad262d2cb64f41169cc91384003a"
+    },
+    {
+      "path": "src/lib/server/mail-transport/selection.ts",
+      "bytes": 5760,
+      "sha256": "7810a9452e1b8b9f3d40ba87e7d1e33e4f93933d1ff0150121bfb7dcaaca2e55",
+      "baseSha256": "9d4815722180a41c6cb131ed48fb65a1ab83176fe2a29f4c070718024d3629db"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+      "bytes": 8944,
+      "sha256": "a2dd644670aae1d3389b06a71ace0dfe9381d36bdbe21f05ba28ed236093ad5f",
+      "baseSha256": "4d1069390167a03e6cf31257ba90f23c4f4d8790cf79f06cfe675a5788206776"
+    }
+  ],
+  "newFiles": [
+    {
+      "path": "src/lib/server/mail-transport/runtime-context.ts",
+      "bytes": 12461,
+      "sha256": "7039c9272fe8d6cc60b00f3300f42e1a5d2c96e8f0fc6578b3fb24d0fc7b09fb"
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-service.ts",
+      "bytes": 1174,
+      "sha256": "dec95adc76f303de709f789c4f8bd17a4ca04bcf2d4d79757e7173c52fdeecb3"
+    },
+    {
+      "path": "src/lib/server/mail-transport/verification-context.ts",
+      "bytes": 1219,
+      "sha256": "e15761aba7fef34dbee88217de3cf02b4552223f68784befc953cbb68800dc22"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/transport-selection.ts",
+      "bytes": 3102,
+      "sha256": "48cef8977c50500cb93fa7007f2c83cc42d398fb46551baa99702c4079794151"
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/transport/route.ts",
+      "bytes": 2391,
+      "sha256": "fa0b5f022f35d3ae500cca9a2f154e1404b167d7a4036962e78377fc78ceb3a3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06-i02.local.sql",
+      "bytes": 6999,
+      "sha256": "91480eda69c2d0839326eb79c56a20e5277980b965b60043a8024dbad7206bb3"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-transport-runtime.ts",
+      "bytes": 2670,
+      "sha256": "4b01ced581a0706dd842f11229df2b41643d010049e73e9af2f35f8269139b96"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-runtime.test.ts",
+      "bytes": 16168,
+      "sha256": "a6fe61933e6d5d2811217e391c38df6b0160df4459e6e2c2536d4b112cd6168d"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-runtime-db.test.ts",
+      "bytes": 9464,
+      "sha256": "597664c145c29fcff90a5b5364ed6a930bbc716e5511d537287407a12dbea2be"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-runtime-api.test.ts",
+      "bytes": 13923,
+      "sha256": "d8b3ed423b18dd4098ade60c0e6395b7f61d68cb6661d7c03777ff62faed9ff0"
+    }
+  ],
+  "documents": [
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/spec.md",
+      "bytes": 5855,
+      "sha256": "95b00b3bd1f382dbf7604a5d963655f0ccd69804cd9c331f74138d1f0d9d947f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/design.md",
+      "bytes": 16863,
+      "sha256": "c3e7e29b41a41f434c1662aea1437fe3965c4e23d6dd26526df5bf7a292c15da"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/tasks.md",
+      "bytes": 8512,
+      "sha256": "8e3194b88fb0c78034a4b8b169edb96b4a9bd0ba7d19d88042b365327c7207b3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/acceptance.md",
+      "bytes": 5412,
+      "sha256": "a66daf591909a8e80c225cbd2eb81836188f168bcc7564e83609b50da6fe9804"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/verification.md",
+      "bytes": 4095,
+      "sha256": "a31d6ca209955404ee971eb47fd2db43137e75bc34c7e7785d16241e5f99052a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i02-design.md",
+      "bytes": 6333,
+      "sha256": "1faaf2206a37c8c549263a9ff70bb934eb2bab2a59ce65844cb264fc74d87d97"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i02-verification.md",
+      "bytes": 6734,
+      "sha256": "2c364ac7f731cc9e48d684566dacb3bdac22a552f18b737d07e5b64dc55be256"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i02-runbook.md",
+      "bytes": 4505,
+      "sha256": "54067d30d255c6d625b4ecf4b000ce161d8945c0890cc8bf307a9dca93cc9725"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i01-implementation.json",
+      "bytes": 8848,
+      "sha256": "e64902c2657239d794e3a72617d4e5ea0c5f6d5657aee25f321c4e91310cd393"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/manifest.json",
+      "bytes": 6381,
+      "sha256": "220f135f777d6509cfc000f552f9e3a8dea808dda6152811061b42921df6d4e6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/manifest.json",
+      "bytes": 7360,
+      "sha256": "9f3be045694a5dbe7c1824d4bb69631102beb5e9815aa874b66898f71432c04c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+      "bytes": 911177,
+      "sha256": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39"
+    }
+  ],
+  "sql": {
+    "candidate": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06-i02.local.sql",
+    "numbered": false,
+    "remoteApplied": false,
+    "sourcePin": {
+      "signature": "public.mail_transport_finish(uuid,text,text)",
+      "baseSourceMd5": "e8a89bcdfcd93659e91e3b35f69a053d"
+    },
+    "newServiceRpcs": 3,
+    "replacedRpcs": 1,
+    "newOutboxHoldTrigger": 1,
+    "changedStateConstraintAndPartialIndex": true,
+    "originalI01SqlUnchanged": true,
+    "externalTransactionRollbackTested": true
+  },
+  "checks": {
+    "node": "22.23.4",
+    "casesIncludingGroups": 215,
+    "passed": 214,
+    "failed": 0,
+    "skipped": 1,
+    "newCasesIncludingGroups": 34,
+    "regressionPassed": 180,
+    "typeScript": "passed --noEmit --incremental false",
+    "wrapperWithoutExperimentalFlag": "passed; not counted again",
+    "originalC3ArchitectureGuard": "passed unchanged after neutral context extraction",
+    "sharedContractAstSymbolsPreserved": 4,
+    "workerCommercialAstPreservedExceptDispatchScope": true,
+    "network": "real fetch/http/https/socket/TLS/DNS denied; injected providers only",
+    "format": true,
+    "localLinks": 28,
+    "preexistingPublicSourcesPreserved": 513,
+    "explicitPriorSourceChanges": [
+      ".env.example",
+      "src/lib/server/google.ts",
+      "worker/gmail.ts",
+      "src/lib/server/mail-transport/selection.ts",
+      "src/lib/server/mail-accounts/composio-verifier.ts"
+    ],
+    "acceptedPayloadUnchanged": 95,
+    "acceptedPayloadDeltaDeclared": [
+      "src/lib/server/google.ts",
+      "src/lib/server/mail-accounts/composio-verifier.ts",
+      "src/lib/server/mail-transport/composio-proxy.ts",
+      "src/lib/server/mail-transport/gmail-direct.ts",
+      "worker/gmail.ts"
+    ],
+    "supportUnchanged": 9,
+    "privateOperationalHashesPreserved": 49,
+    "sql049Unchanged": true,
+    "headAndIndexPreserved": true,
+    "postgresPhysicalConcurrency": false,
+    "linuxImageBuilt": false,
+    "realAuthOrProviderConfigurationVerified": false
+  },
+  "privateEvidence": [
+    {
+      "path": ".local/pipeline-os/r06-i02-20261108/qa-final.tap",
+      "bytes": 52177,
+      "sha256": "aa9d310925baa901038c48ac3a73dfb5845348e3003465aef3526560ace149e7"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i02-20261108/qa-architecture-red.tap",
+      "bytes": 53183,
+      "sha256": "ed1e73433217a11edd7d91f2df5a746f9a475015db82ddbca147ca80a46aa3b3"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i02-20261108/typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i02-20261108/wrapper.tap",
+      "bytes": 306,
+      "sha256": "fe558e0a1821526002dbc6fda7afd4801487130b03a64376c6ef344cda978f76"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i02-20261108/architecture.tap",
+      "bytes": 385,
+      "sha256": "5b113da1b7841b92ae352d88d3032494b538a267c9d59cc3b9830f4a3058534b"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i02-20261108/contract-preservation.json",
+      "bytes": 229,
+      "sha256": "eac741c0c8f70b377ccb8fbc6252b16d32ac834cc451135bce4450e35e4c85d6"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i02-20261108/worker-preservation.json",
+      "bytes": 163,
+      "sha256": "7be246faaefef3ca614a96a2c69ad97b207ba4a0bfc56c37792568a9612b8ff6"
+    }
+  ],
+  "pending": [
+    "F2 T-004: persistent phases, real adapter/mapping/provenance; T-003 completed offline not integrated by this task",
+    "I03 live cursor/scheduler/push/watch/direct callback/panel and delta QA",
+    "final combined SQL/preflight/postflight and PG15 physical contention; never repeat049",
+    "coordinated paused rollout and control old/legacy replicas before enabling routing",
+    "real assignments/evidence/limited Composio trial and reconciliation; general production authorization retained"
+  ]
+}

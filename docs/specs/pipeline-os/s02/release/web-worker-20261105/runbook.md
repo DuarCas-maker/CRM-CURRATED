@@ -1,6 +1,20 @@
 # Publicación propuesta de A/B/C — todavía sin ejecutar
 
+Estado posterior: [050 aplicada y postflight conforme](../050-application/result-review.md). No repetir050. Pendiente publicación de las fuentes web/worker del paquete actual y smoke apagado. La imagen/archivo histórico descrito abajo no contiene estos incrementos.
+
+Revisión MR-AUTH-r1 del [paquete actual](../mail-runtime-final/README.md): usar hashes nuevos; el candidato anterior falló antes deDDL por tipo de Auth. Sin instalación050 ni publicación; la compilación previa de código web/worker conserva su alcance, no acredita el SQL revisado en PG15 físico.
+
+Estado vigente MR-FINAL-r1: usar el [nuevo paquete050/web-worker y su protocolo](../mail-runtime-final/README.md). El archivo histórico descrito abajo no contiene el delta.355 correctos/dos omisiones nativas, build Next Windows aislado y heartbeat paused; aún sin imagen Linux, SQL remoto o despliegue. Composio apagado e Instantly43.
+
+Estado vigente08/11: [CW-I03/HTTP-I01](../../onboarding-http/verification.md) integra T-009 y rutas/panel de alta offline.344 correctos/dos omisiones nativas, TypeScript y QA de fixtures correctos. El archivo histórico no contiene este delta. Seguir el [runbook actual](../../onboarding-http/runbook.md): SQL final nuevo y revisión/publicación/configuración/piloto; no repetir048/049. Composio apagado, Gmail directo e Instantly43. Las notas de entregas anteriores que siguen no son su estado actual.
+
+Continuidad08/11: [CW-I02](../../integration/connect-runtime/verification.md) incorpora motor/adaptador de alta completos T-003/T-004 y prueba su composición con dobles, sin caller/UI ni activación. T-009 sigue en F2. El próximo paquete final debe conciliar persistencia con CW/R06 antes de SQL/corte; no usar el archivo de fuentes histórico como si incluyera estas adiciones.
+
+Actualización08/11: [R06-I03 recepción/panel](../../transport-selection/i03-verification.md) implementado offline, con manifiesto de delta propio y262 correctos/una omisión nativa. El archivo histórico de fuentes no contiene CW/R06. Conciliar alta F2/persistencia y preparar SQL final/corte antes de una versión operable. Composio bloqueado, routing false por defecto y Gmail directo conservado; no hay nueva publicación, SQL remoto ni consumo de proveedores por este incremento.
+
 05/11/2026 · [Candidato y hashes](manifest.json), [fuentes](sources.json), [resultado local](verification.md).
+
+**06/11/2026 — protocolo de construcción controlada preparado:** [CB-20261106-r1](controlled-build/protocol.md), con límites, vigilancia, egress, fuentes y evidencia. No ejecutado ni autorizado. El operador acredita Docker Linux en el VPS existente; la memoria disponible reportada2.4GiB no pasa el inicio propuesto3GiB. Plugin, límites efectivos, control de salida y capacidad reciente siguen pendientes. El commit local de base común50d2f91 existe para los worktrees; no es una publicación ni reemplaza el contexto sellado indicado abajo. Las afirmaciones de ausencia de commit que siguen describen la preparación original05/11.
 
 ## Qué se publica
 

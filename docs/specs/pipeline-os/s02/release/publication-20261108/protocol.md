@@ -1,0 +1,15 @@
+# Publicación conjunta web/worker — 08/11/2026
+
+SDD STRICT · ejecución de publicación autorizada expresamente por el usuario. Destino: main de DuarCas-maker/CRM-CURRATED y los dos recursos existentes de Coolify del CRM Qrated. El usuario confirmó WORKER_EXECUTION_MODE=paused y routing/alta Composio/webhook Instantly apagados. No se vuelve a pedir ese permiso ni se cambian secretos.050 está aplicada con postflight aceptado; no se ejecuta SQL adicional.
+
+PUB-FR01/AC01: mismo commit para web y curated-worker, historial remoto revisado y avance fast-forward sin perder WIP. PUB-FR02/AC02: fuentes públicas únicamente, sin env reales/privados/dependencias;La evidencia vigente es369 casos correctos/dos omisiones nativas, TypeScript y build Next aislado aceptados. Se cotejan hashes para no repetir pruebas aceptadas sin cambios. PUB-FR03/AC03: ambos despliegues terminan Success/Finished y sus contenedores están saludables; worker permanece paused. PUB-FR04/AC04: smoke público acotado sin sesión/correos ni proveedores, webhook apagado, preservación de43 y artefactos050. Un resultado web saludable no acredita el worker.
+
+PUB-T01: revisar manifiestos, contrato/postflight aplicado, remoto y diff; cotejar producto con build y privados. T02: registrar confirmaciones, preparar commit público y revisar índice. T03: push atómico fast-forward main (autodeploy de ambos recursos). T04: observar en Coolify ambos SHA/estado/health, consultar solo logs operativos necesarios y realizar smoke sin proveedores. T05: guardar resultado y pendientes sin disparar otro despliegue por documentación de evidencia.
+
+Coolify observado:4.6.0. Web:rv8rpfxhf0mbxprge6h6ki9c, CRM CURRATADED; worker:vc4aybj4ucje7zstpsp3zboh, curated-worker. Proyecto:gzbzm9radjjsrbgtufhi7x53; entorno:xldygmbiax9prff0pgldqu5a. Dockerfile y Dockerfile.worker existentes, Node22, frozen lock, no usuario root en runtime y healthchecks. El push dispara el build Linux existente; no se instala otro builder o VPS. No activar Composio/routing, campañas, notificaciones, formularios o ensayos por esta publicación.
+
+Antes del push: main remoto fb9f2015e682fc0704340530425322efc62c601b es ancestro de la base local50d2f91. Último despliegue worker de ese SHA aparece Success; recurso Exited antes del corte. Web se observó Running. Si el remoto avanza, revisar el cambio antes de reintentar; no force-push/rebase/reset de cambios ajenos.
+
+Recuperación: conservar paused/flags apagados y detener el recurso afectado si falla su arranque. Revisar ambos binarios e imágenes previas del historial de Coolify; no borrar SQL050, Auth, volúmenes o recibos ni reencolar inciertos. Volver a un commit/imagen anterior solo coordinado con las guardas de DB050; preferir corrección hacia delante. No se afirma un backup/restauración nuevos o ensayo PG15 nativo. La aplicación de producción de050 fue decisión explícita del operador.
+
+La evidencia posterior diferenciará commit/push, build Linux, health de cada recurso, modo paused y smoke HTTP. La publicación del código apagado no completa el piloto operativo ni la activación Composio.

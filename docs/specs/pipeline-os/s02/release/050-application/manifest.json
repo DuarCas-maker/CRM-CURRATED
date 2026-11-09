@@ -1,0 +1,83 @@
+{
+  "id": "MR-APPLY-20261108",
+  "sdd": "STRICT",
+  "target": "CRM Qrated self-hosted Supabase",
+  "authorization": "user: Quiero aplicarlo en produccion",
+  "nativeRuntimeDownloadAuthorized": false,
+  "nativeRuntimeDownloaded": false,
+  "nativeRehearsalExecuted": false,
+  "productionApplicationAuthorized": true,
+  "executionMethod": "operator SQL Editor after confirmed resource pause",
+  "workerAndWebPauseConfirmed": false,
+  "agentRemoteSql": 0,
+  "applicationSucceededObserved": true,
+  "pushes": 0,
+  "deployments": 0,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "providerRequests": 0,
+  "messages": 0,
+  "composioEnabled": false,
+  "sealedRelease": {
+    "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/manifest.json",
+    "bytes": 16589,
+    "sha256": "5531a816a8021a76746cd3102a0a77d12a9ca911c7be46bd1b79bc892a96a28b"
+  },
+  "artifacts": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/contract.json",
+      "bytes": 189996,
+      "sha256": "2482d33acb4f33e1228915bbe3261030998aa5b363f936aa1b15ba1942c30cb7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/050_integrate_mail_runtime_and_connect.sql",
+      "bytes": 383245,
+      "sha256": "ad56aed6bc11c1775bc8a036d7cd367c367432a9ca1a9d1f63ab80d0f4ec61d5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/preflight.sql",
+      "bytes": 122039,
+      "sha256": "61438b86b3cf4c1af8661f336294817573a163de43ba02839ddb491d029cbea8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/postflight.sql",
+      "bytes": 121116,
+      "sha256": "40a3a8a01ca8571d5a956db3449f8f09fc9bbbb9ab38156ec7fb5c60c35e7504"
+    }
+  ],
+  "documents": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/050-application/protocol.md",
+      "bytes": 3385,
+      "sha256": "0f65c18da1693add1eb72709619796d047b00969537a4ce8eb81cb72fb34c861"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/050-application/preflight-result-review.json",
+      "bytes": 896,
+      "sha256": "174a499a193929f5e9b177f0865a9e73a154591eb7c7c796923013e3a7aeab22"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/050-application/application-result-review.json",
+      "bytes": 1325,
+      "sha256": "4ee8661d39964474e11fe8ff3276089beb9695ee6bee36e8cbb8b6044399cb40"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/050-application/result-review.md",
+      "bytes": 1749,
+      "sha256": "e83719f453ed21832efadeea376bcce96b8896ee89dbaa0156bb87cb03db6ad1"
+    }
+  ],
+  "applicationEvidenceSource": "operator application report plus independent postflight",
+  "applicationResult": {
+    "path": "docs/specs/pipeline-os/s02/release/050-application/application-result-review.json",
+    "bytes": 1325,
+    "sha256": "4ee8661d39964474e11fe8ff3276089beb9695ee6bee36e8cbb8b6044399cb40"
+  },
+  "review": {
+    "path": "docs/specs/pipeline-os/s02/release/050-application/result-review.md",
+    "bytes": 1749,
+    "sha256": "e83719f453ed21832efadeea376bcce96b8896ee89dbaa0156bb87cb03db6ad1"
+  },
+  "doNotRepeat050": true,
+  "webWorkerPublicationNotObserved": true
+}

@@ -7,6 +7,10 @@ import {
   type ResolvedComposioBinding,
 } from "./contract";
 import { MailTransportError } from "./errors";
+import {
+  authorizeWorkerRequest,
+  inWorkerPilot,
+} from "../worker-request-control";
 
 export const composioProxyUrl =
   "https://backend.composio.dev/api/v3.1/tools/execute/proxy";
@@ -405,6 +409,17 @@ export function composioProxyTransport(options: {
       if (signal.aborted)
         throw new MailTransportError("COMPOSIO_NETWORK_OR_TIMEOUT");
       let response: Response;
+      if (inWorkerPilot()) {
+        await authorizeWorkerRequest(
+          "composio",
+          binding.accountId,
+          request.path,
+          request.init?.method ?? "GET",
+          true,
+        );
+        if (signal.aborted)
+          throw new MailTransportError("COMPOSIO_NETWORK_OR_TIMEOUT");
+      }
       try {
         response = await withAbort(
           () =>

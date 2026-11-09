@@ -151,8 +151,8 @@
     },
     {
       "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/runbook.md",
-      "bytes": 7015,
-      "sha256": "a142cc0e76a35771e18e62a8fd4e8b8f656eebb53aeb715e00250cde05eeafe4"
+      "bytes": 9941,
+      "sha256": "bac93211037d03443fe32a71315d8c9c018825283f910d4c56759ed374385b64"
     },
     {
       "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/verification.md",
@@ -163,6 +163,94 @@
       "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/sources.json",
       "bytes": 139797,
       "sha256": "333528f2c9a13938bfe381c296afb63eda451d3ea0e1ff338bba36e708173d22"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/spec.md",
+      "bytes": 5316,
+      "sha256": "6d082b16fe09e3434340a807e9a4dd94cb31d2c0640f5b05cbe20f6ab34845d0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/design.md",
+      "bytes": 6539,
+      "sha256": "cfbfd5fa36a731a733b96f3bc390d8587f35aef0909f3d087a959b1c7d52f5c4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/tasks.md",
+      "bytes": 1491,
+      "sha256": "ccde17847beb7f3638902006928dcb011a102de529786ecc7f9b9d51c15c8a62"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/acceptance.md",
+      "bytes": 2964,
+      "sha256": "10f079a2bea969d461935f3cc9b23afe5eb39d8634ebd3d3875fcec1d3923227"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/protocol.md",
+      "bytes": 12480,
+      "sha256": "a3059c160ff733db576bf7d4a7bb39c7fc68107aaf44288edc00eaca5cb8b92a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/verification.md",
+      "bytes": 4439,
+      "sha256": "6f82ad67e4fc0811349437e8fda635f6ac2b661f67d2517cd61bab8f0a8ca922"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/manifest.json",
+      "bytes": 4294,
+      "sha256": "d74fadbb93316f9fb429eb58624bb4c9ed1a1caccac7bf7bf1face287d0c304f"
     }
-  ]
+  ],
+  "controlledBuild": {
+    "protocol": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/protocol.md",
+    "manifest": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/manifest.json",
+    "prepared": true,
+    "executed": false,
+    "readyForExecution": false
+  },
+  "connectWorkerIntegration": {
+    "id": "CW-I01-20261108",
+    "manifest": "docs/specs/pipeline-os/s02/integration/connect-worker/manifest.json",
+    "sha256": "9f3be045694a5dbe7c1824d4bb69631102beb5e9815aa874b66898f71432c04c",
+    "historicalArchiveDoesNotContainThisDelta": true,
+    "readyForProduction": false
+  },
+  "r06Preparation": {
+    "id": "R06-20261108",
+    "manifest": "docs/specs/pipeline-os/s02/transport-selection/manifest.json",
+    "sha256": "fd28b746edf85c855011c958a6713e8e4d56d7408d2cdf39b18ab988e4e5a0cb",
+    "implementation": "docs/specs/pipeline-os/s02/transport-selection/i03-implementation.json",
+    "routingDefaultEnabled": false,
+    "composioProductOperationEnabled": false,
+    "readyForProduction": false,
+    "historicalArchiveDoesNotContainThisDelta": true
+  },
+  "connectRuntimeIntegration": {
+    "id": "CW-I02-20261108",
+    "manifest": "docs/specs/pipeline-os/s02/integration/connect-runtime/manifest.json",
+    "sha256": "07d69554e7e874ee7581b1174c19b274f1c891fa12f3b4106d162115dd17d8d2",
+    "historicalArchiveDoesNotContainThisDelta": true,
+    "readyForProduction": false
+  },
+  "connectStoreIntegration": {
+    "path": "docs/specs/pipeline-os/s02/integration/connect-store/manifest.json",
+    "bytes": 5583,
+    "sha256": "b39ef70a889ddaeaf304f526f7840cf00974981f9d53d0630f1403bea5e5ce8e"
+  },
+  "onboardingHttp": {
+    "path": "docs/specs/pipeline-os/s02/onboarding-http/manifest.json",
+    "bytes": 11095,
+    "sha256": "3fa570c5ce9e7f3a3b1e7545f0435086bf5955a0e0d5849a06f85e292f7dc548",
+    "historicalArchiveDoesNotContainThisDelta": true,
+    "readyForProduction": false
+  },
+  "finalRuntimeRelease": {
+    "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/manifest.json",
+    "bytes": 16589,
+    "sha256": "5531a816a8021a76746cd3102a0a77d12a9ca911c7be46bd1b79bc892a96a28b"
+  },
+  "application050": {
+    "path": "docs/specs/pipeline-os/s02/release/050-application/manifest.json",
+    "bytes": 3160,
+    "sha256": "9751fde258d59a0795b0ca7adcf3a7cca410b4ba9b031ab42a04d83577a2d821"
+  }
 }

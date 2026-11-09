@@ -4,6 +4,11 @@ import { readBounded } from "@/lib/server/body";
 import { gmailHistoryEnabled } from "@/lib/gmail-feature";
 import { gmailPushEnabled } from "@/lib/gmail-sync";
 import {
+  mailRoutingActive,
+  mailRuntimeDependencies,
+} from "@/lib/server/mail-transport/runtime-context";
+import { selectedDirectJob } from "@/lib/server/mail-transport/mailbox-schedule";
+import {
   serviceClient,
   checkDb,
   HttpError,
@@ -53,12 +58,25 @@ export async function POST(request: Request) {
       .eq("status", "connected");
     if (gmailHistoryEnabled()) query = query.eq("live_enabled", true);
     const account = checkDb(await query.maybeSingle());
+    let routeRevision: number | null | undefined;
+    if (account && mailRoutingActive()) {
+      routeRevision = await selectedDirectJob(
+        await mailRuntimeDependencies(),
+        account.id,
+      );
+      if (routeRevision === null) return new Response(null, { status: 204 });
+    }
     if (account)
       checkDb(
         await db.from("jobs").upsert(
           {
             kind: "gmail_sync",
-            payload: { account_id: account.id },
+            payload: {
+              account_id: account.id,
+              ...(routeRevision === undefined
+                ? {}
+                : { route_revision: routeRevision }),
+            },
             dedupe_key: `pubsub:${input.message.messageId}`,
           },
           { onConflict: "dedupe_key", ignoreDuplicates: true },

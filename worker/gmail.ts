@@ -8,6 +8,13 @@ import { recordReplyIntent } from "./gmail-engagement";
 import { isGmailQuotaError } from "../src/lib/gmail-errors";
 import { decrypt } from "../src/lib/server/crypto";
 import {
+  withMailDispatch,
+  mailRoutingActive,
+  mailRuntimeDependencies,
+} from "../src/lib/server/mail-transport/runtime-context";
+import { syncSelectedMailbox } from "../src/lib/server/mail-transport/mailbox-sync";
+import { withSelectedDirectJob } from "../src/lib/server/mail-transport/mailbox-schedule";
+import {
   excludedGmailMessage,
   snapshotMessage,
 } from "../src/lib/gmail-history";
@@ -40,9 +47,19 @@ export async function syncMessage(accountId: string, messageId: string) {
   );
   await ingestMessage(account, msg);
 }
-export async function renewWatch(accountId: string) {
+export async function renewWatch(accountId: string, routeRevision?: unknown) {
   // Old queued watch jobs are completed without calling Gmail after switching modes.
   if (!gmailPushEnabled()) return;
+  if (mailRoutingActive())
+    return withSelectedDirectJob(
+      await mailRuntimeDependencies(),
+      accountId,
+      routeRevision,
+      () => renewDirectWatch(accountId),
+    );
+  return renewDirectWatch(accountId);
+}
+async function renewDirectWatch(accountId: string) {
   const account = checked(
     await db()
       .from("mail_accounts")
@@ -71,7 +88,17 @@ export async function renewWatch(accountId: string) {
       .eq("account_id", accountId),
   );
 }
-export async function syncMailbox(accountId: string) {
+export async function syncMailbox(accountId: string, routeRevision?: unknown) {
+  if (mailRoutingActive())
+    return syncSelectedMailbox<GmailMessage>(
+      accountId,
+      routeRevision,
+      await mailRuntimeDependencies(),
+      {
+        request: (path) => gmail(accountId, path),
+        ingest: ingestMessage,
+      },
+    );
   const client = db();
   const account = checked(
     await client.from("mail_accounts").select("*").eq("id", accountId).single(),
@@ -611,11 +638,17 @@ export async function syncLiveThread(accountId: string, threadId: string) {
   for (const message of thread.messages || [])
     await ingestLiveMessage(account, message);
 }
-export async function sendNext() {
+export async function sendNext(pilot?: { pilotId: string; lease: string }) {
   const client = db();
-  const msg =
-    checked(await client.rpc("claim_outbox"))?.[0] ||
-    checked(await client.rpc("claim_notification_outbox"))?.[0];
+  const msg = pilot
+    ? checked(
+        await client.rpc("worker_pilot_claim", {
+          pilot: pilot.pilotId,
+          lease: pilot.lease,
+        }),
+      )?.[0]
+    : checked(await client.rpc("claim_outbox"))?.[0] ||
+      checked(await client.rpc("claim_notification_outbox"))?.[0];
   if (!msg) return;
   // A binary/schema mismatch must stop before settings, attachments or transport.
   if (
@@ -630,412 +663,422 @@ export async function sendNext() {
     );
     return;
   }
-  let acceptedByGmail = false;
-  let sendAttempted = false;
-  let deliveryHeld = false;
-  let admission: string | null = null;
-  try {
-    const account = checked(
-      await client
-        .from("mail_accounts")
-        .select("email")
-        .eq("id", msg.account_id)
-        .single(),
-    )!;
-    if (msg.opportunity_id && msg.signature_html === null) {
-      const settings = await gmail<{
-        signature?: string;
-        displayName?: string;
-      }>(
-        msg.account_id,
-        `settings/sendAs/${encodeURIComponent(account.email)}`,
-        {},
-        async () => {
+  return withMailDispatch(msg.account_id, msg.id, async () => {
+    let acceptedByGmail = false;
+    let sendAttempted = false;
+    let deliveryHeld = false;
+    let admission: string | null = null;
+    try {
+      const account = checked(
+        await client
+          .from("mail_accounts")
+          .select("email")
+          .eq("id", msg.account_id)
+          .single(),
+      )!;
+      if (msg.opportunity_id && msg.signature_html === null) {
+        const settings = await gmail<{
+          signature?: string;
+          displayName?: string;
+        }>(
+          msg.account_id,
+          `settings/sendAs/${encodeURIComponent(account.email)}`,
+          {},
+          async () => {
+            if (
+              !checked(
+                await client.rpc("brand_signature_allowed", {
+                  message: msg.id,
+                  claim_token: msg.brand_claim_token,
+                }),
+              )
+            ) {
+              deliveryHeld = true;
+              throw new Error("DELIVERY_HELD");
+            }
+          },
+        );
+        msg.signature_html = settings.signature || "";
+        msg.sender_name = settings.displayName || "";
+        checked(
+          await client
+            .from("outbox")
+            .update({
+              signature_html: msg.signature_html,
+              sender_name: msg.sender_name,
+            })
+            .eq("id", msg.id),
+        );
+      }
+      const files: Attachment[] = [];
+      const snapshot: {
+        id: string;
+        storage_path: string;
+        content_hash: string;
+        name?: string;
+        bucket?: string;
+        mime_type?: string;
+      }[] = [];
+      for (const asset of msg.campaign_asset_snapshot || []) {
+        if (
+          (!msg.enrollment_id && !msg.campaign_test) ||
+          asset.bucket !== "campaign-assets"
+        )
+          throw new Error("INVALID_CAMPAIGN_ATTACHMENT");
+        const blob = checked(
+          await client.storage
+            .from("campaign-assets")
+            .download(asset.storage_path),
+        )!;
+        const bytes = Buffer.from(await blob.arrayBuffer());
+        if (hash(bytes) !== asset.content_hash)
+          throw new Error("ATTACHMENT_HASH_MISMATCH");
+        files.push({ name: asset.name, mime: asset.mime_type, bytes });
+        snapshot.push(asset);
+      }
+      for (const id of msg.attachment_ids || []) {
+        const frozen = msg.attachment_snapshot?.find(
+          (entry: { id: string; bucket?: string }) =>
+            entry.id === id && entry.bucket === "case-documents",
+        );
+        const doc =
+          frozen ||
+          checked(
+            await client
+              .from("documents")
+              .select("*")
+              .eq("id", id)
+              .eq("opportunity_id", msg.opportunity_id)
+              .eq("status", "approved")
+              .single(),
+          )!;
+        if (!doc.storage_path) throw new Error("DOCUMENT_NOT_APPROVED");
+        const file = checked(
+          await client.storage
+            .from("case-documents")
+            .download(doc.storage_path),
+        )!;
+        const bytes = Buffer.from(await file.arrayBuffer());
+        if (doc.content_hash && hash(bytes) !== doc.content_hash)
+          throw new Error("ATTACHMENT_HASH_MISMATCH");
+        const { applicationPdfFilename, documentFilename } =
+          await import("../src/lib/server/document-filename");
+        const fallbackName = documentFilename(doc.name, doc.storage_path);
+        const filename =
+          doc.source === "company_application" ||
+          (frozen && /application/i.test(doc.name))
+            ? await applicationPdfFilename(bytes, fallbackName)
+            : fallbackName;
+        files.push({
+          name: filename,
+          mime: file.type,
+          bytes,
+        });
+        snapshot.push({
+          id: doc.id,
+          name: files[files.length - 1].name,
+          bucket: "case-documents",
+          mime_type: file.type,
+          storage_path: doc.storage_path,
+          content_hash: doc.content_hash || hash(files[files.length - 1].bytes),
+        });
+      }
+      for (const id of msg.upload_ids || []) {
+        const upload = checked(
+          await client
+            .from("mail_uploads")
+            .select("*")
+            .eq("id", id)
+            .eq("opportunity_id", msg.opportunity_id)
+            .single(),
+        )!;
+        const blob = checked(
+          await client.storage
+            .from("gmail-documents")
+            .download(upload.storage_path),
+        )!;
+        const bytes = Buffer.from(decrypt(await blob.text()), "base64");
+        if (hash(bytes) !== upload.content_hash)
+          throw new Error("ATTACHMENT_HASH_MISMATCH");
+        files.push({ name: upload.name, mime: upload.mime_type, bytes });
+        snapshot.push({
+          id: upload.id,
+          name: upload.name,
+          bucket: "gmail-documents",
+          mime_type: upload.mime_type,
+          storage_path: upload.storage_path,
+          content_hash: upload.content_hash,
+        });
+      }
+      if (files.reduce((s, f) => s + f.bytes.length, 0) > 18 * 1024 * 1024)
+        throw new Error("ATTACHMENTS_TOO_LARGE");
+      for (const id of msg.gmail_file_ids || []) {
+        const file = checked(
+          await client
+            .from("gmail_saved_attachments")
+            .select("*")
+            .eq("id", id)
+            .eq("opportunity_id", msg.opportunity_id)
+            .in("status", ["received", "approved", "reviewed", "incorporated"])
+            .single(),
+        )!;
+        if (!file.storage_path) throw new Error("DOCUMENT_NOT_APPROVED");
+        const blob = checked(
+          await client.storage
+            .from("gmail-documents")
+            .download(file.storage_path),
+        )!;
+        const bytes = Buffer.from(decrypt(await blob.text()), "base64");
+        files.push({ name: file.name, mime: file.mime_type, bytes });
+        snapshot.push({
+          id: file.id,
+          name: file.name,
+          bucket: "gmail-documents",
+          mime_type: file.mime_type,
+          storage_path: file.storage_path,
+          content_hash: file.content_hash || hash(bytes),
+        });
+        if (files.reduce((s, f) => s + f.bytes.length, 0) > 18 * 1024 * 1024)
+          throw new Error("ATTACHMENTS_TOO_LARGE");
+      }
+      if (msg.forward_message_id && msg.forward_file_ids?.length) {
+        const source = checked(
+          await client
+            .from("messages")
+            .select("internet_message_id,archive_message_id,conversation_id")
+            .eq("id", msg.forward_message_id)
+            .single(),
+        )!;
+        const conversation = checked(
+          await client
+            .from("conversations")
+            .select("opportunity_id")
+            .eq("id", source.conversation_id)
+            .single(),
+        )!;
+        if (conversation.opportunity_id !== msg.opportunity_id)
+          throw new Error("FOREIGN_FORWARD_SOURCE");
+        const sent = checked(
+          await client
+            .from("outbox")
+            .select("attachment_snapshot,upload_ids,gmail_file_ids")
+            .eq("message_id_header", source.internet_message_id)
+            .eq("opportunity_id", msg.opportunity_id)
+            .eq("status", "sent")
+            .maybeSingle(),
+        );
+        for (const id of msg.forward_file_ids) {
+          let original = sent?.attachment_snapshot?.find(
+            (f: { id: string }) => f.id === id,
+          );
+          let bucket =
+            original?.bucket ||
+            ((sent?.upload_ids || []).includes(id) ||
+            (sent?.gmail_file_ids || []).includes(id)
+              ? "gmail-documents"
+              : "case-documents");
+          if (!original) {
+            original = checked(
+              await client
+                .from("gmail_saved_attachments")
+                .select("*")
+                .eq("id", id)
+                .eq("archive_message_id", source.archive_message_id)
+                .eq("opportunity_id", msg.opportunity_id)
+                .single(),
+            )!;
+            bucket = "gmail-documents";
+          }
           if (
-            !checked(
-              await client.rpc("brand_signature_allowed", {
-                message: msg.id,
-                claim_token: msg.brand_claim_token,
-              }),
-            )
+            !["case-documents", "gmail-documents"].includes(bucket) ||
+            !original.storage_path
+          )
+            throw new Error("INVALID_FORWARD_ATTACHMENT");
+          const blob = checked(
+            await client.storage.from(bucket).download(original.storage_path),
+          )!;
+          const bytes =
+            bucket === "gmail-documents"
+              ? Buffer.from(decrypt(await blob.text()), "base64")
+              : Buffer.from(await blob.arrayBuffer());
+          if (hash(bytes) !== original.content_hash)
+            throw new Error("ATTACHMENT_HASH_MISMATCH");
+          const name = (original.name || "Attachment").replace(
+            /[\x00-\x1f\x7f]/g,
+            "_",
+          );
+          files.push({
+            name,
+            mime: original.mime_type || "application/octet-stream",
+            bytes,
+          });
+          snapshot.push({
+            id,
+            name,
+            bucket,
+            mime_type: original.mime_type || "application/octet-stream",
+            storage_path: original.storage_path,
+            content_hash: original.content_hash,
+          });
+        }
+      }
+      if (files.reduce((n, f) => n + f.bytes.length, 0) > 18 * 1024 * 1024)
+        throw new Error("ATTACHMENTS_TOO_LARGE");
+      checked(
+        await client
+          .from("outbox")
+          .update({ attachment_snapshot: snapshot })
+          .eq("id", msg.id),
+      );
+      let replyTo: string | undefined;
+      let references: string | undefined;
+      if (msg.conversation_id) {
+        let replyQuery = client
+          .from("messages")
+          .select("internet_message_id,references_header")
+          .eq("conversation_id", msg.conversation_id);
+        if (msg.reply_message_id)
+          replyQuery = replyQuery.eq("id", msg.reply_message_id);
+        const latest =
+          checked(
+            await replyQuery.order("sent_at", { ascending: false }).limit(1),
+          ) || [];
+        replyTo = latest[0]?.internet_message_id;
+        references = [latest[0]?.references_header, replyTo]
+          .filter(Boolean)
+          .join(" ");
+      }
+      const unsub = msg.enrollment_id
+        ? msg.body.match(/https?:\/\/[^\s]+\/unsubscribe\/[A-Za-z0-9_-]+/)?.[0]
+        : undefined;
+      const raw = buildMime({
+        from: account.email,
+        to: msg.to_email,
+        cc: msg.cc_emails || [],
+        bcc: msg.bcc_emails || [],
+        senderName: msg.sender_name || undefined,
+        signatureHtml: msg.body_html?.includes('data-crm-signature="true"')
+          ? undefined
+          : msg.signature_html || undefined,
+        subject: msg.subject,
+        body: msg.body,
+        bodyHtml: msg.body_html || undefined,
+        messageId: msg.message_id_header,
+        inReplyTo: replyTo,
+        references,
+        unsubscribe: unsub,
+        attachments: files,
+      });
+      // Gmail has no idempotency key. Never blindly retry this POST, even after a timeout.
+      const result = await gmail<{ id: string; threadId: string }>(
+        msg.account_id,
+        "messages/send",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            raw,
+            ...(msg.gmail_thread_id ? { threadId: msg.gmail_thread_id } : {}),
+          }),
+        },
+        async () => {
+          const permitted = checked(
+            await client.rpc("admit_brand_dispatch", {
+              message: msg.id,
+              claim_token: msg.brand_claim_token,
+            }),
+          );
+          if (
+            typeof permitted !== "string" ||
+            !/^[a-f0-9-]{36}$/.test(permitted)
           ) {
             deliveryHeld = true;
             throw new Error("DELIVERY_HELD");
           }
+          admission = permitted;
+          sendAttempted = true;
         },
       );
-      msg.signature_html = settings.signature || "";
-      msg.sender_name = settings.displayName || "";
+      acceptedByGmail = true;
+      checked(
+        await client.rpc("mark_sent", {
+          outbox_id: msg.id,
+          gmail_id: result.id,
+          thread_id: result.threadId,
+        }),
+      );
+    } catch (e) {
+      if (deliveryHeld) return;
+      // A quota rejection is a known failure, unlike a timeout or a failed DB
+      // update after acceptance. Preserve the request and honor Google's wait.
+      if (!acceptedByGmail && isGmailQuotaError(e)) {
+        const seconds = Math.max(
+          e.retryAfter,
+          Math.min(
+            3600,
+            60 * 2 ** Math.min(Math.max(0, (msg.send_attempts || 1) - 1), 6),
+          ),
+        );
+        checked(
+          await client.rpc("defer_gmail_send", {
+            message: msg.id,
+            seconds,
+            error_code: e.code,
+          }),
+        );
+        return;
+      }
+      const admitted = admission as string | null;
+      if (admitted)
+        checked(
+          await client.rpc("brand_dispatch_uncertain", {
+            message: msg.id,
+            admission: admitted,
+          }),
+        );
       checked(
         await client
           .from("outbox")
           .update({
-            signature_html: msg.signature_html,
-            sender_name: msg.sender_name,
+            status: sendAttempted ? "uncertain" : "failed",
+            last_error:
+              e instanceof GmailError
+                ? e.code
+                : sendAttempted
+                  ? "SEND_RESULT_UNCERTAIN"
+                  : "MAIL_PREPARATION_FAILED",
           })
-          .eq("id", msg.id),
+          .eq("id", msg.id)
+          .neq("status", "sent"),
       );
-    }
-    const files: Attachment[] = [];
-    const snapshot: {
-      id: string;
-      storage_path: string;
-      content_hash: string;
-      name?: string;
-      bucket?: string;
-      mime_type?: string;
-    }[] = [];
-    for (const asset of msg.campaign_asset_snapshot || []) {
       if (
-        (!msg.enrollment_id && !msg.campaign_test) ||
-        asset.bucket !== "campaign-assets"
-      )
-        throw new Error("INVALID_CAMPAIGN_ATTACHMENT");
-      const blob = checked(
-        await client.storage
-          .from("campaign-assets")
-          .download(asset.storage_path),
-      )!;
-      const bytes = Buffer.from(await blob.arrayBuffer());
-      if (hash(bytes) !== asset.content_hash)
-        throw new Error("ATTACHMENT_HASH_MISMATCH");
-      files.push({ name: asset.name, mime: asset.mime_type, bytes });
-      snapshot.push(asset);
-    }
-    for (const id of msg.attachment_ids || []) {
-      const frozen = msg.attachment_snapshot?.find(
-        (entry: { id: string; bucket?: string }) =>
-          entry.id === id && entry.bucket === "case-documents",
-      );
-      const doc =
-        frozen ||
+        !pilot &&
+        e instanceof GmailError &&
+        [401, 403, 429].includes(e.status)
+      ) {
         checked(
           await client
-            .from("documents")
-            .select("*")
-            .eq("id", id)
-            .eq("opportunity_id", msg.opportunity_id)
-            .eq("status", "approved")
-            .single(),
-        )!;
-      if (!doc.storage_path) throw new Error("DOCUMENT_NOT_APPROVED");
-      const file = checked(
-        await client.storage.from("case-documents").download(doc.storage_path),
-      )!;
-      const bytes = Buffer.from(await file.arrayBuffer());
-      if (doc.content_hash && hash(bytes) !== doc.content_hash)
-        throw new Error("ATTACHMENT_HASH_MISMATCH");
-      const { applicationPdfFilename, documentFilename } =
-        await import("../src/lib/server/document-filename");
-      const fallbackName = documentFilename(doc.name, doc.storage_path);
-      const filename =
-        doc.source === "company_application" ||
-        (frozen && /application/i.test(doc.name))
-          ? await applicationPdfFilename(bytes, fallbackName)
-          : fallbackName;
-      files.push({
-        name: filename,
-        mime: file.type,
-        bytes,
-      });
-      snapshot.push({
-        id: doc.id,
-        name: files[files.length - 1].name,
-        bucket: "case-documents",
-        mime_type: file.type,
-        storage_path: doc.storage_path,
-        content_hash: doc.content_hash || hash(files[files.length - 1].bytes),
-      });
-    }
-    for (const id of msg.upload_ids || []) {
-      const upload = checked(
-        await client
-          .from("mail_uploads")
-          .select("*")
-          .eq("id", id)
-          .eq("opportunity_id", msg.opportunity_id)
-          .single(),
-      )!;
-      const blob = checked(
-        await client.storage
-          .from("gmail-documents")
-          .download(upload.storage_path),
-      )!;
-      const bytes = Buffer.from(decrypt(await blob.text()), "base64");
-      if (hash(bytes) !== upload.content_hash)
-        throw new Error("ATTACHMENT_HASH_MISMATCH");
-      files.push({ name: upload.name, mime: upload.mime_type, bytes });
-      snapshot.push({
-        id: upload.id,
-        name: upload.name,
-        bucket: "gmail-documents",
-        mime_type: upload.mime_type,
-        storage_path: upload.storage_path,
-        content_hash: upload.content_hash,
-      });
-    }
-    if (files.reduce((s, f) => s + f.bytes.length, 0) > 18 * 1024 * 1024)
-      throw new Error("ATTACHMENTS_TOO_LARGE");
-    for (const id of msg.gmail_file_ids || []) {
-      const file = checked(
-        await client
-          .from("gmail_saved_attachments")
-          .select("*")
-          .eq("id", id)
-          .eq("opportunity_id", msg.opportunity_id)
-          .in("status", ["received", "approved", "reviewed", "incorporated"])
-          .single(),
-      )!;
-      if (!file.storage_path) throw new Error("DOCUMENT_NOT_APPROVED");
-      const blob = checked(
-        await client.storage
-          .from("gmail-documents")
-          .download(file.storage_path),
-      )!;
-      const bytes = Buffer.from(decrypt(await blob.text()), "base64");
-      files.push({ name: file.name, mime: file.mime_type, bytes });
-      snapshot.push({
-        id: file.id,
-        name: file.name,
-        bucket: "gmail-documents",
-        mime_type: file.mime_type,
-        storage_path: file.storage_path,
-        content_hash: file.content_hash || hash(bytes),
-      });
-      if (files.reduce((s, f) => s + f.bytes.length, 0) > 18 * 1024 * 1024)
-        throw new Error("ATTACHMENTS_TOO_LARGE");
-    }
-    if (msg.forward_message_id && msg.forward_file_ids?.length) {
-      const source = checked(
-        await client
-          .from("messages")
-          .select("internet_message_id,archive_message_id,conversation_id")
-          .eq("id", msg.forward_message_id)
-          .single(),
-      )!;
-      const conversation = checked(
-        await client
-          .from("conversations")
-          .select("opportunity_id")
-          .eq("id", source.conversation_id)
-          .single(),
-      )!;
-      if (conversation.opportunity_id !== msg.opportunity_id)
-        throw new Error("FOREIGN_FORWARD_SOURCE");
-      const sent = checked(
-        await client
-          .from("outbox")
-          .select("attachment_snapshot,upload_ids,gmail_file_ids")
-          .eq("message_id_header", source.internet_message_id)
-          .eq("opportunity_id", msg.opportunity_id)
-          .eq("status", "sent")
-          .maybeSingle(),
-      );
-      for (const id of msg.forward_file_ids) {
-        let original = sent?.attachment_snapshot?.find(
-          (f: { id: string }) => f.id === id,
+            .from("mail_accounts")
+            .update({
+              status: e.status === 401 ? "disconnected" : "restricted",
+            })
+            .eq("id", msg.account_id),
         );
-        let bucket =
-          original?.bucket ||
-          ((sent?.upload_ids || []).includes(id) ||
-          (sent?.gmail_file_ids || []).includes(id)
-            ? "gmail-documents"
-            : "case-documents");
-        if (!original) {
-          original = checked(
-            await client
-              .from("gmail_saved_attachments")
-              .select("*")
-              .eq("id", id)
-              .eq("archive_message_id", source.archive_message_id)
-              .eq("opportunity_id", msg.opportunity_id)
-              .single(),
-          )!;
-          bucket = "gmail-documents";
-        }
-        if (
-          !["case-documents", "gmail-documents"].includes(bucket) ||
-          !original.storage_path
-        )
-          throw new Error("INVALID_FORWARD_ATTACHMENT");
-        const blob = checked(
-          await client.storage.from(bucket).download(original.storage_path),
-        )!;
-        const bytes =
-          bucket === "gmail-documents"
-            ? Buffer.from(decrypt(await blob.text()), "base64")
-            : Buffer.from(await blob.arrayBuffer());
-        if (hash(bytes) !== original.content_hash)
-          throw new Error("ATTACHMENT_HASH_MISMATCH");
-        const name = (original.name || "Attachment").replace(
-          /[\x00-\x1f\x7f]/g,
-          "_",
-        );
-        files.push({
-          name,
-          mime: original.mime_type || "application/octet-stream",
-          bytes,
-        });
-        snapshot.push({
-          id,
-          name,
-          bucket,
-          mime_type: original.mime_type || "application/octet-stream",
-          storage_path: original.storage_path,
-          content_hash: original.content_hash,
-        });
-      }
-    }
-    if (files.reduce((n, f) => n + f.bytes.length, 0) > 18 * 1024 * 1024)
-      throw new Error("ATTACHMENTS_TOO_LARGE");
-    checked(
-      await client
-        .from("outbox")
-        .update({ attachment_snapshot: snapshot })
-        .eq("id", msg.id),
-    );
-    let replyTo: string | undefined;
-    let references: string | undefined;
-    if (msg.conversation_id) {
-      let replyQuery = client
-        .from("messages")
-        .select("internet_message_id,references_header")
-        .eq("conversation_id", msg.conversation_id);
-      if (msg.reply_message_id)
-        replyQuery = replyQuery.eq("id", msg.reply_message_id);
-      const latest =
         checked(
-          await replyQuery.order("sent_at", { ascending: false }).limit(1),
-        ) || [];
-      replyTo = latest[0]?.internet_message_id;
-      references = [latest[0]?.references_header, replyTo]
-        .filter(Boolean)
-        .join(" ");
-    }
-    const unsub = msg.enrollment_id
-      ? msg.body.match(/https?:\/\/[^\s]+\/unsubscribe\/[A-Za-z0-9_-]+/)?.[0]
-      : undefined;
-    const raw = buildMime({
-      from: account.email,
-      to: msg.to_email,
-      cc: msg.cc_emails || [],
-      bcc: msg.bcc_emails || [],
-      senderName: msg.sender_name || undefined,
-      signatureHtml: msg.body_html?.includes('data-crm-signature="true"')
-        ? undefined
-        : msg.signature_html || undefined,
-      subject: msg.subject,
-      body: msg.body,
-      bodyHtml: msg.body_html || undefined,
-      messageId: msg.message_id_header,
-      inReplyTo: replyTo,
-      references,
-      unsubscribe: unsub,
-      attachments: files,
-    });
-    // Gmail has no idempotency key. Never blindly retry this POST, even after a timeout.
-    const result = await gmail<{ id: string; threadId: string }>(
-      msg.account_id,
-      "messages/send",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          raw,
-          ...(msg.gmail_thread_id ? { threadId: msg.gmail_thread_id } : {}),
-        }),
-      },
-      async () => {
-        const permitted = checked(
-          await client.rpc("admit_brand_dispatch", {
-            message: msg.id,
-            claim_token: msg.brand_claim_token,
-          }),
+          await client
+            .from("outbox")
+            .update({ status: "paused" })
+            .eq("account_id", msg.account_id)
+            .eq("status", "queued"),
         );
-        if (
-          typeof permitted !== "string" ||
-          !/^[a-f0-9-]{36}$/.test(permitted)
-        ) {
-          deliveryHeld = true;
-          throw new Error("DELIVERY_HELD");
-        }
-        admission = permitted;
-        sendAttempted = true;
-      },
-    );
-    acceptedByGmail = true;
-    checked(
-      await client.rpc("mark_sent", {
-        outbox_id: msg.id,
-        gmail_id: result.id,
-        thread_id: result.threadId,
-      }),
-    );
-  } catch (e) {
-    if (deliveryHeld) return;
-    // A quota rejection is a known failure, unlike a timeout or a failed DB
-    // update after acceptance. Preserve the request and honor Google's wait.
-    if (!acceptedByGmail && isGmailQuotaError(e)) {
-      const seconds = Math.max(
-        e.retryAfter,
-        Math.min(
-          3600,
-          60 * 2 ** Math.min(Math.max(0, (msg.send_attempts || 1) - 1), 6),
-        ),
-      );
-      checked(
-        await client.rpc("defer_gmail_send", {
-          message: msg.id,
-          seconds,
-          error_code: e.code,
-        }),
-      );
-      return;
-    }
-    const admitted = admission as string | null;
-    if (admitted)
-      checked(
-        await client.rpc("brand_dispatch_uncertain", {
-          message: msg.id,
-          admission: admitted,
-        }),
-      );
-    checked(
-      await client
-        .from("outbox")
-        .update({
-          status: sendAttempted ? "uncertain" : "failed",
-          last_error:
-            e instanceof GmailError
-              ? e.code
-              : sendAttempted
-                ? "SEND_RESULT_UNCERTAIN"
-                : "MAIL_PREPARATION_FAILED",
-        })
-        .eq("id", msg.id)
-        .neq("status", "sent"),
-    );
-    if (e instanceof GmailError && [401, 403, 429].includes(e.status)) {
-      checked(
-        await client
-          .from("mail_accounts")
-          .update({ status: e.status === 401 ? "disconnected" : "restricted" })
-          .eq("id", msg.account_id),
-      );
-      checked(
-        await client
-          .from("outbox")
-          .update({ status: "paused" })
-          .eq("account_id", msg.account_id)
-          .eq("status", "queued"),
+      }
+      await alertAdmins(
+        `send:${msg.id}`,
+        sendAttempted
+          ? "An email requires delivery reconciliation"
+          : "An email could not be prepared for sending",
       );
     }
-    await alertAdmins(
-      `send:${msg.id}`,
-      sendAttempted
-        ? "An email requires delivery reconciliation"
-        : "An email could not be prepared for sending",
-    );
-  }
+  });
 }
 export async function reconcileUncertain() {
   const client = db();

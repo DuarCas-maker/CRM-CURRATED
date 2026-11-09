@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import config from "../next.config";
 
-test("OAuth form redirects permit Google while other external form destinations remain excluded", async () => {
+test("OAuth form redirects permit reviewed Google and Composio hosts while other external destinations remain excluded", async () => {
   const rules = await config.headers!();
   const globalRule = rules.find((rule) => rule.source === "/:path*");
   const policy = globalRule?.headers.find(
@@ -18,6 +18,7 @@ test("OAuth form redirects permit Google while other external form destinations 
   assert.deepEqual(directives.get("form-action"), [
     "'self'",
     "https://accounts.google.com",
+    "https://connect.composio.dev",
   ]);
   assert.deepEqual(directives.get("default-src"), ["'self'"]);
   assert.deepEqual(directives.get("base-uri"), ["'self'"]);

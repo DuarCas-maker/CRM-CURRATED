@@ -1,0 +1,153 @@
+{
+  "date": "2026-11-08",
+  "sdd": "STRICT",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "readyForReview": true,
+  "readyForProduction": false,
+  "readyForRemoteSql": false,
+  "gmailDefaultProvider": "gmail_oauth",
+  "composioProductOperationEnabled": false,
+  "routingDefaultEnabled": false,
+  "connectDefaultEnabled": false,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "realProviderRequests": 0,
+  "remoteSql": 0,
+  "messages": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "id": "CW-I03-20261108",
+  "mode": "T009_received_and_composed_offline",
+  "upstream": {
+    "completedTask": "T-009",
+    "originalFiles": [
+      {
+        "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t009.local.sql",
+        "bytes": 45672,
+        "sha256": "c485c50ea15e104ef06224bda1c28079b5bb8ae6b1e6c9f8a9a1e3536cdc2377"
+      },
+      {
+        "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t009.rollback.sql",
+        "bytes": 2676,
+        "sha256": "e8c67811d79d4c1ec29c22cd91ce146d7690a76c11fd21621a03b69d52fa58af"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-connect/secrets.ts",
+        "bytes": 3858,
+        "sha256": "5c14c9b1f41234bb2e7c013f11b68d53cd54e3679f0938b67dcdb636d00c3df9"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-connect/store.ts",
+        "bytes": 15583,
+        "sha256": "6d65083f60be69c1a06f0e16594bc566df4d5482fdaaa3ca51d2b2adcb9b5445"
+      },
+      {
+        "path": "tests/pipeline-os-s02-connect-store.test.ts",
+        "bytes": 15356,
+        "sha256": "830e0ce647e253d404486a451261f46945f0b260f13b7846511c63a3e95adfa9"
+      },
+      {
+        "path": "tests/pipeline-os-s02-connect-store-db.test.ts",
+        "bytes": 44224,
+        "sha256": "29ce5718149af480a0b31ecfa79a77957dd8472cf2d5ff9bcb5fbec5b3e8b900"
+      }
+    ],
+    "receipt": {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/t009-upstream-receipt.json",
+      "bytes": 4797,
+      "sha256": "416da0312ab41b2c5fb168f35a7a45572fc00d9ca7be2a1bf4aab89eee513709"
+    },
+    "sourceWorktree": "C:/Users/Usuario/.codex/worktrees/441b/CRM Currated",
+    "sourceWorktreeWrites": 0,
+    "privateFilesCopied": 0,
+    "allSixReceivedByteIdentical": true,
+    "currentRootStoreHasExplicitLaterHttpOverlay": true
+  },
+  "currentFiles": [
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t009.local.sql",
+      "bytes": 45672,
+      "sha256": "c485c50ea15e104ef06224bda1c28079b5bb8ae6b1e6c9f8a9a1e3536cdc2377"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t009.rollback.sql",
+      "bytes": 2676,
+      "sha256": "e8c67811d79d4c1ec29c22cd91ce146d7690a76c11fd21621a03b69d52fa58af"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/secrets.ts",
+      "bytes": 3858,
+      "sha256": "5c14c9b1f41234bb2e7c013f11b68d53cd54e3679f0938b67dcdb636d00c3df9"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/store.ts",
+      "bytes": 16203,
+      "sha256": "ad111d6bf1cfd61e86b6c966fa561f589536dbaadb7639f423979bc1002570b3"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-store.test.ts",
+      "bytes": 15356,
+      "sha256": "830e0ce647e253d404486a451261f46945f0b260f13b7846511c63a3e95adfa9"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-store-db.test.ts",
+      "bytes": 44224,
+      "sha256": "29ce5718149af480a0b31ecfa79a77957dd8472cf2d5ff9bcb5fbec5b3e8b900"
+    }
+  ],
+  "laterOverlay": {
+    "path": "src/lib/server/mail-accounts/composio-connect/store.ts",
+    "upstreamSha256": "6d65083f60be69c1a06f0e16594bc566df4d5482fdaaa3ca51d2b2adcb9b5445",
+    "currentSha256": "ad111d6bf1cfd61e86b6c966fa561f589536dbaadb7639f423979bc1002570b3",
+    "reconstructionMatches": true
+  },
+  "ownTests": [
+    {
+      "path": "tests/fixtures/pipeline-os-s02-connect-store-composition.ts",
+      "bytes": 12614,
+      "sha256": "126d405be4718d134e09543e25235f35fcf1f5cb2f8127f38871a96eba1dd397"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-store-composition.test.ts",
+      "bytes": 5803,
+      "sha256": "183cd47edffde91922ddfb3d94d233e91eac89a32015f267aca7fb94b40b981e"
+    }
+  ],
+  "documents": [
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/spec.md",
+      "bytes": 1948,
+      "sha256": "781686060fbe96af73d40abc0ca66cac7d2e81e09a697a30228e989b14f63864"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/design.md",
+      "bytes": 2409,
+      "sha256": "418d0891ff998cb64c7f05b67221a5e9d632f932f01dd1b613b22a12b0a4a9c8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/verification.md",
+      "bytes": 1829,
+      "sha256": "89d995d7a659eca7e4939c13aae00de3d7c2e0e13106a3ba43115513f8be5206"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-store/runbook.md",
+      "bytes": 847,
+      "sha256": "55971cfd71dc794119df2a064929742ca0f227a9f154cfed4f4e00e03c483530"
+    }
+  ],
+  "checks": {
+    "upstreamUnitTestsPassed": 12,
+    "newCompositionTestsPassed": 4,
+    "nativeRunnerSkipped": 1,
+    "nativePostgresInRoot": false,
+    "fixtureDatabase": "PGlite",
+    "sqlInstallAndRollbackUnchanged": true,
+    "closedRollbackAndAclRestoration": true,
+    "fullRegressionPassed": 344
+  },
+  "pending": [
+    "combined final SQL package and physical PG15 composition rehearsal",
+    "actual Auth/PostgREST/project configuration and coordinated cutover",
+    "separately authorized real Composio operational pilot"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "MR-APPLY-RESULT-20261108",
+  "source": "operator reports in chat",
+  "application": {
+    "stage": "checked_before_commit",
+    "ordinal": "050",
+    "protocol": "MR-FINAL-r1",
+    "targetsOk": true,
+    "contractSha256": "2482d33acb4f33e1228915bbe3261030998aa5b363f936aa1b15ba1942c30cb7",
+    "preservationMatches": true,
+    "protectedFingerprint": "0a36939474b887eebddc8972e53c24ed",
+    "gmailProviderExpected": "gmail_oauth",
+    "composioEnabledExpected": false
+  },
+  "postflight": {
+    "ordinal": "050",
+    "protocol": "MR-FINAL-r1",
+    "targetsOk": true,
+    "mismatches": [],
+    "mismatchCount": 0,
+    "contractSha256": "2482d33acb4f33e1228915bbe3261030998aa5b363f936aa1b15ba1942c30cb7",
+    "publicationReady": false,
+    "gmailProviderExpected": "gmail_oauth",
+    "composioEnabledExpected": false
+  },
+  "review": {
+    "matchingSealedContract": true,
+    "applicationPrecommitGuardsPassed": true,
+    "independentPostflightTargetsMatch": true,
+    "installation050ObservedInOperatorEvidence": true,
+    "doNotRepeat050": true,
+    "providerActivationNotReported": true,
+    "webWorkerPublicationNotReported": true,
+    "pauseOfProcessesNotIndependentlyVerified": true,
+    "nativePg15RehearsalNotExecuted": true,
+    "agentRemoteSql": 0,
+    "instantlyConsumed": 43,
+    "instantlyNew": 0
+  }
+}

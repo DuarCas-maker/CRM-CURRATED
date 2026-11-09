@@ -1,0 +1,227 @@
+{
+  "id": "R06-PREP-20261108",
+  "date": "2026-11-08",
+  "timezone": "America/Bogota",
+  "sdd": "STRICT",
+  "mode": "planning_only_no_product_implementation",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "coordinatorOwnsSharedFiles": true,
+  "readyForDocumentReview": true,
+  "readyForProduction": false,
+  "readyForRemoteSql": false,
+  "implementationStarted": false,
+  "gmailProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "providerRequests": 0,
+  "remoteSql": 0,
+  "messages": 0,
+  "servicesStarted": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/spec.md",
+      "bytes": 5151,
+      "sha256": "6cc068bac1d4769cf5f39584a806ec57d4706e9bf65fea92fb2de0b025ebeaaa"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/design.md",
+      "bytes": 16164,
+      "sha256": "9dddf77d534c9ed08e64bdf9ab039c78861dec1d6d6d83ae11a83823d85b78d8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/tasks.md",
+      "bytes": 8160,
+      "sha256": "b68ed6d5761cb4069e932b257125b0df18626884651065e85a6033ea813c7dd9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/acceptance.md",
+      "bytes": 5229,
+      "sha256": "971935048fc30783d451d6a56b0b82f023cdb0a84007aabb593296a2664617e6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/verification.md",
+      "bytes": 3777,
+      "sha256": "65369466477f1eadd7a5715149b862a543f7c3ad1a3df64c3afea136ac099ca9"
+    }
+  ],
+  "sources": [
+    {
+      "path": "src/lib/server/google.ts",
+      "bytes": 5296,
+      "sha256": "77724314e2cb4fc9b54ccd5858b68ab5d936fb7f449d94764f3c2e50aa96e95b"
+    },
+    {
+      "path": "src/lib/server/mail-transport/contract.ts",
+      "bytes": 1085,
+      "sha256": "a38920e11561fbb41680f120a51a29bdcdcf38f011e54417acb3588e9dee2b92"
+    },
+    {
+      "path": "src/lib/server/mail-transport/factory.ts",
+      "bytes": 867,
+      "sha256": "f33c01c21a1fc79c106b95746dc5441c1af1e58f3ebff7cbeb3b19676cee15d0"
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "bytes": 16059,
+      "sha256": "ff4613af2d8474529b9d82d1f0daae288871b6a86d3050bfdbb202baf54d782a"
+    },
+    {
+      "path": "src/lib/server/mail-transport/errors.ts",
+      "bytes": 785,
+      "sha256": "9f03a63a8e650d93e1bcf7c009a93afa2afe0e81e37f74e938d533962bf13aae"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding.ts",
+      "bytes": 7921,
+      "sha256": "7430dcd9b9aea3cb8e2ba5d93124e26803e03f19117204ad351266ffd0a6d35c"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+      "bytes": 9694,
+      "sha256": "4d1069390167a03e6cf31257ba90f23c4f4d8790cf79f06cfe675a5788206776"
+    },
+    {
+      "path": "src/lib/server/worker-request-control.ts",
+      "bytes": 4625,
+      "sha256": "2100149a37a51ed621327e6d82ac76b1153d09a766924349ab74a20c9080d300"
+    },
+    {
+      "path": "src/lib/gmail-sync.ts",
+      "bytes": 389,
+      "sha256": "e3d1b27bde78b04526d720b4add4df338bfff17bddb61f8fa4efbef9a524193f"
+    },
+    {
+      "path": "worker/index.ts",
+      "bytes": 10960,
+      "sha256": "4f1c78acfa668f0c20e69ac42c4ac041c87d98e17f5477ec067ec34056cc5285"
+    },
+    {
+      "path": "worker/gmail.ts",
+      "bytes": 34017,
+      "sha256": "a465c2a41b1dfc5699232ff206521b108ac0ad262d2cb64f41169cc91384003a"
+    },
+    {
+      "path": "worker/gmail-schedule.ts",
+      "bytes": 1024,
+      "sha256": "2409525f6dfe99076a4018c0bb1c869150e881316716cc26c84ee22c87fa03ef"
+    },
+    {
+      "path": "worker/gmail-archive.ts",
+      "bytes": 19925,
+      "sha256": "d72fb0fbc750674b72cfb8490a61b549ccc83b41d086e67b8b359b30bdeb6e2e"
+    },
+    {
+      "path": "worker/gmail-sending-usage.ts",
+      "bytes": 4085,
+      "sha256": "33d6b7e59e03c3182a342d5979e8eaeb8c9862d5cea15f1290520be59dc724d6"
+    },
+    {
+      "path": "worker/pilot-runtime.ts",
+      "bytes": 3481,
+      "sha256": "99fde7712a6cfc1800699adca3264ee290994a8b206e346d1ed40f07ddb8d6d4"
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/composio/route.ts",
+      "bytes": 2076,
+      "sha256": "ae9d0e3c665c4be5cca2a63a89d73b05802bf0ec50a51ef0a380c23790046929"
+    },
+    {
+      "path": "src/app/api/gmail/callback/route.ts",
+      "bytes": 2717,
+      "sha256": "6d03a561c66c15ea720fe21045fb363427610823a19de5f660dfbdf44b267a8e"
+    },
+    {
+      "path": "src/app/api/gmail/push/route.ts",
+      "bytes": 2438,
+      "sha256": "caecb1d7f60dfbb6c6ed5cf3bc76d5b21cc13791136f1b59f0883baa325382aa"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-c/migrations/c-composio-bindings.local.sql",
+      "bytes": 37423,
+      "sha256": "c350e981fe58631aa2409757f6a5045b12eafa299b08e693070df2bf55df459c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-delivery.local.sql",
+      "bytes": 66581,
+      "sha256": "7a24c586fe9dd7640191c8788ae19eea636ea7f06508b0786ffc61f6ec301fab"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/block-b/migrations/b-brand-management.local.sql",
+      "bytes": 31070,
+      "sha256": "ff3ed9771b93c0d0ef5e6c125a60a41c70dabb1e0a3f410d917785e5dd1cc821"
+    },
+    {
+      "path": "supabase/migrations/001_core.sql",
+      "bytes": 24991,
+      "sha256": "d289f241a98ed4faa5430df044c2256c913f9dcbe38d478ee500722ebc8a10da"
+    },
+    {
+      "path": "supabase/migrations/021_mail_manager.sql",
+      "bytes": 36642,
+      "sha256": "0774fbebfd4c3c01e79dd3764ced73a15ef0af5d6adc4e2c83e8c637f708eceb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/manifest.json",
+      "bytes": 7360,
+      "sha256": "9f3be045694a5dbe7c1824d4bb69631102beb5e9815aa874b66898f71432c04c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/manifest.json",
+      "bytes": 6381,
+      "sha256": "220f135f777d6509cfc000f552f9e3a8dea808dda6152811061b42921df6d4e6"
+    }
+  ],
+  "externalReadOnlySources": [
+    {
+      "path": "C:/Users/Usuario/.codex/worktrees/441b/CRM Currated/docs/specs/pipeline-os/s02/connect-gmail/t003-plan.md",
+      "bytes": 8966,
+      "sha256": "b73861d0c07768c231cb60a4856ea29e59141ef02530cfd57aefc3e848bff8e1"
+    },
+    {
+      "path": "C:/Users/Usuario/.codex/worktrees/441b/CRM Currated/docs/specs/pipeline-os/s02/connect-gmail/t002-verification.json",
+      "bytes": 4342,
+      "sha256": "a098288cd73f6e4e03a5c2b9120105c42ffc62ee2ded9b102a481efaf17ff989"
+    }
+  ],
+  "firstIncrement": {
+    "id": "R06-I01",
+    "mode": "proposed_offline",
+    "newPaths": [
+      "src/lib/mail-transport-selection.ts",
+      "src/lib/server/mail-transport/selection.ts",
+      "docs/specs/pipeline-os/s02/transport-selection/migrations/r06.local.sql",
+      "tests/pipeline-os-s02-transport-selection.test.ts",
+      "tests/pipeline-os-s02-transport-selection-db.test.ts",
+      "tests/fixtures/pipeline-os-s02-transport-selection.ts"
+    ],
+    "existingProductFilesToEdit": [],
+    "providerAdapters": "injected fake only",
+    "sqlOrdinal": null
+  },
+  "checks": {
+    "preparedRequirements": 10,
+    "preparedAcceptanceScenarios": 10,
+    "preparedTasks": 10,
+    "implementationIncrements": 3,
+    "productTestsRun": 0,
+    "historicalCwTestsNotRecounted": 101,
+    "format": true,
+    "localLinks": 9,
+    "publicProductAndBuildFilesUnchanged": 367,
+    "privateOperationalHashesPreserved": 49,
+    "sql049Unchanged": true,
+    "cwAndWcFilesPreserved": true,
+    "headAndIndexPreserved": true,
+    "plannedI01FilesAbsent": true
+  },
+  "limitations": [
+    "No R06 code/SQL implemented or run",
+    "native PG15 concurrency, exact SQL/lock ordering and C2 new-account bridge require I01 QA",
+    "F2 T-003 is not production store/provider adapter/routes/UI; integrate finished deliveries only",
+    "real provider mapping/scopes/quota provenance not verified by this planning",
+    "production release/pilot configuration and bounded provider traffic remain distinct; general production authorization retained"
+  ]
+}

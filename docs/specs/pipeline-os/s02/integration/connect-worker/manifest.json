@@ -1,0 +1,188 @@
+{
+  "id": "CW-I01-20261108",
+  "date": "2026-11-08",
+  "sdd": "STRICT",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "mode": "local_integration_tested_not_activated",
+  "readyForReview": true,
+  "readyForProduction": false,
+  "readyForRemoteSql": false,
+  "gmailProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "providerRequests": 0,
+  "remoteSql": 0,
+  "messages": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "upstream": {
+    "id": "S02-CONNECT-T002-NATIVE-20261108",
+    "receipt": "docs/specs/pipeline-os/s02/integration/connect-worker/t002-upstream-receipt.json",
+    "nativeEvidence": "18/18 PG15.19 reported by F2; not rerun, not certification of local overlay",
+    "files": [
+      {
+        "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t002.local.sql",
+        "bytes": 28219,
+        "sha256": "37421175ae296c753d507fa2f2a662533b3ccfd9e4e166b82a2ddea4e0dbbfdc",
+        "upstreamSha256": "f26ebb769644cd233cacd2dddcb2d44a667c4459c9c84a26a24177d63b2db08b",
+        "unchangedFromUpstream": false
+      },
+      {
+        "path": "docs/specs/pipeline-os/s02/connect-gmail/migrations/connect-t002.rollback.sql",
+        "bytes": 787,
+        "sha256": "89adcf1db93f3ff8d67f79b412e95c944cd07dcbbeda8b6e6f1314bbd7a0979b",
+        "upstreamSha256": "89adcf1db93f3ff8d67f79b412e95c944cd07dcbbeda8b6e6f1314bbd7a0979b",
+        "unchangedFromUpstream": true
+      },
+      {
+        "path": "tests/pipeline-os-s02-connect-db.test.ts",
+        "bytes": 34426,
+        "sha256": "fab560e36f7cd4e55cc202bbb2323a84c15b539f1b913bf9aa3637c12281a22d",
+        "upstreamSha256": "fab560e36f7cd4e55cc202bbb2323a84c15b539f1b913bf9aa3637c12281a22d",
+        "unchangedFromUpstream": true
+      }
+    ]
+  },
+  "localFix": {
+    "id": "CW-FIX01",
+    "scope": "atomic monotonic configuration publish only; native guards retained",
+    "test": "tests/worker-onboarding-composition.test.ts",
+    "postgresPhysicalConcurrencyTested": false
+  },
+  "workerControlManifest": "docs/specs/pipeline-os/s02/worker-control/manifest.json",
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/spec.md",
+      "bytes": 2141,
+      "sha256": "127f52e38a73a864c7ee3e304328f26b8f88265f043a206c00678c9fbe76221f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/design.md",
+      "bytes": 1639,
+      "sha256": "d7da23615cd2c98260acbc3346085fcaa172034be0555b278e2a1f2404575d49"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/tasks.md",
+      "bytes": 560,
+      "sha256": "2afdbe50e27583336886c3b7c7d9fd7594ce00f343ffbac29ac01e6b5d59775b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/acceptance.md",
+      "bytes": 999,
+      "sha256": "b6bd3cd985cf4b92ddd324f3e007b7db0ef43514df55e4578691b021eb53e23d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/bugfix.md",
+      "bytes": 1546,
+      "sha256": "4c533608d4003b3f5cb432a9d8474ad2466f0a057d030761e46e96b5bdf7757b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/verification.md",
+      "bytes": 4734,
+      "sha256": "a1e720dbd379ad257bebfd6b742d8f7c9acc493045fb33d36cfc8e0e93fba0fb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/f3-handoff.md",
+      "bytes": 3899,
+      "sha256": "96a187a0b5123d186a242bb126929ab3f3a97b109dbbc7aa5b47b98c582ae036"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/t002-upstream-receipt.json",
+      "bytes": 4342,
+      "sha256": "a098288cd73f6e4e03a5c2b9120105c42ffc62ee2ded9b102a481efaf17ff989"
+    },
+    {
+      "path": "tests/worker-onboarding-composition.test.ts",
+      "bytes": 12984,
+      "sha256": "7dd852ac1fc77486a87602330a64ea7b8fb49f83154f01e9465121983cfe7e7c"
+    }
+  ],
+  "f3": {
+    "assignment": "docs/specs/pipeline-os/s02/integration/connect-worker/f3-handoff.md",
+    "scope": "T-007-R1 document review only; no product ownership transfer",
+    "messageSent": false,
+    "reviewedSources": [
+      {
+        "path": "C:/Users/Usuario/.codex/worktrees/ef2d/CRM Currated/docs/specs/pipeline-os/operations-pilot/integration-manifest.json",
+        "bytes": 3938,
+        "sha256": "a0bbbe51a762bba4b19aae72b6221b34454cc2f33c698447def3c6fdd2218356"
+      },
+      {
+        "path": "C:/Users/Usuario/.codex/worktrees/ef2d/CRM Currated/docs/specs/pipeline-os/operations-pilot/control-review.md",
+        "bytes": 12224,
+        "sha256": "131c3a5eddabfbf237b4f1aa4a57a564b4ae6a83a4276b1bf511f547af4b591b"
+      },
+      {
+        "path": "C:/Users/Usuario/.codex/worktrees/ef2d/CRM Currated/docs/specs/pipeline-os/operations-pilot/tasks.md",
+        "bytes": 4509,
+        "sha256": "10a98183a6569137a7d7aa3d36cbd6e41a5e4c8279a0f13eae1db8365951e3da"
+      }
+    ]
+  },
+  "checks": {
+    "node": "22.23.4",
+    "nodeCasesIncludingGroups": 102,
+    "passed": 101,
+    "failed": 0,
+    "skipped": 1,
+    "newCompositionCasesIncludingGroups": 14,
+    "regressionPassed": 87,
+    "nativeRunnerDefaultSkipped": true,
+    "nativeServerStarted": false,
+    "typeScript": "passed --noEmit --incremental false",
+    "network": "real fetch/http/https/socket/TLS/DNS denied outside test doubles",
+    "format": true,
+    "localLinks": 3,
+    "protectedRuntimeAndBuildFiles": 359,
+    "existingRuntimeDelta": [
+      "src/lib/server/google.ts",
+      "src/lib/server/mail-transport/composio-proxy.ts",
+      "src/lib/server/mail-transport/gmail-direct.ts",
+      "worker/gmail.ts",
+      "worker/index.ts"
+    ],
+    "acceptedPayloadPreserved": 96,
+    "explicitPriorPayloadDelta": [
+      "src/lib/server/google.ts",
+      "src/lib/server/mail-transport/composio-proxy.ts",
+      "src/lib/server/mail-transport/gmail-direct.ts",
+      "worker/gmail.ts"
+    ],
+    "supportPreserved": 9,
+    "explicitPriorSupportDelta": [".env.example"],
+    "operationalHashesPreserved": 49,
+    "sql049Preserved": true,
+    "historicalArchivePreserved": true,
+    "headAndIndexPreserved": true
+  },
+  "privateEvidence": [
+    {
+      "path": ".local/pipeline-os/worker-control-20261108/composition-before.tap",
+      "bytes": 6371,
+      "sha256": "be1174a62ed6e80c0802dc389ae733b6e0c55147b8692ef4607df66d346aa655"
+    },
+    {
+      "path": ".local/pipeline-os/worker-control-20261108/composition-after.tap",
+      "bytes": 3584,
+      "sha256": "857148a19c0039dfe586b6e2f2f3dd2bf9d6b75c1783f18df15b92b468651d43"
+    },
+    {
+      "path": ".local/pipeline-os/worker-control-20261108/composition-regression.tap",
+      "bytes": 24199,
+      "sha256": "e23f0762277d2d7d254f9cac850fd0c72e125c40ac08a270be4dda20b1996306"
+    },
+    {
+      "path": ".local/pipeline-os/worker-control-20261108/composition-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "pending": [
+    "F2 T-003 orchestration; adapter/routes/panel and real Auth contract",
+    "R06 per-mailbox resolver and reviewed cutover; current facade remains gmail_oauth",
+    "combined native PG15 concurrency and final SQL/preflight/postflight; never replay049",
+    "Linux/Coolify build and delta visual QA",
+    "real assignments, explicit trial budget and pause/drain/restart/inflight evidence"
+  ]
+}

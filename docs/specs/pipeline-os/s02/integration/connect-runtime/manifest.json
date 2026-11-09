@@ -1,0 +1,213 @@
+{
+  "id": "CW-I02-20261108",
+  "date": "2026-11-08",
+  "sdd": "STRICT",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "mode": "completed_sources_imported_and_composed_offline_no_caller",
+  "readyForReview": true,
+  "readyForProduction": false,
+  "readyForRemoteSql": false,
+  "gmailDefaultProvider": "gmail_oauth",
+  "routingDefaultEnabled": false,
+  "composioProductOperationEnabled": false,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "realProviderRequests": 0,
+  "remoteSql": 0,
+  "messages": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "existingProductChanges": [],
+  "upstream": {
+    "completedTasks": ["T-003", "T-004"],
+    "sourceWorktree": "C:/Users/Usuario/.codex/worktrees/441b/CRM Currated",
+    "receipts": [
+      {
+        "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/t003-upstream-receipt.json",
+        "bytes": 2875,
+        "sha256": "a08c6371e6abe20f3f430d5a83ce85abbbe36f61e78967a4452baba0aa7e613b"
+      },
+      {
+        "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/t004-upstream-receipt.json",
+        "bytes": 2705,
+        "sha256": "48108151ed53af13b3ab51dc25bae06af3af8c1e3dc2860179a46a4d112a7730"
+      }
+    ],
+    "files": [
+      {
+        "path": "src/lib/composio-connect.ts",
+        "bytes": 12712,
+        "sha256": "0f2ce283a5703cbb9e24f464e2bf98e0309ba462c16bf545609a88c646ee5f49"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-connect/session.ts",
+        "bytes": 1964,
+        "sha256": "2703ac18a441dddf07b88f8a40cec673e44e4e7213b0901e42ae943672d61813"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-connect/orchestrator.ts",
+        "bytes": 23525,
+        "sha256": "dfdf0c846917eea9e2f5d0b9b2be387db9b2f8414acf485ef8334fb88226235a"
+      },
+      {
+        "path": "tests/pipeline-os-s02-connect-contract.test.ts",
+        "bytes": 32827,
+        "sha256": "c7e283bff27b00442e1e1b52de58d91a843c8d9abeec8a98e86e0487d6985a16"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-connect/config.ts",
+        "bytes": 2025,
+        "sha256": "70a3265dfdd4d438487f60f2c2334800a8ab677f2af3c7cdcceb5f28efac96e5"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-connect/provider.ts",
+        "bytes": 11502,
+        "sha256": "c4697d591a048e9b26780a1515d719030a173467ab588a9c08e4cb8ad2bc3ed3"
+      },
+      {
+        "path": "tests/pipeline-os-s02-connect-provider.test.ts",
+        "bytes": 25803,
+        "sha256": "d4b88cebc36b4651671a20db03922b43d39e7bf944363c4da5515ddf0292d78e"
+      }
+    ],
+    "byteIdenticalToUpstream": true,
+    "sourceWorktreeWrites": 0,
+    "privateFilesCopied": 0,
+    "T009": {
+      "observedState": "active implementation; not received",
+      "snapshotCursor": "b3b760aa-1bbf-49a1-a2b4-4fe7ca3b7522:8",
+      "filesImported": 0
+    },
+    "messagesSent": 0
+  },
+  "ownTests": [
+    {
+      "path": "tests/fixtures/pipeline-os-s02-connect-composition.ts",
+      "bytes": 10232,
+      "sha256": "de8b255943f364df1da05c5c0785543f9113e3b32e93c1ed02536d260ab5ea51"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-composition.test.ts",
+      "bytes": 7487,
+      "sha256": "e05d6832fe02af9c1ef3aae37005ac326fb24e5eeedc4ea610b4eb9fd4002c9b"
+    }
+  ],
+  "documents": [
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/spec.md",
+      "bytes": 2705,
+      "sha256": "a07709beb6a684bfac57d8340741257c34a57fe5c8870ea2c099bf218fcfbe13"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/design.md",
+      "bytes": 2535,
+      "sha256": "ae5cdaa129850f1153c4844b58b49ca1674f8677a7bc530173dd7e8ae531d1ca"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/tasks.md",
+      "bytes": 1568,
+      "sha256": "a6f92dab358fdd1b2c5f1fbba5599b91d06171a1f6bff4797e236099130f2f93"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/acceptance.md",
+      "bytes": 984,
+      "sha256": "ae0270f32f8482036c66320dd932c9ac4738ff662e3b9af652ee55fe9c6cea7e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/verification.md",
+      "bytes": 2973,
+      "sha256": "c6a197c48d07efd660611436c113d6ea6325dd2e26877674b48ea887b5729884"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/runbook.md",
+      "bytes": 2980,
+      "sha256": "5d0c6fb55bbdc96de0aa27a584a30ea6a9c5beef9e8e79186ea4dc6b0c1f40a3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-runtime/f3-handoff.md",
+      "bytes": 2019,
+      "sha256": "0c12d80d02e9b0f87de1e5aade7dd06b75dbcd3484565845d09f888b416277e3"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i03-implementation.json",
+      "bytes": 11954,
+      "sha256": "8de3515b02bb457fa320db530fcce2a10e48fbcff48101ca23f0626055f1e4e9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/manifest.json",
+      "bytes": 7360,
+      "sha256": "9f3be045694a5dbe7c1824d4bb69631102beb5e9815aa874b66898f71432c04c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/manifest.json",
+      "bytes": 6381,
+      "sha256": "220f135f777d6509cfc000f552f9e3a8dea808dda6152811061b42921df6d4e6"
+    }
+  ],
+  "accepted049": {
+    "path": "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+    "bytes": 911177,
+    "sha256": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39"
+  },
+  "checks": {
+    "node": "22.23.4",
+    "selectedCasesIncludingGroups": 152,
+    "passed": 152,
+    "failed": 0,
+    "skipped": 0,
+    "upstreamTestsExecutedInRoot": 49,
+    "newCompositionTests": 6,
+    "relatedRegressionPassed": 97,
+    "typescript": "passed --noEmit --incremental false",
+    "originalC3ArchitectureGuard": "passed unchanged",
+    "format": true,
+    "localLinks": 10,
+    "preexistingPublicSourcesPreserved": 720,
+    "privateOperationalHashesPreserved": 49,
+    "sql049Unchanged": true,
+    "headAndIndexPreserved": true,
+    "existingProductSourcesChanged": 0,
+    "newProductOrTestSources": 9,
+    "network": "real fetch/http/https/socket/TLS/DNS denied; injected in-memory responses only",
+    "actualDatabaseStore": false,
+    "physicalPostgresTestedHere": false,
+    "realOAuthOrConfiguration": false,
+    "httpRoutesOrOnboardingUi": false
+  },
+  "privateEvidence": [
+    {
+      "path": ".local/pipeline-os/connect-runtime-20261108/upstream.tap",
+      "bytes": 12329,
+      "sha256": "9f1791edfec5a6c2bdf70340d4152d01726ed94d64453b880bab77ca558c67e2"
+    },
+    {
+      "path": ".local/pipeline-os/connect-runtime-20261108/qa-new.tap",
+      "bytes": 13795,
+      "sha256": "8c0e3961be39eb3018a6ca7eec257bda30ae6367bf2be143faa5e2a66323a734"
+    },
+    {
+      "path": ".local/pipeline-os/connect-runtime-20261108/qa-final.tap",
+      "bytes": 37911,
+      "sha256": "cccd26621690d868d0f7b2fa882f154271c8e2ee8caaebbb59d1100066fa813a"
+    },
+    {
+      "path": ".local/pipeline-os/connect-runtime-20261108/typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/pipeline-os/connect-runtime-20261108/received.json",
+      "bytes": 2013,
+      "sha256": "7592c5444864aa04cc936db5aec6baac5110ec6365293c4ae9d0668066663da9"
+    }
+  ],
+  "pending": [
+    "receive T-009 only after its final verification and source receipt",
+    "compose durable phases/cipher/store with CW/R06 SQL and preserve human registration",
+    "caller/configuration/callback/cookies and UI for onboarding",
+    "new final SQL/catalog/preflight/postflight and reviewed web-worker cutover; never repeat048/049",
+    "real assignments/configuration/live-sync enablement and separately budgeted Composio pilot"
+  ]
+}

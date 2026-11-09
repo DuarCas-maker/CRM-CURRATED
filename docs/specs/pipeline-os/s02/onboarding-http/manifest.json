@@ -1,0 +1,303 @@
+{
+  "date": "2026-11-08",
+  "sdd": "STRICT",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "readyForReview": true,
+  "readyForProduction": false,
+  "readyForRemoteSql": false,
+  "gmailDefaultProvider": "gmail_oauth",
+  "composioProductOperationEnabled": false,
+  "routingDefaultEnabled": false,
+  "connectDefaultEnabled": false,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "realProviderRequests": 0,
+  "remoteSql": 0,
+  "messages": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "id": "HTTP-I01-20261108",
+  "mode": "durable_onboarding_http_and_ui_implemented_offline",
+  "newSources": [
+    {
+      "path": "src/lib/composio-connect-http.ts",
+      "bytes": 3123,
+      "sha256": "fd2fafe8dad399b6f1bb9b5c7beeb9ae0f7aab4a35258d4e5bccd0bc384fae7b"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "bytes": 21848,
+      "sha256": "42bc462040023cb843bfd377daa6f2a26cf8ed13362dbd14f9652b438b09fd82"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http-correlation.ts",
+      "bytes": 1386,
+      "sha256": "096739b4e845bcbb547d0deb7d86e2212b3562a3e24d1ac20914549f2eaa25c7"
+    },
+    {
+      "path": "src/components/composio-connect.tsx",
+      "bytes": 21695,
+      "sha256": "39213b15441d864e819a3936177390e16705e0f5cc4eaad96d50ff67f1ddaa41"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/route.ts",
+      "bytes": 117,
+      "sha256": "2a0c6da6264da06d7436b315297d1b9b374b534f1523da55247fff360220a829"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/[id]/route.ts",
+      "bytes": 249,
+      "sha256": "06c1dd8827c95ecb06e84c4d2992f16b9bf82591c3d4a187ef8833fda3484d83"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/[id]/[action]/route.ts",
+      "bytes": 283,
+      "sha256": "9211d4903a5be99f2d11ef499e8e1a74e373152b63f1dd5d995c03ab259ecccc"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/callback/route.ts",
+      "bytes": 91,
+      "sha256": "3d2493c274fef6fee17fe3fb5123285d8f37e6aaa874941a97efb3d759054a55"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-connect-http.ts",
+      "bytes": 8542,
+      "sha256": "88f29f241a40ac3c919272ed08950dc84c3dec8fb85d465168e66ee65afa21d4"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-http.test.ts",
+      "bytes": 10020,
+      "sha256": "21098542462693e94686aafc303ab1221595eb6d083e6b6c1e14028491698f2f"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-http-ui.test.ts",
+      "bytes": 5536,
+      "sha256": "2e99619232f4c347b9f8fe02fe4a26fd34d7dd20436f54d58d7a4982b0eff657"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-http-session.test.ts",
+      "bytes": 2541,
+      "sha256": "cc0e588590af76b1572cbdea672b4cc8c140a0b4ebe379c459f45544817810b1"
+    }
+  ],
+  "existingDelta": [
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/store.ts",
+      "bytes": 16203,
+      "sha256": "ad111d6bf1cfd61e86b6c966fa561f589536dbaadb7639f423979bc1002570b3"
+    },
+    {
+      "path": "src/components/integrations.tsx",
+      "bytes": 14420,
+      "sha256": "eee826a47f6d7a7b1b69da710edb69abbec6a0276b9ff876a974cf637efb9ab6"
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "bytes": 124058,
+      "sha256": "62124125ca4d85c95379e043032033d48bc74677a91d96a4a12bd370bd7003ae"
+    },
+    {
+      "path": ".env.example",
+      "bytes": 3386,
+      "sha256": "0520346e31042a0f5f547710bc1f8e19320914b2298a91f019276b057bc8da16"
+    }
+  ],
+  "sourcePreservation": [
+    {
+      "path": "src/components/crm.tsx",
+      "baselineSha256": "8f3f78ec8e766feeef6cd87ec7625fde6803658535911082bd7fe43976d00b2b",
+      "currentSha256": "62124125ca4d85c95379e043032033d48bc74677a91d96a4a12bd370bd7003ae",
+      "reconstructionMatches": true
+    },
+    {
+      "path": "src/components/integrations.tsx",
+      "baselineSha256": "36feab3aab8f59cafcdc2b972efdb9346cb81dc048e2e1e7132289bdc6c6aa9b",
+      "currentSha256": "eee826a47f6d7a7b1b69da710edb69abbec6a0276b9ff876a974cf637efb9ab6",
+      "reconstructionMatches": true
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/store.ts",
+      "upstreamSha256": "6d65083f60be69c1a06f0e16594bc566df4d5482fdaaa3ca51d2b2adcb9b5445",
+      "currentSha256": "ad111d6bf1cfd61e86b6c966fa561f589536dbaadb7639f423979bc1002570b3",
+      "reconstructionMatches": true
+    },
+    {
+      "path": ".env.example",
+      "reconstructionMatches": true,
+      "currentSha256": "0520346e31042a0f5f547710bc1f8e19320914b2298a91f019276b057bc8da16"
+    }
+  ],
+  "documents": [
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/spec.md",
+      "bytes": 2890,
+      "sha256": "c6cf603de2f4c79a4411bd37693d7c681e8b553fa67964bf0bc819ed9e724272"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/design.md",
+      "bytes": 4667,
+      "sha256": "5eb35735836a9551315207fa4bcf07c66f2a586358c07210a640df92dbc71f92"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/tasks.md",
+      "bytes": 781,
+      "sha256": "6d2980bfc5d43ac353c6d6836afa48f4321cd21dffa526962d671d38c2127d23"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/acceptance.md",
+      "bytes": 1170,
+      "sha256": "72bbe850274b7a4c18f47e442e4db3b1732abc8e9658c84153860ba6cd15a4e0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/verification.md",
+      "bytes": 1809,
+      "sha256": "7354ad9e6eeae8429b38c59c1a4af16b61f1744fd74593edee49c3f9ddeaa0c7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/onboarding-http/runbook.md",
+      "bytes": 2464,
+      "sha256": "631708c701718e369265190660e60e82d9f24a923eade4ce5867912b2a39246a"
+    }
+  ],
+  "dependency": {
+    "path": "docs/specs/pipeline-os/s02/integration/connect-store/manifest.json",
+    "bytes": 5583,
+    "sha256": "b39ef70a889ddaeaf304f526f7840cf00974981f9d53d0630f1403bea5e5ce8e"
+  },
+  "accepted049": {
+    "path": "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+    "bytes": 911177,
+    "sha256": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39"
+  },
+  "checks": {
+    "node": "22.23.4",
+    "files": 32,
+    "casesIncludingGroups": 346,
+    "passed": 344,
+    "failed": 0,
+    "skipped": 2,
+    "skips": ["T002 native opt-in runner", "T009 native opt-in runner"],
+    "typescript": "passed --noEmit --incremental false",
+    "httpTests": 6,
+    "verifiedSessionTests": 1,
+    "uiContractTests": 4,
+    "originalC3ArchitectureGuard": "passed unchanged",
+    "format": true,
+    "localLinks": 0,
+    "preexistingPublicSourcesPreserved": 737,
+    "privateOperationalHashesPreserved": 49,
+    "sourceReconstructionPassed": true,
+    "headAndIndexPreserved": true,
+    "network": "test preload denies fetch/http/https/socket/TLS/DNS; injected responses only",
+    "visualFixtures": {
+      "engine": "Edge headless",
+      "localCdpOnly": true,
+      "viewports": [360, 768, 1280],
+      "locales": ["es", "en"],
+      "screenshots": 14,
+      "overflow": false,
+      "realOAuth": false
+    },
+    "physicalPostgresTestedInRoot": false,
+    "realAuthPostgrestOrProvider": false,
+    "linuxOrProductionBuild": false
+  },
+  "privateEvidence": [
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/qa-final.tap",
+      "bytes": 84256,
+      "sha256": "2590e5e36606d871b07887209742255fb251ce80433be58aa78ee8150e93ceda"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/preservation.json",
+      "bytes": 983,
+      "sha256": "21c99cabf6961553eb118b4a55f4bdd45d1271257b4081220cb733d688bcb0ef"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/browser-qa.json",
+      "bytes": 1610,
+      "sha256": "1e0fd8070d6e749b7bd624526854e1e2ffd6cfe128dbe912e0c8566691595402"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/form-es-360.png",
+      "bytes": 29283,
+      "sha256": "a5b389039e03e7f8d3fb290f66eb4ffb55cbb627d0d5d7fc8a7353833757e0e4"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/consent-es-360.png",
+      "bytes": 21432,
+      "sha256": "1ccf86e05c04fb3223fb979bd0c219cbf0ae312e8b8110c60c73a3ea0fc097da"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/form-es-768.png",
+      "bytes": 30145,
+      "sha256": "9535abe761520368e9338a6d576e8f4cf9cbba8f2921cda64c802b4101cf2a15"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/consent-es-768.png",
+      "bytes": 24240,
+      "sha256": "071e65a81fe18f8ff7df3ee624eac1ea363fb4195f62a5c64ea53ced5ebdf4a4"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/form-es-1280.png",
+      "bytes": 31466,
+      "sha256": "13389f31a3c5d070875e3ffca7e14aae15b2bc924382542eeb514958104352e9"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/consent-es-1280.png",
+      "bytes": 25523,
+      "sha256": "0ef5faab3942a5d210c8a0184bcf366183ff9518ed54eac0f96d4e60996bded4"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/form-en-360.png",
+      "bytes": 28042,
+      "sha256": "e7977b206b7b3029ea6a04ee3dc82d329f1691acb616f3494400a7ecf5390cff"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/consent-en-360.png",
+      "bytes": 21393,
+      "sha256": "31abbbaae81f2a9e6e42b88858f4f39058630e502d919e9815997f1b22a70ba9"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/form-en-768.png",
+      "bytes": 29243,
+      "sha256": "f8ab0b7d0dae8b3d155acb83adfa8a8d642df235aeafd342879eacf85740e4d9"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/consent-en-768.png",
+      "bytes": 24224,
+      "sha256": "1bff58f1d21888b11790d881f38857f5d7c6ea523a4e0bff7b5696dd7e098ddc"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/form-en-1280.png",
+      "bytes": 29922,
+      "sha256": "2c6d0327790e9f6bd0242384e998200bd107fea02f106fe61275468aa025ea50"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/consent-en-1280.png",
+      "bytes": 24911,
+      "sha256": "104d0b277068071133f1c304fa5b938cf5915f73f87fcb47bf342304928c36d3"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/error-es-360.png",
+      "bytes": 17724,
+      "sha256": "daee3d101bcc899b037525ebed83f8f071b0c0b9582eaa133298f4c2b9534dd2"
+    },
+    {
+      "path": ".local/pipeline-os/onboarding-http-20261108/error-en-360.png",
+      "bytes": 17701,
+      "sha256": "f74a64173876ac4471e1bdf57d69cca9a961cf45f025c153ca713e4982f88041"
+    }
+  ],
+  "pending": [
+    "combined final SQL package and physical PG15 composition rehearsal",
+    "actual Auth/PostgREST/project configuration and coordinated cutover",
+    "separately authorized real Composio operational pilot",
+    "release review/configuration/build/publication before enabling onboarding; product Composio remains code-disabled"
+  ]
+}

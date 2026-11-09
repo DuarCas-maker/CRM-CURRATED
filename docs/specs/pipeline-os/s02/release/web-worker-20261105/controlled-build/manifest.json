@@ -1,0 +1,129 @@
+{
+  "id": "CB-20261106-r1",
+  "date": "2026-11-06",
+  "timezone": "America/Bogota",
+  "sdd": "STRICT",
+  "mode": "protocol_prepared_not_executed",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "candidate": "ABC-WW-20261105",
+  "candidateSourceTreeSha256": "8c9690dbe5c4421f709608f5e51062a140f42f3b62ddabd1ff586d7885ad6710",
+  "archive": {
+    "path": ".local/abc-release-20261105/abc-web-worker-sources.tar.gz",
+    "bytes": 3163193,
+    "sha256": "abf0979c698e430671e57c3a2aae75053ee327b729555e36f7c072421fca9718",
+    "files": 776,
+    "listingVerified": true,
+    "containsDependencies": false,
+    "containsRealEnv": false
+  },
+  "hostEvidence": {
+    "source": "operator_pasted_read_only_terminal_output",
+    "independentAgentRemoteReads": 0,
+    "architecture": "linux/amd64",
+    "dockerClient": "29.7.2",
+    "dockerServer": "29.7.2",
+    "cpus": 4,
+    "ramTotalGiB": 5.8,
+    "memAvailableGiB": 2.4,
+    "swapTotalGiB": 4,
+    "swapUsedGiB": 1.7,
+    "diskAvailableReported": "76G",
+    "activeContainers": 33,
+    "images": 48,
+    "imagesSizeGB": 18.66,
+    "volumesSizeGB": 9.391,
+    "buildCacheGB": 0,
+    "buildxVersion": null,
+    "cgroupLimitsVerified": false,
+    "egressVerified": false
+  },
+  "proposedPolicy": {
+    "builderMemoryGiB": 2,
+    "builderAdditionalSwapGiB": 0,
+    "builderCpuQuota": 100000,
+    "builderCpuPeriod": 100000,
+    "maxParallelism": 1,
+    "admitMemAvailableGiB": 3,
+    "admitWindowSeconds": 60,
+    "abortMemAvailableGiB": 1,
+    "abortSamples": 2,
+    "sampleSeconds": 5,
+    "admitDiskAvailableGiB": 20,
+    "abortDiskAvailableGiB": 15,
+    "maxTrialDiskGrowthGiB": 15,
+    "maxMinutesPerImage": 45,
+    "maxBuildAttempts": 2,
+    "automaticRetry": false,
+    "validatedCapacityRequirement": false
+  },
+  "readyForReview": true,
+  "executionAuthorized": false,
+  "readyForExecution": false,
+  "readyForPush": false,
+  "readyForDeployment": false,
+  "buildsExecuted": 0,
+  "applicationStarts": 0,
+  "providerRequests": 0,
+  "remoteSql": 0,
+  "installs": 0,
+  "deployments": 0,
+  "pushes": 0,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "gmailProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "checks": {
+    "newMarkdownFormatted": 6,
+    "localLinksChecked": 16,
+    "payloadMatches": 100,
+    "supportMatches": 10,
+    "operationalHashesPreserved": 49,
+    "archivePreserved": true,
+    "priorPublicFilesCompared": 802,
+    "priorFilesPreservedExceptAllowedMetadata": true,
+    "indexAndHeadPreserved": true,
+    "noExecutableRunnerImplemented": true,
+    "remoteCommandsNotExecuted": true
+  },
+  "pending": [
+    "fresh capacity >=3GiB available; last snapshot does not pass",
+    "compatible preinstalled Buildx",
+    "effective cgroups and solver budget",
+    "private source transfer verification",
+    "builder egress filtering verified without business API probes",
+    "target public web config and BuildKit/Node identities",
+    "specific execution window and authorization"
+  ],
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/spec.md",
+      "bytes": 5316,
+      "sha256": "6d082b16fe09e3434340a807e9a4dd94cb31d2c0640f5b05cbe20f6ab34845d0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/design.md",
+      "bytes": 6539,
+      "sha256": "cfbfd5fa36a731a733b96f3bc390d8587f35aef0909f3d087a959b1c7d52f5c4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/tasks.md",
+      "bytes": 1491,
+      "sha256": "ccde17847beb7f3638902006928dcb011a102de529786ecc7f9b9d51c15c8a62"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/acceptance.md",
+      "bytes": 2964,
+      "sha256": "10f079a2bea969d461935f3cc9b23afe5eb39d8634ebd3d3875fcec1d3923227"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/protocol.md",
+      "bytes": 12480,
+      "sha256": "a3059c160ff733db576bf7d4a7bb39c7fc68107aaf44288edc00eaca5cb8b92a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/web-worker-20261105/controlled-build/verification.md",
+      "bytes": 4439,
+      "sha256": "6f82ad67e4fc0811349437e8fda635f6ac2b661f67d2517cd61bab8f0a8ca922"
+    }
+  ]
+}

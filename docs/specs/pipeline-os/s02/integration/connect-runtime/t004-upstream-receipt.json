@@ -1,0 +1,79 @@
+{
+  "id": "S02-CONNECT-T004-OFFLINE-20261108",
+  "date": "2026-11-08",
+  "mode": "authorized_offline_provider_config_with_injected_transport",
+  "node": "v22.23.4",
+  "unitTestsExecuted": true,
+  "passed": 22,
+  "failed": 0,
+  "skipped": 0,
+  "cancelled": 0,
+  "durationMs": 603.8565,
+  "command": "Node22 --import tsx --test tests/pipeline-os-s02-connect-provider.test.ts",
+  "realFetchCalls": 0,
+  "providerRequests": 0,
+  "newServicesStarted": 0,
+  "fakeTransportTested": true,
+  "virtualClock": true,
+  "inMemoryResponseStreams": true,
+  "realOAuthTested": false,
+  "realConfigurationProvenanceVerified": false,
+  "realDatabaseAdapterTested": false,
+  "t002T003SourceHashesUnchanged": true,
+  "priorSourceHashCount": 7,
+  "priorSuitesRepeated": false,
+  "httpRoutesImplemented": false,
+  "transportActivated": false,
+  "typecheck": {
+    "command": "Node22 node_modules/typescript/bin/tsc --noEmit --incremental false",
+    "exitCode": 0
+  },
+  "format": {
+    "command": "Node22 prettier --check <three T-004 files>",
+    "exitCode": 0
+  },
+  "files": [
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/config.ts",
+      "bytes": 2025,
+      "sha256": "70a3265dfdd4d438487f60f2c2334800a8ab677f2af3c7cdcceb5f28efac96e5"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/provider.ts",
+      "bytes": 11502,
+      "sha256": "c4697d591a048e9b26780a1515d719030a173467ab588a9c08e4cb8ad2bc3ed3"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-provider.test.ts",
+      "bytes": 25803,
+      "sha256": "d4b88cebc36b4651671a20db03922b43d39e7bf944363c4da5515ddf0292d78e"
+    }
+  ],
+  "scenarios": [
+    "T004-UT01",
+    "T004-UT02",
+    "T004-UT03",
+    "T004-UT04",
+    "T004-UT05",
+    "T004-UT06",
+    "T004-UT07",
+    "T004-UT08",
+    "T004-UT09",
+    "T004-UT10",
+    "T004-UT11",
+    "T004-UT12"
+  ],
+  "review": {
+    "initialSuitePassed": 20,
+    "streamingDeadlineRegressionInitiallyFailed": true,
+    "regressionFixed": true,
+    "openConfirmedFindings": 0
+  },
+  "limitations": [
+    "Synthetic server descriptor, credential and provider JSON; no live project, callback mode, Google quota or effective grants accredited",
+    "Generation/version comparison is against caller-provided trusted expected descriptor; future composition must tie that descriptor to the durable attempt",
+    "T-002 SQL lacks complete network phase leases, encrypted callback state and atomic store adapter; HTTP integration remains gated",
+    "No real network, global fetch fallback, environment reader, OAuth, worker, route or UI caller",
+    "This is provider/config contract evidence with doubles, not integrated acceptance or general coordinator G2 approval"
+  ]
+}

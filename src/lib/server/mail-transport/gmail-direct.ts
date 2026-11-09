@@ -5,6 +5,7 @@ import {
   type GmailRequest,
   type PreparedGmailTransport,
 } from "./contract";
+import { inWorkerPilot } from "../worker-request-control";
 
 // OAuth, quota reservations and the final permission hook remain in google.ts.
 export function directGmailTransport(
@@ -22,6 +23,7 @@ export function directGmailTransport(
           ...init.headers,
         },
         signal: AbortSignal.timeout(30000),
+        ...(inWorkerPilot() ? { redirect: "manual" as const } : {}),
       });
       if (!res.ok) {
         const error = await gmailResponseError(res);

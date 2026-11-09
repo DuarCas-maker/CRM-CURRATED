@@ -1,0 +1,35 @@
+{
+  "protocol": "MR-CONTEXT-DIAG-r1",
+  "source": "operator_result_in_chat_2026-11-08",
+  "reportedFile": "complete050_BEGIN_through_COMMIT",
+  "reportedError": "MR_CONTEXT_MISMATCH",
+  "sqlRole": "supabase_admin",
+  "version": "150008",
+  "readOnly": "on",
+  "checks": {
+    "sqlRole": true,
+    "humanRoles": true,
+    "serviceRole": true,
+    "sqlSuperuser": true,
+    "requiredRoles": true,
+    "serverVersion": true,
+    "publicSchemaAcl": true,
+    "roleMemberships": true,
+    "authSessionsShape": false,
+    "authSessionsPresent": true
+  },
+  "targetSchemas": {
+    "mail_runtime": false,
+    "worker_pilot": false,
+    "composio_connect": false,
+    "composio_connect_runtime": false
+  },
+  "authSessionColumns": [
+    { "name": "created_at", "type": "timestamp with time zone" },
+    { "name": "id", "type": "uuid" },
+    { "name": "not_after", "type": "timestamp with time zone" },
+    { "name": "refreshed_at", "type": "timestamp without time zone" },
+    { "name": "user_id", "type": "uuid" }
+  ],
+  "interpretation": "guard_failed_before_DDL; schema_absence_observed_in_later_read; no_successful050_or_new_remote_execution_claimed"
+}

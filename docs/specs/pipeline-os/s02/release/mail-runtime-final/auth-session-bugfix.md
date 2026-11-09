@@ -1,0 +1,13 @@
+# MR-AUTH-r1 — compatibilidad de refreshed_at
+
+STRICT · corrección local del candidato050, continuación de MR-FINAL-r1. El operador ejecutó050 completo y recibió MR_CONTEXT_MISMATCH antes del DDL. Su lectura MR-CONTEXT-DIAG-r1 en PG150008 confirma nueve checks correctos salvo authSessionsShape, con refreshed_at timestamp without time zone y los cuatro schemas nuevos ausentes. No hay evidencia de instalación050 ni se autoriza reintentar por esta corrección.
+
+Causa confirmada: el generador exigía timestamptz para ese campo en una fixture simplificada. Además, T-002 live_actor y T-009 session_limit mezclan ese timestamp con created_at timestamptz mediante COALESCE: su conversión implícita depende de TimeZone. No basta permitir el tipo en la guarda.
+
+MR-AUTH-FR01/AC01: aceptar únicamente uuid para id/user_id, timestamptz para created_at/not_after y timestamp o timestamptz para refreshed_at, sin alterar Auth ni relajar otros checks. MR-AUTH-FR02/AC02: dos overloads privados interpretan el timestamp naive como UTC e identifican timestamptz sin reconvertirlo; usarlos en las dos expresiones de inactividad/caducidad. ACL cerrada y políticas/max-age/not_after/revocación/MFA originales conservadas. MR-AUTH-FR03/AC03: regenerar contrato/050/preflight/postflight con ambas fixtures, probar zonas horarias, NULL/fallback, inactividad/max-age/not_after/revocación y fallos de tipos; conservar seis fuentes de origen,049, producto web/worker y privados43.
+
+MR-AUTH-ADR01: overlay acotado del generador, con anchors únicos y recibo explícito. No editar las fuentes F2 ni su SQL local-only. Añadir helpers dentro de composio_connect antes del digest y conservar el REVOKE ALL final del schema. El contrato registra el overlay y sus dos cuerpos cambiados. No modificar tipos/filas/políticas del schema auth del proyecto.
+
+MR-AUTH-T01: reproducir guarda anterior sobre el esquema informado. T02: adaptación/guardas y generación en los dos tipos de Auth; exigir mismo catálogo final. T03: fixtures/test temporal/ACL y regresión pertinente. T04: hashes/paquete/protocolo actualizados y constancia del intento; sin llamadas reales, SQL remoto, enlaces, push o despliegue. Reversa antes de COMMIT continúa siendo ROLLBACK; tras instalación futura conservar recibos y seguir el runbook, sin DROP de Auth.
+
+Fuente primaria: [Supabase Auth, UpdateOnlyRefreshInfo](https://github.com/supabase/auth/blob/master/internal/models/sessions.go) documenta el almacenamiento sin zona y normaliza a UTC antes de escribir. Esto respalda la interpretación del helper; el tipo real del CRM proviene del diagnóstico del operador. La prueba nueva en memoria no acredita concurrencia ni deparser PG15 físico.

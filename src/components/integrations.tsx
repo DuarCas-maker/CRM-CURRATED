@@ -9,6 +9,8 @@ import { GmailHistory } from "./gmail-history";
 import { InstantlyTrialControl } from "./instantly-trial-control";
 import { BrandSettings } from "./brand-settings";
 import { ComposioAccountBindings } from "./composio-account-bindings";
+import { MailTransportSettings } from "./mail-transport-settings";
+import { ComposioConnect } from "./composio-connect";
 export function Integrations({
   data,
   locale,
@@ -62,6 +64,22 @@ export function Integrations({
         demo={data.demo}
       />
       <ComposioAccountBindings
+        locale={locale}
+        allowed={
+          data.profile.role === "superadmin" && data.profile.active === true
+        }
+        demo={data.demo}
+        accounts={data.accounts}
+      />
+      <ComposioConnect
+        locale={locale}
+        allowed={
+          data.profile.role === "superadmin" && data.profile.active === true
+        }
+        demo={data.demo}
+        accounts={data.accounts}
+      />
+      <MailTransportSettings
         locale={locale}
         allowed={
           data.profile.role === "superadmin" && data.profile.active === true

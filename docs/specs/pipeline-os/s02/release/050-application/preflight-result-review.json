@@ -1,0 +1,33 @@
+{
+  "source": "operator_read_only_result_in_chat",
+  "protocol": "MR-FINAL-r1",
+  "ordinal": "050",
+  "catalogOk": true,
+  "queueOk": true,
+  "mismatchCount": 0,
+  "mismatches": [],
+  "queue": {
+    "queued": 0,
+    "sending": 0,
+    "uncertain": 0,
+    "runningJobs": 0,
+    "activeCampaigns": 0,
+    "activeEnrollments": 0
+  },
+  "contractSha256": "2482d33acb4f33e1228915bbe3261030998aa5b363f936aa1b15ba1942c30cb7",
+  "readyToApply": false,
+  "limits": [
+    "snapshot_is_not_worker_pause",
+    "requires_PG15_rehearsal_and_cutover_review",
+    "unrelated_base_objects_not_certified"
+  ],
+  "review": {
+    "contractMatchesCurrentSealedRevision": true,
+    "readAccepted": true,
+    "readingNotRepeated": true,
+    "processPauseNotConfirmed": true,
+    "applicationNotObserved": true,
+    "nativeRehearsalNotExecuted": true,
+    "operatorSubsequentlyRequestedProductionApplication": true
+  }
+}

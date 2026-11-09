@@ -1,0 +1,243 @@
+{
+  "id": "R06-I01-20261108",
+  "date": "2026-11-08",
+  "timezone": "America/Bogota",
+  "sdd": "STRICT",
+  "mode": "implemented_tested_offline_no_active_callers",
+  "baseCommit": "50d2f916788c73c831d6e0ebe1cf29a1e9d6340a",
+  "readyForReview": true,
+  "readyForI02Integration": true,
+  "readyForProduction": false,
+  "readyForRemoteSql": false,
+  "productFacadeChanged": false,
+  "activeCallersAdded": false,
+  "gmailProvider": "gmail_oauth",
+  "composioEnabled": false,
+  "instantlyConsumed": 43,
+  "instantlyNew": 0,
+  "providerRequests": 0,
+  "remoteSql": 0,
+  "messages": 0,
+  "installations": 0,
+  "pushes": 0,
+  "deployments": 0,
+  "files": [
+    {
+      "path": "src/lib/mail-transport-selection.ts",
+      "bytes": 2208,
+      "sha256": "340ed15bb950ae925973bba17b7689e054a6715e6785635fc853e46cbf7740ba"
+    },
+    {
+      "path": "src/lib/server/mail-transport/selection.ts",
+      "bytes": 5441,
+      "sha256": "9d4815722180a41c6cb131ed48fb65a1ab83176fe2a29f4c070718024d3629db"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06.local.sql",
+      "bytes": 29841,
+      "sha256": "3602ff6ed10e313d412828cd552d79ed7518f783b2562217218037c1d0982e79"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-selection.test.ts",
+      "bytes": 11329,
+      "sha256": "8f8a2e45ddab8072294e090122fb1ef4bfe8d32de719dc2f559f74033d846b47"
+    },
+    {
+      "path": "tests/pipeline-os-s02-transport-selection-db.test.ts",
+      "bytes": 24474,
+      "sha256": "f79106293c93adb537bb4d5da7bbbf35c908fd51ace4e95b9f703e1094dfcb37"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-transport-selection.ts",
+      "bytes": 11920,
+      "sha256": "63c1e42855cbd7563a3f2d3b5dc11a713230e791c7552625b5c4c6b36731b8c3"
+    }
+  ],
+  "documents": [
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/spec.md",
+      "bytes": 5493,
+      "sha256": "01318b88655c6ce68e8b716d5f845da64636047f82cc38a54cad19f781298acc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/design.md",
+      "bytes": 16567,
+      "sha256": "95881fac15a4918cb08f098a749475e92fbdca49a80f753b32fda41b92d7b1b7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/tasks.md",
+      "bytes": 8222,
+      "sha256": "cbb54d8786f7f7625c46eef2693934ec8d1491f5c1666ce927943bf4061d1507"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/acceptance.md",
+      "bytes": 5396,
+      "sha256": "ded30b97536057d7d82b9dd13aa5dbb7bf8bb084c56cd8f2fd67527da5b3a27e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/verification.md",
+      "bytes": 4095,
+      "sha256": "a31d6ca209955404ee971eb47fd2db43137e75bc34c7e7785d16241e5f99052a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i01-design.md",
+      "bytes": 5212,
+      "sha256": "213c7133a5d0c89d36bb98d5c6343a43cb9f697eed9c21f5e8ae0fec8bc69181"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i01-verification.md",
+      "bytes": 7373,
+      "sha256": "967d51fde27d06dff4908dfe85d14da9410bca8b64c0ca24a8410c29a9797595"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/transport-selection/i01-runbook.md",
+      "bytes": 4430,
+      "sha256": "d131414a7f1af6c9a6b63b272edc8421780c13e8f5cb81a60160b6866260003b"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "docs/specs/pipeline-os/s02/worker-control/manifest.json",
+      "bytes": 6381,
+      "sha256": "220f135f777d6509cfc000f552f9e3a8dea808dda6152811061b42921df6d4e6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/integration/connect-worker/manifest.json",
+      "bytes": 7360,
+      "sha256": "9f3be045694a5dbe7c1824d4bb69631102beb5e9815aa874b66898f71432c04c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+      "bytes": 911177,
+      "sha256": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39"
+    }
+  ],
+  "c2AdditivePatches": [
+    {
+      "signature": "composio_c1.check_current(public.mail_provider_binding_checks,jsonb,public.mail_provider_binding_heads,public.mail_provider_bindings)",
+      "baseSourceMd5": "54338942249348eaa2b80da60036e319",
+      "replacements": [
+        [
+          "(ctx->>'ready')::boolean",
+          "mail_runtime.verification_ready(ctx,c.actor_id)"
+        ]
+      ]
+    },
+    {
+      "signature": "composio_c1.approval_current(public.mail_provider_bindings,jsonb)",
+      "baseSourceMd5": "9843065f0b47b2ce4c8a4984b3e90946",
+      "replacements": [
+        [
+          " select exists(",
+          " select mail_runtime.binding_approved(b,ctx) or exists("
+        ],
+        [
+          "(ctx->>'ready')::boolean",
+          "mail_runtime.verification_ready(ctx,c.actor_id)"
+        ]
+      ]
+    },
+    {
+      "signature": "composio_c1.row_dto(public.mail_provider_bindings,jsonb)",
+      "baseSourceMd5": "181449deee9fdcaa480a71d4de344c74",
+      "replacements": [
+        [
+          "b.account_context is distinct from ctx or (",
+          "(b.account_context is distinct from ctx and not mail_runtime.binding_approved(b,ctx)) or ("
+        ]
+      ]
+    },
+    {
+      "signature": "public.composio_binding_check_begin(uuid,uuid,jsonb,text,text,uuid)",
+      "baseSourceMd5": "8dd7c83b1214af1f6da6763549214f56",
+      "replacements": [
+        [
+          "not(ctx->>'ready')::boolean",
+          "not mail_runtime.verification_ready(ctx,auth.uid())"
+        ]
+      ]
+    }
+  ],
+  "sql": {
+    "candidate": "docs/specs/pipeline-os/s02/transport-selection/migrations/r06.local.sql",
+    "numbered": false,
+    "requiredMarker": "pipeline_os.r06_local=in_memory_test",
+    "privateTables": 3,
+    "newPrivateFunctions": 10,
+    "newPublicRpcs": 6,
+    "newIdentityEpochTriggers": 1,
+    "c2FunctionsReplaced": 4,
+    "rollback": "external isolated transaction ROLLBACK restores tables/trigger and original C2 functions",
+    "remoteApplied": false
+  },
+  "checks": {
+    "node": "22.23.4",
+    "casesIncludingGroups": 181,
+    "passed": 180,
+    "failed": 0,
+    "skipped": 1,
+    "newCasesIncludingGroups": 37,
+    "regressionPassed": 143,
+    "typeScript": "passed --noEmit --incremental false",
+    "network": "real fetch/http/https/socket/TLS/DNS denied; fake ports only",
+    "nativeT002OptIn": false,
+    "nativeServerStarted": false,
+    "postgresPhysicalConcurrencyTested": false,
+    "format": true,
+    "localLinks": 23,
+    "preexistingProductAndBuildFilesUnchanged": 367,
+    "acceptedPayloadUnchanged": 96,
+    "supportUnchanged": 9,
+    "priorWcDeltaPreserved": true,
+    "cwFilesPreserved": true,
+    "privateOperationalHashesPreserved": 49,
+    "sql049Unchanged": true,
+    "headAndIndexPreserved": true
+  },
+  "privateEvidence": [
+    {
+      "path": ".local/pipeline-os/r06-i01-20261108/qa-attempt1.tap",
+      "bytes": 62254,
+      "sha256": "fee34186ca245acf9091869e608b315baeb11059524b9961189f3bc1c916d8fa"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i01-20261108/qa-final.tap",
+      "bytes": 43886,
+      "sha256": "6b55a27359952537176378716e51ef2cbb6f248d0616cf0d544b0a3606d00c20"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i01-20261108/new-final.tap",
+      "bytes": 9036,
+      "sha256": "c421f1e21285537db9319594e7c62bf4b5eb8af6723f76a704f4dec1a92cfcbf"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i01-20261108/typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i01-20261108/review-red.tap",
+      "bytes": 5254,
+      "sha256": "324c424b21f8f75146153eb1114308e6e9209d073764d409b76617fb9a590e76"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i01-20261108/review-green.tap",
+      "bytes": 3360,
+      "sha256": "e81e39c75d0a037c58818281d8bf011c9c9631feceb701a963dd0cda75655bbf"
+    },
+    {
+      "path": ".local/pipeline-os/r06-i01-20261108/paused-isolated.tap",
+      "bytes": 398,
+      "sha256": "ed3c2f667e136a5220695485733a3ceae61f630e38899a1fbad1ed8ce14f9709"
+    }
+  ],
+  "limitations": [
+    "No facade/worker/route/component uses these new modules until I02",
+    "Auth/session/provider scopes and configuration inputs are fictitious in this offline rehearsal",
+    "PGlite does not prove PG15 physical multiconnection contention or actual Coolify containment",
+    "I02 must bind execute/finish to sendNext plus accepted-result persistence; no finish before mark_sent",
+    "expired/unknown inflight operations block; no automatic takeover, read-uncertainty release or send replay",
+    "first expanded run had a paused-entry heartbeat timeout; isolated and final complete run passed unchanged; Linux image unverified",
+    "I02/I03 and native QA/final SQL/protocol/pilot remain pending; general production authorization retained"
+  ]
+}
