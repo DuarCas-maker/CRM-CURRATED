@@ -33,6 +33,7 @@ import {
 import { readBounded } from "../../body";
 import { parseBrandPage } from "../../../brand-management";
 import { composioBindingPage } from "../composio-binding";
+import { mailQuotaEnabled, reserveGmailQuota } from "../../mail-quota";
 const nonce = z.string().regex(/^[A-Za-z0-9_-]{32,256}$/),
   revision = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const cookieSchema = z.strictObject({
@@ -408,6 +409,81 @@ async function engine(
         ctx.p.configuration().fingerprint !== c.fingerprint
       )
         return fail("CONNECT_STALE");
+      // Only the pinned Gmail profile proxy needs Gmail units. Metadata/link are separate Composio requests.
+      if (
+        mailQuotaEnabled() &&
+        String(input) ===
+          "https://backend.composio.dev/api/v3.1/tools/execute/proxy"
+      ) {
+        const body =
+          typeof init?.body === "string" ? JSON.parse(init.body) : null;
+        if (
+          init?.method !== "POST" ||
+          body?.method !== "GET" ||
+          body?.endpoint !==
+            "https://gmail.googleapis.com/gmail/v1/users/me/profile"
+        )
+          return fail();
+        const loaded = await api.inspectIntent({
+          attempt_id: id,
+          authority: connectAuthority(session, cookie.proof),
+        });
+        const a = loaded.snapshot.attempt;
+        if (
+          !a.account_id ||
+          a.state !== "identity_checking" ||
+          a.phase?.kind !== "identity" ||
+          body.connected_account_id !== a.connection_id ||
+          body.user_id !== a.config.owner_id
+        )
+          return fail();
+        const account = a.account_id,
+          phase = a.phase.id;
+        const authorize = async () => {
+          if (
+            !ctx.p.enabled() ||
+            ctx.p.configuration().fingerprint !== c.fingerprint
+          )
+            return fail("CONNECT_STALE");
+          const current = currentConnectSession(
+            await ctx.u.session(),
+            ctx.p.now(),
+          );
+          if (
+            current.actor_id !== session.actor_id ||
+            current.session_id !== session.session_id ||
+            current.authorization_revision !== session.authorization_revision
+          )
+            return fail("CONNECT_FORBIDDEN");
+          const next = (
+            await api.inspectIntent({
+              attempt_id: id,
+              authority: connectAuthority(current, cookie.proof),
+            })
+          ).snapshot.attempt;
+          if (
+            next.state !== "identity_checking" ||
+            next.phase?.id !== phase ||
+            next.account_id !== account ||
+            next.connection_id !== a.connection_id ||
+            JSON.stringify(next.config) !== JSON.stringify(a.config) ||
+            next.deadline_ms <= ctx.p.now()
+          )
+            return fail("CONNECT_STALE");
+        };
+        const lease = await reserveGmailQuota({
+          account,
+          provider: "composio",
+          path: "profile",
+          key: phase,
+          deadline: new Date(a.deadline_ms).toISOString(),
+          signal: init.signal ?? undefined,
+          authorize,
+          requiresV2: true,
+          legacy: async () => fail(),
+        });
+        return lease.emit(() => ctx.p.fetchImpl(input, init));
+      }
       return ctx.p.fetchImpl(input, init);
     },
   });

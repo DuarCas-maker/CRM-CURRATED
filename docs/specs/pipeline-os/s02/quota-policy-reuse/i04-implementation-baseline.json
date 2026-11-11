@@ -1,0 +1,219 @@
+{
+  "protocol": "QGR-I04-PLAN-r1",
+  "date": "2026-11-10",
+  "level": "STRICT",
+  "mode": "planning_only",
+  "head": "00b00937b8de7eea1966a6b2c3189bf1c9db8023",
+  "implementationAuthorized": false,
+  "plan": "i04-plan.md",
+  "verification": "i04-verification.md",
+  "invariants": {
+    "gmailDirect": "preserve",
+    "composioEnabled": false,
+    "instantlyConsumed": 43,
+    "authorizedProviderRequests": 0,
+    "remoteChanges": 0,
+    "deployments": 0,
+    "privateFilesRead": 0
+  },
+  "criticalPath": [
+    "I04-A1_A2_A3_A4_R1_R2",
+    "I05_new_sql_web_worker_release",
+    "Daniel_live_identity_scope_check",
+    "one_mailbox_cutover_pilot"
+  ],
+  "deferredNotBlockingFirstMailbox": [
+    "I04-B_new_account_pre_materialization_scope_and_Connect",
+    "remaining_mailboxes",
+    "Instantly_C_D",
+    "new_bulk_history"
+  ],
+  "futureProviderBudget": {
+    "normalComposio": 4,
+    "optionalDiagnosticReserve": 1,
+    "maximumProposed": 5,
+    "authorized": 0,
+    "includedQuotaConfirmed": false,
+    "messages": 0,
+    "cutoverPilotBudget": "separate_not_yet_prepared"
+  },
+  "estimatesHours": {
+    "I04": [
+      8,
+      16
+    ],
+    "I05": [
+      4,
+      8
+    ],
+    "realCheckPreparation": [
+      1,
+      2
+    ],
+    "cutoverPilotPreparation": [
+      2,
+      4
+    ],
+    "total": [
+      15,
+      30
+    ],
+    "technicalDays": [
+      2,
+      4
+    ],
+    "conditionalOn": "tokeninfo_proxy_compatibility_catalog_build_and_quota",
+    "calendarPromise": false
+  },
+  "sources": [
+    {
+      "path": "src/lib/composio-bindings.ts",
+      "sha256": "a4e9ed08fb2cda57a8a73a23fae299a67b787d599f75bee6d5ec1fe8ff0669b2",
+      "role": "I04-A_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding.ts",
+      "sha256": "7430dcd9b9aea3cb8e2ba5d93124e26803e03f19117204ad351266ffd0a6d35c",
+      "role": "I04-A_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-existing-verifier.ts",
+      "sha256": "2d49cdf9f4d8c48ca6e9beaf1861edd53db4a18bb82e5daf05fc1807a3b407ab",
+      "role": "I04-A_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-existing-provider.ts",
+      "sha256": "bbd90846ce8bd1e66f782b2964ec739aaaf6fc6074ebf28f231ee777d66f55d4",
+      "role": "I04-A_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/components/composio-account-bindings.tsx",
+      "sha256": "c24e37fbf52dab7b510aa9f3ab844b1c823d281a09fcde8121f6cb2bf7c45d0f",
+      "role": "I04-A_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/composio/route.ts",
+      "sha256": "ae9d0e3c665c4be5cca2a63a89d73b05802bf0ec50a51ef0a380c23790046929",
+      "role": "I04-A_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-transport/verification-context.ts",
+      "sha256": "e15761aba7fef34dbee88217de3cf02b4552223f68784befc953cbb68800dc22",
+      "role": "I04-R_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-transport/contract.ts",
+      "sha256": "a38920e11561fbb41680f120a51a29bdcdcf38f011e54417acb3588e9dee2b92",
+      "role": "I04-R_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-transport/selection.ts",
+      "sha256": "7810a9452e1b8b9f3d40ba87e7d1e33e4f93933d1ff0150121bfb7dcaaca2e55",
+      "role": "I04-R_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-context.ts",
+      "sha256": "fceac97287dc477840d8cccd9149486d3602855f17ff5a1244100569d8eb0cb0",
+      "role": "I04-R_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-service.ts",
+      "sha256": "dec95adc76f303de709f789c4f8bd17a4ca04bcf2d4d79757e7173c52fdeecb3",
+      "role": "I04-R_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "sha256": "8386b198ae79a27432b011dd9c3882fb07fcb616ad86afab8e74056521a44e3e",
+      "role": "I04-R_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "sha256": "ce7daa5a4cc208e9f506b6c458ec43093605a2f6afde987a1453c784cc3c3532",
+      "role": "I04-R_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "worker/gmail.ts",
+      "sha256": "b692ab869aa5ede80bcd78878e964e9845ce898597655f45c26042589da038ea",
+      "role": "I04-A_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "worker/gmail-schedule.ts",
+      "sha256": "f1a7428040982b8a2cf53337c7a0cac808fa70990c3f3050bf84da108b7b3619",
+      "role": "I04-A_proposed_overlay",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/config.ts",
+      "sha256": "70a3265dfdd4d438487f60f2c2334800a8ab677f2af3c7cdcceb5f28efac96e5",
+      "role": "I04-B_deferred_read_only",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "sha256": "be22131ccddc20c0bae5933ab574c80e0cde3e6f0c9f15c7d46a64b7480a5570",
+      "role": "I04-B_deferred_read_only",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-policy-v2.local.sql",
+      "sha256": "e86e29f28cf46d3c7a611e700d3905734102922122a888fbf1504b592bb021d0",
+      "role": "sealed_dependency_do_not_edit",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-i03.local.sql",
+      "sha256": "3978379041905614e76add315510f6137e013a24bb19ff278dc35071b64ad3c9",
+      "role": "sealed_dependency_do_not_edit",
+      "owner": "coordinator",
+      "editAuthorizedThisTurn": false
+    }
+  ],
+  "proposedNewPaths": [
+    "src/app/api/mail/accounts/[id]/composio/check/route.ts",
+    "src/lib/server/mail-accounts/composio-binding-v2.ts",
+    "tests/pipeline-os-s02-binding-v2-contract.test.ts",
+    "tests/pipeline-os-s02-binding-v2-db.test.ts",
+    "tests/pipeline-os-s02-binding-v2-http.test.ts",
+    "tests/pipeline-os-s02-binding-v2-ui.test.ts",
+    "tests/pipeline-os-s02-runtime-quota-v2.test.ts",
+    "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-i04.local.sql",
+    "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-i04.rollback.sql"
+  ],
+  "migrationOrdinal": null,
+  "F2Status": "only_imported_coordinator_sources_inspected_no_other_chat_status_assertion",
+  "F2OwnershipTransfer": false,
+  "SQL048_049_050_051Repeat": false,
+  "publicationReady": false
+}

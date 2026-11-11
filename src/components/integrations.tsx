@@ -9,6 +9,7 @@ import { GmailHistory } from "./gmail-history";
 import { InstantlyTrialControl } from "./instantly-trial-control";
 import { BrandSettings } from "./brand-settings";
 import { ComposioAccountBindings } from "./composio-account-bindings";
+import { ComposioAccountBindingsV2 } from "./composio-account-bindings-v2";
 import { MailTransportSettings } from "./mail-transport-settings";
 import { ComposioConnect } from "./composio-connect";
 export function Integrations({
@@ -28,6 +29,10 @@ export function Integrations({
   const [error, setError] = useState("");
   const [accountId, setAccountId] = useState(data.accounts[0]?.id || "");
   const account = data.accounts.find((a) => a.id === accountId);
+  const Bindings =
+    data.mail_binding_contract_version === 2
+      ? ComposioAccountBindingsV2
+      : ComposioAccountBindings;
   const [selectedCase, setSelectedCase] = useState(
     data.opportunities[0]?.id || "",
   );
@@ -63,7 +68,7 @@ export function Integrations({
         }
         demo={data.demo}
       />
-      <ComposioAccountBindings
+      <Bindings
         locale={locale}
         allowed={
           data.profile.role === "superadmin" && data.profile.active === true

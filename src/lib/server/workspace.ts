@@ -355,6 +355,8 @@ export async function loadWorkspace(
     preferences,
     notifications: preferences.internal ? data.notifications : [],
     demo: false,
+    mail_binding_contract_version:
+      process.env.COMPOSIO_BINDING_V2_ENABLED === "true" ? 2 : 1,
     gmail_history_enabled: gmailHistoryEnabled(),
     page,
     listTotal:

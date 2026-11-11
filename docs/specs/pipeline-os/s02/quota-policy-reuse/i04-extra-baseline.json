@@ -1,0 +1,14 @@
+[
+  {
+    "sha256": "1b3c67d34cc1d882352c5e2728cc0c239d910c705c7faa519aa2f691c1e896fb",
+    "path": "src/lib/domain.ts"
+  },
+  {
+    "sha256": "9ea0c707b33a997b4d38182893c2b8a53ff6d6638535c7bf7a9abcf839abfa9f",
+    "path": "src/lib/server/workspace.ts"
+  },
+  {
+    "sha256": "eee826a47f6d7a7b1b69da710edb69abbec6a0276b9ff876a974cf637efb9ab6",
+    "path": "src/components/integrations.tsx"
+  }
+]

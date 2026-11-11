@@ -10,6 +10,7 @@ export {
 } from "../mail-transport/verification-context";
 import { performance } from "node:perf_hooks";
 import { z } from "zod";
+import { mailQuotaEnabled } from "../mail-quota";
 
 // Internal normalized contracts only. No provider SDK, URL, environment or transport factory.
 const text = z
@@ -180,6 +181,8 @@ export async function verifyComposioBinding(
   dependencies: ComposioVerificationDependencies,
   options: { signal?: AbortSignal; timing?: VerificationTiming } = {},
 ): Promise<VerificationFacts> {
+  // A v1 normalized dependency must not bypass v2 admission or be reinterpreted as v2 evidence.
+  if (mailQuotaEnabled()) return incompleteVerification("stale_context");
   const facts = incompleteVerification();
   const target = verificationTargetSchema.safeParse(targetInput),
     context = verificationContextSchema.safeParse(contextInput);

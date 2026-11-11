@@ -1,0 +1,194 @@
+{
+  "protocol": "QGR-I05-PREP-r1",
+  "date": "2026-11-11",
+  "level": "STRICT",
+  "status": "preparation_complete_remote_gates_pending",
+  "ordinal": "052",
+  "ordinalStatus": "coordinator_local_reservation_only",
+  "head": "00b00937b8de7eea1966a6b2c3189bf1c9db8023",
+  "commitCreated": false,
+  "pushed": false,
+  "remoteChanges": 0,
+  "providerCalls": 0,
+  "messages": 0,
+  "instantlyConsumed": 43,
+  "composioEnabled": false,
+  "gmailDirect": "preserved",
+  "worker": "paused_expected_not_remotely_rechecked",
+  "contractSha256": "28e2e365438d1725f271e8d724d87f8f90516803d65f62d844cc5ebeac8a0921",
+  "changes": {
+    "indexes": 13,
+    "schemas": 1,
+    "policies": 0,
+    "triggers": 2,
+    "functions": 40,
+    "relations": 11,
+    "constraints": 43
+  },
+  "artifacts": [
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/052_integrate_mail_quota_and_existing_bindings.sql",
+      "sha256": "112d50cfd4f592802ae20257dd2954822fb21c562a52e7add05723a5b4f18786",
+      "bytes": 255442
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/README.md",
+      "sha256": "09a529ac74a6d7c9e298f2d1c29edf381bd3824e0c938b7520d8c6566bac7804",
+      "bytes": 2063
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/acceptance.md",
+      "sha256": "f1f1eb2b3efddd32d804d44228e48f865196d53a9397d4813b2aaebc6fbc1a31",
+      "bytes": 996
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/bundle-build.mjs",
+      "sha256": "44e0f81535fcaa774bcf978eb1cceabdafb667e43cbf3e0a38ee410834c2ca7f",
+      "bytes": 5565
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/cleanup.sql",
+      "sha256": "238e947f3614f4bab3bf7b08398af20b3fb979c9de043693f8bae08054319d2e",
+      "bytes": 10
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/contract.json",
+      "sha256": "28e2e365438d1725f271e8d724d87f8f90516803d65f62d844cc5ebeac8a0921",
+      "bytes": 141278
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/design.md",
+      "sha256": "d307d533eca5863c983f59c4ab2db305e6b0af3b28eb8d9832f44417dc4506c7",
+      "bytes": 2068
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/postflight.sql",
+      "sha256": "cb05664292a461ad1bd7414a212a53a811a0a7be9feafd3d5cfddbdd1b2fa1f0",
+      "bytes": 89217
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/preflight.sql",
+      "sha256": "1130460e9e118714de000f8c14c4c1d1950951622871702516bb2760109caf41",
+      "bytes": 90374
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/prepare.mjs",
+      "sha256": "d721ceb4c034309b61df154cca65d265d7fc10f2c8bd6eee39f3c1fe8fe7cda9",
+      "bytes": 15086
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/rollback-disabled-unused.sql",
+      "sha256": "25ee7bd558f94d8dd1d09b9008f46fbbfe08a357cf26c42a536fdca3b21d40dc",
+      "bytes": 4408
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/run-prepare.mjs",
+      "sha256": "8a5bad6efb6a3ecc7b3722a46dd47c309c342c3c0ae6be3c85cee869223e1889",
+      "bytes": 7430
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/runbook.md",
+      "sha256": "a43b2bd0192d6bc6c071d038a6a196b181da1cec3be07b6cbdd0ae0134a959ec",
+      "bytes": 7775
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/seal.mjs",
+      "sha256": "027783476d76d7ab52aca93d8c9a40bdf73a0311e54010022b73669557725490",
+      "bytes": 4810
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/sources.json",
+      "sha256": "3ead2f818eae336fb0479ef6d133d47a50a6dad2af25e340f15a1e8a21db0d6a",
+      "bytes": 191712
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/spec.md",
+      "sha256": "b89fcae0c437840d3b977c454943819fb60593e98a33432980e816754d48bc1e",
+      "bytes": 2031
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/tasks.md",
+      "sha256": "5c5ef4a26ea62c8637c2bd57c55a9ca5d4950f6481dddfc53b10b6fcfe3ed1cf",
+      "bytes": 968
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/quota-final/verification.md",
+      "sha256": "14c218e42b1d9557d7ac27e7a96037232f874b1fe5b8c5409f738a2813ed051a",
+      "bytes": 3176
+    }
+  ],
+  "sourceTreeSha256": "f321f5f2062b9904ccaf56efafa8e2053bdda250e9e4810799e89659189caf2c",
+  "applicationSourceSha256": "ae84ca5c77bc580e37daba352efc4d1798b76fb55e76a34615695448396f6db8",
+  "sourceFiles": 1044,
+  "archive": {
+    "path": ".local/pipeline-os/qgr-i05/web-worker-sources.tar.gz",
+    "sha256": "354ac255671b7fb1dd5f998b1ecd1586d5023a7cf960eef1ff7c6f583393997d"
+  },
+  "native": {
+    "protocol": "QGR-I05-PG15-r1",
+    "postgres": 150019,
+    "passed": [
+      "052 exact preflight/application/postflight preserve data and install unconfigured schema",
+      "052 metadata drift blocks before DDL with a bounded diagnostic",
+      "052 wrong context cannot apply",
+      "052 work in flight blocks before DDL",
+      "052 used policy prevents the unused-state rollback",
+      "052 exact SQL rolls back catalog and operational data atomically"
+    ],
+    "failed": 0,
+    "clusterStopped": true,
+    "providerCalls": 0,
+    "remoteChanges": 0,
+    "instantlyConsumed": 43,
+    "contractSha256": "28e2e365438d1725f271e8d724d87f8f90516803d65f62d844cc5ebeac8a0921",
+    "resultPath": ".local\\pipeline-os\\qgr-i05\\runs\\c496c045b2e0\\result.json",
+    "tapPath": ".local/pipeline-os/qgr-i05/native.tap",
+    "tapSha256": "1ffb14671d5642a769bdfb4cd9b5ce03abb1d5c780788263d72803786fc4f6f9",
+    "reportedTests": 7
+  },
+  "build": {
+    "protocol": "QGR-I05-BUILD-r1",
+    "code": 0,
+    "context": ".local/pipeline-os/qgr-i05/build-6gZcqc",
+    "sourceTreeSha256": "c3a9bd012cff8d3d0a49d0254e24f9dc2287e715c34ae6470874a99173930363",
+    "platform": "win32",
+    "node": "22.23.4",
+    "linuxImage": false,
+    "realEnvFiles": 0,
+    "providerCalls": 0,
+    "networkPermitted": false,
+    "applicationSourcesMatchCurrent": true,
+    "buildInputSourceTreeSha256": "c3a9bd012cff8d3d0a49d0254e24f9dc2287e715c34ae6470874a99173930363",
+    "releaseSqlRehearsedSeparately": true,
+    "log": ".local/pipeline-os/qgr-i05/build.log",
+    "logSha256": "c3aff38e3a29aa24497e082cddd6f6f5515688108b3e622e0c7810a57d1145e4"
+  },
+  "inheritedI04": {
+    "reportedTests": 248,
+    "sourceHashesMatch": true,
+    "notRepeated": true
+  },
+  "checks": {
+    "typeScript": "passed_in_isolated_build",
+    "format": "checked_mjs_and_markdown",
+    "diff": "git_diff_check",
+    "dockerfiles": "reviewed_existing",
+    "linuxImagesBuilt": false,
+    "workerStarted": false,
+    "privateEnvRead": false
+  },
+  "nextRemoteScripts": [
+    "preflight.sql",
+    "052_integrate_mail_quota_and_existing_bindings.sql",
+    "postflight.sql"
+  ],
+  "pending": [
+    "current_CRM_target_and_flags_confirmation",
+    "new_read_only_preflight_authorization_and_result",
+    "052_application_authorization",
+    "reviewed_new_commit_and_remote_Git",
+    "Linux_build_and_health_of_both_resources",
+    "authorized_smoke"
+  ],
+  "publicationReady": false
+}

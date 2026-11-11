@@ -1,0 +1,25 @@
+{
+  "evidenceSource": "operator_pasted_independent_postflight",
+  "receivedDate": "2026-11-09",
+  "agentExecutedRemoteSql": false,
+  "pipeline_os_workspace_stats_postflight": {
+    "rawRls": true,
+    "stable": true,
+    "ordinal": "051",
+    "version": "150008",
+    "protocol": "WS-COMPAT-r2",
+    "targetsOk": true,
+    "sourceHash": "2d22ca1953b8a8072abd161c29486ec8",
+    "readyToApply": true,
+    "sourceExpected": true,
+    "emptySearchPath": true,
+    "securityInvoker": true,
+    "rawSubjectDenied": true,
+    "restrictivePolicy": true,
+    "rawAttentionDenied": true,
+    "rawIdentityAllowed": true,
+    "visibleMailAllowed": true,
+    "authenticatedExecute": true,
+    "anonymousExecuteDenied": true
+  }
+}

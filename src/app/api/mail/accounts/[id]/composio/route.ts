@@ -2,6 +2,12 @@ import { z } from "zod";
 import { requireUser, checkOrigin } from "@/lib/server/supabase";
 import { readBounded } from "@/lib/server/body";
 import { parseBindingQuery } from "@/lib/composio-bindings";
+import { bindingV2Query } from "@/lib/composio-bindings-v2";
+import {
+  bindingPageV2,
+  bindingCommandV2,
+  bindingV2Ports,
+} from "@/lib/server/mail-accounts/composio-binding-v2";
 import {
   ComposioBindingError,
   requireComposioAdmin,
@@ -16,11 +22,25 @@ export async function GET(request: Request, context: Context) {
     const { db, profile } = await requireUser();
     requireComposioAdmin(profile);
     const account = z.uuid().safeParse((await context.params).id);
-    const query = parseBindingQuery(new URL(request.url).searchParams);
+    const params = new URL(request.url).searchParams;
+    const v2 = params.has("contract_version");
+    const query = v2 ? bindingV2Query(params) : parseBindingQuery(params);
     if (!account.success || !query)
       throw new ComposioBindingError("C_BINDING_INVALID_INPUT", 400);
     return Response.json(
-      await composioBindingPage(db, account.data, query.cursor, query.limit),
+      v2
+        ? await bindingPageV2(
+            bindingV2Ports(db),
+            account.data,
+            query.cursor,
+            query.limit,
+          )
+        : await composioBindingPage(
+            db,
+            account.data,
+            query.cursor,
+            query.limit,
+          ),
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (error) {
@@ -51,9 +71,16 @@ export async function POST(request: Request, context: Context) {
         throw new ComposioBindingError("C_BINDING_INVALID_INPUT", 400);
       throw error;
     }
-    return Response.json(await composioBindingCommand(db, account.data, body), {
-      headers: { "Cache-Control": "no-store" },
-    });
+    const versioned =
+      !!body && typeof body === "object" && "contract_version" in body;
+    return Response.json(
+      versioned
+        ? await bindingCommandV2(bindingV2Ports(db), account.data, body)
+        : await composioBindingCommand(db, account.data, body),
+      {
+        headers: { "Cache-Control": "no-store" },
+      },
+    );
   } catch (error) {
     return bindingJsonError(error);
   }

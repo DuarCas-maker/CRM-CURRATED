@@ -280,6 +280,7 @@ export interface Preferences {
   locale: Locale;
 }
 export interface Workspace {
+  mail_binding_contract_version?: 1 | 2;
   brand_guards_ready?: boolean;
   mail_access?: Record<string, { area: Area; can_write: boolean }>;
   opportunity_signals?: Record<

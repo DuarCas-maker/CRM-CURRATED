@@ -5,6 +5,16 @@ import { decrypt } from "./crypto";
 import { serviceClient, checkDb, HttpError } from "./supabase";
 import { GmailError, isGmailQuotaError } from "../gmail-errors";
 import { GmailQuotaPacer, gmailRequestCost } from "../gmail-quota";
+import {
+  reserveGmailQuota,
+  mailQuotaEnabled,
+  MailQuotaError,
+} from "./mail-quota";
+import {
+  mailboxScope,
+  validateMailboxScope,
+} from "./mail-transport/mailbox-context";
+import type { TransportTicket } from "./mail-transport/selection";
 import { createMailTransport } from "./mail-transport/factory";
 import {
   mailRoutingActive,
@@ -130,6 +140,55 @@ export async function gmail<T>(
   init: RequestInit = {},
   beforeRequest?: () => Promise<void>,
 ): Promise<T> {
+  // Opt-in validation precedes credentials; default/direct compatibility remains unchanged.
+  const quotaV2 = mailQuotaEnabled();
+  if (quotaV2 && !mailRoutingActive() && !mailboxScope() && !inWorkerPilot())
+    throw new MailQuotaError("QGR_DENIED");
+  const reserve = async (
+    project: string | undefined,
+    provider: "gmail_oauth" | "composio",
+    ticket?: TransportTicket,
+  ) =>
+    reserveGmailQuota({
+      account: accountId,
+      provider,
+      path,
+      method: init.method,
+      project,
+      key: ticket?.id,
+      deadline: ticket?.deadline,
+      signal: init.signal ?? undefined,
+      authorize: async () => {
+        await validateMailboxScope();
+        if (inWorkerPilot())
+          await authorizeWorkerRequest(
+            provider,
+            accountId,
+            path,
+            init.method ?? "GET",
+          );
+      },
+      pace: () =>
+        quotaPacer.wait(accountId, gmailRequestCost(path, init.method)),
+      legacy: async () => {
+        const reserved = checkDb(
+          await serviceClient().rpc("reserve_gmail_api", {
+            account: accountId,
+            project,
+            units: gmailRequestCost(path, init.method),
+          }),
+        );
+        if (reserved === -1)
+          throw new GmailError(403, "dailyLimitExceeded", 3600);
+        if (
+          typeof reserved !== "number" ||
+          !Number.isFinite(reserved) ||
+          reserved < 0
+        )
+          throw new Error("GMAIL_QUOTA_RESERVATION_FAILED");
+        if (reserved > 0) await delay(reserved);
+      },
+    });
   if (mailRoutingActive()) {
     try {
       return await executeRuntimeMail<T>(
@@ -145,28 +204,8 @@ export async function gmail<T>(
               quotaProjectId,
             };
           },
-          quota: async (project) => {
-            await quotaPacer.wait(
-              accountId,
-              gmailRequestCost(path, init.method),
-            );
-            const reserved = checkDb(
-              await serviceClient().rpc("reserve_gmail_api", {
-                account: accountId,
-                project,
-                units: gmailRequestCost(path, init.method),
-              }),
-            );
-            if (reserved === -1)
-              throw new GmailError(403, "dailyLimitExceeded", 3600);
-            if (
-              typeof reserved !== "number" ||
-              !Number.isFinite(reserved) ||
-              reserved < 0
-            )
-              throw new Error("GMAIL_QUOTA_RESERVATION_FAILED");
-            if (reserved > 0) await delay(reserved);
-          },
+          quota: (project, ticket) =>
+            reserve(project, ticket?.provider ?? "gmail_oauth", ticket),
         },
       );
     } catch (error) {
@@ -182,35 +221,23 @@ export async function gmail<T>(
       path,
       init.method ?? "GET",
     );
+  if (quotaV2) await validateMailboxScope();
   const access = await gmailToken(accountId);
-  await quotaPacer.wait(accountId, gmailRequestCost(path, init.method));
-  const reserved = checkDb(
-    await serviceClient().rpc("reserve_gmail_api", {
-      account: accountId,
-      project: quotaProjects.get(accountId),
-      units: gmailRequestCost(path, init.method),
-    }),
-  );
-  if (reserved === -1) throw new GmailError(403, "dailyLimitExceeded", 3600);
-  if (
-    typeof reserved !== "number" ||
-    !Number.isFinite(reserved) ||
-    reserved < 0
-  )
-    throw new Error("GMAIL_QUOTA_RESERVATION_FAILED");
-  if (reserved > 0) await delay(reserved);
+  const lease = await reserve(quotaProjects.get(accountId), "gmail_oauth");
   await beforeRequest?.();
-  if (inWorkerPilot())
-    await authorizeWorkerRequest(
-      "gmail_oauth",
-      accountId,
-      path,
-      init.method ?? "GET",
-      true,
-    );
   try {
     // Compatibility mode retains direct Gmail; no per-account fallback on routing errors.
-    return await preparedDirectTransport(access).execute<T>({ path, init });
+    return await lease.emit(async () => {
+      if (inWorkerPilot())
+        await authorizeWorkerRequest(
+          "gmail_oauth",
+          accountId,
+          path,
+          init.method ?? "GET",
+          true,
+        );
+      return preparedDirectTransport(access).execute<T>({ path, init });
+    });
   } catch (error) {
     if (isGmailQuotaError(error))
       error.unitsPerMinute = quotaPacer.throttle(accountId);

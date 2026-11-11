@@ -16,6 +16,10 @@ import {
   type TransportTicket,
 } from "./selection";
 import { createMailTransport } from "./factory";
+import {
+  verificationContextV2Schema,
+  verificationContextV2Hash,
+} from "./verification-context-v2";
 import { GmailError } from "../../gmail-errors";
 import { MailTransportError } from "./errors";
 import {
@@ -25,6 +29,12 @@ import {
 } from "../worker-request-control";
 import type { PreparedGmailTransport } from "./contract";
 import { mailboxScope, validateMailboxScope } from "./mailbox-context";
+import {
+  mailQuotaEnabled,
+  recheckMailQuotaEmission,
+  MailQuotaError,
+  type MailQuotaLease,
+} from "../mail-quota";
 
 export const composioProductOperationEnabled = false;
 export function productRoutingEnabled() {
@@ -121,7 +131,7 @@ async function dispatch<T>(
     }),
   );
 }
-const snapshotSchema = z.strictObject({
+const snapshotBase = z.strictObject({
   account_id: z.uuid(),
   provider: transportProvider,
   revision: transportRevision,
@@ -134,8 +144,17 @@ const snapshotSchema = z.strictObject({
   auth_config_id: z.string().nullable(),
   quota_project_id: z.string().nullable(),
 });
+const snapshotSchema = z.union([
+  snapshotBase.extend({ quota_contract_version: z.literal(1).optional() }),
+  snapshotBase.extend({
+    quota_contract_version: z.literal(2),
+    quota_project_id: z.null(),
+    quota_policy_id: z.uuid(),
+    quota_policy_generation: z.number().int().positive().safe(),
+  }),
+]);
 const configurationSchema = z.strictObject({
-  context: verificationContextSchema,
+  context: z.union([verificationContextSchema, verificationContextV2Schema]),
   apiKey: z
     .string()
     .min(1)
@@ -150,11 +169,14 @@ export type RuntimeRequest = {
 };
 export type DirectPreparation = {
   transport: PreparedGmailTransport;
-  quotaProjectId: string;
+  quotaProjectId: string | null;
 };
 export type RuntimeCallbacks = {
   direct(): Promise<DirectPreparation>;
-  quota(project: string): Promise<void>;
+  quota(
+    project: string | undefined,
+    ticket?: TransportTicket,
+  ): Promise<void | MailQuotaLease>;
 };
 
 function requestScope(
@@ -208,7 +230,8 @@ function requestScope(
 function safeError(error: unknown): Error | null {
   return error instanceof GmailError ||
     error instanceof MailTransportError ||
-    error instanceof WorkerPilotError
+    error instanceof WorkerPilotError ||
+    error instanceof MailQuotaError
     ? error
     : null;
 }
@@ -254,16 +277,31 @@ export async function executeRuntimeMail<T>(
   if (snapshot.provider === "composio" && !deps.composioEnabled)
     throw new TransportSelectionError("R06_DENIED");
   let prepared: DirectPreparation | undefined,
+    quotaLease: MailQuotaLease | undefined,
     configuration: z.infer<typeof configurationSchema> | undefined,
     lastError: unknown;
   const readConfiguration = () => {
     const config = configurationSchema.safeParse(deps.configuration());
+    const context = config.success ? config.data.context : null;
+    const v2 = context && "contract_version" in context;
+    const validQuota =
+      context &&
+      (v2
+        ? snapshot.quota_contract_version === 2 &&
+          mailQuotaEnabled() &&
+          context.policy.state === "enabled" &&
+          context.policy.policy_id === snapshot.quota_policy_id &&
+          context.policy.generation === snapshot.quota_policy_generation
+        : snapshot.quota_contract_version !== 2 &&
+          context.google_quota_project_id === snapshot.quota_project_id);
     if (
       !config.success ||
-      verificationContextHash(config.data.context) !==
+      !validQuota ||
+      (v2
+        ? verificationContextV2Hash(config.data.context)
+        : verificationContextHash(config.data.context)) !==
         snapshot.verification_context_hash ||
-      config.data.context.composio_project_id !== snapshot.project_id ||
-      config.data.context.google_quota_project_id !== snapshot.quota_project_id
+      config.data.context.composio_project_id !== snapshot.project_id
     )
       throw new TransportSelectionError("R06_DENIED");
     return Object.freeze({
@@ -322,7 +360,10 @@ export async function executeRuntimeMail<T>(
     },
     prepareDirect: async () => {
       prepared = await callbacks.direct();
-      if (prepared.transport.provider !== "gmail_oauth")
+      if (
+        prepared.transport.provider !== "gmail_oauth" ||
+        !prepared.quotaProjectId
+      )
         throw new TransportSelectionError("R06_DENIED");
       return prepared;
     },
@@ -330,7 +371,12 @@ export async function executeRuntimeMail<T>(
       if (
         !configuration ||
         binding.authConfigId !== snapshot.auth_config_id ||
-        binding.quotaProjectId !== snapshot.quota_project_id
+        binding.quotaProjectId !== snapshot.quota_project_id ||
+        (snapshot.quota_contract_version === 2
+          ? binding.quotaContractVersion !== 2 ||
+            binding.quotaPolicyId !== snapshot.quota_policy_id ||
+            binding.quotaPolicyGeneration !== snapshot.quota_policy_generation
+          : binding.quotaContractVersion === 2)
       )
         throw new TransportSelectionError("R06_DENIED");
       const guardedFetch: typeof fetch = async (input, init) => {
@@ -338,6 +384,7 @@ export async function executeRuntimeMail<T>(
         const current = readConfiguration();
         if (current.apiKey !== configuration!.apiKey)
           throw new TransportSelectionError("R06_DENIED");
+        recheckMailQuotaEmission();
         return deps.fetchImpl(input, init);
       };
       prepared = {
@@ -351,10 +398,17 @@ export async function executeRuntimeMail<T>(
       };
       return prepared;
     },
-    quota: async () => {
-      if (!prepared?.quotaProjectId)
+    quota: async (ticket) => {
+      if (
+        !prepared ||
+        (!prepared.quotaProjectId && snapshot.quota_contract_version !== 2)
+      )
         throw new TransportSelectionError("R06_UNAVAILABLE");
-      await callbacks.quota(prepared.quotaProjectId);
+      quotaLease =
+        (await callbacks.quota(prepared.quotaProjectId ?? undefined, ticket)) ??
+        undefined;
+      if (mailQuotaEnabled() && !quotaLease)
+        throw new MailQuotaError("QGR_DENIED");
     },
     beforeRequest: async () => {
       if (configuration) {
@@ -383,10 +437,12 @@ export async function executeRuntimeMail<T>(
             input.init.method ?? "GET",
             true,
           );
-        return await prepared!.transport.execute<R>({
-          path: input.path,
-          init: input.init,
-        });
+        const execute = () =>
+          prepared!.transport.execute<R>({
+            path: input.path,
+            init: input.init,
+          });
+        return quotaLease ? await quotaLease.emit(execute) : await execute();
       } catch (error) {
         lastError = error;
         throw error;

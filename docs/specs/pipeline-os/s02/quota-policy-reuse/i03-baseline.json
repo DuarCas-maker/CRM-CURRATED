@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-10",
+  "scope": "authorized_I03",
+  "sources": [
+    {
+      "path": "src/lib/server/google.ts",
+      "sha256": "4d0ded0610847d0ae4933922a75ff6827f52626aeee6a35d14ccb4403eb7874d"
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-context.ts",
+      "sha256": "2ceed1905ef85f3114e4ae934409361ef61c6f6ebb1f67a6c7db025576c62e8c"
+    },
+    {
+      "path": "src/lib/server/mail-transport/gmail-direct.ts",
+      "sha256": "7b14af4439d7a19bcf8312cf4cb0121de62cc1a9b209d1e9ed6771c2c184008f"
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "sha256": "ff4613af2d8474529b9d82d1f0daae288871b6a86d3050bfdbb202baf54d782a"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "sha256": "42bc462040023cb843bfd377daa6f2a26cf8ed13362dbd14f9652b438b09fd82"
+    },
+    {
+      "path": ".env.example",
+      "sha256": "0520346e31042a0f5f547710bc1f8e19320914b2298a91f019276b057bc8da16"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+      "sha256": "a2dd644670aae1d3389b06a71ace0dfe9381d36bdbe21f05ba28ed236093ad5f"
+    }
+  ]
+}

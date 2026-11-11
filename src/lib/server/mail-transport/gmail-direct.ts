@@ -6,6 +6,7 @@ import {
   type PreparedGmailTransport,
 } from "./contract";
 import { inWorkerPilot } from "../worker-request-control";
+import { assertMailQuotaEmission } from "../mail-quota";
 
 // OAuth, quota reservations and the final permission hook remain in google.ts.
 export function directGmailTransport(
@@ -15,6 +16,7 @@ export function directGmailTransport(
   return {
     provider: "gmail_oauth",
     async execute<T>({ path, init = {} }: GmailRequest) {
+      assertMailQuotaEmission("gmail_oauth", path, init.method ?? "GET");
       const res = await (fetchImpl ?? fetch)(gmailApiRoot + path, {
         ...init,
         headers: {

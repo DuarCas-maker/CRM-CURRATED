@@ -3,3 +3,6 @@
 *.jpg binary
 *.jpeg binary
 *.pdf binary
+# Preserve the exact bytes of the sealed historical I04 evidence.
+docs/specs/pipeline-os/s02/quota-policy-reuse/i04-extra-baseline.json -text
+docs/specs/pipeline-os/s02/quota-policy-reuse/i04-implementation-baseline.json -text

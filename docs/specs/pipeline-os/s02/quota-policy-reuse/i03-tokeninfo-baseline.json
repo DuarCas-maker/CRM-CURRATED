@@ -1,0 +1,71 @@
+{
+  "protocol": "QGR-I03-TI-r1",
+  "date": "2026-11-10",
+  "head": "00b00937b8de7eea1966a6b2c3189bf1c9db8023",
+  "sources": [
+    {
+      "path": "src/lib/server/mail-accounts/composio-existing-provider.ts",
+      "sha256": "3585c37ebdefdf91fef20066d62f57a5de007b88f8cb7171f4da3ac51ed0aeb6"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-existing-verifier.ts",
+      "sha256": "5a0a6dba3a13ab2f570b273477f48edd4846a0256e2ffd49b39f75613b545265"
+    },
+    {
+      "path": "tests/pipeline-os-s02-existing-verification.test.ts",
+      "sha256": "a5746640d171f158d370be769c03126098586ade2bf2158b7be5343b032693f4"
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "sha256": "ce7daa5a4cc208e9f506b6c458ec43093605a2f6afde987a1453c784cc3c3532"
+    },
+    {
+      "path": "src/lib/server/mail-quota.ts",
+      "sha256": "7daa0db199dddd2e53c328ee7a89a741554b5e59f8ff4f8812ec1e0eb2708401"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "sha256": "be22131ccddc20c0bae5933ab574c80e0cde3e6f0c9f15c7d46a64b7480a5570"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+      "sha256": "d6b0077d136a8968e3017fee127f3f68fc8cdaad71137720d6115a4df8f5b67d"
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "sha256": "8386b198ae79a27432b011dd9c3882fb07fcb616ad86afab8e74056521a44e3e"
+    },
+    {
+      "path": "src/lib/server/mail-transport/gmail-direct.ts",
+      "sha256": "226184cd817813dbdf6d9c174b6ded136f3f4ccec3c24163ebba94b6bcf03ae5"
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-context.ts",
+      "sha256": "fceac97287dc477840d8cccd9149486d3602855f17ff5a1244100569d8eb0cb0"
+    },
+    {
+      "path": ".env.example",
+      "sha256": "6ddc7c085037447cdbe22aff23513807713dae7b79c51734f0c9c4b7af536762"
+    },
+    {
+      "path": "src/lib/mail-quota-policy.ts",
+      "sha256": "5b94a925f7fa04aaaaa5a27291f2187205b78d73bd1a69e78bb688f6211a71c2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-policy-v2.local.sql",
+      "sha256": "e86e29f28cf46d3c7a611e700d3905734102922122a888fbf1504b592bb021d0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-policy-v2.rollback.sql",
+      "sha256": "aa324659edcd6ef543ba7de2093b2f117a7ff18feb23d2c5a5390c20454e3288"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-i03.local.sql",
+      "sha256": "3978379041905614e76add315510f6137e013a24bb19ff278dc35071b64ad3c9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-i03.rollback.sql",
+      "sha256": "69596608f12ad2ec5c0328d2f36cddd906a7d72e896ebeba72aeeb7eed74ad14"
+    }
+  ]
+}

@@ -1,0 +1,498 @@
+{
+  "id": "S02-QGR-PLAN-r1",
+  "date": "2026-11-10",
+  "mode": "implementation",
+  "level": "STRICT",
+  "status": "i01_i02_i03_i04_AR_offline_verified_real_compatibility_and_I05_pending",
+  "authorization": {
+    "documents": true,
+    "implementation": true,
+    "localSqlExecution": true,
+    "remoteSql": false,
+    "providerCalls": 0,
+    "remoteChanges": false,
+    "services": false,
+    "installation": false,
+    "commitPushMergeDeploy": false,
+    "sharedOwnershipTransfer": false,
+    "isolatedPostgresFixture": true,
+    "scope": "I01_I02_I03_I04_AR_local_only_no_remote_or_activation"
+  },
+  "clarification": {
+    "existingMailboxConfirmed": true,
+    "originalPlatformConnectionCandidate": true,
+    "answer2": "A",
+    "sharedConservativePolicyIncludingPossiblySharedDirectTrafficAccepted": true,
+    "implementationConsentInferred": false
+  },
+  "invariants": {
+    "gmailDirect": "preserved_active",
+    "composioOperationEnabled": false,
+    "workerMode": "paused",
+    "instantlyConsumed": 43,
+    "instantlyAuthorizedNew": 0,
+    "selectedPlan": "Hobby"
+  },
+  "baseline": {
+    "head": "00b00937b8de7eea1966a6b2c3189bf1c9db8023",
+    "trackedCount": 960,
+    "trackedSha256": "f057cf4d67d1a06258888e751a670d3f43913890f5dd14685ff2e18f583f2c83",
+    "preexistingUntrackedCount": 15,
+    "preexistingUntrackedSha256": "881d5fb62bce863cee7ca5cb6a1738e0e938748e3a57eb3568a915afd8fec255"
+  },
+  "protectedSources": [
+    {
+      "path": "src/lib/composio-bindings.ts",
+      "sha256": "a4e9ed08fb2cda57a8a73a23fae299a67b787d599f75bee6d5ec1fe8ff0669b2"
+    },
+    {
+      "path": "src/lib/composio-connect.ts",
+      "sha256": "0f2ce283a5703cbb9e24f464e2bf98e0309ba462c16bf545609a88c646ee5f49"
+    },
+    {
+      "path": "src/lib/gmail-quota.ts",
+      "sha256": "5279de856b6e470bd618933e084ec70aa5cc7f1e68689121f4e2fa6f71dcb735"
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "sha256": "4d0ded0610847d0ae4933922a75ff6827f52626aeee6a35d14ccb4403eb7874d"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+      "sha256": "a2dd644670aae1d3389b06a71ace0dfe9381d36bdbe21f05ba28ed236093ad5f"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding.ts",
+      "sha256": "7430dcd9b9aea3cb8e2ba5d93124e26803e03f19117204ad351266ffd0a6d35c"
+    },
+    {
+      "path": "src/lib/server/mail-transport/verification-context.ts",
+      "sha256": "e15761aba7fef34dbee88217de3cf02b4552223f68784befc953cbb68800dc22"
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-context.ts",
+      "sha256": "2ceed1905ef85f3114e4ae934409361ef61c6f6ebb1f67a6c7db025576c62e8c"
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-service.ts",
+      "sha256": "dec95adc76f303de709f789c4f8bd17a4ca04bcf2d4d79757e7173c52fdeecb3"
+    },
+    {
+      "path": "src/lib/server/mail-transport/selection.ts",
+      "sha256": "7810a9452e1b8b9f3d40ba87e7d1e33e4f93933d1ff0150121bfb7dcaaca2e55"
+    },
+    {
+      "path": "src/lib/server/mail-transport/contract.ts",
+      "sha256": "a38920e11561fbb41680f120a51a29bdcdcf38f011e54417acb3588e9dee2b92"
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "sha256": "ff4613af2d8474529b9d82d1f0daae288871b6a86d3050bfdbb202baf54d782a"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/config.ts",
+      "sha256": "70a3265dfdd4d438487f60f2c2334800a8ab677f2af3c7cdcceb5f28efac96e5"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/provider.ts",
+      "sha256": "c4697d591a048e9b26780a1515d719030a173467ab588a9c08e4cb8ad2bc3ed3"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "sha256": "42bc462040023cb843bfd377daa6f2a26cf8ed13362dbd14f9652b438b09fd82"
+    },
+    {
+      "path": "src/components/composio-account-bindings.tsx",
+      "sha256": "c24e37fbf52dab7b510aa9f3ab844b1c823d281a09fcde8121f6cb2bf7c45d0f"
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/composio/route.ts",
+      "sha256": "ae9d0e3c665c4be5cca2a63a89d73b05802bf0ec50a51ef0a380c23790046929"
+    },
+    {
+      "path": "supabase/migrations/039_campaign_delivery_controls.sql",
+      "sha256": "5e39c7ce4a71df5dd43d4ddad70e69ad5e1cadd8e0e092e4aec22f11937bd8d1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/abc-final/049_integrate_mail_identity_brands_and_bindings.sql",
+      "sha256": "1ee6dab9911777f4fae3f912ad6a679d17ad9fb88e79ae8479f20df541171f39"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/release/mail-runtime-final/050_integrate_mail_runtime_and_connect.sql",
+      "sha256": "ad56aed6bc11c1775bc8a036d7cd367c367432a9ca1a9d1f63ab80d0f4ec61d5"
+    }
+  ],
+  "firstIncrement": {
+    "id": "QGR-I01",
+    "authorization": true,
+    "paths": [
+      {
+        "path": "src/lib/mail-quota-policy.ts",
+        "change": "new",
+        "purpose": "pure versioned schema and conservative scope resolution; no IO",
+        "sha256": "5b94a925f7fa04aaaaa5a27291f2187205b78d73bd1a69e78bb688f6211a71c2"
+      },
+      {
+        "path": "tests/pipeline-os-s02-quota-policy.test.ts",
+        "change": "new",
+        "purpose": "synthetic policy/compatibility/grouping tests",
+        "sha256": "1bb10a034655dabbf85801b3ad4734f1b5cc11bf9b119fd118d0a3fbf8ef6f16"
+      }
+    ],
+    "existingFilesToModify": [],
+    "runtimeWiring": false,
+    "fetch": false,
+    "database": false,
+    "worker": false,
+    "status": "done"
+  },
+  "futureImpact": {
+    "coordinatorOwned": [
+      "src/lib/composio-bindings.ts",
+      "src/lib/server/mail-accounts/composio-verifier.ts",
+      "src/lib/server/mail-accounts/composio-binding.ts",
+      "src/lib/server/google.ts",
+      "src/lib/server/mail-transport/verification-context.ts",
+      "src/lib/server/mail-transport/runtime-context.ts",
+      "src/lib/server/mail-transport/runtime-service.ts",
+      "src/lib/server/mail-transport/contract.ts",
+      "src/lib/server/mail-transport/selection.ts",
+      "src/lib/server/mail-transport/composio-proxy.ts",
+      "src/app/api/mail/accounts/[id]/composio/route.ts"
+    ],
+    "requiresF2Reconciliation": [
+      "src/lib/composio-connect.ts",
+      "src/lib/server/mail-accounts/composio-connect/config.ts",
+      "src/lib/server/mail-accounts/composio-connect/provider.ts",
+      "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "src/components/composio-account-bindings.tsx"
+    ],
+    "proposedNewLater": [
+      "src/lib/server/mail-accounts/composio-verifier-provider.ts",
+      "src/app/api/mail/accounts/[id]/composio/check/route.ts"
+    ],
+    "sealedMigrationsToEdit": [],
+    "migrationOrdinal": null,
+    "allPathsAreProposals": false,
+    "note": "I01/I02 implemented. I03 seven shared sources and eleven new code/test/SQL files explicitly overlaid; remaining runtime/UI/command paths remain proposals."
+  },
+  "coverage": {
+    "requirements": 10,
+    "acceptanceScenarios": 20,
+    "plannedTasks": 6,
+    "productScenariosExecuted": 47,
+    "productScenariosScope": "21_pure_I01_plus_26_synthetic_PG15_I02_not_operational_acceptance",
+    "i03": {
+      "syntheticScenarios": 124,
+      "operationalAcceptanceComplete": false
+    }
+  },
+  "budgetPath": "budget.json",
+  "remainingGates": [
+    "I04_commands_persistence_and_pre_account_scope",
+    "future_final_migration_QA_and_versioning",
+    "F2_final_snapshot_reconciliation",
+    "full_delta_qa_and_release",
+    "Hobby_Proxy_allowance",
+    "remote_and_provider_authorization",
+    "I03_tokeninfo_proxy_real_compatibility_pending"
+  ],
+  "documentationFiles": [
+    "spec.md",
+    "design.md",
+    "decision.md",
+    "tasks.md",
+    "acceptance.md",
+    "rollout.md",
+    "budget.json",
+    "manifest.json",
+    "verification.md",
+    "i01-design.md",
+    "i01-verification.md",
+    "i02-design.md",
+    "i02-verification.md",
+    "i03-design.md",
+    "i03-baseline.json",
+    "i03-verification.md",
+    "i03-tokeninfo.md",
+    "i03-tokeninfo-baseline.json",
+    "i03-tokeninfo-verification.md",
+    "i04-plan.md",
+    "i04-manifest.json",
+    "i04-verification.md"
+  ],
+  "i01": {
+    "authorizedScope": "two_new_files_and_QGR_evidence_only",
+    "implemented": true,
+    "unitTestsPassed": 21,
+    "unitTestsFailed": 0,
+    "unitTestsSkipped": 0,
+    "typeScript": "passed",
+    "format": "passed",
+    "productImports": 0,
+    "providerCalls": 0,
+    "remoteChanges": 0,
+    "sqlExecuted": false,
+    "activation": false,
+    "endToEndAcceptanceComplete": false,
+    "review": "no_confirmed_findings_in_pure_module_scope"
+  },
+  "secondIncrement": {
+    "id": "QGR-I02",
+    "authorization": true,
+    "status": "done",
+    "level": "STRICT",
+    "paths": [
+      {
+        "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-policy-v2.local.sql",
+        "change": "new",
+        "sha256": "e86e29f28cf46d3c7a611e700d3905734102922122a888fbf1504b592bb021d0"
+      },
+      {
+        "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-policy-v2.rollback.sql",
+        "change": "new",
+        "sha256": "aa324659edcd6ef543ba7de2093b2f117a7ff18feb23d2c5a5390c20454e3288"
+      },
+      {
+        "path": "tests/pipeline-os-s02-quota-reservations-db.test.ts",
+        "change": "new",
+        "sha256": "814232124c5c4a500a7e275ef14b510ab555e9f0e55b6bd0745be042c2405285"
+      }
+    ],
+    "existingProductFilesToModify": [],
+    "runtimeWiring": false,
+    "migrationOrdinal": null,
+    "providerCalls": 0,
+    "remoteChanges": 0,
+    "instantlyConsumed": 43,
+    "gmailDirect": "preserved_active",
+    "composioOperationEnabled": false,
+    "portableBinaryReuse": "explicitly_authorized_F2_binaries_only_no_data_env_or_counters",
+    "installation": false,
+    "cluster": "own_loopback_only_stopped",
+    "nativePostgresVersion": 150019,
+    "nativeScenariosPassed": 26,
+    "nativeScenariosFailed": 0,
+    "policyUnitTestsPassed": 21,
+    "nodeTestTotalIncludingHarness": 48,
+    "skippedNative": 0,
+    "typeScript": "passed",
+    "format": "passed",
+    "defaultRun": "native_suite_skips_without_opt_in_no_services",
+    "rollback": ["remove_empty_restores_schema", "close_preserves_history"],
+    "preservation": "960_tracked_15_prior_untracked_20_protected_and_2_I01_unchanged",
+    "localEvidence": ".local/pipeline-os/qgr-i02/runs/5f2ee62ec305/result.json",
+    "evidenceSha256": "abcc239a881a9a5cc1adb2a3964ad5ff87cf33d5d2a8d2cd2f40e0fa9197e613",
+    "endToEndAcceptanceComplete": false,
+    "review": "SQL_delta_reviewed_no_confirmed_unresolved_findings_within_scope"
+  },
+  "thirdIncrement": {
+    "id": "QGR-I03",
+    "authorized": true,
+    "implementationOffline": true,
+    "complete": false,
+    "status": "offline_verified_with_tokeninfo_real_wire_pending",
+    "sharedSources": [
+      {
+        "path": "src/lib/server/google.ts",
+        "beforeSha256": "4d0ded0610847d0ae4933922a75ff6827f52626aeee6a35d14ccb4403eb7874d",
+        "afterSha256": "ce7daa5a4cc208e9f506b6c458ec43093605a2f6afde987a1453c784cc3c3532"
+      },
+      {
+        "path": "src/lib/server/mail-transport/runtime-context.ts",
+        "beforeSha256": "2ceed1905ef85f3114e4ae934409361ef61c6f6ebb1f67a6c7db025576c62e8c",
+        "afterSha256": "fceac97287dc477840d8cccd9149486d3602855f17ff5a1244100569d8eb0cb0"
+      },
+      {
+        "path": "src/lib/server/mail-transport/gmail-direct.ts",
+        "beforeSha256": "7b14af4439d7a19bcf8312cf4cb0121de62cc1a9b209d1e9ed6771c2c184008f",
+        "afterSha256": "226184cd817813dbdf6d9c174b6ded136f3f4ccec3c24163ebba94b6bcf03ae5"
+      },
+      {
+        "path": "src/lib/server/mail-transport/composio-proxy.ts",
+        "beforeSha256": "ff4613af2d8474529b9d82d1f0daae288871b6a86d3050bfdbb202baf54d782a",
+        "afterSha256": "8386b198ae79a27432b011dd9c3882fb07fcb616ad86afab8e74056521a44e3e"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+        "beforeSha256": "42bc462040023cb843bfd377daa6f2a26cf8ed13362dbd14f9652b438b09fd82",
+        "afterSha256": "be22131ccddc20c0bae5933ab574c80e0cde3e6f0c9f15c7d46a64b7480a5570"
+      },
+      {
+        "path": ".env.example",
+        "beforeSha256": "0520346e31042a0f5f547710bc1f8e19320914b2298a91f019276b057bc8da16",
+        "afterSha256": "6ddc7c085037447cdbe22aff23513807713dae7b79c51734f0c9c4b7af536762"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-verifier.ts",
+        "beforeSha256": "a2dd644670aae1d3389b06a71ace0dfe9381d36bdbe21f05ba28ed236093ad5f",
+        "afterSha256": "d6b0077d136a8968e3017fee127f3f68fc8cdaad71137720d6115a4df8f5b67d"
+      }
+    ],
+    "newSources": [
+      {
+        "path": "src/lib/server/mail-quota.ts",
+        "sha256": "7daa0db199dddd2e53c328ee7a89a741554b5e59f8ff4f8812ec1e0eb2708401"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-existing-verifier.ts",
+        "sha256": "2d49cdf9f4d8c48ca6e9beaf1861edd53db4a18bb82e5daf05fc1807a3b407ab"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-existing-provider.ts",
+        "sha256": "bbd90846ce8bd1e66f782b2964ec739aaaf6fc6074ebf28f231ee777d66f55d4"
+      },
+      {
+        "path": "tests/fixtures/pipeline-os-quota-i03.ts",
+        "sha256": "55fb080fc7b998ac29b0c57a4c216b1c6473cd14e559b7d91d01ced8e03d82bb"
+      },
+      {
+        "path": "tests/pipeline-os-s02-quota-integration.test.ts",
+        "sha256": "4e5b90992702cfa211617d8a2d3b2f655d98a3b461e779a1c519f09e96a08173"
+      },
+      {
+        "path": "tests/pipeline-os-s02-existing-verification.test.ts",
+        "sha256": "19e85271f25f1d8cabbffa68237ceaa1954a1ac465d575da3859aa6a56037f0f"
+      },
+      {
+        "path": "tests/pipeline-os-s02-quota-facade.test.ts",
+        "sha256": "04fb4d50cb4f2b5dde519e509db7b3f72c8435088c593744e7a5e9b2e548e8f5"
+      },
+      {
+        "path": "tests/pipeline-os-s02-quota-connect.test.ts",
+        "sha256": "7b40fe9aa99d02203b7034665d23fdab8150206e3c88ad2c67a1d619c4ca753e"
+      },
+      {
+        "path": "tests/pipeline-os-s02-quota-admission-db.test.ts",
+        "sha256": "096a8a88665d7d5eb098bc1219078ac7cba0735921f48be020e50f6b3179ac42"
+      },
+      {
+        "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-i03.local.sql",
+        "sha256": "3978379041905614e76add315510f6137e013a24bb19ff278dc35071b64ad3c9"
+      },
+      {
+        "path": "docs/specs/pipeline-os/s02/quota-policy-reuse/migrations/quota-i03.rollback.sql",
+        "sha256": "69596608f12ad2ec5c0328d2f36cddd906a7d72e896ebeba72aeeb7eed74ad14"
+      }
+    ],
+    "nativeScenariosPassed": 11,
+    "nativeFailed": 0,
+    "newSyntheticScenarios": 124,
+    "scenarioBreakdown": {
+      "quota": 22,
+      "verifier": 31,
+      "facade": 7,
+      "connect": 3,
+      "native": 11,
+      "tokeninfo": 50
+    },
+    "regressions": "C2_runtime_workerPilot_transports_ConnectHTTP_GmailRecovery_passed",
+    "typeScript": "passed",
+    "format": "passed",
+    "localSqlOnly": true,
+    "migrationOrdinal": null,
+    "apiBusinessCalls": 0,
+    "remoteChanges": 0,
+    "instantlyConsumed": 43,
+    "composioEnabled": false,
+    "gmailDirect": "preserved",
+    "quotaFeatureDefault": false,
+    "localEvidence": ".local/pipeline-os/qgr-i03/runs/b237ca14206e/result.json",
+    "evidenceSha256": "8667c2a6b568157f882646ddc00fce3dbd2b3f9b901d7d2d2682d3dc16deca37",
+    "clusterStopped": true,
+    "priorUntrackedIntact": 15,
+    "protectedUnchanged": 15,
+    "protectedModifiedByAuthorizedScope": 5,
+    "I01I02SourcesIntact": true,
+    "publicationReady": false,
+    "remaining": [
+      "I04_versioned_commands_DTOs_persistence_UI",
+      "I04_pre_account_quota_scope",
+      "F2_reconciliation",
+      "full_release_QA_and_final_migration",
+      "tokeninfo_proxy_real_compatibility_pending"
+    ],
+    "verification": "i03-verification.md",
+    "profileWire": "pinned_endpoint_owner_and_connection_v2_proof_required",
+    "effectiveGrantsWire": "google_tokeninfo_fixed_proxy_no_token_export_offline_verified"
+  },
+  "tokeninfoIncrement": {
+    "protocol": "QGR-I03-TI-r1",
+    "status": "offline_verified",
+    "verification": "i03-tokeninfo-verification.md",
+    "contract": "i03-tokeninfo.md",
+    "newScenarios": 50,
+    "focusedReportedTests": 81,
+    "regressionReportedTests": 137,
+    "failed": 0,
+    "omitted": 0,
+    "typeScript": "passed",
+    "apiBusinessCalls": 0,
+    "remoteChanges": 0,
+    "instantlyConsumed": 43,
+    "composioOperationEnabled": false,
+    "gmailDirect": "preserved",
+    "tokeninfoRealCompatibilityConfirmed": false,
+    "publicationReady": false,
+    "baselineSourceCount": 16,
+    "baselineChanged": [
+      "src/lib/server/mail-accounts/composio-existing-provider.ts",
+      "src/lib/server/mail-accounts/composio-existing-verifier.ts",
+      "tests/pipeline-os-s02-existing-verification.test.ts"
+    ],
+    "baselineUnchangedCount": 13,
+    "sources": [
+      {
+        "path": "src/lib/server/mail-accounts/composio-existing-provider.ts",
+        "sha256": "bbd90846ce8bd1e66f782b2964ec739aaaf6fc6074ebf28f231ee777d66f55d4"
+      },
+      {
+        "path": "src/lib/server/mail-accounts/composio-existing-verifier.ts",
+        "sha256": "2d49cdf9f4d8c48ca6e9beaf1861edd53db4a18bb82e5daf05fc1807a3b407ab"
+      },
+      {
+        "path": "tests/pipeline-os-s02-existing-verification.test.ts",
+        "sha256": "19e85271f25f1d8cabbffa68237ceaa1954a1ac465d575da3859aa6a56037f0f"
+      },
+      {
+        "path": "tests/pipeline-os-s02-tokeninfo.test.ts",
+        "sha256": "fb4b754b4d6292edf18edf5dbb10faeaecb0a414a66346e3f5853a4443ca7d0a"
+      }
+    ],
+    "format": "passed",
+    "diffCheck": "passed"
+  },
+  "i04Preparation": {
+    "protocol": "QGR-I04-PLAN-r1",
+    "mode": "planning_only",
+    "status": "implemented_after_separate_explicit_authorization",
+    "plan": "i04-plan.md",
+    "manifest": "i04-manifest.json",
+    "verification": "i04-verification.md",
+    "firstMailbox": "existing_confirmed_candidate",
+    "firstPilotPrerequisites": [
+      "I04-A1_A2_A3_A4_R1_R2",
+      "I05",
+      "authorized_live_check",
+      "authorized_cutover_pilot"
+    ],
+    "newMailboxBlock": "I04-B_deferred_not_blocking_existing_mailbox",
+    "implementationAuthorized": false,
+    "remoteAuthorized": false,
+    "providerCalls": 0,
+    "instantlyConsumed": 43,
+    "gmailDirect": "preserved",
+    "composioEnabled": false
+  },
+  "i04Implementation": {
+    "protocol": "QGR-I04-IMPL-r1",
+    "manifest": "i04-manifest.json",
+    "offlineOnly": true,
+    "design": "i04-implementation.md",
+    "implementationAuthorized": true,
+    "providerCalls": 0,
+    "verification": "i04-verification.md",
+    "instantlyConsumed": 43,
+    "publicationReady": false
+  }
+}

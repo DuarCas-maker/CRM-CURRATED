@@ -1,5 +1,7 @@
+import { resolvedBindingSchema } from "./resolved-binding";
 import { gmailResponseError } from "../../gmail-errors";
 import { gmailRequestOperation } from "../../gmail-quota";
+import { assertMailQuotaEmission } from "../mail-quota";
 import {
   gmailApiRoot,
   type GmailRequest,
@@ -39,28 +41,9 @@ const invalidRequest = (): never => {
 };
 
 function bindingSnapshot(value: ResolvedComposioBinding) {
-  if (
-    !value ||
-    typeof value.accountId !== "string" ||
-    !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(value.accountId) ||
-    typeof value.connectedAccountId !== "string" ||
-    !/^ca_[A-Za-z0-9_-]{1,128}$/.test(value.connectedAccountId) ||
-    typeof value.authConfigId !== "string" ||
-    !/^ac_[A-Za-z0-9_-]{1,128}$/.test(value.authConfigId) ||
-    !clean(value.userId) ||
-    !email(value.mailboxEmail) ||
-    !email(value.verifiedMailboxEmail) ||
-    value.mailboxEmail.toLowerCase() !==
-      value.verifiedMailboxEmail.toLowerCase() ||
-    value.identityVerified !== true ||
-    value.status !== "active" ||
-    !Number.isSafeInteger(value.revision) ||
-    value.revision < 1 ||
-    typeof value.quotaProjectId !== "string" ||
-    !/^[A-Za-z0-9_-]{1,128}$/.test(value.quotaProjectId)
-  )
-    throw new MailTransportError("INVALID_COMPOSIO_BINDING");
-  return Object.freeze({ ...value });
+  const parsed = resolvedBindingSchema.safeParse(value);
+  if (!parsed.success) throw new MailTransportError("INVALID_COMPOSIO_BINDING");
+  return Object.freeze(parsed.data);
 }
 
 type Resource =
@@ -421,6 +404,11 @@ export function composioProxyTransport(options: {
           throw new MailTransportError("COMPOSIO_NETWORK_OR_TIMEOUT");
       }
       try {
+        assertMailQuotaEmission(
+          "composio",
+          request.path,
+          request.init?.method ?? "GET",
+        );
         response = await withAbort(
           () =>
             fetchImpl(composioProxyUrl, {

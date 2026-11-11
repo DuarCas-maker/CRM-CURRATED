@@ -1,0 +1,41 @@
+{
+  "protocol": "QGR-TI-BUDGET-r1",
+  "date": "2026-11-10",
+  "status": "provisional_not_authorized",
+  "selectedPlan": "Hobby",
+  "scope": "one_existing_crm_account_one_existing_platform_connection",
+  "currentPreparation": {
+    "providerCalls": 0,
+    "remoteChanges": 0,
+    "messagesSent": 0
+  },
+  "proposedFutureVerification": {
+    "connectionRead": 1,
+    "authConfigRead": 1,
+    "gmailProfileViaProxy": 1,
+    "normalMaximum": 4,
+    "diagnosticConnectionReadReserve": 1,
+    "maximumNew": 5,
+    "oauthLinks": 0,
+    "revocations": 0,
+    "permissionEvidenceSourceReviewed": true,
+    "requiresBudgetReviewIfExtraGrantRequestNeeded": true,
+    "gmailProfileIncludedInProxyCount": true,
+    "includesBrowserOrSupabaseTraffic": false,
+    "includesOperationalSyncOrHistory": false,
+    "tokeninfoViaProxy": 1,
+    "tokeninfoRealCompatibilityConfirmed": false,
+    "clientRetries": 0
+  },
+  "providerCallsAuthorized": 0,
+  "includedQuotaConfirmed": false,
+  "additionalCostLimit": 0,
+  "currency": "USD",
+  "instantly": {
+    "consumed": 43,
+    "authorizedNew": 0
+  },
+  "historicalS00LedgerMutated": false,
+  "historicalOnboardingSixRequestProposalReplaced": false,
+  "readyForExecution": false
+}
