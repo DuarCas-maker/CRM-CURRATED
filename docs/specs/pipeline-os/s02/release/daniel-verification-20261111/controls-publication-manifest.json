@@ -1,0 +1,111 @@
+{
+  "protocol": "DV-PUB-r1",
+  "base": "2730d2731ec871e80d3393f5c48d059496d95bb2",
+  "preparationComplete": true,
+  "publicationReady": false,
+  "commitCreated": false,
+  "pushed": false,
+  "deployed": false,
+  "productFilesUnchangedFromImplementation": 13,
+  "sourceFiles": 1083,
+  "sourceTreeSha256": "7918f20f7c0af569119da2129db120d2eb9fec8e0fcf3aa0e421ccf97c0338db",
+  "applicationSha256": "0b009a08c4561bb31a1127f490e8c950d801d22f52913757b025278eafca7790",
+  "archive": {
+    "path": ".local/pipeline-os/dv-publication/web-worker-sources.tar.gz",
+    "sha256": "4c164e0736db746ee68f308392bd303410328755a6c2fdef6419ca30659230ce"
+  },
+  "selectedCommitPaths": [
+    ".env.example",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/budget.json",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/controls-implementation.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/controls-manifest.json",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/controls-publication-manifest.json",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/controls-publication-prepare.mjs",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/controls-publication-sources.json",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/controls-publication-verification.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/controls-publication.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/controls-verification.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/design.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/limited-config-verification.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/limited-configuration.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/metadata-result.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/proxy-quota-guide.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/runbook.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/spec.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/tasks.md",
+    "docs/specs/pipeline-os/s02/release/daniel-verification-20261111/verification.md",
+    "scripts/pipeline-os/preview-verifier-setup.mjs",
+    "src/app/api/mail/accounts/[id]/composio/verification-setup/route.ts",
+    "src/components/composio-account-bindings-v2.tsx",
+    "src/components/composio-verification-setup.tsx",
+    "src/lib/composio-verification-setup.ts",
+    "src/lib/server/mail-accounts/composio-verification-setup.ts",
+    "tests/fixtures/composio-verification-setup-ui.tsx",
+    "tests/fixtures/composio-verification-setup.ts",
+    "tests/pipeline-os-composio-verification-setup-db.test.ts",
+    "tests/pipeline-os-composio-verification-setup-http.test.ts",
+    "tests/pipeline-os-composio-verification-setup-ui.test.tsx",
+    "tests/pipeline-os-composio-verification-setup.test.ts"
+  ],
+  "excludedWip": [
+    "docs/specs/pipeline-os/s02/release/quota-final/publication-result-20261111.md"
+  ],
+  "build": {
+    "platform": "win32",
+    "node": "22.23.4",
+    "code": 0,
+    "mode": "Windows webpack standalone; Linux Coolify pending",
+    "newRouteCompiled": true,
+    "linuxImagesBuilt": false
+  },
+  "verification": {
+    "priorPackageAndRegression": 27,
+    "priorNativePG15Scenarios": 4,
+    "priorEvidenceReusedByHash": true,
+    "compiledHandlerSmoke": 2,
+    "gitNormalizationMatches": 13,
+    "diffCheck": "passed"
+  },
+  "sql052Unchanged": true,
+  "newMigrationRequired": false,
+  "gmailDirect": "preserved",
+  "composioEnabled": false,
+  "workerExpectedMode": "paused",
+  "instantlyConsumed": 43,
+  "providerCalls": 0,
+  "remoteChanges": 0,
+  "messages": 0,
+  "proposedAppSmokeRequests": 6,
+  "proposedProviderRequests": 0,
+  "guardsDefaultOff": [
+    "COMPOSIO_VERIFIER_SETUP_ENABLED",
+    "COMPOSIO_BINDING_V2_ENABLED",
+    "COMPOSIO_BINDING_CHECKS_ENABLED",
+    "MAIL_QUOTA_POLICY_ENABLED",
+    "COMPOSIO_CONNECT_ENABLED",
+    "MAIL_TRANSPORT_ROUTING_ENABLED",
+    "INSTANTLY_WEBHOOK_ENABLED"
+  ],
+  "target": {
+    "repository": "DuarCas-maker/CRM-CURRATED",
+    "branch": "main",
+    "origin": "https://crm.finlabinc.com",
+    "web": "rv8rpfxhf0mbxprge6h6ki9c",
+    "worker": "vc4aybj4ucje7zstpsp3zboh",
+    "currentRemoteStateRechecked": false
+  },
+  "pending": [
+    "review_and_local_commit",
+    "publication_authorization",
+    "remote_main_flags_pause_and_rollback_image_preflight",
+    "linux_builds_both_healthy",
+    "authorized_app_smoke"
+  ],
+  "separateFutureOperations": [
+    "limited_live_setup_configuration",
+    "included_proxy_quota_confirmation",
+    "human_policy_and_budget",
+    "real_verifier_check_max4",
+    "transport_cutover"
+  ]
+}

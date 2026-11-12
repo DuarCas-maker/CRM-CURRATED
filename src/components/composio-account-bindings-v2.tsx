@@ -16,6 +16,7 @@ import {
   useLeaveConfirmation,
 } from "./unsaved-changes";
 import { Modal, t } from "./ui";
+import { ComposioVerificationSetup } from "./composio-verification-setup";
 
 type Props = {
   locale: Locale;
@@ -37,11 +38,13 @@ export function ComposioAccountBindingsV2({
 }: Props) {
   const [account, setAccount] = useState(accounts[0]?.id ?? ""),
     [page, setPage] = useState<BindingPageV2 | null>(null),
-    [busy, setBusy] = useState(false),
+    [operationBusy, setBusy] = useState(false),
+    [setupBusy, setSetupBusy] = useState(false),
     [loading, setLoading] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [intent, setIntent] = useState<Intent | null>(null);
+  const busy = operationBusy || setupBusy;
   const generation = useRef(0),
     submitting = useRef(false),
     errorRef = useRef<HTMLParagraphElement>(null),
@@ -250,6 +253,16 @@ export function ComposioAccountBindingsV2({
       {loading && (
         <p role="status">{tr("Cargando revisión…", "Loading review…")}</p>
       )}
+      <ComposioVerificationSetup
+        account={account}
+        locale={locale}
+        allowed={allowed}
+        demo={demo}
+        disabled={operationBusy || loading || !!intent}
+        onLockChange={setSetupBusy}
+        reviewAction={(action) => requestLeave(action, formRef.current)}
+        onChanged={() => void load(account)}
+      />
       {page && (
         <>
           <p>

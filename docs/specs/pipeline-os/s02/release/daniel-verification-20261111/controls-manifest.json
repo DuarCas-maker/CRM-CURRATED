@@ -1,0 +1,99 @@
+{
+  "protocol": "DV-LIMIT-UI-r1",
+  "base": "2730d2731ec871e80d3393f5c48d059496d95bb2",
+  "status": "implemented_offline_not_published",
+  "tests": {
+    "packageAndRegression": {
+      "passed": 27,
+      "failed": 0
+    },
+    "nativePG15": {
+      "version": 150019,
+      "scenarios": 4,
+      "passed": 4,
+      "clusterStopped": true
+    },
+    "typescript": "passed",
+    "format": "passed",
+    "diffCheck": "passed",
+    "visualContainers": [
+      360,
+      768,
+      1280
+    ]
+  },
+  "gmailDirect": "preserved",
+  "composioEnabled": false,
+  "instantlyConsumed": 43,
+  "providerCalls": 0,
+  "remoteChanges": 0,
+  "messages": 0,
+  "push": false,
+  "deployed": false,
+  "sql052Unchanged": true,
+  "newMigrationRequired": false,
+  "trackedChanged": [
+    ".env.example",
+    "src/components/composio-account-bindings-v2.tsx"
+  ],
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "0815eaff91a44820290087abcd166580eece8ecbbaa0e7a583e1336dff766f08"
+    },
+    {
+      "path": "src/components/composio-account-bindings-v2.tsx",
+      "sha256": "12f242a237657eac66f5d33f1144e4d33a13004226f051015c16c16a68e9edd4"
+    },
+    {
+      "path": "src/components/composio-verification-setup.tsx",
+      "sha256": "cfe0f2ffbf9d191a09ce5252c06c0cbbf64a5a5053aa1903bc247fe5a1ee84a8"
+    },
+    {
+      "path": "src/lib/composio-verification-setup.ts",
+      "sha256": "ce1d85ca34b3c7780921ec2bfdb3f25ee04f3428021148c2a017acca92c7b099"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-verification-setup.ts",
+      "sha256": "f49c81418484655f79309dcd8c248124a42dfcfb15cd80bdb91b1b508268aa86"
+    },
+    {
+      "path": "src/app/api/mail/accounts/[id]/composio/verification-setup/route.ts",
+      "sha256": "578d81e0be832cc4de154f487ae7bf7b9b123e2ededf57918cc7285cb6efbe13"
+    },
+    {
+      "path": "tests/fixtures/composio-verification-setup.ts",
+      "sha256": "aaf3632b8bebbb1c1eeb9122fd1a64db8b911667d6cadc7dca6f9c68f0fb726c"
+    },
+    {
+      "path": "tests/fixtures/composio-verification-setup-ui.tsx",
+      "sha256": "4de8f362c7af2ecb8b6b78accdd4399c6b0e016b1e6c2af005630a52587ee485"
+    },
+    {
+      "path": "tests/pipeline-os-composio-verification-setup.test.ts",
+      "sha256": "9e7e9f3643d5dbc553ec9c473b678cf2f06838526628bc37095d6ce72e549539"
+    },
+    {
+      "path": "tests/pipeline-os-composio-verification-setup-http.test.ts",
+      "sha256": "a6abd5b4e4362e1547858537dcc85875fba3976b29b486f21892faf14f8946fe"
+    },
+    {
+      "path": "tests/pipeline-os-composio-verification-setup-ui.test.tsx",
+      "sha256": "fd9182fca24bd3d7de6096bcaa849aa5eb852c0e111b76d031175d1f3bd8c1ea"
+    },
+    {
+      "path": "tests/pipeline-os-composio-verification-setup-db.test.ts",
+      "sha256": "5abb7433a94ea05d4477860a9efaf7ca79ec361b1df70978ff5b7ada42696313"
+    },
+    {
+      "path": "scripts/pipeline-os/preview-verifier-setup.mjs",
+      "sha256": "f4df78f13f5959b59c4d4f1468f9a0cdab3b914a1269c8bf8b450d7834ae4035"
+    }
+  ],
+  "pending": [
+    "publication_build_and_authorization",
+    "confirm_current_included_proxy_quota",
+    "limited_live_configuration",
+    "separately_authorized_real_verification"
+  ]
+}
