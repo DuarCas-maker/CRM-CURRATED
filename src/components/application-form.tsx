@@ -1,6 +1,6 @@
 "use client";
 import { ProtectedForm, markFormSaved } from "./unsaved-changes";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { ShieldCheck, Plus, CheckCircle2, Upload } from "lucide-react";
 import { applicationSchema } from "@/lib/application";
 import { Field } from "./ui";
@@ -24,7 +24,8 @@ export function ApplicationForm({
   submitted?: boolean;
   documents?: Doc[];
 }) {
-  const [owners, setOwners] = useState(1);
+  const [owners, setOwners] = useState([0]);
+  const nextOwnerId = useRef(1);
   const [done, setDone] = useState(submitted);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -39,10 +40,10 @@ export function ApplicationForm({
     const parsed = applicationSchema.safeParse({
       ...values,
       consent: form.get("consent") === "on",
-      owners: Array.from({ length: owners }, (_, i) =>
+      owners: owners.map((id) =>
         Object.fromEntries(
           ["name", "title", "email", "phone", "ownership", "address"].map(
-            (k) => [k, form.get(`owner_${i}_${k}`)],
+            (k) => [k, form.get(`owner_${id}_${k}`)],
           ),
         ),
       ),
@@ -167,30 +168,50 @@ export function ApplicationForm({
                 required
               />
               <h2>Business owners</h2>
-              {Array.from({ length: owners }, (_, i) => (
-                <div key={i}>
+              {owners.map((id, i) => (
+                <div key={id}>
                   <h3>Owner {i + 1}</h3>
+                  {i > 0 && (
+                    <button
+                      type="button"
+                      className="button"
+                      aria-label={`Remove owner ${i + 1}`}
+                      onClick={(event) => {
+                        const previous =
+                          event.currentTarget.form?.elements.namedItem(
+                            `owner_${owners[i - 1]}_name`,
+                          );
+                        if (previous instanceof HTMLElement) previous.focus();
+                        setOwners((current) =>
+                          current.filter((owner) => owner !== id),
+                        );
+                        setError("");
+                      }}
+                    >
+                      Remove owner
+                    </button>
+                  )}
                   <div className="form-grid">
                     <Field
-                      name={`owner_${i}_name`}
+                      name={`owner_${id}_name`}
                       label="Full legal name"
                       required
                     />
-                    <Field name={`owner_${i}_title`} label="Title" required />
+                    <Field name={`owner_${id}_title`} label="Title" required />
                     <Field
-                      name={`owner_${i}_email`}
+                      name={`owner_${id}_email`}
                       label="Email"
                       type="email"
                       required
                     />
                     <Field
-                      name={`owner_${i}_phone`}
+                      name={`owner_${id}_phone`}
                       label="Phone"
                       type="tel"
                       required
                     />
                     <Field
-                      name={`owner_${i}_ownership`}
+                      name={`owner_${id}_ownership`}
                       label="Ownership (%)"
                       type="number"
                       min={1}
@@ -198,18 +219,24 @@ export function ApplicationForm({
                       required
                     />
                     <Field
-                      name={`owner_${i}_address`}
+                      name={`owner_${id}_address`}
                       label="Home address"
                       required
                     />
                   </div>
                 </div>
               ))}
-              {owners < 4 && (
+              {owners.length < 4 && (
                 <button
                   type="button"
                   className="button"
-                  onClick={() => setOwners(owners + 1)}
+                  onClick={() => {
+                    const id = nextOwnerId.current++;
+                    setOwners((current) =>
+                      current.length < 4 ? [...current, id] : current,
+                    );
+                    setError("");
+                  }}
                 >
                   <Plus size={16} />
                   Add owner

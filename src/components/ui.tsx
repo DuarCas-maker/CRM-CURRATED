@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { X, Inbox, LoaderCircle } from "lucide-react";
 import type { Locale, Stage, Verification } from "@/lib/domain";
 import { stageLabels } from "@/lib/domain";
@@ -90,6 +90,7 @@ export function Modal({
   trackChanges?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   useNativeChanges(ref, dirty === undefined, !trackChanges);
   useProtection({
     element: () => ref.current,
@@ -106,6 +107,7 @@ export function Modal({
   return (
     <dialog
       ref={ref}
+      aria-labelledby={titleId}
       className={`modal ${wide ? "wide" : ""}`}
       onCancel={(e) => {
         e.preventDefault();
@@ -117,7 +119,7 @@ export function Modal({
       }}
     >
       <div className="modal-heading">
-        <h2>{title}</h2>
+        <h2 id={titleId}>{title}</h2>
         <button
           type="button"
           className="icon-button"

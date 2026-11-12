@@ -898,6 +898,19 @@ export default function CRM({ initial }: { initial: Workspace }) {
           WORKSPACE <span>CF</span>
         </div>
         <nav>
+          <button
+            onClick={() =>
+              requestLeave(() =>
+                window.location.assign(
+                  data.demo ? "/pipeline-os/demo" : "/pipeline-os",
+                ),
+              )
+            }
+          >
+            <LayoutDashboard size={19} />
+            <span>Pipeline OS</span>
+            <ArrowUpRight size={14} />
+          </button>
           {nav.map((item) => (
             <button
               key={item.id}

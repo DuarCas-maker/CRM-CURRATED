@@ -1,0 +1,1226 @@
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/pipeline-os/fonts/instrument-sans-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/pipeline-os/fonts/instrument-serif-latin.woff2") format("woff2");
+}
+.pipeline-os {
+  --pos-bg: #f5f3ee;
+  --pos-panel: #fff;
+  --pos-panel2: #faf9f6;
+  --pos-ink: #1d1c1a;
+  --pos-muted: #6d6a62;
+  --pos-line: #e5e1d7;
+  --pos-line2: #d6d1c4;
+  --pos-accent: #1e5a46;
+  --pos-on-accent: #fff;
+  --pos-soft: #e2eee8;
+  --pos-soft-ink: #174636;
+  --pos-good: #e6f0dc;
+  --pos-good-ink: #2f5d17;
+  --pos-warn: #f9ecd5;
+  --pos-warn-ink: #7d4a08;
+  --pos-bad: #f8e3e1;
+  --pos-bad-ink: #93302b;
+  --pos-info: #e5edf8;
+  --pos-info-ink: #1d4f86;
+  --pos-shadow: 0 1px 2px #14120a0d, 0 6px 24px #14120a0f;
+  background: var(--pos-bg);
+  color: var(--pos-ink);
+  font-family:
+    "Instrument Sans",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100dvh;
+  color-scheme: light;
+}
+.pipeline-os[data-pos-theme="dark"] {
+  --pos-bg: #141412;
+  --pos-panel: #1d1c1a;
+  --pos-panel2: #22211e;
+  --pos-ink: #ecebe6;
+  --pos-muted: #a6a39a;
+  --pos-line: #2f2e2a;
+  --pos-line2: #57554e;
+  --pos-accent: #5fb393;
+  --pos-on-accent: #0f1f19;
+  --pos-soft: #1c3229;
+  --pos-soft-ink: #9fd8bf;
+  --pos-good: #223018;
+  --pos-good-ink: #b4d99a;
+  --pos-warn: #3a2a10;
+  --pos-warn-ink: #f0c47a;
+  --pos-bad: #3b1d1b;
+  --pos-bad-ink: #f2a49e;
+  --pos-info: #18273b;
+  --pos-info-ink: #9cc2f0;
+  --pos-shadow: 0 1px 2px #0005, 0 6px 24px #0005;
+  color-scheme: dark;
+}
+.pipeline-os button,
+.pipeline-os input,
+.pipeline-os select {
+  font: inherit;
+}
+.pipeline-os button {
+  cursor: pointer;
+}
+.pipeline-os button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.pipeline-os button:focus-visible,
+.pipeline-os a:focus-visible,
+.pipeline-os input:focus-visible,
+.pipeline-os select:focus-visible,
+.pipeline-os summary:focus-visible {
+  outline: 2px solid var(--pos-accent);
+  outline-offset: 3px;
+}
+.pipeline-os .pos-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+.pipeline-os .pos-skip {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  transform: translateY(-150%);
+  z-index: 100;
+  background: var(--pos-panel);
+  color: var(--pos-accent);
+  padding: 12px;
+}
+.pipeline-os .pos-skip:focus {
+  transform: none;
+}
+.pipeline-os .pos-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--pos-bg);
+  border-bottom: 1px solid var(--pos-line);
+}
+.pipeline-os .pos-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  background: none;
+  color: var(--pos-ink);
+  text-align: left;
+  padding: 0;
+  flex: none;
+}
+.pipeline-os .pos-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--pos-accent);
+  color: var(--pos-on-accent);
+  display: grid;
+  place-items: center;
+  font:
+    22px "Instrument Serif",
+    Georgia,
+    serif;
+}
+.pipeline-os .pos-brand b {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.pipeline-os .pos-brand small {
+  display: block;
+  font-size: 11px;
+  color: var(--pos-muted);
+  line-height: 1.3;
+}
+.pipeline-os .pos-demo {
+  font-size: 11px;
+  white-space: nowrap;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--pos-warn);
+  color: var(--pos-warn-ink);
+}
+.pipeline-os .pos-search {
+  position: relative;
+  margin-left: auto;
+  width: min(340px, 33vw);
+}
+.pipeline-os .pos-search > svg {
+  position: absolute;
+  left: 11px;
+  top: 11px;
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-search input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+  border: 1px solid var(--pos-line2);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.pipeline-os .pos-search input::placeholder {
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-btn,
+.pipeline-os .pos-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--pos-line2);
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+  font-size: 13px;
+  min-height: 34px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.pipeline-os .pos-btn:hover,
+.pipeline-os .pos-icon-btn:hover {
+  background: var(--pos-panel2);
+}
+.pipeline-os .pos-btn.pos-primary {
+  background: var(--pos-accent);
+  border-color: var(--pos-accent);
+  color: var(--pos-on-accent);
+}
+.pipeline-os .pos-btn.pos-primary:hover {
+  filter: brightness(1.07);
+}
+.pipeline-os .pos-sm {
+  padding: 4px 9px;
+  font-size: 12px;
+  min-height: 30px;
+}
+.pipeline-os .pos-icon-btn {
+  padding: 6px;
+  min-width: 32px;
+  flex: none;
+  background: transparent;
+  border-color: transparent;
+}
+.pipeline-os .pos-chosen {
+  background: var(--pos-soft) !important;
+  border-color: var(--pos-accent) !important;
+  color: var(--pos-soft-ink) !important;
+}
+.pipeline-os .pos-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: calc(100dvh - 60px);
+}
+.pipeline-os .pos-shell.pos-tree-open {
+  grid-template-columns: 260px minmax(0, 1fr);
+}
+.pipeline-os .pos-side {
+  border-right: 1px solid var(--pos-line);
+  background: var(--pos-panel2);
+  padding: 18px 12px 30px;
+  position: sticky;
+  top: 60px;
+  align-self: start;
+  height: calc(100dvh - 60px);
+  overflow: auto;
+}
+.pipeline-os .pos-caption {
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  color: var(--pos-muted);
+  font-weight: 500;
+  margin-bottom: 9px;
+}
+.pipeline-os .pos-side > .pos-caption {
+  padding: 0 8px;
+  margin-bottom: 14px;
+}
+.pipeline-os .pos-node {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border: 1px solid transparent;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--pos-ink);
+  font-size: 13px;
+  border-radius: 7px;
+  min-height: 34px;
+}
+.pipeline-os .pos-node:hover {
+  background: var(--pos-line);
+}
+.pipeline-os .pos-node > span,
+.pipeline-os .pos-side summary > span {
+  font-size: 10.5px;
+  color: var(--pos-muted);
+  margin-left: auto;
+  border: 1px solid var(--pos-line);
+  background: var(--pos-panel);
+  border-radius: 20px;
+  min-width: 23px;
+  text-align: center;
+  padding: 0 5px;
+}
+.pipeline-os .pos-side details {
+  margin-bottom: 4px;
+}
+.pipeline-os .pos-side summary {
+  padding: 8px 6px;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px;
+  border-radius: 7px;
+}
+.pipeline-os .pos-side summary::before {
+  content: "›";
+  transform: rotate(90deg);
+  color: var(--pos-muted);
+  font-size: 17px;
+  line-height: 1;
+}
+.pipeline-os .pos-side details:not([open]) summary::before {
+  transform: none;
+}
+.pipeline-os .pos-tree-children {
+  margin-left: 20px;
+  padding-left: 7px;
+  border-left: 1px solid var(--pos-line2);
+}
+.pipeline-os .pos-tree-divider {
+  border-top: 1px solid var(--pos-line);
+  margin: 17px 0 10px;
+}
+.pipeline-os .pos-side-note {
+  display: flex;
+  gap: 8px;
+  color: var(--pos-muted);
+  font-size: 11px;
+  margin: 30px 8px 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--pos-line);
+}
+.pipeline-os .pos-side-note > svg {
+  flex: none;
+}
+.pipeline-os .pos-main {
+  padding: 22px 26px 36px;
+  min-width: 0;
+  max-width: 1800px;
+  width: 100%;
+  margin-inline: auto;
+}
+.pipeline-os .pos-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  color: var(--pos-muted);
+  font-size: 12px;
+  margin-bottom: 28px;
+}
+.pipeline-os .pos-crumbs button {
+  border: 0;
+  background: transparent;
+  color: var(--pos-accent);
+  padding: 3px 0;
+}
+.pipeline-os .pos-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.pipeline-os h1,
+.pipeline-os .pos-level > h2 {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--pos-ink);
+  margin: 0 0 8px;
+}
+.pipeline-os .pos-level > h2 {
+  font-size: 30px;
+}
+.pipeline-os .pos-subtitle {
+  color: var(--pos-muted);
+  font-size: 13px;
+  margin: 0 0 18px;
+  line-height: 1.6;
+}
+.pipeline-os .pos-heading .pos-subtitle {
+  margin-bottom: 0;
+}
+.pipeline-os .pos-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 13px;
+}
+.pipeline-os .pos-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+  border: 1px solid var(--pos-line);
+  border-radius: 14px;
+  padding: 19px;
+  text-align: left;
+  min-height: 200px;
+  transition:
+    border-color 0.15s,
+    transform 0.15s;
+}
+.pipeline-os .pos-tile:hover {
+  border-color: var(--pos-accent);
+  transform: translateY(-2px);
+}
+.pipeline-os .pos-tile-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--pos-soft);
+  color: var(--pos-soft-ink);
+}
+.pipeline-os .pos-tile-title {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
+.pipeline-os .pos-tile-title > svg {
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-tile-description {
+  font-size: 12.5px;
+  color: var(--pos-muted);
+  max-width: 27ch;
+}
+.pipeline-os .pos-tile-number {
+  font:
+    32px/1.15 "Instrument Serif",
+    Georgia,
+    serif;
+  margin-top: auto;
+  padding-top: 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+}
+.pipeline-os .pos-tile-number small {
+  font:
+    11px "Instrument Sans",
+    system-ui,
+    sans-serif;
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-home-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
+  gap: 16px;
+  margin-top: 22px;
+}
+.pipeline-os .pos-card {
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line);
+  border-radius: 14px;
+  padding: 17px 19px;
+  min-width: 0;
+}
+.pipeline-os .pos-card h3,
+.pipeline-os .pos-home-bottom > .pos-card h2,
+.pipeline-os .pos-home-callout h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pipeline-os .pos-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.pipeline-os .pos-card-head h3 {
+  margin: 0;
+}
+.pipeline-os .pos-text-btn,
+.pipeline-os .pos-business {
+  border: 0;
+  background: transparent;
+  color: var(--pos-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 0;
+  font-size: inherit;
+  text-align: left;
+}
+.pipeline-os .pos-text-btn:hover,
+.pipeline-os .pos-business:hover {
+  text-decoration: underline;
+}
+.pipeline-os .pos-business {
+  font-weight: 600;
+  color: var(--pos-ink);
+}
+.pipeline-os .pos-business:hover {
+  color: var(--pos-accent);
+}
+.pipeline-os .pos-priority {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--pos-line);
+  background: transparent;
+  color: var(--pos-ink);
+  text-align: left;
+}
+.pipeline-os .pos-priority:last-child {
+  border-bottom: 0;
+}
+.pipeline-os .pos-priority > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.pipeline-os .pos-priority b {
+  font-size: 13px;
+  font-weight: 600;
+}
+.pipeline-os .pos-priority > span:nth-child(2) > span {
+  font-size: 12px;
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-step {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: var(--pos-soft);
+  color: var(--pos-soft-ink);
+  display: grid;
+  place-items: center;
+  flex: none;
+  font-size: 12px;
+}
+.pipeline-os .pos-home-callout {
+  border-radius: 14px;
+  background: var(--pos-accent);
+  color: var(--pos-on-accent);
+  padding: 22px 23px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+}
+.pipeline-os .pos-home-callout h2 {
+  font:
+    27px/1.15 "Instrument Serif",
+    Georgia,
+    serif;
+  color: inherit;
+  margin: 0;
+}
+.pipeline-os .pos-home-callout p {
+  color: inherit;
+  opacity: 0.85;
+  font-size: 12.5px;
+  margin: 0 0 5px;
+  max-width: 40ch;
+}
+.pipeline-os .pos-home-callout .pos-btn {
+  border-color: transparent;
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+}
+.pipeline-os .pos-level {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--pos-line2);
+  scroll-margin-top: 82px;
+  animation: pos-in 0.2s ease-out;
+}
+.pipeline-os .pos-level-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  background: var(--pos-soft);
+  color: var(--pos-soft-ink);
+  border-radius: 20px;
+  padding: 3px 9px;
+  margin-bottom: 13px;
+}
+.pipeline-os .pos-stage-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.pipeline-os .pos-stage-strip button {
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-align: left;
+  color: var(--pos-ink);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.pipeline-os .pos-stage-strip b {
+  font:
+    25px "Instrument Serif",
+    Georgia,
+    serif;
+}
+.pipeline-os .pos-stage-strip span {
+  font-size: 11.5px;
+}
+.pipeline-os .pos-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line);
+  border-radius: 10px;
+  padding: 11px 14px;
+  margin: 0 0 14px;
+  font-size: 12px;
+}
+.pipeline-os .pos-filters > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--pos-muted);
+}
+.pipeline-os select,
+.pipeline-os .pos-filters input {
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line2);
+  border-radius: 7px;
+  padding: 6px 8px;
+  color: var(--pos-ink);
+  font-size: 12px;
+  min-height: 32px;
+  max-width: 100%;
+}
+.pipeline-os .pos-filter-end {
+  margin-left: auto;
+}
+.pipeline-os .pos-scroll {
+  overflow: auto;
+  max-height: 42rem;
+  overscroll-behavior: contain;
+}
+.pipeline-os .pos-table-card {
+  padding: 14px 0 0;
+}
+.pipeline-os .pos-table-card > .pos-card-head {
+  padding: 0 16px;
+}
+.pipeline-os .pos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.pipeline-os .pos-table th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--pos-muted);
+  font-size: 11.5px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--pos-line);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  background: var(--pos-panel);
+  z-index: 1;
+}
+.pipeline-os .pos-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--pos-line);
+  vertical-align: top;
+  min-width: 110px;
+  max-width: 330px;
+  overflow-wrap: anywhere;
+}
+.pipeline-os .pos-table tr:last-child td {
+  border-bottom: 0;
+}
+.pipeline-os .pos-table tr:hover td {
+  background: var(--pos-panel2);
+}
+.pipeline-os .pos-table td:first-child {
+  min-width: 200px;
+}
+.pipeline-os .pos-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+  background: var(--pos-panel2);
+  color: var(--pos-muted);
+  border: 1px solid var(--pos-line);
+  margin: 2px 3px 2px 0;
+}
+.pipeline-os .pos-p1 {
+  background: var(--pos-bad);
+  color: var(--pos-bad-ink);
+  border-color: transparent;
+}
+.pipeline-os .pos-p2 {
+  background: var(--pos-warn);
+  color: var(--pos-warn-ink);
+  border-color: transparent;
+}
+.pipeline-os .pos-good,
+.pipeline-os .pos-stage-signed,
+.pipeline-os .pos-stage-funded {
+  background: var(--pos-good);
+  color: var(--pos-good-ink);
+  border-color: transparent;
+}
+.pipeline-os .pos-stage-offers,
+.pipeline-os .pos-stage-docsout {
+  background: var(--pos-soft);
+  color: var(--pos-soft-ink);
+  border-color: transparent;
+}
+.pipeline-os .pos-small {
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.pipeline-os .pos-muted {
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.pipeline-os .pos-comparison {
+  background: var(--pos-panel2);
+  padding: 14px;
+  border: 1px solid var(--pos-line);
+  border-radius: 9px;
+  min-width: 720px;
+}
+.pipeline-os .pos-comparison > .pos-btn {
+  margin-top: 14px;
+}
+.pipeline-os .pos-empty {
+  padding: 40px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  color: var(--pos-muted);
+  font-size: 12.5px;
+  text-align: center;
+}
+.pipeline-os .pos-empty > strong {
+  font-weight: 500;
+  color: var(--pos-ink);
+}
+.pipeline-os .pos-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin: 13px 0 20px;
+  font-size: 12px;
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-pagination > span {
+  margin-right: auto;
+}
+.pipeline-os .pos-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.pipeline-os .pos-module-actions,
+.pipeline-os .pos-report-controls {
+  margin: 0 0 17px;
+}
+.pipeline-os .pos-report-controls {
+  font-size: 12px;
+}
+.pipeline-os .pos-grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.pipeline-os .pos-span2 {
+  grid-column: 1/-1;
+}
+.pipeline-os .pos-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.pipeline-os .pos-metric {
+  border: 1px solid var(--pos-line);
+  background: var(--pos-panel);
+  border-radius: 12px;
+  padding: 15px 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.pipeline-os .pos-metric > span {
+  font-size: 11.5px;
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-metric > b {
+  font:
+    31px "Instrument Serif",
+    Georgia,
+    serif;
+  overflow-wrap: anywhere;
+}
+.pipeline-os .pos-funnel {
+  display: grid;
+  grid-template-columns: 155px 1fr 30px;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  margin: 14px 0;
+}
+.pipeline-os .pos-funnel > div,
+.pipeline-os .pos-bar-track {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--pos-panel2);
+  border: 1px solid var(--pos-line);
+  overflow: hidden;
+}
+.pipeline-os .pos-funnel i,
+.pipeline-os .pos-bar-track i {
+  display: block;
+  height: 100%;
+  background: var(--pos-accent);
+  border-radius: 5px;
+}
+.pipeline-os .pos-rep-bar {
+  display: grid;
+  grid-template-columns: 125px 1fr 30px;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  margin: 6px 0;
+  padding: 7px 0;
+  width: 100%;
+  background: none;
+  border: 0;
+  color: var(--pos-ink);
+  text-align: left;
+}
+.pipeline-os .pos-update-group {
+  margin-top: 20px;
+}
+.pipeline-os .pos-update-group h4 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pos-ink);
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.pipeline-os .pos-update {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  background: transparent;
+  color: var(--pos-ink);
+  border: 0;
+  border-bottom: 1px solid var(--pos-line);
+  text-align: left;
+}
+.pipeline-os .pos-update > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+.pipeline-os .pos-update > span > span {
+  font-size: 12px;
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-update time {
+  font-size: 10.5px;
+  color: var(--pos-muted);
+  max-width: 100px;
+}
+.pipeline-os .pos-info,
+.pipeline-os .pos-alert,
+.pipeline-os .pos-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 9px;
+  background: var(--pos-info);
+  color: var(--pos-info-ink);
+  padding: 12px 14px;
+  font-size: 12px;
+  margin-bottom: 17px;
+}
+.pipeline-os .pos-info svg {
+  flex: none;
+  align-self: flex-start;
+  margin-top: 1px;
+}
+.pipeline-os .pos-alert {
+  background: var(--pos-bad);
+  color: var(--pos-bad-ink);
+  flex-wrap: wrap;
+}
+.pipeline-os .pos-alert > span {
+  flex: 1;
+  min-width: 120px;
+}
+.pipeline-os .pos-alert button {
+  color: inherit;
+}
+.pipeline-os .pos-notice {
+  background: var(--pos-good);
+  color: var(--pos-good-ink);
+}
+.pipeline-os .pos-tabs {
+  display: flex;
+  gap: 5px;
+  border-bottom: 1px solid var(--pos-line);
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+.pipeline-os .pos-tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.pipeline-os .pos-tabs button[aria-selected="true"] {
+  color: var(--pos-ink);
+  border-bottom-color: var(--pos-accent);
+}
+.pipeline-os .pos-settings {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) 1.8fr;
+  gap: 14px;
+  font-size: 12px;
+  align-items: center;
+}
+.pipeline-os .pos-settings dt {
+  color: var(--pos-muted);
+}
+.pipeline-os .pos-settings dd {
+  margin: 0;
+}
+.pipeline-os .pos-existing {
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  font-size: 14px;
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 14px;
+  min-width: 0;
+  color-scheme: light;
+}
+.pipeline-os .pos-existing .pos-btn {
+  font-family: "Instrument Sans", system-ui, sans-serif;
+}
+.pipeline-os .pos-mail-module {
+  min-height: 600px;
+}
+.pipeline-os .pos-existing input,
+.pipeline-os .pos-existing select {
+  font-size: inherit;
+  color: var(--ink);
+  background: var(--panel);
+  border-color: var(--line);
+}
+.pipeline-os .pos-existing .conversations-workspace {
+  min-width: 0;
+}
+.pipeline-os .pos-case-dialog .modal {
+  position: fixed;
+  inset: 0 0 0 auto;
+  margin: 0;
+  border: 0;
+  border-left: 1px solid var(--pos-line);
+  border-radius: 0;
+  max-height: 100dvh;
+  height: 100dvh;
+  width: min(1120px, 100%);
+  max-width: 100vw;
+  padding: 18px 22px;
+  background: var(--pos-bg);
+  color: var(--pos-ink);
+}
+.pipeline-os .pos-case-dialog .modal > .modal-heading {
+  position: sticky;
+  top: -18px;
+  z-index: 5;
+  background: var(--pos-bg);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--pos-line);
+}
+.pipeline-os .pos-case-dialog .modal::backdrop {
+  background: #14141266;
+  backdrop-filter: blur(2px);
+}
+.pipeline-os .pos-file-tools {
+  padding-bottom: 14px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.pipeline-os .pos-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 10.5px;
+  color: var(--pos-muted);
+  border-top: 1px solid var(--pos-line);
+  margin-top: 36px;
+  padding-top: 17px;
+  flex-wrap: wrap;
+}
+.pipeline-os .pos-spin {
+  animation: pos-spin 1s linear infinite;
+}
+@keyframes pos-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pos-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (min-width: 1500px) {
+  .pipeline-os .pos-tiles {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+@media (max-width: 1100px) {
+  .pipeline-os .pos-top {
+    gap: 9px;
+  }
+  .pipeline-os .pos-demo {
+    display: none;
+  }
+  .pipeline-os .pos-tile {
+    min-height: 185px;
+  }
+  .pipeline-os .pos-home-bottom {
+    grid-template-columns: 1.5fr 1fr;
+  }
+  .pipeline-os .pos-shell.pos-tree-open {
+    grid-template-columns: 230px minmax(0, 1fr);
+  }
+}
+@media (max-width: 900px) {
+  .pipeline-os .pos-shell.pos-tree-open {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pipeline-os .pos-side {
+    position: static;
+    height: auto;
+    max-height: 320px;
+    border-right: 0;
+    border-bottom: 1px solid var(--pos-line);
+  }
+  .pipeline-os .pos-main {
+    padding: 20px;
+  }
+  .pipeline-os .pos-home-bottom,
+  .pipeline-os .pos-grid2 {
+    grid-template-columns: 1fr;
+  }
+  .pipeline-os .pos-stage-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .pipeline-os .pos-span2 {
+    grid-column: auto;
+  }
+  .pipeline-os .pos-top {
+    padding: 11px 17px;
+  }
+  .pipeline-os .pos-brand small {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .pipeline-os .pos-top {
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .pipeline-os .pos-brand {
+    margin-right: auto;
+  }
+  .pipeline-os .pos-search {
+    order: 2;
+    width: 100%;
+    margin: 3px 0 0;
+  }
+  .pipeline-os .pos-return {
+    display: none;
+  }
+  .pipeline-os .pos-main {
+    padding: 17px 14px 28px;
+  }
+  .pipeline-os .pos-crumbs {
+    margin-bottom: 22px;
+  }
+  .pipeline-os .pos-heading {
+    align-items: flex-start;
+  }
+  .pipeline-os h1 {
+    font-size: 30px;
+  }
+  .pipeline-os .pos-heading .pos-btn {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  .pipeline-os .pos-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .pipeline-os .pos-tile {
+    padding: 14px 12px;
+    min-height: 190px;
+  }
+  .pipeline-os .pos-tile-title {
+    font-size: 13px;
+  }
+  .pipeline-os .pos-tile-description {
+    font-size: 11.5px;
+  }
+  .pipeline-os .pos-tile-number {
+    font-size: 29px;
+  }
+  .pipeline-os .pos-tile-number small {
+    font-size: 10px;
+  }
+  .pipeline-os .pos-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pipeline-os .pos-filters {
+    padding: 10px;
+  }
+  .pipeline-os .pos-filter-end {
+    margin-left: 0;
+    width: 100%;
+  }
+  .pipeline-os .pos-case-dialog .modal {
+    padding: 12px;
+  }
+  .pipeline-os .pos-existing {
+    padding: 9px;
+  }
+  .pipeline-os .pos-funnel {
+    grid-template-columns: 130px 1fr 24px;
+  }
+  .pipeline-os .pos-funnel > span {
+    font-size: 11px;
+  }
+  .pipeline-os .pos-stage-strip {
+    gap: 6px;
+  }
+  .pipeline-os .pos-stage-strip button {
+    padding: 8px;
+  }
+  .pipeline-os .pos-stage-strip span {
+    font-size: 10.5px;
+  }
+  .pipeline-os .pos-settings {
+    grid-template-columns: 1fr;
+  }
+  .pipeline-os .pos-node {
+    min-height: 40px;
+  }
+  .pipeline-os .pos-btn,
+  .pipeline-os .pos-icon-btn {
+    min-height: 36px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pipeline-os * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

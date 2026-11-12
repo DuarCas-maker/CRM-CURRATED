@@ -1,0 +1,102 @@
+{
+  "version": "POS-MODULE-20261112-v1",
+  "scope": "local additive module; no deployment",
+  "files": [
+    {
+      "path": "public/pipeline-os/fonts/README.md",
+      "sha256": "dcae675243d45e7eeda7da897d7c09c5df473957c933b386f7ae447cc637a3fe"
+    },
+    {
+      "path": "public/pipeline-os/fonts/instrument-sans-OFL.txt",
+      "sha256": "9e27a72ed30eb49a08678f6a5d6ed98ec7ba5368f541637ee0683ec9134ef966"
+    },
+    {
+      "path": "public/pipeline-os/fonts/instrument-sans-latin.woff2",
+      "sha256": "2ee17598a98d8a59e4df8152d015bec9ab8e4d5672cc0ab42bef806b568e3971"
+    },
+    {
+      "path": "public/pipeline-os/fonts/instrument-serif-OFL.txt",
+      "sha256": "129ed7618959716959f2941fdd5b49e0ad6e6c1d78726761786a00253d865521"
+    },
+    {
+      "path": "public/pipeline-os/fonts/instrument-serif-latin.woff2",
+      "sha256": "5eb09b5ac0e28b67c2f041c8ba6d244604ca0c0980d65912ab2d47fed84ddc31"
+    },
+    {
+      "path": "src/app/api/pipeline-os/route.ts",
+      "sha256": "73fc53ea135221a2cbe1decacada1db243e5616fb2607926ad7ee77b9ec343e9"
+    },
+    {
+      "path": "src/app/pipeline-os/demo/page.tsx",
+      "sha256": "b3fbee86040546ab12226501e07b5c007b545e2a034b0e25bf2f319dc01b7d79"
+    },
+    {
+      "path": "src/app/pipeline-os/error.tsx",
+      "sha256": "2585dd43019a9f286cc892c71585a9fd7ccfd664035ea6aa1d72d7b83731ef2f"
+    },
+    {
+      "path": "src/app/pipeline-os/loading.tsx",
+      "sha256": "e0d78bf46d3619a74696cc4a4210fec84b8ddf081a6881d14750a27cefbbe080"
+    },
+    {
+      "path": "src/app/pipeline-os/page.tsx",
+      "sha256": "b7ab4eedc5259213175492fa1886f91bd62ad36cfc57164b9b0a714531a2b71b"
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "sha256": "6b02954e0eac809dc02d37c0baa5a6c9f195ad48009d51e7703806fa28546059"
+    },
+    {
+      "path": "src/components/pipeline-os/board.tsx",
+      "sha256": "4a1575fcc3e0e7a4f55e7faa364d79cdfc8787768c0f6bba3805c97bbc36cc73"
+    },
+    {
+      "path": "src/components/pipeline-os/leads.tsx",
+      "sha256": "afc0ee75d5faf7b5fe4b946d60c5f055900623148b00e1d16e1f2159129d8937"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.css",
+      "sha256": "292c063f7366f28a718b692949ee8c4dbbf773ccb6676bf72baf90036d560fee"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "3cdc18fe23ab0e9fafff7c27fbf65abc69ce7286b1dc9492a4c08cc5ca51bf32"
+    },
+    {
+      "path": "src/lib/pipeline-os/demo.ts",
+      "sha256": "aae221be0f4c7714a6750aba18735685bfdcdbdede64b2a65156cfaa9d8dd58f"
+    },
+    {
+      "path": "src/lib/pipeline-os/module.ts",
+      "sha256": "e6ba15638915ffa9155749e8557df085a1d8caecc56a7f008ab6be2123f6a2ee"
+    },
+    {
+      "path": "src/lib/server/pipeline-os-http.ts",
+      "sha256": "69580e87aad38df1b53230ff3737c220fdf40b3d68168c528da02afdb87ddd6a"
+    },
+    {
+      "path": "src/lib/server/pipeline-os-module.ts",
+      "sha256": "e08deedea8c57f297c7b680eb333c0654b4978703eab7425eb42f211b8827e32"
+    },
+    {
+      "path": "tests/pipeline-os-module-db.test.ts",
+      "sha256": "16e19d76c47e8cdeca1a5e8a23684c70c543c93b2a22b23ca76659ead2ac7def"
+    },
+    {
+      "path": "tests/pipeline-os-module-http.test.ts",
+      "sha256": "16f7e307eaa83e74866fed1ff3cf74f0d408db9ddf32ac8e0f32c2fadb971447"
+    },
+    {
+      "path": "tests/pipeline-os-module-pagination.test.ts",
+      "sha256": "836ef7c8674bd8df397b3a87760078a1162bc9179d4c348e7388dd8b3717eb91"
+    },
+    {
+      "path": "tests/pipeline-os-module-ui.test.ts",
+      "sha256": "cde87ff2a382eff6f5b05d5010aa0be6c4a1a478a9884e6d43e3db05cdbae0d7"
+    },
+    {
+      "path": "tests/pipeline-os-module.test.ts",
+      "sha256": "9b0c67256b4f6e3da71fca8a47c1404fb1895de70aad37fa24240be6102501cf"
+    }
+  ]
+}

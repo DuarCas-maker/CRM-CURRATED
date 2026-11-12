@@ -1,0 +1,238 @@
+{
+  "version": "POS-PUB-20261112-v1",
+  "baseCommit": "77f495cf2d9fb7d228a4fd52934b58c1022f53b7",
+  "destination": {
+    "repository": "DuarCas-maker/CRM-CURRATED",
+    "branch": "main",
+    "origin": "https://crm.finlabinc.com"
+  },
+  "scope": "Pipeline OS additive module and QA-F01/02/03 corrections",
+  "productFiles": [
+    "package.json",
+    "public/pipeline-os/fonts/README.md",
+    "public/pipeline-os/fonts/instrument-sans-OFL.txt",
+    "public/pipeline-os/fonts/instrument-sans-latin.woff2",
+    "public/pipeline-os/fonts/instrument-serif-OFL.txt",
+    "public/pipeline-os/fonts/instrument-serif-latin.woff2",
+    "scripts/run-tests.mjs",
+    "src/app/api/pipeline-os/route.ts",
+    "src/app/pipeline-os/demo/page.tsx",
+    "src/app/pipeline-os/error.tsx",
+    "src/app/pipeline-os/loading.tsx",
+    "src/app/pipeline-os/page.tsx",
+    "src/components/application-form.tsx",
+    "src/components/crm.tsx",
+    "src/components/pipeline-os/board.tsx",
+    "src/components/pipeline-os/leads.tsx",
+    "src/components/pipeline-os/workspace.css",
+    "src/components/pipeline-os/workspace.tsx",
+    "src/components/ui.tsx",
+    "src/lib/pipeline-os/demo.ts",
+    "src/lib/pipeline-os/module.ts",
+    "src/lib/server/pipeline-os-http.ts",
+    "src/lib/server/pipeline-os-module.ts",
+    "tests/offline.mjs",
+    "tests/pipeline-os-composio-verification-setup-http.test.ts",
+    "tests/pipeline-os-module-db.test.ts",
+    "tests/pipeline-os-module-http.test.ts",
+    "tests/pipeline-os-module-pagination.test.ts",
+    "tests/pipeline-os-module-ui.test.ts",
+    "tests/pipeline-os-module.test.ts",
+    "tests/pipeline-os-s02-quota-i04-http.test.ts",
+    "tests/test-runner.test.ts",
+    "tests/ui-accessibility.test.tsx"
+  ],
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/acceptance.md",
+      "sha256": "43329e7ffaa10556204556d2d617cd715d3d8d5417cf592b3d84ebd37910c1a6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/adr-001.md",
+      "sha256": "a771810ebae73cdd6ad4a991b4a841e299eeaddba6ca9bdb3ff8dd3cac9ccc44"
+    },
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/design.md",
+      "sha256": "8eccd86c8c211de33da20fec6819f4c258df307f7951a8dd5371441740dbf550"
+    },
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/manifest.json",
+      "sha256": "fd8d1d50c4ce920852d24c68a5a356eb3c777e38a3c83f1ccc18f704a67880b6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/operating-guide.md",
+      "sha256": "2db752fa05832e0cfc31d928a6b9b93de3002de4e6ce4533dfc8bec804e76cc5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/publication-20261112.md",
+      "sha256": "83022df96c3754bfd9adb83df511c4bf8ba1fefcc2f3530b4463518ababfee76"
+    },
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/rollout.md",
+      "sha256": "612c1b78cad60b846d107c6526b6995211a9c37719a5cddab40bf3b417219694"
+    },
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/spec.md",
+      "sha256": "1d0727a97e5fdffa13cc747fc6ee7767dc7d6cf5eb96d5ba8098805d38ad1b71"
+    },
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/tasks.md",
+      "sha256": "80fc48121a4f506245b2b2fe6ce8efc746e8c5b54942c0335e89299e261ce392"
+    },
+    {
+      "path": "docs/specs/pipeline-os/module-20261112/verification.md",
+      "sha256": "ecd91f1705f68f5da9de192c371effa2524349f02d4e8981c8ed8e8e0cb85f13"
+    },
+    {
+      "path": "package.json",
+      "sha256": "5bf43b7f63dca00f11dc48b33b68917ead4b7919801f2c81caa6eae6d44be801"
+    },
+    {
+      "path": "public/pipeline-os/fonts/README.md",
+      "sha256": "dcae675243d45e7eeda7da897d7c09c5df473957c933b386f7ae447cc637a3fe"
+    },
+    {
+      "path": "public/pipeline-os/fonts/instrument-sans-OFL.txt",
+      "sha256": "9e27a72ed30eb49a08678f6a5d6ed98ec7ba5368f541637ee0683ec9134ef966"
+    },
+    {
+      "path": "public/pipeline-os/fonts/instrument-sans-latin.woff2",
+      "sha256": "2ee17598a98d8a59e4df8152d015bec9ab8e4d5672cc0ab42bef806b568e3971"
+    },
+    {
+      "path": "public/pipeline-os/fonts/instrument-serif-OFL.txt",
+      "sha256": "129ed7618959716959f2941fdd5b49e0ad6e6c1d78726761786a00253d865521"
+    },
+    {
+      "path": "public/pipeline-os/fonts/instrument-serif-latin.woff2",
+      "sha256": "5eb09b5ac0e28b67c2f041c8ba6d244604ca0c0980d65912ab2d47fed84ddc31"
+    },
+    {
+      "path": "scripts/run-tests.mjs",
+      "sha256": "3992350213b32f72ec96e65c2edae134c786efd830a29a58e7d53f924ee1f9fd"
+    },
+    {
+      "path": "src/app/api/pipeline-os/route.ts",
+      "sha256": "73fc53ea135221a2cbe1decacada1db243e5616fb2607926ad7ee77b9ec343e9"
+    },
+    {
+      "path": "src/app/pipeline-os/demo/page.tsx",
+      "sha256": "b3fbee86040546ab12226501e07b5c007b545e2a034b0e25bf2f319dc01b7d79"
+    },
+    {
+      "path": "src/app/pipeline-os/error.tsx",
+      "sha256": "2585dd43019a9f286cc892c71585a9fd7ccfd664035ea6aa1d72d7b83731ef2f"
+    },
+    {
+      "path": "src/app/pipeline-os/loading.tsx",
+      "sha256": "e0d78bf46d3619a74696cc4a4210fec84b8ddf081a6881d14750a27cefbbe080"
+    },
+    {
+      "path": "src/app/pipeline-os/page.tsx",
+      "sha256": "b7ab4eedc5259213175492fa1886f91bd62ad36cfc57164b9b0a714531a2b71b"
+    },
+    {
+      "path": "src/components/application-form.tsx",
+      "sha256": "8bd28af52761f89f6e3ac2afef26484b3d97cab7c7b7ac181fcab9d272ac3c1f"
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "sha256": "6b02954e0eac809dc02d37c0baa5a6c9f195ad48009d51e7703806fa28546059"
+    },
+    {
+      "path": "src/components/pipeline-os/board.tsx",
+      "sha256": "4a1575fcc3e0e7a4f55e7faa364d79cdfc8787768c0f6bba3805c97bbc36cc73"
+    },
+    {
+      "path": "src/components/pipeline-os/leads.tsx",
+      "sha256": "afc0ee75d5faf7b5fe4b946d60c5f055900623148b00e1d16e1f2159129d8937"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.css",
+      "sha256": "292c063f7366f28a718b692949ee8c4dbbf773ccb6676bf72baf90036d560fee"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "3cdc18fe23ab0e9fafff7c27fbf65abc69ce7286b1dc9492a4c08cc5ca51bf32"
+    },
+    {
+      "path": "src/components/ui.tsx",
+      "sha256": "91a56b7f93c26345f3dbf7e7c82d8094a729ee97ed0eeb9ced7687daa0aaaa68"
+    },
+    {
+      "path": "src/lib/pipeline-os/demo.ts",
+      "sha256": "aae221be0f4c7714a6750aba18735685bfdcdbdede64b2a65156cfaa9d8dd58f"
+    },
+    {
+      "path": "src/lib/pipeline-os/module.ts",
+      "sha256": "e6ba15638915ffa9155749e8557df085a1d8caecc56a7f008ab6be2123f6a2ee"
+    },
+    {
+      "path": "src/lib/server/pipeline-os-http.ts",
+      "sha256": "69580e87aad38df1b53230ff3737c220fdf40b3d68168c528da02afdb87ddd6a"
+    },
+    {
+      "path": "src/lib/server/pipeline-os-module.ts",
+      "sha256": "e08deedea8c57f297c7b680eb333c0654b4978703eab7425eb42f211b8827e32"
+    },
+    {
+      "path": "tests/offline.mjs",
+      "sha256": "3823e3aeb3cfa966ee4cc93627255a8e087e62a7fd49d5bfae94083b625fec25"
+    },
+    {
+      "path": "tests/pipeline-os-composio-verification-setup-http.test.ts",
+      "sha256": "a0ea90283b520a7f6dd30c7f8e2dc59672ad14f8ab9c5995463d4630f3159fbc"
+    },
+    {
+      "path": "tests/pipeline-os-module-db.test.ts",
+      "sha256": "16e19d76c47e8cdeca1a5e8a23684c70c543c93b2a22b23ca76659ead2ac7def"
+    },
+    {
+      "path": "tests/pipeline-os-module-http.test.ts",
+      "sha256": "16f7e307eaa83e74866fed1ff3cf74f0d408db9ddf32ac8e0f32c2fadb971447"
+    },
+    {
+      "path": "tests/pipeline-os-module-pagination.test.ts",
+      "sha256": "836ef7c8674bd8df397b3a87760078a1162bc9179d4c348e7388dd8b3717eb91"
+    },
+    {
+      "path": "tests/pipeline-os-module-ui.test.ts",
+      "sha256": "cde87ff2a382eff6f5b05d5010aa0be6c4a1a478a9884e6d43e3db05cdbae0d7"
+    },
+    {
+      "path": "tests/pipeline-os-module.test.ts",
+      "sha256": "9b0c67256b4f6e3da71fca8a47c1404fb1895de70aad37fa24240be6102501cf"
+    },
+    {
+      "path": "tests/pipeline-os-s02-quota-i04-http.test.ts",
+      "sha256": "64be407e7548556f030f62c58311503990a5cb25a387765a6ba4a3963035e255"
+    },
+    {
+      "path": "tests/test-runner.test.ts",
+      "sha256": "ef0c955269524edb6fef7c9206287780d0d78dd5ddf1b89e20cb3a2813cf2c59"
+    },
+    {
+      "path": "tests/ui-accessibility.test.tsx",
+      "sha256": "933bf6e75f78ee9b34b92c8229b4127e9f357dd5f72bdc5cc2de00f741816af3"
+    }
+  ],
+  "tests": {
+    "files": 168,
+    "enumerated": 1427,
+    "pass": 1421,
+    "fail": 0,
+    "skipped": 6,
+    "typecheck": 0,
+    "buildWebpack": 0
+  },
+  "preserved": {
+    "workerMode": "paused",
+    "workerCode": true,
+    "dockerfiles": true,
+    "lockfile": true,
+    "migrations": true,
+    "remoteVariables": true,
+    "otherReleaseWip": 4
+  },
+  "note": "This manifest excludes its own hash. Raw QA logs, screenshots and machine/runtime metadata remain local."
+}

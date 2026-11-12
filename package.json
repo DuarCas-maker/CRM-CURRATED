@@ -10,7 +10,7 @@
     "worker": "tsx --env-file=.env.local worker/index.ts",
     "worker:production": "tsx worker/index.ts",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "tsx --test tests/*.test.ts",
+    "test": "node scripts/run-tests.mjs",
     "test:db": "tsx tests/database.ts",
     "test:load": "tsx tests/import-load.ts"
   },

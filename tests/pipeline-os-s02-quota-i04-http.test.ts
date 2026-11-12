@@ -19,7 +19,7 @@ if (!process.execArgv.includes("--experimental-test-module-mocks"))
       [
         "--experimental-test-module-mocks",
         "--import",
-        "./.local/pipeline-os/s02-i01/offline.mjs",
+        "./tests/offline.mjs",
         "--import",
         "tsx",
         "--test",
