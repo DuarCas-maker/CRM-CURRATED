@@ -441,15 +441,25 @@ export function PipelineUpdates({
               {items.map((x) => (
                 <button
                   className="pos-update"
-                  key={x.id}
+                  key={x.eventId || x.id}
                   onClick={() => open(x.id)}
                 >
                   <span>
                     <b>{x.company}</b>
                     <span>
-                      {x.nextAction ||
+                      {x.summary ||
+                        x.nextAction ||
                         t(locale, "Revisar expediente", "Review file")}
                     </span>
+                    {x.sourceMessageId && (
+                      <small>
+                        {t(
+                          locale,
+                          "Correo revisado · evidencia en el expediente",
+                          "Reviewed email · evidence in file",
+                        )}
+                      </small>
+                    )}
                   </span>
                   <time>{dateLabel(x.at, locale, true)}</time>
                   <ArrowUpRight size={14} />

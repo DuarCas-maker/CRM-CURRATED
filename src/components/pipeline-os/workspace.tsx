@@ -43,6 +43,7 @@ import type { EmailTemplate } from "@/lib/campaign-templates";
 import { Modal, t } from "../ui";
 import { useLeaveConfirmation } from "../unsaved-changes";
 import { OpportunityDetail } from "../opportunity-detail";
+import { PipelineMailReview } from "./mail-review";
 import { ConversationsWorkspace } from "../conversations-workspace";
 import { CampaignCenterWorkspace } from "../campaign-center";
 import { CampaignComposer } from "../campaign-composer";
@@ -1462,6 +1463,18 @@ export function PipelineOSWorkspace({
                         )}
                       </span>
                     </div>
+                  )}
+                  {["superadmin", "closer_admin", "closer"].includes(
+                    caseData.profile.role,
+                  ) && (
+                    <PipelineMailReview
+                      key={caseId}
+                      caseId={caseId}
+                      locale={locale}
+                      demo={data.demo}
+                      changed={refresh}
+                      leave={requestLeave}
+                    />
                   )}
                   <OpportunityDetail
                     key={`${caseId}:${caseSection}`}

@@ -1,0 +1,19 @@
+{
+  "protocol": "MAIL-REVIEW-053-PG15-r1",
+  "version": 150019,
+  "checks": [
+    "053 installs with supabase_admin ownership and leaves prior function definitions/ACL intact",
+    "concurrent begin across two physical sessions permits exactly one fresh analysis and zero commercial effects",
+    "invalid owner, revision, amount and mismatched process produce no partial writes",
+    "concurrent same-key approval commits exactly one offer/task/activity/event and replays identical IDs",
+    "different-key competing approval has one winner and one MR_ALREADY_APPROVED without duplicates",
+    "requirement approval creates a requirement and task without an extra offer",
+    "source changes block approval; explicit reanalysis archives old attempt and ignores a stale finish",
+    "integrated permission catalog denies seller/outsider/inactive/AAL1/anon and direct writes",
+    "rollback preserves approved business effects and old catalog; reinstall succeeds"
+  ],
+  "clusterStopped": true,
+  "synthetic": true,
+  "archiveSha256": "cc54e2d349f48c7743ad0c509b755ea565ff04bb5c5e71745d114074cab0c453",
+  "node": "22.23.5"
+}

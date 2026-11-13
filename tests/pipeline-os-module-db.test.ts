@@ -61,7 +61,10 @@ test("the new catalog queries the real schema under two users' RLS and never wid
             return {
               data: null,
               count: null,
-              error: { message: (e as Error).message },
+              error: {
+                message: (e as Error).message,
+                code: (e as { code?: string }).code,
+              },
             };
           }
         },

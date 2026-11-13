@@ -5,6 +5,7 @@ import {
   buildPipelineBoard,
   type PipelineQuery,
   type PipelineProcess,
+  type PipelineMailUpdate,
 } from "../pipeline-os/module";
 import { checkDb, HttpError, requireUser } from "./supabase";
 import {
@@ -200,6 +201,31 @@ export async function readPipelineBoard(
     conversations,
     messages,
   });
+  const mail_review_updates: PipelineMailUpdate[] = [];
+  for (let offset = 0; offset < closerIds.length; offset += 50) {
+    const batch = closerIds.slice(offset, offset + 50);
+    const events = await readPipelinePages<PipelineMailUpdate>(
+      async (start) => {
+        const r = await db
+          .from("pipeline_mail_reviews")
+          .select("id,opportunity_id,message_id,approved_at,approved_value", {
+            count: "exact",
+          })
+          .eq("status", "approved")
+          .in("opportunity_id", batch)
+          .order("id")
+          .range(start, start + 499);
+        // Existing installations retain their board until the additive migration is applied.
+        if (r.error && ["42P01", "PGRST205"].includes(r.error.code || ""))
+          return { rows: [], total: 0 };
+        return {
+          rows: checkDb(r, "pipeline_os.mail_reviews") || [],
+          total: r.count,
+        };
+      },
+    );
+    mail_review_updates.push(...events);
+  }
   return buildPipelineBoard(
     {
       ...directory,
@@ -211,6 +237,7 @@ export async function readPipelineBoard(
       submissions,
       campaigns,
       opportunity_signals,
+      mail_review_updates,
       conversations: [],
       messages: [],
     },

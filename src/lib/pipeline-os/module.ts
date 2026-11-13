@@ -123,6 +123,9 @@ export type PipelineBoard = {
   };
   updates: {
     id: string;
+    eventId?: string;
+    sourceMessageId?: string;
+    summary?: string;
     company: string;
     group: PipelineGroup;
     priority: number;
@@ -130,6 +133,17 @@ export type PipelineBoard = {
     at: string;
   }[];
   priorities: Pick<PipelineRow, "id" | "company" | "nextAction" | "priority">[];
+};
+export type PipelineMailUpdate = {
+  id: string;
+  opportunity_id: string;
+  message_id: string;
+  approved_at: string;
+  approved_value: {
+    summary: string;
+    task_title: string;
+    kind: "offer" | "requirement";
+  };
 };
 export type PipelineSource = Pick<
   Workspace,
@@ -146,7 +160,10 @@ export type PipelineSource = Pick<
   | "conversations"
   | "messages"
   | "opportunity_signals"
-> & { campaigns?: Pick<Workspace["campaigns"][number], "id" | "status">[] };
+> & {
+  campaigns?: Pick<Workspace["campaigns"][number], "id" | "status">[];
+  mail_review_updates?: PipelineMailUpdate[];
+};
 
 export function comparePipelineOffers(
   opportunity: Pick<Opportunity, "amount">,
@@ -391,6 +408,52 @@ export function buildPipelineBoard(
       };
     })
     .sort((a, b) => b.tasks - a.tasks || a.name.localeCompare(b.name));
+  const inWindow = (at: string) =>
+    Date.parse(at) <= now && Date.parse(at) >= now - q.hours * 3600000;
+  const reviewed: PipelineBoard["updates"] = (
+    data.mail_review_updates || []
+  ).flatMap((event) => {
+    const row = rows.find((r) => r.id === event.opportunity_id);
+    if (
+      !row ||
+      !canSeeArea(
+        data.profile,
+        allowed.find((o) => o.id === row.id)!,
+        "closer",
+      ) ||
+      !event.approved_value ||
+      !inWindow(event.approved_at)
+    )
+      return [];
+    return [
+      {
+        id: row.id,
+        eventId: event.id,
+        sourceMessageId: event.message_id,
+        company: row.company,
+        group: event.approved_value.kind === "offer" ? "offers" : "need",
+        priority: row.priority,
+        summary: event.approved_value.summary,
+        nextAction: event.approved_value.task_title,
+        at: event.approved_at,
+      },
+    ];
+  });
+  const edited: PipelineBoard["updates"] = rows
+    .filter(
+      (r) => inWindow(r.updatedAt) && !reviewed.some((e) => e.id === r.id),
+    )
+    .map((r) => ({
+      id: r.id,
+      company: r.company,
+      group:
+        r.groups.find((g) =>
+          pipelineStages.includes(g as (typeof pipelineStages)[number]),
+        ) || (r.groups.includes("clients") ? "clients" : "files"),
+      priority: r.priority,
+      nextAction: r.nextAction,
+      at: r.updatedAt,
+    }));
   return {
     source: "crm",
     campaigns: {
@@ -419,24 +482,13 @@ export function buildPipelineBoard(
         : null,
       fundedCount: counts.clients,
     },
-    updates: rows
-      .filter((r) => {
-        const t = Date.parse(r.updatedAt);
-        return t <= now && t >= now - q.hours * 3600000;
-      })
-      .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
-      .slice(0, 50)
-      .map((r) => ({
-        id: r.id,
-        company: r.company,
-        group:
-          r.groups.find((g) =>
-            pipelineStages.includes(g as (typeof pipelineStages)[number]),
-          ) || (r.groups.includes("clients") ? "clients" : "files"),
-        priority: r.priority,
-        nextAction: r.nextAction,
-        at: r.updatedAt,
-      })),
+    updates: [...reviewed, ...edited]
+      .sort(
+        (a, b) =>
+          Date.parse(b.at) - Date.parse(a.at) ||
+          (a.eventId || a.id).localeCompare(b.eventId || b.id),
+      )
+      .slice(0, 50),
     priorities: rows
       .filter((r) => r.groups.includes("tasks"))
       .slice(0, 3)

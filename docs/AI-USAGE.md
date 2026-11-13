@@ -1,5 +1,7 @@
 # Claves y consumo por servicio
 
+La revisión de correo bajo demanda de Pipeline OS reutiliza **A_OPENAI_API_KEY** y el modelo existente. Su consumo se suma a `application_extraction` (Completar aplicación), no aparece como un cuarto servicio. La revisión durable identifica su propósito y guarda la propuesta antes de la aprobación humana. No se ejecuta IA por recibir un correo ni al actualizar la lectura. Detalles y activación coordinada: [guía de revisión](specs/pipeline-os/mail-review/operating-guide.md).
+
 | Servicio | Variable | Coolify Production / Runtime |
 |---|---|---|
 | Análisis manual / riesgo | `R_OPENAI_API_KEY` | Web y worker |

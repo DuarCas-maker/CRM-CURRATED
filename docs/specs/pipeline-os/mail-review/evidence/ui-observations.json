@@ -1,0 +1,21 @@
+{
+  "syntheticOnly": true,
+  "viewportCssWidths": [
+    360,
+    768,
+    1280
+  ],
+  "mobile": {
+    "overflowingControls": 0,
+    "pageWidth": 346,
+    "width": 360
+  },
+  "keyboard": "Amount Tab -> Product",
+  "unsavedGuard": "Continue editing preserved corrected amount",
+  "requiredRequirement": "Empty requirement blocked approval",
+  "languages": [
+    "es",
+    "en"
+  ],
+  "approvedAmountUsd": 60000
+}

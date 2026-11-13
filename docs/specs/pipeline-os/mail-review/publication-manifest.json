@@ -1,0 +1,160 @@
+{
+  "scope": "pipeline-os-mail-review-publication",
+  "base": "832136f8e0b783c4a68a3f88810ebfeff26b00f3",
+  "authorized": "PG15, SQL053, production",
+  "nativePg15": 150019,
+  "nativeTestsPassed": 10,
+  "sql053Sha256": "66e368e2775b87a28042db8bcb1039f75344b88e458219ded5a9c314ee596047",
+  "productionPg15": 150008,
+  "sql053Committed": true,
+  "priorFunctionFingerprint": "f417ebcac7d68bd0b4717e64e0d56416",
+  "backupReadable": true,
+  "workerMode": "paused",
+  "files": [
+    {
+      "path": "docs/AI-USAGE.md",
+      "sha256": "4b86e49c111a06f638a180aaf9efc82f1bd0d6502da71dbebf9fb5a284f675d7",
+      "gitBlob": "cd6767be479f6ec26170e2b188a6f6b25356b202"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/acceptance.md",
+      "sha256": "c59efb8abe60c82eaeb322c0c60d94ee97635b7a290ed7f3b7c17e302c306e9f",
+      "gitBlob": "1e215ae15461abe84f4478d6ca5d9c52a93b78b3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/adr-001.md",
+      "sha256": "52734e0dcf0c319131db43372e0a7936c64a3b49b5803d6a4c80a824d1681331",
+      "gitBlob": "09e3354597b2a610879a44e54deee0bcbfb995e9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/design.md",
+      "sha256": "eb0d7f2445369c2291b9a83d73886c3c20dea0f5e7415f79399fbb403d3c9454",
+      "gitBlob": "892a3a3759376a7a9728e8f2146e0afc452d113a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/evidence/approved-desktop.jpg",
+      "sha256": "78866a325bd5afb6a5c673689f520eec872a0e31621f8e1919014dd29161a623",
+      "gitBlob": "189bcccfe0c11fc883e4aa4ebdc8f97061944e46"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/evidence/pg15-native.json",
+      "sha256": "2df7059695e49a1a56283a2a32301a9c134a7041ef3d80680eb1f96d93025c9e",
+      "gitBlob": "3d47321bccbc66c210e617ca0a9be05dbf6ba68c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/evidence/review-mobile.jpg",
+      "sha256": "a3d362d05ddbcc87e743e51f1e48df7052b0a6ed78b0b23e3189c07eaac0e05f",
+      "gitBlob": "aa0ab7cbcd3fa729b0df9f38850e0ad443f02682"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/evidence/ui-observations.json",
+      "sha256": "c89a4ffd10fb3bb1bb5d6b907214c9f6ee1fda68462a6a153c8f32667012982b",
+      "gitBlob": "3f4d17bc2e9ec55fa9247d3173ef0541bb8115c9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/manifest.json",
+      "sha256": "fbd2a50fcaf8731248950927502e27ffbe01d63cd2ec2328d2a97d4410227259",
+      "gitBlob": "d5e20813d90f66049144b95d78822d1185d47cc8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/migrations/053_pipeline_mail_review.rollback.sql",
+      "sha256": "067de13b2a1ea13a47e8e6dd371a77843b5dcdb6271ec4a39fa38c3ca8058ee4",
+      "gitBlob": "f701a97402bbb935a30c96109c0f7ea043f0bd2d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/migrations/053_pipeline_mail_review.sql",
+      "sha256": "66e368e2775b87a28042db8bcb1039f75344b88e458219ded5a9c314ee596047",
+      "gitBlob": "c75e5568b3e6d4967baf5c1ca089c591a3126677"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/operating-guide.md",
+      "sha256": "ebcb18fcc33058c48397d34d7730df03de233461c5095859159d84ff23c68646",
+      "gitBlob": "9a7bf52bd720540415f1475b9da3d16491793379"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/publication.md",
+      "sha256": "f9c6dcd8b712d1ba5c9e3bb12b0d0fab9f673859fdfe85c0f2519c0e451ae6e3",
+      "gitBlob": "d48086761f7c638f027ab4ed80f05d4e954c4a3b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/rollout.md",
+      "sha256": "2b18727311a387d2bbcfa7031b1250b70a9d6b375ba1172958dcfcb737854367",
+      "gitBlob": "90e055d669fa4f771165bdfd7ebf8b3554045117"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/spec.md",
+      "sha256": "584565889d02ec99b9d53e8e64ed4432209b0b4328b97b90490b6d57dad26fff",
+      "gitBlob": "99aa21c2b46d0e22be72fd67bb7389b74bcc40ca"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/tasks.md",
+      "sha256": "3c3db77339d52598f4ba7ad43ef18bf2cb1d5e8c09536901faa0ecb83e045cae",
+      "gitBlob": "00ace8cdc39ea78c120c916787947e23bf18c2a0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/verification.md",
+      "sha256": "537e47fd44e1af6fd12aea45dbff037f250aaac86a44125c7af80165bd8f4f71",
+      "gitBlob": "b5d853c92f2aa4b3cc38535bc05b1e5129fb4a22"
+    },
+    {
+      "path": "src/app/api/pipeline-os/mail-review/route.ts",
+      "sha256": "603909aa4a59f8b852659f466fb273364b9e8c346a55b268d39635dcb6665a06",
+      "gitBlob": "f1b696ae92b6dc884a5b99cdc219523f8c85f179"
+    },
+    {
+      "path": "src/components/pipeline-os/board.tsx",
+      "sha256": "93757e65d8bcc5a1de813721605ca948cde52cde22ca146e0bccc7bb648fa46a",
+      "gitBlob": "d7cabfa460afaeefc822c86076ab52f2e811505a"
+    },
+    {
+      "path": "src/components/pipeline-os/mail-review.tsx",
+      "sha256": "de3ff62a8eff81bbf956812d0465dc146b432d2a041c89d6f2a5fa01e1f6d33e",
+      "gitBlob": "53ca9be61164676e6d653e344b9989d2480c5ef4"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.css",
+      "sha256": "c6106e8e522ec65b44d3dba643fd64496bd64ce7ba7c8525d8325b30f66c02c6",
+      "gitBlob": "33a0319ef0e7c8c3d5d8a683d707da63dce5e1c2"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "0060f957415affa2e4e7c980d2a06b3af84f88d87c7383ac2d9d3885eb3299cb",
+      "gitBlob": "457d81423c42074ac52a1bc99e9da8bb59a84c18"
+    },
+    {
+      "path": "src/lib/pipeline-os/mail-review.ts",
+      "sha256": "27a94bbc19e73e62d75c73c409b2c2aa733c9ca788ddc7dfe08bf8317bbb082d",
+      "gitBlob": "ad090b5e4b69bfc4bb01430c35a5ac1af069bee1"
+    },
+    {
+      "path": "src/lib/pipeline-os/module.ts",
+      "sha256": "232d75d45ffe9e7903cb445d5543547396da5d2a9652f7d810539f0b8d7dc969",
+      "gitBlob": "0c660dc8ecec9db79d8fb873b40bdb6956ec9a7a"
+    },
+    {
+      "path": "src/lib/server/pipeline-mail-review.ts",
+      "sha256": "ac55110dde55084f29007505019a19a29d7ff114ba0083e1045d8714d0428117",
+      "gitBlob": "f3dc5b86115fe947398167b1bc9991f300a9b70c"
+    },
+    {
+      "path": "src/lib/server/pipeline-os-module.ts",
+      "sha256": "cd051d2accded8830ee792dcf04032470648f01b5c9af660753e0bfbf3b3b9d5",
+      "gitBlob": "23152cf9577d95ff2afef88d146dbf0025a16fcc"
+    },
+    {
+      "path": "tests/pipeline-os-mail-review-pg15.test.ts",
+      "sha256": "858d2e8ccf3b56638719ac3f5027946994652b9e4f2213ba7cf7517eb3614885",
+      "gitBlob": "6b0d0789375afcf01e797df06565404ca6c71166"
+    },
+    {
+      "path": "tests/pipeline-os-mail-review.test.ts",
+      "sha256": "4634d0b9862076d657803e5f9e25388cf10b26b2c504d0350d66918aa540ae48",
+      "gitBlob": "317af6d06037840bc53e6aa176db9130941ff345"
+    },
+    {
+      "path": "tests/pipeline-os-module-db.test.ts",
+      "sha256": "476578096d0a0893cc213b1814812bbe6cc6610e208540163b7d64a97806e3ee",
+      "gitBlob": "406e4631d989953eeb848c64ca7b10613a218d8b"
+    }
+  ]
+}

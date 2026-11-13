@@ -1224,3 +1224,9 @@
     scroll-behavior: auto !important;
   }
 }
+.pipeline-os .pos-mail-review { margin: 16px 0; overflow-wrap: anywhere; }
+.pipeline-os .pos-mail-review summary { cursor: pointer; padding: 8px 0; }
+.pipeline-os .pos-mail-review label { display: grid; gap: 6px; margin: 12px 0; min-width: 0; }
+.pipeline-os .pos-mail-review input, .pipeline-os .pos-mail-review select, .pipeline-os .pos-mail-review textarea { box-sizing: border-box; width: 100%; min-width: 0; }
+.pipeline-os .pos-mail-review pre { max-height: 260px; overflow: auto; white-space: pre-wrap; font: inherit; }
+.pipeline-os .pos-mail-review blockquote { margin: 8px 0; padding: 8px 12px; border-left: 3px solid currentColor; }
