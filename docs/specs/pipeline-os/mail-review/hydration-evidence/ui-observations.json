@@ -1,0 +1,23 @@
+{
+  "synthetic": true,
+  "serverTZ": "UTC",
+  "widths": [
+    {
+      "date": "jueves, 12 de noviembre",
+      "overflows": false,
+      "width": 360
+    },
+    {
+      "date": "jueves, 12 de noviembre",
+      "overflows": false,
+      "width": 768
+    },
+    {
+      "date": "jueves, 12 de noviembre",
+      "overflows": false,
+      "width": 1280
+    }
+  ],
+  "consoleErrorWarnCount": 0,
+  "providerCalls": 0
+}

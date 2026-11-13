@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { registerHooks } from "node:module";
+import { createHash } from "node:crypto";
 import { pipelineModuleDemo } from "../src/lib/pipeline-os/demo";
 import { buildPipelineBoard } from "../src/lib/pipeline-os/module";
 import {
@@ -62,4 +63,50 @@ test("tables identify no-result states and reports never claim they executed a G
     }),
   );
   assert(report.includes("does not run a new Gmail scan"));
+});
+
+test("first workspace render matches across server/client time zones near UTC midnight in both languages", async () => {
+  const hook = registerHooks({
+    load(url, context, next) {
+      return url.endsWith(".css")
+        ? { format: "module", source: "", shortCircuit: true }
+        : next(url, context);
+    },
+  });
+  const { PipelineOSWorkspace } =
+    await import("../src/components/pipeline-os/workspace");
+  hook.deregister();
+  const previousZone = process.env.TZ;
+  try {
+    for (const locale of ["es", "en"] as const) {
+      const { data, processes } = pipelineModuleDemo();
+      data.preferences.locale = locale;
+      const initialBoard = {
+        ...buildPipelineBoard(data, processes),
+        asOf: "2026-11-13T04:00:00.000Z",
+      };
+      const markup = (zone: string) => {
+        process.env.TZ = zone;
+        return renderToStaticMarkup(
+          createElement(PipelineOSWorkspace, {
+            initial: data,
+            initialBoard,
+            processes,
+          }),
+        );
+      };
+      const server = markup("UTC");
+      for (const zone of ["America/Bogota", "America/New_York", "Asia/Tokyo"]) {
+        const client = markup(zone);
+        assert.equal(
+          createHash("sha256").update(client).digest("hex"),
+          createHash("sha256").update(server).digest("hex"),
+          `${locale} ${zone}: server=${server.match(/pos-subtitle[^>]*>(.*?)<\/p>/)?.[1]} client=${client.match(/pos-subtitle[^>]*>(.*?)<\/p>/)?.[1]}`,
+        );
+      }
+    }
+  } finally {
+    if (previousZone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousZone;
+  }
 });

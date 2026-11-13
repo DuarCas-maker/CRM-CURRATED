@@ -1197,10 +1197,14 @@ export function PipelineOSWorkspace({
                   )}
                 </h1>
                 <p className="pos-subtitle">
-                  {new Intl.DateTimeFormat(
-                    locale === "es" ? "es-CO" : "en-US",
-                    { weekday: "long", month: "long", day: "numeric" },
-                  ).format(new Date(board.asOf))}{" "}
+                  <time dateTime={board.asOf}>
+                    {ready
+                      ? new Intl.DateTimeFormat(
+                          locale === "es" ? "es-CO" : "en-US",
+                          { weekday: "long", month: "long", day: "numeric" },
+                        ).format(new Date(board.asOf))
+                      : "—"}
+                  </time>{" "}
                   ·{" "}
                   {t(
                     locale,

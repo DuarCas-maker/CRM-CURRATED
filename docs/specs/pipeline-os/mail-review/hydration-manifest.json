@@ -1,0 +1,50 @@
+{
+  "scope": "pipeline-os-hydration-fix",
+  "base": "22e84f206201831493ac4e15cf56d84ce13b152a",
+  "request": "Corrige ese error de hidratación y luego hagamos el piloto con un correo real",
+  "risk": "isolated presentation fix",
+  "testsPassed": 28,
+  "typecheckPassed": true,
+  "buildPassed": true,
+  "serverTimezone": "UTC",
+  "zones": [
+    "UTC",
+    "America/Bogota",
+    "America/New_York",
+    "Asia/Tokyo"
+  ],
+  "languages": [
+    "es",
+    "en"
+  ],
+  "sqlChanges": false,
+  "providerCalls": 0,
+  "workerMode": "paused",
+  "files": [
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "db8fc78d87d9e1cbda5787a1eb3b527fbbdf91123e9ea0275d8fc0f92e2cc3d0",
+      "gitBlob": "0281539d2d34c2a966bcd488529c5a12f486f288"
+    },
+    {
+      "path": "tests/pipeline-os-module-ui.test.ts",
+      "sha256": "0b925083f2779622451e0ced0a031d13d315fcaf06ed30c5e1bd91e36c699c79",
+      "gitBlob": "9282fcb265c9bdee964526f3191372a05e7045fb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/hydration-publication.md",
+      "sha256": "56a7f37961d013dd763f91ee5cb1540fb504a42881b0fb73d45f942e969890c3",
+      "gitBlob": "f263d1e45165c53186465538f3afc5eba8ab3875"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/hydration-evidence/qa-desktop.jpg",
+      "sha256": "5a74f636c7c7125135552b1d53e6b246744bc8349d3498e9f0d1023761de846c",
+      "gitBlob": "abe07d9a44d365992bbb233b594bbb57307d50dd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/mail-review/hydration-evidence/ui-observations.json",
+      "sha256": "de63f665280f53ed8b0304b6c5b3f0d847b8889f5f55ff89da535b4e63f6a9bd",
+      "gitBlob": "08fa6d412b2aa87a5ad41a9b708d72d0f7710b3d"
+    }
+  ]
+}
