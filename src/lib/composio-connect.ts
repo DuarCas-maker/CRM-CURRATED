@@ -123,7 +123,7 @@ export const connectConfigSchema = z.strictObject({
   generation: revision.min(1),
   project_id: identifier.refine((s) => !/^(ac_|ca_)/.test(s)),
   auth_config_id: z.string().regex(/^ac_[A-Za-z0-9_-]{1,128}$/),
-  quota_project_id: identifier,
+  quota_project_id: identifier.nullable(),
   owner_id: owner,
   callback_mode: z.literal("standard"),
 });

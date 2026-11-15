@@ -34,6 +34,7 @@ import { readBounded } from "../../body";
 import { parseBrandPage } from "../../../brand-management";
 import { composioBindingPage } from "../composio-binding";
 import { mailQuotaEnabled, reserveGmailQuota } from "../../mail-quota";
+import { reserveConnectProfileQuota } from "./profile-quota";
 const nonce = z.string().regex(/^[A-Za-z0-9_-]{32,256}$/),
   revision = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const cookieSchema = z.strictObject({
@@ -409,9 +410,19 @@ async function engine(
         ctx.p.configuration().fingerprint !== c.fingerprint
       )
         return fail("CONNECT_STALE");
+      if ("contract_version" in c.descriptor.context) {
+        const checked = await ctx.p
+          .service()
+          .rpc("composio_connect_policy_current", {
+            attempt: id,
+            authority: connectAuthority(session, cookie.proof),
+          });
+        if (checked.error || checked.data !== true)
+          return fail("CONNECT_STALE");
+      }
       // Only the pinned Gmail profile proxy needs Gmail units. Metadata/link are separate Composio requests.
       if (
-        mailQuotaEnabled() &&
+        (mailQuotaEnabled() || "contract_version" in c.descriptor.context) &&
         String(input) ===
           "https://backend.composio.dev/api/v3.1/tools/execute/proxy"
       ) {
@@ -471,17 +482,30 @@ async function engine(
           )
             return fail("CONNECT_STALE");
         };
-        const lease = await reserveGmailQuota({
-          account,
-          provider: "composio",
-          path: "profile",
-          key: phase,
-          deadline: new Date(a.deadline_ms).toISOString(),
-          signal: init.signal ?? undefined,
-          authorize,
-          requiresV2: true,
-          legacy: async () => fail(),
-        });
+        const lease =
+          "contract_version" in c.descriptor.context
+            ? await reserveConnectProfileQuota({
+                attempt: id,
+                phase,
+                authority: connectAuthority(session, cookie.proof),
+                policy: c.descriptor.context.policy,
+                deadline: a.deadline_ms,
+                rpc: (name, input) => ctx.p.service().rpc(name, input),
+                now: ctx.p.now,
+                signal: init.signal ?? undefined,
+                authorize,
+              })
+            : await reserveGmailQuota({
+                account,
+                provider: "composio",
+                path: "profile",
+                key: phase,
+                deadline: new Date(a.deadline_ms).toISOString(),
+                signal: init.signal ?? undefined,
+                authorize,
+                requiresV2: true,
+                legacy: async () => fail(),
+              });
         return lease.emit(() => ctx.p.fetchImpl(input, init));
       }
       return ctx.p.fetchImpl(input, init);

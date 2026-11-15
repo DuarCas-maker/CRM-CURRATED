@@ -212,7 +212,11 @@ test(
       },
       callback_origin: "https://crm.example.test",
     };
-    const configFor = (config: typeof configuration.config) => ({
+    const configFor = (
+      config: Omit<typeof configuration.config, "quota_project_id"> & {
+        quota_project_id: string | null;
+      },
+    ) => ({
       ...configuration,
       config: { ...config },
     });

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { ConnectError, connectConfigSchema } from "../../../composio-connect";
 import { verificationContextSchema } from "../composio-verifier";
+import { verificationContextV2Schema } from "../../mail-transport/verification-context-v2";
 
 const httpsOrigin = z
   .string()
@@ -24,13 +25,17 @@ export const connectProviderConfigSchema = z
   .strictObject({
     enabled: z.literal(true),
     config: connectConfigSchema,
-    context: verificationContextSchema,
+    context: z.union([verificationContextSchema, verificationContextV2Schema]),
     callback_origin: httpsOrigin,
   })
   .superRefine((value, ctx) => {
     if (
       value.config.project_id !== value.context.composio_project_id ||
-      value.config.quota_project_id !== value.context.google_quota_project_id
+      ("contract_version" in value.context
+        ? value.config.quota_project_id !== null ||
+          value.context.policy.state !== "enabled"
+        : value.config.quota_project_id !==
+          value.context.google_quota_project_id)
     )
       ctx.addIssue({
         code: "custom",
