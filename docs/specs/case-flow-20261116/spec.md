@@ -1,0 +1,15 @@
+# Flujo simplificado del expediente
+
+SDD STRICT · implementación local · base `a34a089`. Decisiones nuevas del usuario: 14A confirmación/corrección manual con motivo y evidencia (informes desde su tarjeta y desembolso con datos obligatorios); 15A importe ofrecido por lender y final acordado del elegido, distinto del desembolso; 16A responsable actual y administradores continúan sin traspaso. Sustituye las partes incompatibles del checklist anterior, sin eliminar registros históricos.
+
+| FR | Aceptación |
+|---|---|
+| FR-01 Informes IA | AC-01 Quitar Registrar análisis. Cada informe terminado queda pendiente y ofrece Aprobar / No aprobar. Uno o más informes IA aprobados y vigentes completan ese punto; análisis manuales anteriores, borradores/rechazados/obsoletos no lo completan. La aprobación usa el propio informe, sin volver a escribirlo. |
+| FR-02 Sin traspaso | AC-02 Quitar el punto de entrega al closer; no exigir esa entrega para continuar. Responsable actual = closer asignado, o seller si no hay closer. Ese responsable y superadmin/seller_admin/closer_admin gestionan el flujo; ajenos, inactivos y sin MFA no. Se conservan permisos de buzón, remitente, marca y envío. |
+| FR-03 Pendiente de lenders | AC-03 Casos con riesgo completo y sin correo confirmado a lender aparecen en Pendiente de lenders. El primer correo outbound confirmado los lleva a Oferta y negociación, aunque no exista aún una oferta. Cola/draft/uncertain no cuentan. Las fases y listas se recalculan con registros; no se dispara IA/envío por visualizar. |
+| FR-04 Gestión en conversaciones | AC-04 En el lender seleccionado de Conversaciones se puede registrar oferta recibida, seleccionar una, indicar requisitos pendientes/resueltos y guardar montos. Varias ofertas disponibles; un solo lender elegido por operación, sin descartar los demás. Guardado atómico, idempotente y con respaldo del mismo expediente. |
+| FR-05 Montos | AC-05 Oferta positiva por lender; monto final acordado positivo solo del elegido. No registrar un desembolso por completar ese campo. El desembolso sigue exigiendo evento, importe real y lender. |
+| FR-06 Manual y automático | AC-06 Confirmar, marcar pendiente o volver al cálculo automático con motivo y correo/documento del expediente. Mostrar procedencia manual y conservar auditoría. No fabricar archivos, firmas, informes aprobados ni mensajes enviados; no omitir los datos financieros estructurados obligatorios. |
+| FR-07 Compatibilidad y verificación | AC-07 Mantener pantallas y acciones ajenas, histórico separado por operación, sin atribuir renovaciones por nombre. Pruebas de permisos, concurrencia, datos, HTTP, UI responsive/teclado y build. Sin importar datos reales, enviar mensajes, SQL remoto, push o publicación en este incremento local. |
+
+No se decide elegibilidad crediticia por IA. Aprobar un informe es una revisión humana, no aprobar o desembolsar un crédito. Las selecciones y requisitos pertenecen al lender y proceso elegidos, no al comercio por coincidencia de nombre.

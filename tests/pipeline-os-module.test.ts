@@ -25,7 +25,17 @@ function fixture() {
   d.messages = [];
   d.conversations = [];
   d.opportunity_signals = {};
-  return d;
+  return {
+    ...d,
+    flow_signals: {
+      [o.id]: {
+        approved: true,
+        ready: true,
+        sent: 0,
+        manualSent: null as boolean | null,
+      },
+    },
+  };
 }
 
 test("application signatures are not lender contract evidence; historical processes do not override the active one", () => {
@@ -124,6 +134,12 @@ test("counts, owner filtering and search run before pagination; one business cou
     seller_id: i < 110 ? "one" : "two",
     closer_id: null,
   }));
+  d.flow_signals = Object.fromEntries(
+    d.opportunities.map((o) => [
+      o.id,
+      { approved: true, ready: true, sent: 0, manualSent: null },
+    ]),
+  );
   const b = buildPipelineBoard(
     d,
     [],
@@ -146,6 +162,7 @@ test("seller projection never exposes closer offers, contract states, private ta
     o = d.opportunities[0];
   d.profile = { ...d.profile, role: "seller", id: o.seller_id };
   o.handed_off_at = "2026-11-01";
+  o.closer_id = "another-current-owner";
   d.tasks = [
     {
       id: "private",

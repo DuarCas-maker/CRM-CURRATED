@@ -141,6 +141,8 @@ export interface Lender {
   notes: string;
 }
 export interface Submission {
+  requirements_state?: "not_requested" | "pending" | "resolved";
+  agreed_amount?: number | null;
   process_id?: string | null;
   id: string;
   opportunity_id: string;
@@ -442,7 +444,7 @@ export function canSeeOpportunity(profile: Profile, o: Opportunity): boolean {
     profile.role === "superadmin" ||
     profile.role === "seller_admin" ||
     (profile.role === "seller" && o.seller_id === profile.id) ||
-    (profile.role === "closer_admin" && !!o.handed_off_at) ||
+    profile.role === "closer_admin" ||
     (profile.role === "closer" && o.closer_id === profile.id)
   );
 }
@@ -453,7 +455,17 @@ export function canSeeArea(
 ): boolean {
   return (
     canSeeOpportunity(profile, o) &&
-    (area !== "closer" || isCloserRole(profile.role))
+    (area !== "closer" || canManageCaseFlow(profile, o))
+  );
+}
+export function canManageCaseFlow(
+  profile: Profile,
+  o: Pick<Opportunity, "seller_id" | "closer_id">,
+) {
+  return (
+    profile.active !== false &&
+    (["superadmin", "seller_admin", "closer_admin"].includes(profile.role) ||
+      (o.closer_id || o.seller_id) === profile.id)
   );
 }
 export function handoffErrors(

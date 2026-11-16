@@ -86,8 +86,8 @@ const pageNames: Record<Page, [string, string]> = {
   master: ["Master Pipeline", "Master Pipeline"],
   tasks: ["Tareas abiertas", "Open tasks"],
   app: ["Aplicación pendiente", "App needed"],
-  need: ["Oferta pendiente", "Offer needed"],
-  offers: ["Ofertas", "Offers"],
+  need: ["Pendiente de lenders", "Awaiting lender submission"],
+  offers: ["Oferta y negociación", "Offer and negotiation"],
   docsout: ["Contratos enviados", "Docs out"],
   signed: ["Contratos firmados", "Docs signed"],
   campaigns: ["Campañas", "Campaigns"],
@@ -1483,8 +1483,14 @@ export function PipelineOSWorkspace({
                     caseId={caseId}
                     processes={processes}
                     locale={locale}
+                    changed={refresh}
                     open={(section) =>
                       requestLeave(() => {
+                        if (section === "conversations") {
+                          closeCase();
+                          mail(caseId);
+                          return;
+                        }
                         setCaseSection(section);
                         requestAnimationFrame(() => {
                           caseContent.current?.focus({ preventScroll: true });

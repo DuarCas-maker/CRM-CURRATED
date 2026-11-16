@@ -383,7 +383,16 @@ test("Gmail history is controlled, recoverable, permissioned, and separate from 
           [submissions[1]],
         )
       ).rows[0].withdrawal_reason,
-      "selected_other_offer",
+      null,
+    );
+    assert.equal(
+      (
+        await db.query<{ status: string }>(
+          "select status from submissions where id=$1",
+          [submissions[1]],
+        )
+      ).rows[0].status,
+      "offer",
     );
     assert.equal(
       (

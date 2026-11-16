@@ -19,6 +19,9 @@ import {
   type ProgressText,
 } from "@/lib/pipeline-os/case-progress";
 import { t } from "../ui";
+import { manualMilestones } from "@/lib/pipeline-os/case-flow";
+import { CaseFlowManualDialog } from "./case-flow-controls";
+import { useLeaveConfirmation } from "../unsaved-changes";
 import "./case-progress.css";
 
 function StateIcon({ state }: { state: ProgressState }) {
@@ -37,6 +40,7 @@ const actionText: Record<CaseProgressAction, ProgressText> = {
   analysis: ["Revisar análisis", "Review analysis"],
   lenders: ["Gestionar lenders y ofertas", "Manage lenders and offers"],
   mail_history: ["Abrir gestión e histórico", "Open management and history"],
+  conversations: ["Abrir conversaciones", "Open conversations"],
 };
 const stateText: Record<ProgressState, ProgressText> = {
   complete: ["Verificado", "Verified"],
@@ -49,10 +53,12 @@ export function CaseProgressPanel({
   progress,
   locale,
   open,
+  manual,
 }: {
   progress: CaseProgress;
   locale: Locale;
   open(section: CaseProgressAction): void;
+  manual?(id: string, title: string): void;
 }) {
   const text = (value: ProgressText) => value[locale === "es" ? 0 : 1];
   const firstPending = progress.phases.find(
@@ -130,8 +136,8 @@ export function CaseProgressPanel({
             : progress.processNumber === null
               ? t(
                   locale,
-                  "Sin proceso activo asociado",
-                  "No linked active process",
+                  "Operación actual: se creará al guardar su primera gestión",
+                  "Current operation: created when its first action is saved",
                 )
               : t(
                   locale,
@@ -225,6 +231,11 @@ export function CaseProgressPanel({
               </div>
               <span className="pos-progress-item-state">
                 {text(stateText[item.state])}
+                {item.origin === "manual" && (
+                  <small>
+                    {t(locale, " · Revisión manual", " · Manual review")}
+                  </small>
+                )}
               </span>
               {item.state !== "complete" && item.action && (
                 <button
@@ -236,6 +247,20 @@ export function CaseProgressPanel({
                   <ArrowUpRight size={14} aria-hidden="true" />
                 </button>
               )}
+              {manual &&
+                progress.canManage &&
+                item.state !== "restricted" &&
+                (
+                  [...manualMilestones, "funding"] as readonly string[]
+                ).includes(item.id) && (
+                  <button
+                    type="button"
+                    className="pos-progress-manual"
+                    onClick={() => manual(item.id, text(item.title))}
+                  >
+                    {t(locale, "Revisar con evidencia", "Review with evidence")}
+                  </button>
+                )}
             </li>
           ))}
         </ul>
@@ -243,8 +268,8 @@ export function CaseProgressPanel({
           <p>
             {t(
               locale,
-              "Se calcula con los registros del CRM. No necesitas marcar casillas.",
-              "Calculated from CRM records. No manual checkboxes needed.",
+              "Se calcula con los registros del CRM. Las correcciones manuales conservan motivo y respaldo.",
+              "Calculated from CRM records. Manual corrections keep their reason and evidence.",
             )}
           </p>
           {progress.outcome === "without_funding" && progress.closerVisible ? (
@@ -278,13 +303,19 @@ export function PipelineCaseProgress({
   processes,
   locale,
   open,
+  changed,
 }: {
   data: Workspace;
   caseId: string;
   processes: ProgressProcess[];
   locale: Locale;
   open(section: CaseProgressAction): void;
+  changed?(): Promise<void>;
 }) {
+  const { requestLeave, confirmation } = useLeaveConfirmation(locale);
+  const [manual, setManual] = useState<{ id: string; title: string } | null>(
+    null,
+  );
   const [loaded, setLoaded] = useState<{
     caseId: string;
     progress: CaseProgress;
@@ -357,11 +388,30 @@ export function PipelineCaseProgress({
       </section>
     );
   return (
-    <CaseProgressPanel
-      key={caseId}
-      progress={progress}
-      locale={locale}
-      open={open}
-    />
+    <>
+      {confirmation}
+      <CaseProgressPanel
+        key={caseId}
+        progress={progress}
+        locale={locale}
+        open={open}
+        manual={(id, title) => requestLeave(() => setManual({ id, title }))}
+      />
+      {manual && (
+        <CaseFlowManualDialog
+          key={`${caseId}:${manual.id}`}
+          data={data}
+          caseId={caseId}
+          milestone={manual.id}
+          title={manual.title}
+          locale={locale}
+          close={() => setManual(null)}
+          changed={async () => {
+            await changed?.();
+            setRetry((n) => n + 1);
+          }}
+        />
+      )}
+    </>
   );
 }

@@ -1,0 +1,17 @@
+[
+  {
+    "label": "mobile",
+    "documentWidth": 346,
+    "width": 360
+  },
+  {
+    "label": "tablet",
+    "documentWidth": 755,
+    "width": 768
+  },
+  {
+    "label": "desktop",
+    "documentWidth": 1266,
+    "width": 1280
+  }
+]

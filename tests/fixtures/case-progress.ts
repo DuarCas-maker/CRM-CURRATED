@@ -46,6 +46,35 @@ export function progressFixture(): CaseProgressSource {
     profile: data.profile,
     opportunity,
     documents,
+    reports: [
+      {
+        id: "run-1",
+        opportunity_id: opportunity.id,
+        status: "approved",
+        analysis_id: "analysis-1",
+        reviewed_at: "2026-11-14T12:00:00Z",
+      },
+    ],
+    lenders: [{ id: "lender-fictional", email: "lender@example.invalid" }],
+    conversations: [
+      {
+        id: "conversation-1",
+        opportunity_id: opportunity.id,
+        process_id: process.id,
+        submission_id: "submission-1",
+        recipient_email: "lender@example.invalid",
+      } as import("../../src/lib/domain").Conversation,
+    ],
+    messages: [
+      {
+        id: "message-1",
+        conversation_id: "conversation-1",
+        direction: "outbound",
+        status: "sent",
+        sent_at: "2026-11-14T13:00:00Z",
+        participants: [{ role: "to", email: "lender@example.invalid" }],
+      } as import("../../src/lib/domain").Message,
+    ],
     analyses: [
       {
         id: "analysis-1",

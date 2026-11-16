@@ -1,0 +1,85 @@
+.case-lender-flow {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  margin: 12px 0;
+  background: var(--surface, #fff);
+  color: var(--ink);
+}
+.case-lender-flow > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.case-lender-flow form,
+.case-lender-flow > label {
+  margin-top: 14px;
+}
+.case-lender-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.case-lender-facts > div {
+  min-width: 0;
+}
+.case-lender-facts dt {
+  color: var(--muted, #6d6a62);
+  font-size: 11px;
+}
+.case-lender-facts dd {
+  margin: 3px 0 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.case-lender-flow select,
+.case-lender-flow input,
+.case-lender-flow textarea {
+  max-width: 100%;
+}
+.ai-report-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  margin: 12px 0;
+}
+.ai-report-decision {
+  margin-top: 8px;
+}
+.ai-report-decision > p {
+  font-size: 12px;
+}
+.ai-report-decision .card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pos-progress-manual {
+  grid-column: 2 / -1;
+  justify-self: start;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font: inherit;
+  font-size: 11px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--pos-accent);
+  cursor: pointer;
+}
+.pos-progress-manual:hover {
+  text-decoration: underline;
+}
+.pos-progress-manual:focus-visible {
+  outline: 3px solid var(--pos-accent);
+  outline-offset: 3px;
+}
+@media (max-width: 480px) {
+  .case-lender-facts {
+    grid-template-columns: 1fr;
+  }
+  .case-lender-flow {
+    padding: 12px;
+  }
+}

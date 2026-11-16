@@ -15,7 +15,7 @@ const item = (source: ReturnType<typeof progressFixture>, id: string) =>
     .phases.flatMap((p) => p.items)
     .find((i) => i.id === id)!;
 
-test("AC002/003: complete documentation, current human review and handoff verify the first two steps without mutating inputs", () => {
+test("AC002/003: complete documents and approved current AI report verify risk without handoff or mutations", () => {
   const s = progressFixture(),
     before = JSON.stringify(s);
   const p = buildCaseProgress(s, progressNow);
@@ -28,6 +28,9 @@ test("AC002/003: complete documentation, current human review and handoff verify
   assert.equal(phase(s, "lenders").state, "complete");
   assert.equal(phase(s, "offers").state, "pending");
   assert.equal(JSON.stringify(s), before);
+  s.opportunity.handed_off_at = null;
+  assert.equal(phase(s, "risk").state, "complete");
+  assert.equal(p.phases[1].items.length, 2);
 });
 test("AC002: duplicate, missing, unapproved sources and report files do not satisfy documentary evidence", () => {
   const s = progressFixture();
@@ -64,16 +67,9 @@ test("AC002: application flags, extra requirements and source hash/size limits r
     });
   assert.equal(item(s, "sources").state, "pending");
 });
-test("AC003: stale, incomplete, unreviewed analyses and missing handoff never finish risk", () => {
+test("AC003: manual analyses, stale linked analyses and unapproved reports never finish risk", () => {
   const s = progressFixture();
-  for (const update of [
-    { is_current: false },
-    { reviewer_id: "" },
-    { reviewed_at: "invalid" },
-    { reviewed_at: "2027-01-01" },
-    { recommendations: " " },
-    { conclusion: "" },
-  ]) {
+  for (const update of [{ is_current: false }]) {
     const next = structuredClone(s);
     Object.assign(next.analyses[0], update);
     assert.equal(item(next, "review").state, "pending");
@@ -81,24 +77,31 @@ test("AC003: stale, incomplete, unreviewed analyses and missing handoff never fi
   }
   s.analyses = [];
   assert.equal(item(s, "review").state, "pending");
-  s.opportunity.handed_off_at = null;
-  assert.equal(item(s, "handoff").state, "pending");
+  for (const status of ["draft", "rejected", "outdated", "failed"]) {
+    const next = progressFixture();
+    next.reports![0].status = status;
+    assert.equal(item(next, "review").state, "pending");
+  }
+  const manual = progressFixture();
+  manual.reports = [];
+  assert.equal(item(manual, "review").state, "pending");
 });
-test("AC004: no active process means unverified lender/offer/closing evidence rather than legacy completion", () => {
+test("AC004: no active process leaves pending actions without counting previous offers", () => {
   const s = progressFixture();
   s.offers = [progressOffer(s, "accepted")];
   s.processes[0].classification = "inactive";
+  s.messages = [];
   const p = buildCaseProgress(s, progressNow);
   assert.equal(p.processNumber, null);
   assert.deepEqual(
     p.phases.slice(2).map((p) => p.state),
-    ["unknown", "unknown", "unknown"],
+    ["pending", "pending", "pending"],
   );
   assert.ok(
     p.phases
       .slice(2)
       .flatMap((p) => p.items)
-      .every((i) => i.action === "mail_history"),
+      .every((i) => !!i.action),
   );
 });
 test("AC004: renewal uses only latest active process, excluding archives, previous offers, events and global funding", () => {
@@ -131,12 +134,13 @@ test("AC004: renewal uses only latest active process, excluding archives, previo
   for (const id of ["submissions", "offer", "contract-signed", "funding"])
     assert.equal(item(s, id).state, "pending");
 });
-test("AC005: draft/queued/uncertain/withdrawn, invalid dates and future submissions never count as sent", () => {
+test("AC005: only confirmed sent messages count, independent of submission status", () => {
   const s = progressFixture();
-  for (const status of ["draft", "queued", "uncertain", "withdrawn"]) {
-    s.submissions[0].status = status;
+  for (const status of ["draft", "queued", "uncertain", "failed"]) {
+    s.messages![0].status = status;
     assert.equal(item(s, "submissions").state, "pending", status);
   }
+  s.messages![0].status = "sent";
   for (const status of [
     "submitted",
     "reviewing",
@@ -148,7 +152,7 @@ test("AC005: draft/queued/uncertain/withdrawn, invalid dates and future submissi
     assert.equal(item(s, "submissions").state, "complete", status);
   }
   for (const date of ["bad", "2027-01-01"]) {
-    s.submissions[0].submitted_at = date;
+    s.messages![0].sent_at = date;
     assert.equal(item(s, "submissions").state, "pending");
   }
 });
@@ -236,7 +240,7 @@ test("AC007: contracted selected offers remain evidence after expiry; funding re
   s.events.push(progressEvent(s, "disbursed"));
   assert.equal(item(s, "funding").state, "pending");
 });
-test("AC008/009: terminal loss is not funding; sellers receive no private process facts, unauthorized users receive nothing", () => {
+test("AC008/009: terminal loss is not funding; previous owners lose financial access", () => {
   const s = progressFixture();
   for (const state of ["client_withdrew", "funding_declined"]) {
     s.processes[0].state = state;
@@ -244,6 +248,7 @@ test("AC008/009: terminal loss is not funding; sellers receive no private proces
   }
   s.profile.role = "seller";
   s.opportunity.seller_id = s.profile.id;
+  s.opportunity.closer_id = "different-current-owner";
   const p = buildCaseProgress(s, progressNow);
   assert.equal(p.processNumber, null);
   assert.equal(p.outcome, "open");

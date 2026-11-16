@@ -9,6 +9,8 @@ import type {
 import { canSeeArea, canSeeOpportunity, isCloserRole } from "../domain";
 import { summarizeOpportunities } from "../opportunity-signals";
 import { documentProgress } from "../document-labels";
+import { underwritingReadiness } from "../underwriting-status";
+import type { FlowSignal } from "./case-flow";
 
 export const pipelineGroups = [
   "files",
@@ -25,8 +27,8 @@ export const pipelineLabels: Record<PipelineGroup, [string, string]> = {
   files: ["Expedientes", "Files"],
   tasks: ["Tareas abiertas", "Open tasks"],
   app: ["Aplicación pendiente", "App needed"],
-  need: ["Oferta pendiente", "Offer needed"],
-  offers: ["Ofertas", "Offers"],
+  need: ["Pendiente de lenders", "Awaiting lender submission"],
+  offers: ["Oferta y negociación", "Offer and negotiation"],
   docsout: ["Contratos enviados", "Docs out"],
   signed: ["Contratos firmados", "Docs signed"],
   clients: ["Clientes", "Clients"],
@@ -39,6 +41,7 @@ export const pipelineStages = [
   "signed",
 ] as const;
 export type PipelineProcess = {
+  started_at?: string;
   id: string;
   opportunity_id: string;
   sequence_number: number;
@@ -161,6 +164,7 @@ export type PipelineSource = Pick<
   | "messages"
   | "opportunity_signals"
 > & {
+  flow_signals?: Record<string, FlowSignal>;
   campaigns?: Pick<Workspace["campaigns"][number], "id" | "status">[];
   mail_review_updates?: PipelineMailUpdate[];
 };
@@ -178,9 +182,14 @@ export function comparePipelineOffers(
       return (
         Number.isFinite(o.amount) &&
         o.amount > 0 &&
-        ["received", "approved", "accepted", "offered", "active"].includes(
-          o.status.toLowerCase(),
-        ) &&
+        [
+          "received",
+          "approved",
+          "accepted",
+          "selected",
+          "offered",
+          "active",
+        ].includes(o.status.toLowerCase()) &&
         expiry > now
       );
     })
@@ -203,7 +212,8 @@ export function comparePipelineOffers(
   );
   return {
     active,
-    selected: active.find((o) => o.status === "accepted") || null,
+    selected:
+      active.find((o) => ["accepted", "selected"].includes(o.status)) || null,
     highest:
       [...active].sort(
         (a, b) => b.amount - a.amount || a.id.localeCompare(b.id),
@@ -254,13 +264,13 @@ export function buildPipelineBoard(
       const caseSubmissions = submissions.get(o.id) || [];
       const currentSubmissions = process
         ? caseSubmissions.filter((s) => s.process_id === process.id)
-        : caseSubmissions;
+        : [];
       const currentSubmissionIds = new Set(currentSubmissions.map((s) => s.id));
       const comparison = closer
         ? comparePipelineOffers(
             o,
-            (offers.get(o.id) || []).filter(
-              (f) => !process || currentSubmissionIds.has(f.submission_id),
+            (offers.get(o.id) || []).filter((f) =>
+              currentSubmissionIds.has(f.submission_id),
             ),
             currentSubmissions,
             data.lenders,
@@ -299,27 +309,17 @@ export function buildPipelineBoard(
         if (["contract_signed", "final_approval"].includes(state || ""))
           bucket = "signed";
         else if (state === "contract_sent") bucket = "docsout";
-        else if (comparison?.active.length) bucket = "offers";
         else if (
-          [
-            "prepared",
-            "submitted",
-            "lender_evaluation",
-            "offers",
-            "lender_selected",
-            "requirements",
-          ].includes(state || "") ||
-          ([
-            "analysis",
-            "ready_for_closer",
-            "unassigned",
-            "lenders",
-            "offers",
-            "negotiation",
-            "accepted",
-            "funding_pending",
-          ].includes(o.stage) &&
-            !renewal)
+          comparison?.active.length ||
+          (data.flow_signals?.[o.id]?.manualSent ??
+            (data.flow_signals?.[o.id]?.sent || 0) > 0)
+        )
+          bucket = "offers";
+        else if (
+          data.flow_signals?.[o.id]?.approved &&
+          (data.flow_signals[o.id].ready ??
+            underwritingReadiness(documents, !!("demo" in data && data.demo))
+              .ready)
         )
           bucket = "need";
         else bucket = "app";
@@ -475,10 +475,10 @@ export function buildPipelineBoard(
       active: counts.tasks,
       urgent: rows.filter((r) => r.groups.includes("tasks") && r.priority === 1)
         .length,
-      offers: isCloserRole(data.profile.role)
+      offers: allowed.some((o) => canSeeArea(data.profile, o, "closer"))
         ? rows.reduce((s, r) => s + (r.offers?.length || 0), 0)
         : null,
-      fundedAmount: isCloserRole(data.profile.role)
+      fundedAmount: allowed.some((o) => canSeeArea(data.profile, o, "closer"))
         ? rows.reduce((s, r) => s + (r.fundedAmount || 0), 0)
         : null,
       fundedCount: counts.clients,

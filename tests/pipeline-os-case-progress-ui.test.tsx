@@ -31,9 +31,7 @@ test("AC001/011: five numbered native step controls, evidence states and labeled
     );
     assert.ok(
       html.includes(
-        locale === "es"
-          ? "No necesitas marcar casillas"
-          : "No manual checkboxes needed",
+        locale === "es" ? "Las correcciones manuales" : "Manual corrections",
       ),
     );
   }
@@ -49,11 +47,12 @@ test("AC004/009: unknown and restricted steps are explicit; sellers receive no l
       open={() => {}}
     />,
   );
-  assert.ok(html.includes("Sin proceso activo asociado"));
-  assert.ok(html.includes("Sin verificar"));
+  assert.ok(html.includes("Operación actual: se creará"));
+  assert.ok(html.includes("Pendiente"));
   assert.ok(html.includes("Revisar documentos"));
   s.profile.role = "seller";
   s.opportunity.seller_id = s.profile.id;
+  s.opportunity.closer_id = "another-current-owner";
   html = renderToStaticMarkup(
     <CaseProgressPanel
       progress={buildCaseProgress(s, progressNow)}

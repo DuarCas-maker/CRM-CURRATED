@@ -7,15 +7,25 @@ import type {
   Submission,
 } from "../domain";
 import { canSeeArea, canSeeOpportunity } from "../domain";
+import {
+  canManageCaseFlow,
+  approvedReportIds,
+  confirmedLenderSends,
+  latestConfirmation,
+  type FlowReport,
+  type FlowValue,
+} from "./case-flow";
 import { documentProgress } from "../document-labels";
 import { underwritingReadiness } from "../underwriting-status";
 import type { PipelineProcess } from "./module";
 
 export type ProgressText = [string, string];
 export type CaseProgressAction =
-  "documents" | "analysis" | "lenders" | "mail_history";
+  "documents" | "analysis" | "lenders" | "mail_history" | "conversations";
 export type ProgressState = "complete" | "pending" | "unknown" | "restricted";
 export interface ProgressItem {
+  origin?: "automatic" | "manual";
+  confirmationId?: string;
   id: string;
   title: ProgressText;
   detail: ProgressText;
@@ -29,10 +39,14 @@ export interface ProgressPhase {
   items: ProgressItem[];
 }
 export type ProgressProcess = PipelineProcess & {
+  started_at?: string;
   actual_funded_amount?: number | null;
   funded_lender_id?: string | null;
 };
 export interface ProgressEvent {
+  created_at?: string;
+  workflow_value?: FlowValue | null;
+  body?: string;
   id: string;
   opportunity_id: string;
   process_id: string | null;
@@ -42,6 +56,11 @@ export interface ProgressEvent {
   document_id: string | null;
 }
 export interface CaseProgressSource {
+  reports?: FlowReport[];
+  conversations?: import("../domain").Conversation[];
+  messages?: import("../domain").Message[];
+  lenders?: { id: string; email: string }[];
+  lender_contacts?: { lender_id: string; email: string }[];
   profile: Profile;
   opportunity: Opportunity;
   documents: Document[];
@@ -53,6 +72,7 @@ export interface CaseProgressSource {
   demo?: boolean;
 }
 export interface CaseProgress {
+  canManage?: boolean;
   caseId: string;
   processNumber: number | null;
   multipleActive: boolean;
@@ -74,19 +94,19 @@ export function buildCaseProgress(
   );
   const doc = documentProgress(docs);
   const ready = underwritingReadiness(docs, !!source.demo);
-  const reviewed = source.analyses.some(
-    (a) =>
-      a.opportunity_id === o.id &&
-      a.is_current !== false &&
-      !!a.reviewer_id &&
-      Number.isFinite(Date.parse(a.reviewed_at)) &&
-      Date.parse(a.reviewed_at) <= now &&
-      !!a.summary.trim() &&
-      !!a.conclusion.trim() &&
-      !!a.recommendations.trim(),
-  );
-  const obsolete = source.analyses.some(
-    (a) => a.opportunity_id === o.id && a.is_current === false,
+  const reviewed =
+    approvedReportIds(
+      (source.reports || []).filter((r) => r.opportunity_id === o.id),
+      source.analyses,
+    ).size > 0;
+  const obsolete = (source.reports || []).some(
+    (r) =>
+      r.opportunity_id === o.id &&
+      (r.status === "outdated" ||
+        (r.status === "approved" &&
+          source.analyses.some(
+            (a) => a.id === r.analysis_id && a.is_current === false,
+          ))),
   );
   const active = closer
     ? source.processes
@@ -162,33 +182,42 @@ export function buildCaseProgress(
   const available = offers.filter(
     (f) => validOffer(f) && (!f.expires_at || Date.parse(f.expires_at) > now),
   );
-  const selection =
-    selected.length === 1 ||
-    (selected.length === 0 &&
-      has(
-        "lender_selected",
-        "contract_sent",
-        "contract_signed",
-        "final_approval",
-        "disbursed",
-      ));
+  const selection = selected.length === 1;
   const chosenSubmissions = new Set(selected.map((f) => f.submission_id));
   const requirements = submissions.filter(
     (s) =>
-      s.status === "requirements" &&
+      (s.requirements_state === "pending" || s.status === "requirements") &&
       (!chosenSubmissions.size || chosenSubmissions.has(s.id)),
   ).length;
   const requirementsOpen =
     process?.state === "requirements" || requirements > 0;
-  const sent = submissions.filter(
-    (s) =>
-      !!s.lender_id &&
-      Number.isFinite(Date.parse(s.submitted_at)) &&
-      Date.parse(s.submitted_at) <= now &&
-      ["submitted", "reviewing", "requirements", "offer", "rejected"].includes(
-        s.status.toLowerCase(),
-      ),
-  ).length;
+  const sent = new Set(
+    confirmedLenderSends(
+      {
+        opportunity: o,
+        process,
+        reports: source.reports || [],
+        analyses: source.analyses,
+        conversations: source.conversations || [],
+        messages: source.messages || [],
+        submissions: source.submissions,
+        lenders: source.lenders || [],
+        lender_contacts: source.lender_contacts,
+        events: source.events,
+      },
+      now,
+    ).map((m) => m.message_id),
+  ).size;
+  const sendDecision = latestConfirmation(
+    source.events,
+    o.id,
+    "submissions",
+    process?.id || null,
+  )?.workflow_value?.decision;
+  const manualSent = sendDecision === "confirmed";
+  const finalAmount = submissions.find((s) =>
+    chosenSubmissions.has(s.id),
+  )?.agreed_amount;
 
   const item = (
     id: string,
@@ -213,9 +242,7 @@ export function buildCaseProgress(
     items,
     state: items.every((i) => i.state === "complete") ? "complete" : "pending",
   });
-  const lenderAction: CaseProgressAction = o.handed_off_at
-    ? "lenders"
-    : "mail_history";
+  const lenderAction: CaseProgressAction = "conversations";
   const processItems = (items: ProgressItem[]) =>
     items.map((i) =>
       !closer
@@ -228,17 +255,7 @@ export function buildCaseProgress(
             ] as ProgressText,
             action: null,
           }
-        : !process
-          ? {
-              ...i,
-              state: "unknown" as const,
-              detail: [
-                "Asocia o crea un proceso activo en Correo e histórico.",
-                "Link or create an active process in Email and history.",
-              ] as ProgressText,
-              action: "mail_history" as const,
-            }
-          : i,
+        : i,
     );
   const phases = [
     phase(
@@ -321,72 +338,35 @@ export function buildCaseProgress(
         ),
         item(
           "review",
-          ["Análisis revisado y vigente", "Current, reviewed analysis"],
+          ["Informe de IA aprobado", "Approved AI report"],
           reviewed,
           [
             reviewed
               ? "Revisión humana vigente registrada."
               : obsolete
                 ? "El análisis anterior está desactualizado; revisa las fuentes."
-                : "Requiere revisión humana, conclusión y recomendaciones. Un borrador no completa este punto.",
+                : "Aprueba uno o más informes de IA desde su tarjeta. Los pendientes o no aprobados no completan este punto.",
             reviewed
               ? "Current human review recorded."
               : obsolete
                 ? "The previous analysis is outdated; review its sources."
-                : "Requires human review, conclusion and recommendations. A draft does not complete this item.",
+                : "Approve one or more AI reports from their cards. Pending or rejected reports do not complete this item.",
           ],
           "analysis",
-        ),
-        item(
-          "handoff",
-          ["Expediente entregado al closer", "Case handed to the closer"],
-          !!o.handed_off_at,
-          [
-            o.handed_off_at
-              ? "Entrega al closer registrada."
-              : "La entrega se confirma desde Gestión del caso.",
-            o.handed_off_at
-              ? "Handoff to the closer recorded."
-              : "Confirm the handoff from Case management.",
-          ],
-          "mail_history",
         ),
       ],
     ),
     phase(
       "lenders",
-      ["Lenders", "Lenders"],
+      ["Pendiente de lenders", "Awaiting lender submission"],
       processItems([
         item(
-          "process",
-          ["Proceso activo asociado", "Linked active process"],
-          !!process,
-          [
-            `Proceso ${process?.sequence_number || "—"}; se conserva el histórico por separado.`,
-            `Process ${process?.sequence_number || "—"}; history is kept separately.`,
-          ],
-          "mail_history",
-        ),
-        item(
-          "evaluations",
-          [
-            "Evaluaciones de lenders registradas",
-            "Recorded lender evaluations",
-          ],
-          submissions.length > 0,
-          [
-            `${submissions.length} evaluaciones de este proceso.`,
-            `${submissions.length} evaluations for this process.`,
-          ],
-          lenderAction,
-        ),
-        item(
           "submissions",
-          ["Envío a lenders registrado", "Recorded lender submission"],
+          ["Correo enviado a un lender", "Email sent to a lender"],
           sent > 0,
           [
-            `${sent} envíos registrados. Borradores, en cola o inciertos no cuentan.`,
-            `${sent} recorded submissions. Draft, queued or uncertain sends do not count.`,
+            `${sent} correos confirmados. Al confirmar el primero, continúa en Oferta y negociación. Cola o inciertos no cuentan.`,
+            `${sent} confirmed emails. After the first, continue to Offer and negotiation. Queued or uncertain do not count.`,
           ],
           lenderAction,
         ),
@@ -396,6 +376,17 @@ export function buildCaseProgress(
       "offers",
       ["Oferta y negociación", "Offer and negotiation"],
       processItems([
+        item(
+          "negotiation-started",
+          ["Gestión con lenders iniciada", "Lender engagement started"],
+          (sendDecision !== "pending" && (sent > 0 || manualSent)) ||
+            offers.length > 0,
+          [
+            "El correo confirmado inicia la negociación; la oferta puede llegar después.",
+            "A confirmed email starts negotiation; the offer may arrive later.",
+          ],
+          lenderAction,
+        ),
         item(
           "offer",
           ["Oferta disponible para negociar", "Offer available to negotiate"],
@@ -439,6 +430,16 @@ export function buildCaseProgress(
             requirementsOpen
               ? "This process has additional pending requirements."
               : "No additional pending requirements recorded.",
+          ],
+          lenderAction,
+        ),
+        item(
+          "agreed-amount",
+          ["Monto final acordado registrado", "Final agreed amount recorded"],
+          selection && Number.isFinite(finalAmount) && Number(finalAmount) > 0,
+          [
+            "Registra el monto acordado en el lender elegido. No es un desembolso.",
+            "Record the agreed amount for the selected lender. This is not funding.",
           ],
           lenderAction,
         ),
@@ -492,10 +493,37 @@ export function buildCaseProgress(
     ),
   ];
   for (const p of phases) {
+    for (const i of p.items) {
+      const confirmation = latestConfirmation(
+        source.events,
+        o.id,
+        i.id,
+        process?.id || null,
+      );
+      i.origin = "automatic";
+      if (confirmation && i.state !== "restricted") {
+        i.confirmationId = confirmation.id;
+        if (confirmation.workflow_value?.decision !== "automatic") {
+          i.origin = "manual";
+          i.state =
+            confirmation.workflow_value?.decision === "confirmed"
+              ? "complete"
+              : "pending";
+          i.detail = [
+            "Revisión manual con evidencia: " + (confirmation.body || ""),
+            "Manual review with evidence: " + (confirmation.body || ""),
+          ];
+        }
+      }
+    }
+    p.state = p.items.every((i) => i.state === "complete")
+      ? "complete"
+      : "pending";
     if (p.items.every((i) => i.state === "restricted")) p.state = "restricted";
     else if (p.items.every((i) => i.state === "unknown")) p.state = "unknown";
   }
   return {
+    canManage: canManageCaseFlow(profile, o),
     caseId: o.id,
     processNumber: process?.sequence_number ?? null,
     multipleActive: active.length > 1,

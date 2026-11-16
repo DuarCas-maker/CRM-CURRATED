@@ -1,0 +1,186 @@
+{
+  "branch": "codex/case-flow-simplification-20261116",
+  "base": "a34a08938cc637aa28b5176af31368cce30c554c",
+  "localOnly": true,
+  "commit": false,
+  "push": false,
+  "merge": false,
+  "remoteSql": false,
+  "deployment": false,
+  "realDataImport": false,
+  "externalMail": false,
+  "verification": {
+    "regressionPassed": 76,
+    "nativePostgresPassed": 1,
+    "postgresVersion": "15.19",
+    "build": "passed",
+    "browser": "synthetic HTTP with actual components; responsive and keyboard verified",
+    "nativeCluster": "stopped"
+  },
+  "files": [
+    {
+      "path": "docs/specs/case-flow-20261116/acceptance.md",
+      "sha256": "1d0814dbf2de8875612df9c40f5125f60f99c7a129d96b4fb6efca42a84d028d"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/design.md",
+      "sha256": "cc85d8b7415b1864180d3309b72f3a5346cac3f6d1bdb1baf14c1076960b9bb5"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/evidence/lender-mobile.jpg",
+      "sha256": "874d5adca93acac00a497c807d79b99507179a2c9f7939a97452e26d7c7ff4c8"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/evidence/manual-mobile.jpg",
+      "sha256": "b8f39587eca83b9229f5c2eb278bb074cc768c9bf25051bc19c9ed011ff7963f"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/evidence/responsive.json",
+      "sha256": "27342f7f955ecb3299f17c1065370a5fdd0a51e9a07f71e30a9f7d9316e5c274"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/evidence/review-decision-desktop.jpg",
+      "sha256": "e1f423a49c3aa89fabc7cbd7e55b2722575d7b658279de00a07af99dd773f935"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/evidence/risk-desktop.jpg",
+      "sha256": "1de6b28dd1c28589793ce79994810b62b08bbdfb25df49686410eb2699426d1f"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/review.md",
+      "sha256": "617c0739693ac2afd1d50b7f1afe994a0f5300f25da55e6b3f4a359ee37ddd05"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/rollback.sql",
+      "sha256": "9c2806977b587ab3f0b0de99f9c8a93c4141f504884fe6ef1a26ad26a182d1cc"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/rollout.md",
+      "sha256": "91557ea171798a4d021f4dc2a31e4e3195b7d9348d4fe71d07eac2e4b8dd542e"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/spec.md",
+      "sha256": "8a65dc15f5e8fbe3145bb00d4ec5fa5da6cb18a5f01f99482516f025007df330"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/tasks.md",
+      "sha256": "7ede5ab290a255c8a8bb67bc9cbbf816559c092206e719f293d97d3ec737f7fd"
+    },
+    {
+      "path": "docs/specs/case-flow-20261116/verification.md",
+      "sha256": "9a5b6e0555c696a4a5749f2590281d9e842e2a0eb682b4feed334f23db8cad72"
+    },
+    {
+      "path": "src/app/api/pipeline-os/case-flow/route.ts",
+      "sha256": "5c358f9d94201feab54658ba459ea7df90dbe2da5acb658cbb85342372e2e47f"
+    },
+    {
+      "path": "src/app/api/underwriting/route.ts",
+      "sha256": "806a39e6814bb6ab3d9cad9ef81c90ea69fd5fd3a5d339e93ad979864b8d4d74"
+    },
+    {
+      "path": "src/components/ai-report-decision.tsx",
+      "sha256": "6eec2736bf5a69ef6b98cd5eb598553068dbbe641ba4e42744c1d076cc5392c0"
+    },
+    {
+      "path": "src/components/conversations-workspace.tsx",
+      "sha256": "e4cade0b44f1bcd78107ef168804abc028ad4215f015770ad1641662f1d8c868"
+    },
+    {
+      "path": "src/components/opportunity-detail.tsx",
+      "sha256": "2dff47e651000e01bbc001f959fd2d6315e48ce7c00a7a928c5f72d42cf910ec"
+    },
+    {
+      "path": "src/components/pipeline-os/case-flow-controls.css",
+      "sha256": "48aec4bfcbf54e973199fb0011e4a646f60eb28012b38551e0378aeb66cc4ddd"
+    },
+    {
+      "path": "src/components/pipeline-os/case-flow-controls.tsx",
+      "sha256": "03fa95cc65926d572650db7978e71a62f3d85e114cc2129d5e570e470472abbf"
+    },
+    {
+      "path": "src/components/pipeline-os/case-progress.tsx",
+      "sha256": "69f7690f8441c03b6a3865e84788ab21607a061dd2cfc0362df0fabf944081ba"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "4ca516c9a5c978ccbb6961ded09bc69c6a4bc05e0c5bc27cbe6a2542c38a4a45"
+    },
+    {
+      "path": "src/components/underwriting-workspace.tsx",
+      "sha256": "2137697a666ebec6b59b5f3e2e2c3b57b886dfc6a4a5476b57bbda9b4444005b"
+    },
+    {
+      "path": "src/lib/domain.ts",
+      "sha256": "3aec091733161b6efa0b70c3ae1da784748ffdcec3f0ff1f5c5099c37dabb469"
+    },
+    {
+      "path": "src/lib/pipeline-os/case-flow.ts",
+      "sha256": "651d8aa52f8d5d75f20fa3e342fb7c355d15365b6f192ed173afaa49edab7211"
+    },
+    {
+      "path": "src/lib/pipeline-os/case-progress.ts",
+      "sha256": "8145e3fc491e5ea77486b14998f4abf2d865fc7a09c6e0b24a232962045229f4"
+    },
+    {
+      "path": "src/lib/pipeline-os/module.ts",
+      "sha256": "565df069affc4f0fcbb7de6abd945b399c2270a7426d448f7591a3c647d37898"
+    },
+    {
+      "path": "src/lib/server/case-flow.ts",
+      "sha256": "1aa3a8569e1a56bc20ef5ddeab38e26d88ca5dc2b6299948cf51c3b161e40f4d"
+    },
+    {
+      "path": "src/lib/server/case-progress.ts",
+      "sha256": "ab4ccf5bfbf077566825c31a386ac69e58c8e34a15d8e36b78aeb7d97113364e"
+    },
+    {
+      "path": "src/lib/server/pipeline-os-module.ts",
+      "sha256": "944407ef610393194f9920698543e4923ff53712d713c953fcfae253be03c24c"
+    },
+    {
+      "path": "supabase/migrations/055_case_flow.sql",
+      "sha256": "93071c0c10795da4e8170abe062fbe4a3389b8326e20d7a9a9008dbfc3ac2378"
+    },
+    {
+      "path": "tests/fixtures/case-progress.ts",
+      "sha256": "008ba0d56340dfcab77fd5789c0031449b8bdeec759c452d3edb970d359d1264"
+    },
+    {
+      "path": "tests/gmail-database.test.ts",
+      "sha256": "40cab0d4288dcf71c30ac8eba2b186b801058af3b13027dbaaf287fbf20f6b8d"
+    },
+    {
+      "path": "tests/pipeline-os-case-flow-db.test.ts",
+      "sha256": "1a783bbfe1e5df1bb7bebbe1b15b6f4fd3026cc8531779c89ffed7b3863111ab"
+    },
+    {
+      "path": "tests/pipeline-os-case-flow-http.test.ts",
+      "sha256": "19eca5c6a243dd84a2971def19b04db31aa1f71cca0d479ef7f1d46bfc0ea5d7"
+    },
+    {
+      "path": "tests/pipeline-os-case-flow-pg15.test.ts",
+      "sha256": "dcb2a99e310a20e8cd3c7d50e6659d1ccd8aeb6fe4c0caf982035a2a167d34e3"
+    },
+    {
+      "path": "tests/pipeline-os-case-flow.test.ts",
+      "sha256": "b6f0ce984d48efec829dee0a58cfb7c00448304b63a6a0dc09f5d28317f427eb"
+    },
+    {
+      "path": "tests/pipeline-os-case-progress-http.test.ts",
+      "sha256": "b4289538300b327f014a971a32eae949fd34937aa72e879dc4bdb1b68c2ab87c"
+    },
+    {
+      "path": "tests/pipeline-os-case-progress-ui.test.tsx",
+      "sha256": "b26d9fe1bb91eefe065b179dcf60f0d6cd08a2118ac14d7383aa2c7a80fa1c22"
+    },
+    {
+      "path": "tests/pipeline-os-case-progress.test.ts",
+      "sha256": "0564bc115762272f17d08518dec1a32fe7aae6dfde5166b903ef6fa5a98b2db7"
+    },
+    {
+      "path": "tests/pipeline-os-module.test.ts",
+      "sha256": "5ff9666541ca318a624ef5f4f323cf1badd1fe6a128f7dab623787d6bbc38b46"
+    }
+  ]
+}

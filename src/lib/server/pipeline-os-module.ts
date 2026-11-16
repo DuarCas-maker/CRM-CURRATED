@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { underwritingReadiness } from "../underwriting-status";
 import type { Opportunity, Profile, Workspace } from "../domain";
 import { canSeeOpportunity, canSeeArea } from "../domain";
 import {
@@ -8,6 +9,14 @@ import {
   type PipelineMailUpdate,
 } from "../pipeline-os/module";
 import { checkDb, HttpError, requireUser } from "./supabase";
+import {
+  approvedReportIds,
+  confirmedLenderSends,
+  latestConfirmation,
+  type FlowReport,
+  type FlowEvent,
+  type FlowSignal,
+} from "../pipeline-os/case-flow";
 import {
   summarizeOpportunities,
   type SignalConversation,
@@ -169,7 +178,7 @@ export async function readPipelineBoard(
     readTable<PipelineProcess>(
       db,
       "financing_processes",
-      "id,opportunity_id,sequence_number,state,classification,is_unclassified_archive",
+      "id,opportunity_id,sequence_number,state,classification,is_unclassified_archive,started_at",
       closerIds,
     ),
     readTable<Pick<Workspace["campaigns"][number], "id" | "status">>(
@@ -183,7 +192,7 @@ export async function readPipelineBoard(
   const conversations = await readTable<SignalConversation>(
     db,
     "mail_conversations_visible",
-    "id,opportunity_id,submission_id,recipient_email",
+    "id,opportunity_id,submission_id,recipient_email,process_id",
     ids,
   );
   const messages = await readTable<SignalMessage>(
@@ -201,6 +210,79 @@ export async function readPipelineBoard(
     conversations,
     messages,
   });
+  const [reports, analyses, flowEvents] = await Promise.all([
+    readTable<FlowReport>(
+      db,
+      "underwriting_runs",
+      "id,opportunity_id,status,analysis_id,reviewed_at,created_at",
+      ids,
+    ),
+    readTable<Workspace["analyses"][number]>(
+      db,
+      "analyses",
+      "id,opportunity_id,is_current",
+      ids,
+    ),
+    readTable<FlowEvent>(
+      db,
+      "case_events",
+      "id,opportunity_id,process_id,kind,occurred_at,created_at,archive_message_id,document_id,workflow_value",
+      closerIds,
+    ),
+  ]);
+  const approved = approvedReportIds(reports, analyses),
+    flow_signals: Record<string, FlowSignal> = {};
+  for (const opportunity of opportunities) {
+    const process = processes
+      .filter(
+        (p) =>
+          p.opportunity_id === opportunity.id &&
+          p.classification === "active" &&
+          !p.is_unclassified_archive,
+      )
+      .sort((a, b) => b.sequence_number - a.sequence_number)[0];
+    const confirmation = latestConfirmation(
+      flowEvents,
+      opportunity.id,
+      "submissions",
+      process?.id || null,
+    );
+    const sourceCorrection = latestConfirmation(
+      flowEvents,
+      opportunity.id,
+      "sources",
+      null,
+    );
+    const delivered = confirmedLenderSends({
+      opportunity,
+      process,
+      reports: reports.filter((r) => r.opportunity_id === opportunity.id),
+      analyses,
+      conversations: conversations as Workspace["conversations"],
+      messages: messages as Workspace["messages"],
+      submissions,
+      lenders,
+      lender_contacts,
+      events: flowEvents,
+    });
+    const sourceDecision = sourceCorrection?.workflow_value?.decision;
+    flow_signals[opportunity.id] = {
+      approved: reports.some(
+        (r) => r.opportunity_id === opportunity.id && approved.has(r.id),
+      ),
+      ready:
+        sourceDecision === "confirmed" ||
+        (sourceDecision !== "pending" &&
+          underwritingReadiness(
+            documents.filter((d) => d.opportunity_id === opportunity.id),
+          ).ready),
+      sent: new Set(delivered.map((m) => m.message_id)).size,
+      manualSent:
+        confirmation?.workflow_value?.decision === "automatic" || !confirmation
+          ? null
+          : confirmation.workflow_value?.decision === "confirmed",
+    };
+  }
   const mail_review_updates: PipelineMailUpdate[] = [];
   for (let offset = 0; offset < closerIds.length; offset += 50) {
     const batch = closerIds.slice(offset, offset + 50);
@@ -238,6 +320,7 @@ export async function readPipelineBoard(
       campaigns,
       opportunity_signals,
       mail_review_updates,
+      flow_signals,
       conversations: [],
       messages: [],
     },

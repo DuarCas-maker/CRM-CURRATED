@@ -1,5 +1,4 @@
 "use client";
-import { useUnsavedChanges } from "./unsaved-changes";
 import { useEffect, useRef, useState } from "react";
 import type { Locale, Opportunity, Workspace } from "@/lib/domain";
 import { currency, dateLabel } from "@/lib/domain";
@@ -12,6 +11,7 @@ import {
   UnderwritingOriginalOutput,
 } from "./underwriting-observations";
 import { Modal, t } from "./ui";
+import { AiReportDecision } from "./ai-report-decision";
 import { UnderwritingNotices } from "./underwriting-notices";
 import { underwritingReadiness } from "@/lib/underwriting-status";
 import {
@@ -22,10 +22,7 @@ const labels: Record<UnderwritingRun["status"], [string, string]> = {
   queued: ["En cola", "Queued"],
   preparing: ["Preparando archivos", "Preparing files"],
   running: ["Analizando con IA", "Analyzing with AI"],
-  draft: [
-    "Informe disponible · Pendiente de revisión humana",
-    "Report available · Awaiting human review",
-  ],
+  draft: ["Informe pendiente de aprobación", "Report awaiting approval"],
   approved: ["Aprobado por el usuario", "Approved by user"],
   rejected: ["Descartado por el usuario", "Discarded by user"],
   failed: ["Requiere atención", "Needs attention"],
@@ -82,31 +79,14 @@ export function UnderwritingWorkspace({
     [error, setError] = useState("");
   const [review, setReview] = useState<UnderwritingRun | null>(null),
     [copied, setCopied] = useState(false);
-  const [rejectionNote, setRejectionNote] = useState("");
   const [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
   const requestedRun = useRef<string | null>(null);
+  const reportPage = useRef(0);
+  const currentCase = useRef(o.id);
+  currentCase.current = o.id;
+  const [hasMoreReports, setHasMoreReports] = useState(false);
   const [pdfLocale, setPdfLocale] = useState<Locale>(locale);
   useEffect(() => setPdfLocale(locale), [locale]);
-  const [summary, setSummary] = useState(""),
-    [conclusion, setConclusion] = useState(""),
-    [observations, setObservations] = useState(""),
-    [recommendations, setRecommendations] = useState(""),
-    [confirmed, setConfirmed] = useState(false);
-  const changes = useUnsavedChanges(
-    {
-      summary,
-      conclusion,
-      observations,
-      recommendations,
-      confirmed,
-      rejectionNote,
-    },
-    busy,
-    !!review && editable,
-  );
-  useEffect(() => {
-    changes.markSaved();
-  }, [review?.id]);
   const docs = data.documents.filter(
     (d) => d.opportunity_id === o.id && d.kind !== "analysis_report",
   );
@@ -114,16 +94,35 @@ export function UnderwritingWorkspace({
   const active = runs.some((r) =>
     ["queued", "preparing", "running"].includes(r.status),
   );
-  async function load(signal?: AbortSignal) {
+  async function load(signal?: AbortSignal, page = 0) {
     if (data.demo || data.crm_extensions_ready === false) return;
     const r = await fetch(
-      `/api/underwriting?${new URLSearchParams({ opportunity: o.id })}`,
+      `/api/underwriting?${new URLSearchParams({ opportunity: o.id, page: String(page) })}`,
       { signal },
     );
     const value = await r.json();
     if (!r.ok) throw new Error(value.error);
-    if (signal?.aborted) return;
-    setRuns(value.runs);
+    if (signal?.aborted || currentCase.current !== o.id) return;
+    setRuns((previous) => {
+      const next = new Map<string, UnderwritingRun>(
+        previous.map((item) => [item.id, item]),
+      );
+      for (const item of value.runs as UnderwritingRun[])
+        next.set(item.id, item);
+      for (const state of (value.statuses || []) as {
+        id: string;
+        status: UnderwritingRun["status"];
+      }[]) {
+        const item = next.get(state.id);
+        if (item) next.set(state.id, { ...item, status: state.status });
+      }
+      return [...next.values()].sort(
+        (a, b) =>
+          b.created_at.localeCompare(a.created_at) || a.id.localeCompare(b.id),
+      );
+    });
+    if (page > 0 || reportPage.current === 0)
+      setHasMoreReports(!!value.hasMore);
     setConfigured(value.configured);
     const completed = value.runs.find(
       (run: UnderwritingRun) => run.id === requestedRun.current && run.report,
@@ -136,6 +135,7 @@ export function UnderwritingWorkspace({
   useEffect(() => {
     const controller = new AbortController();
     setRuns([]);
+    reportPage.current = 0;
     requestedRun.current = null;
     setError("");
     void load(controller.signal).catch((e) => {
@@ -163,43 +163,6 @@ export function UnderwritingWorkspace({
   function openReview(run: UnderwritingRun) {
     setReview(run);
     setPdfLocale(locale);
-    setSummary(
-      run.report?.compact_report?.conclusion[locale] ||
-        run.report?.summary ||
-        "",
-    );
-    setConclusion(
-      run.report?.compact_report?.pitch[locale] || run.report?.strategy || "",
-    );
-    setObservations(
-      [
-        ...(run.report?.compact_report?.pending.map((item) => item[locale]) ||
-          run.report?.missing_information ||
-          []),
-        t(
-          locale,
-          "Revisión judicial pendiente en NYSCEF.",
-          "NYSCEF court review pending.",
-        ),
-      ].join("\n"),
-    );
-    setRecommendations(
-      (run.report?.compact_report
-        ? run.report.compact_report.lenders
-            .filter((l) => l.fit !== "exclude")
-            .map((l) => `${l.name}: ${l.reason[locale]}`)
-            .join("\n")
-        : run.report?.lender_matches
-            .map((l) => `${l.name}: ${l.reason}`)
-            .join("\n")) ||
-        t(
-          locale,
-          "Completar guidelines y selección de lenders con el equipo.",
-          "Review guidelines and lender selection with the team.",
-        ),
-    );
-    setConfirmed(false);
-    setRejectionNote("");
     setCopied(false);
   }
   function demoGenerate() {
@@ -341,88 +304,53 @@ export function UnderwritingWorkspace({
       setBusy(false);
     }
   }
-  async function approve() {
-    if (!review) return;
-    if (data.demo) {
-      setRuns((previous) =>
-        previous.map((run) =>
-          run.id === review.id
-            ? {
-                ...run,
-                status: "approved",
-                reviewed_by: data.profile.id,
-                reviewed_at: new Date().toISOString(),
-              }
-            : run,
-        ),
-      );
-      setReview(null);
-      return;
-    }
+  async function decideReport(
+    run: UnderwritingRun,
+    decision: "approved" | "rejected",
+    reason: string,
+  ) {
+    if (busy || !editable || !run.report) return;
     setBusy(true);
     setError("");
     try {
-      const r = await fetch("/api/underwriting", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "approve",
-          run_id: review.id,
-          summary,
-          conclusion,
-          observations,
-          recommendations,
-        }),
-      });
-      const value = await r.json();
-      if (!r.ok) throw new Error(value.error);
-      await refresh();
-      await load();
+      if (!data.demo) {
+        const response = await fetch("/api/pipeline-os/case-flow", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            case_id: o.id,
+            command: {
+              operation: "report",
+              request_key: crypto.randomUUID(),
+              run_id: run.id,
+              decision,
+              locale,
+              reason,
+            },
+          }),
+        });
+        const value = await response.json();
+        if (!response.ok) throw new Error(value.error);
+        await refresh();
+        await load();
+      } else {
+        setRuns((previous) =>
+          previous.map((item) =>
+            item.id === run.id
+              ? {
+                  ...item,
+                  status: decision,
+                  reviewed_by: data.profile.id,
+                  reviewed_at: new Date().toISOString(),
+                  review_notes: reason,
+                }
+              : item,
+          ),
+        );
+      }
       setReview(null);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function reject() {
-    if (!review || !rejectionNote.trim() || !confirmed) return;
-    if (data.demo) {
-      setRuns((previous) =>
-        previous.map((run) =>
-          run.id === review.id
-            ? {
-                ...run,
-                status: "rejected",
-                review_notes: rejectionNote.trim(),
-                reviewed_by: data.profile.id,
-                reviewed_at: new Date().toISOString(),
-              }
-            : run,
-        ),
-      );
-      setReview(null);
-      return;
-    }
-    setBusy(true);
-    setError("");
-    try {
-      const response = await fetch("/api/underwriting", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "reject",
-          run_id: review.id,
-          notes: rejectionNote,
-        }),
-      });
-      const value = await response.json();
-      if (!response.ok) throw new Error(value.error);
-      await refresh();
-      await load();
-      setReview(null);
-    } catch (e) {
-      setError((e as Error).message);
+    } catch (error) {
+      setError((error as Error).message);
     } finally {
       setBusy(false);
     }
@@ -537,25 +465,53 @@ export function UnderwritingWorkspace({
         ]}
       />
       {runs.map((run) => (
-        <div className="document-row" key={run.id}>
-          <div>
-            <strong>{t(locale, ...labels[run.status])}</strong>
-            <small>
-              {dateLabel(run.created_at, locale, true)} · {run.model} · Prompt v
-              {run.prompt_version}
-            </small>
+        <div className="ai-report-card" key={run.id}>
+          <div className="document-row">
+            <div>
+              <strong>{t(locale, ...labels[run.status])}</strong>
+              <small>
+                {dateLabel(run.created_at, locale, true)} · {run.model} · Prompt
+                v{run.prompt_version}
+              </small>
+            </div>
+            {run.report && (
+              <button className="button" onClick={() => openReview(run)}>
+                {t(locale, "Ver análisis", "View analysis")}
+              </button>
+            )}
           </div>
-          {run.report && (
-            <button className="button" onClick={() => openReview(run)}>
-              {t(locale, "Ver análisis", "View analysis")}
-            </button>
+          {run.report && editable && (
+            <AiReportDecision
+              status={run.status}
+              locale={locale}
+              busy={busy}
+              decide={(decision, reason) => decideReport(run, decision, reason)}
+            />
           )}
         </div>
       ))}
+      {hasMoreReports && !data.demo && (
+        <button
+          className="button"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              await load(undefined, reportPage.current + 1);
+              reportPage.current++;
+            } catch (error) {
+              setError((error as Error).message);
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          {t(locale, "Más informes", "More reports")}
+        </button>
+      )}
       {review && report && (
         <Modal
           busy={busy}
-          dirty={changes.dirty}
           locale={locale}
           wide
           title={t(locale, "Revisión del análisis", "Analysis review")}
@@ -981,111 +937,15 @@ export function UnderwritingWorkspace({
               ))}
             </details>
           </details>
-          {review.status === "draft" && editable && (
-            <>
-              <h3>
-                {t(locale, "Revisión final del equipo", "Final team review")}
-              </h3>
-              {[
-                [t(locale, "Resumen", "Summary"), summary, setSummary],
-                [
-                  t(locale, "Conclusión", "Conclusion"),
-                  conclusion,
-                  setConclusion,
-                ],
-                [
-                  t(locale, "Observaciones", "Observations"),
-                  observations,
-                  setObservations,
-                ],
-                [
-                  t(locale, "Lenders y motivos", "Lenders and reasons"),
-                  recommendations,
-                  setRecommendations,
-                ],
-              ].map(([label, value, setter]) => (
-                <label className="field" key={label as string}>
-                  {label as string}
-                  <textarea
-                    value={value as string}
-                    maxLength={20000}
-                    onChange={(e) =>
-                      (setter as (v: string) => void)(e.target.value)
-                    }
-                  />
-                </label>
-              ))}
-              <label className="document-review-confirm">
-                <input
-                  type="checkbox"
-                  checked={confirmed}
-                  onChange={(e) => setConfirmed(e.target.checked)}
-                />
-                {t(
-                  locale,
-                  "Revisé los cálculos, las evidencias y las limitaciones del borrador.",
-                  "I reviewed calculations, evidence and draft limitations.",
-                )}
-              </label>
-              <div className="modal-footer">
-                <button
-                  className="button primary"
-                  disabled={
-                    busy ||
-                    !confirmed ||
-                    !summary.trim() ||
-                    !conclusion.trim() ||
-                    !recommendations.trim()
-                  }
-                  onClick={() => void approve()}
-                >
-                  {t(
-                    locale,
-                    "Aprobar informe y guardar revisión",
-                    "Approve report and save review",
-                  )}
-                </button>
-              </div>
-              <label className="field">
-                {t(
-                  locale,
-                  "Motivo para descartar el informe",
-                  "Reason for discarding the report",
-                )}
-                <textarea
-                  value={rejectionNote}
-                  maxLength={20000}
-                  onChange={(e) => setRejectionNote(e.target.value)}
-                />
-              </label>
-              <button
-                className="button"
-                disabled={busy || !confirmed || !rejectionNote.trim()}
-                onClick={() => void reject()}
-              >
-                {t(
-                  locale,
-                  "Descartar informe y guardar observación",
-                  "Discard report and save note",
-                )}
-              </button>
-              <p className="muted">
-                {t(
-                  locale,
-                  "Descartar conserva el informe para consulta. Puedes cerrar esta ventana y dejar la revisión pendiente.",
-                  "Discarding keeps the report available. You can close this window and leave the review pending.",
-                )}
-              </p>
-              {data.demo && (
-                <p className="muted">
-                  {t(
-                    locale,
-                    "Las decisiones de esta demostración se reinician al recargar.",
-                    "Decisions in this demo reset on reload.",
-                  )}
-                </p>
-              )}
-            </>
+          {editable && (
+            <AiReportDecision
+              status={review.status}
+              locale={locale}
+              busy={busy}
+              decide={(decision, reason) =>
+                decideReport(review, decision, reason)
+              }
+            />
           )}
         </Modal>
       )}

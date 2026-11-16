@@ -8,6 +8,7 @@ import {
   jsonError,
 } from "@/lib/server/supabase";
 import { readBounded } from "@/lib/server/body";
+import { readPipelinePages } from "@/lib/server/pipeline-os-module";
 const inputSchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("generate"),
@@ -35,6 +36,12 @@ export async function GET(request: Request) {
     const caseId = z
       .uuid()
       .parse(new URL(request.url).searchParams.get("opportunity"));
+    const page = z.coerce
+      .number()
+      .int()
+      .min(0)
+      .max(5000)
+      .parse(new URL(request.url).searchParams.get("page") || "0");
     checkDb(
       await db.from("opportunities").select("id").eq("id", caseId).single(),
     );
@@ -47,8 +54,52 @@ export async function GET(request: Request) {
           )
           .eq("opportunity_id", caseId)
           .order("created_at", { ascending: false })
-          .limit(20),
+          .order("id")
+          .range(page * 20, page * 20 + 20),
       ) || [];
+    const hasMore = runs.length > 20;
+    runs.splice(20);
+    const statuses = await readPipelinePages<{
+      id: string;
+      status: string;
+      analysis_id: string | null;
+    }>(async (offset) => {
+      const result = await db
+        .from("underwriting_runs")
+        .select("id,status,analysis_id", { count: "exact" })
+        .eq("opportunity_id", caseId)
+        .order("id")
+        .range(offset, offset + 499);
+      return {
+        rows: checkDb(result, "underwriting.statuses") || [],
+        total: result.count,
+      };
+    });
+    const analysisIds = statuses
+      .map((r) => r.analysis_id)
+      .filter((id): id is string => !!id);
+    const current = new Set<string>();
+    for (let start = 0; start < analysisIds.length; start += 50) {
+      const rows =
+        checkDb(
+          await db
+            .from("analyses")
+            .select("id")
+            .in("id", analysisIds.slice(start, start + 50))
+            .eq("is_current", true),
+          "underwriting.current",
+        ) || [];
+      for (const row of rows) current.add(row.id);
+    }
+    for (const row of statuses)
+      if (
+        row.status === "approved" &&
+        (!row.analysis_id || !current.has(row.analysis_id))
+      )
+        row.status = "outdated";
+    for (const run of runs)
+      run.status =
+        statuses.find((row) => row.id === run.id)?.status || run.status;
     if (runs.length) {
       const progress = await db
         .from("underwriting_runs")
@@ -69,7 +120,12 @@ export async function GET(request: Request) {
           Object.assign(run, progress.data?.find((p) => p.id === run.id) || {});
     }
     return Response.json(
-      { runs, configured: !!process.env.R_OPENAI_API_KEY?.trim() },
+      {
+        runs,
+        statuses,
+        hasMore,
+        configured: !!process.env.R_OPENAI_API_KEY?.trim(),
+      },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (e) {

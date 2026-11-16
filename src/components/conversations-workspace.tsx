@@ -1,4 +1,5 @@
 "use client";
+import { LenderFlowPanel } from "./pipeline-os/case-flow-controls";
 import "./conversations-workspace.css";
 import { useLeaveConfirmation } from "./unsaved-changes";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -19,7 +20,12 @@ import {
   RefreshCw,
 } from "lucide-react";
 import type { Message, Locale, Workspace, Opportunity } from "@/lib/domain";
-import { dateLabel, canSeeOpportunity, isCloserRole } from "@/lib/domain";
+import {
+  dateLabel,
+  canSeeOpportunity,
+  canSeeArea,
+  isCloserRole,
+} from "@/lib/domain";
 import type { Action } from "./crm";
 import { t, Empty, Modal } from "./ui";
 import { MailEditor } from "./mail-editor";
@@ -1021,9 +1027,9 @@ export function ConversationsWorkspace({
             [
               ["messages", "Conversaciones", "Conversations"],
               ["documents", "Documentos", "Documents"],
-              ["analysis", "Análisis manual", "Manual review"],
+              ["analysis", "Análisis de riesgo", "Risk analysis"],
               ["activity", "Gestionar oportunidad", "Manage opportunity"],
-              ...(isCloserRole(data.profile.role) && selectedCase.handed_off_at
+              ...(canSeeArea(data.profile, selectedCase, "closer")
                 ? [
                     [
                       "lenders",
@@ -1433,6 +1439,19 @@ export function ConversationsWorkspace({
               "Conversation history",
             )}
           >
+            {!pendingMode && selectedCase && active?.category === "lender" && (
+              <LenderFlowPanel
+                key={`${selectedCase.id}:${activeKey}`}
+                data={effectiveData}
+                caseId={selectedCase.id}
+                locale={locale}
+                lenderIds={active.lender_ids}
+                conversationId={active.conversation_ids[0] || null}
+                changed={async () => {
+                  bump();
+                }}
+              />
+            )}
             {loadingMail && (
               <p className="cw-small-status" role="status">
                 <LoaderCircle size={13} className="spin" />

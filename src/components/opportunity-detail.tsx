@@ -1,4 +1,5 @@
 "use client";
+import { LenderFlowPanel } from "./pipeline-os/case-flow-controls";
 import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
 import { OpportunitySignalSummary } from "./opportunity-signals";
 import { summarizeOpportunities } from "@/lib/opportunity-signals";
@@ -41,6 +42,7 @@ import {
   handoffErrors,
   canSeeArea,
   canSeeOpportunity,
+  canManageCaseFlow,
   isCloserRole,
 } from "@/lib/domain";
 import type { Action } from "./crm";
@@ -91,7 +93,7 @@ export function OpportunityDetail({
     !o.handed_off_at &&
     ["superadmin", "seller_admin", "seller"].includes(profile.role);
   const closerAccess = !!o.handed_off_at && isCloserRole(profile.role);
-  const editable = sellerAccess || closerAccess;
+  const editable = canManageCaseFlow(profile, o);
   const docs = data.documents.filter((d) => d.opportunity_id === o.id);
   const documentStatus = documentProgress(docs);
   const signals =
@@ -242,8 +244,8 @@ export function OpportunityDetail({
                 ["activity", "Actividad", "Activity"],
                 ["mail_history", "Correo e histórico", "Email and history"],
                 ["documents", "Documentos", "Documents"],
-                ["analysis", "Análisis manual", "Manual review"],
-                ...(isCloserRole(profile.role) && o.handed_off_at
+                ["analysis", "Análisis de riesgo", "Risk analysis"],
+                ...(canSeeArea(profile, o, "closer")
                   ? [["lenders", "Lenders y ofertas", "Lenders & offers"]]
                   : []),
               ].map(([id, es, en]) => (
@@ -601,66 +603,6 @@ export function OpportunityDetail({
           )}
           {tab === "analysis" && (
             <div className="tab-content">
-              <div className="activity-toolbar">
-                <h2>
-                  {t(
-                    locale,
-                    "Análisis registrado por el equipo",
-                    "Team review",
-                  )}
-                </h2>
-                {sellerAccess && (
-                  <button
-                    className="button"
-                    onClick={() => setModal("analysis")}
-                  >
-                    <Plus size={15} />
-                    {t(locale, "Registrar análisis", "Add review")}
-                  </button>
-                )}
-              </div>
-              {analyses.map((a) => (
-                <article className="analysis-card" key={a.id}>
-                  {a.is_current === false && (
-                    <p className="error-banner">
-                      {t(
-                        locale,
-                        "Análisis anterior: los documentos cambiaron. Requiere un nuevo análisis.",
-                        "Previous analysis: documents changed. A new analysis is required.",
-                      )}
-                    </p>
-                  )}
-                  <div className="person">
-                    <Avatar name={name(a.reviewer_id)} small />
-                    <strong>{name(a.reviewer_id)}</strong>
-                    <small>{dateLabel(a.reviewed_at, locale)}</small>
-                  </div>
-                  <h3>{t(locale, "Resumen", "Summary")}</h3>
-                  <p>{a.summary}</p>
-                  <h3>{t(locale, "Conclusión", "Conclusion")}</h3>
-                  <p>{a.conclusion}</p>
-                  <h3>{t(locale, "Observaciones", "Observations")}</h3>
-                  <p>{a.observations || "—"}</p>
-                  <h3>
-                    {t(
-                      locale,
-                      "Lenders recomendados y motivos",
-                      "Recommended lenders and reasons",
-                    )}
-                  </h3>
-                  <p>{a.recommendations}</p>
-                </article>
-              ))}
-              {!analyses.length && (
-                <Empty
-                  title={t(locale, "Análisis pendiente", "Review pending")}
-                  body={t(
-                    locale,
-                    "Registra la revisión realizada fuera de la aplicación.",
-                    "Record the analysis performed outside the application.",
-                  )}
-                />
-              )}
               <UnderwritingWorkspace
                 data={data}
                 opportunity={o}
@@ -673,6 +615,13 @@ export function OpportunityDetail({
           )}
           {tab === "lenders" && (
             <div className="tab-content">
+              <LenderFlowPanel
+                key={o.id}
+                data={data}
+                caseId={o.id}
+                locale={locale}
+                changed={refresh}
+              />
               <div className="activity-toolbar">
                 <h2>
                   {t(
@@ -1094,44 +1043,6 @@ export function OpportunityDetail({
                   />
                 </>
               )}
-              <div className="modal-footer">
-                <SaveButton busy={busy} locale={locale} />
-              </div>
-            </ProtectedForm>
-          )}
-          {modal === "analysis" && (
-            <ProtectedForm busy={busy} onSubmit={(e) => submit(e, "analysis")}>
-              <Field
-                name="summary"
-                label={t(locale, "Resumen", "Summary")}
-                type="textarea"
-                required
-              />
-              <Field
-                name="conclusion"
-                label={t(locale, "Conclusión", "Conclusion")}
-                type="textarea"
-                required
-              />
-              <Field
-                name="observations"
-                label={t(
-                  locale,
-                  "Observaciones / información por revisar",
-                  "Observations / information to review",
-                )}
-                type="textarea"
-              />
-              <Field
-                name="recommendations"
-                label={t(
-                  locale,
-                  "Lenders recomendados y motivos",
-                  "Recommended lenders and reasons",
-                )}
-                type="textarea"
-                required
-              />
               <div className="modal-footer">
                 <SaveButton busy={busy} locale={locale} />
               </div>

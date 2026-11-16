@@ -33,6 +33,11 @@ function database(
     submissions: source.submissions,
     offers: source.offers,
     case_events: source.events,
+    underwriting_runs: source.reports || [],
+    mail_conversations_visible: source.conversations || [],
+    messages: source.messages || [],
+    lenders: source.lenders || [],
+    lender_contacts: [],
   };
   const db = {
     from(table: string) {
@@ -53,12 +58,16 @@ function database(
           record.filters[key] = value;
           return query;
         },
+        in(key: string, value: unknown) {
+          record.filters[key] = value;
+          return query;
+        },
         is(key: string, value: unknown) {
           record.filters[key] = value;
           return query;
         },
         order(key: string) {
-          assert.equal(key, "id");
+          assert.equal(key, table === "lender_contacts" ? "email" : "id");
           return query;
         },
         async maybeSingle() {
@@ -103,12 +112,13 @@ test("AC009/010: RLS client, one-case filters, complete pagination and projectio
   assert.equal(progress.phases[0].state, "complete");
   assert.equal(ledger.filter((r) => r.table === "documents").length, 5);
   for (const row of ledger)
-    assert.equal(
-      row.filters[
-        row.table === "opportunity_workspace" ? "id" : "opportunity_id"
-      ],
-      source.opportunity.id,
-    );
+    if (!["messages", "lenders", "lender_contacts"].includes(row.table))
+      assert.equal(
+        row.filters[
+          row.table === "opportunity_workspace" ? "id" : "opportunity_id"
+        ],
+        source.opportunity.id,
+      );
   const text = JSON.stringify(progress);
   for (const privateValue of [
     "Resumen ficticio",
@@ -119,11 +129,7 @@ test("AC009/010: RLS client, one-case filters, complete pagination and projectio
     "actual_funded_amount",
   ])
     assert.ok(!text.includes(privateValue), privateValue);
-  assert.ok(
-    ledger.every(
-      (r) => !r.columns.includes("body") && !r.columns.includes("email"),
-    ),
-  );
+  assert.ok(ledger.every((r) => !r.columns.includes("body")));
 });
 test("AC009: access is checked before reading related metadata; missing and foreign cases are indistinguishable", async () => {
   for (const options of [{ missing: true }, { denied: true }]) {
@@ -139,10 +145,11 @@ test("AC009: access is checked before reading related metadata; missing and fore
     );
   }
 });
-test("AC009: a seller never queries financial processes, submissions, offers or private events", async () => {
+test("AC009: a previous seller does not query private financial records", async () => {
   const { db, source, ledger } = database();
   source.profile.role = "seller";
   source.opportunity.seller_id = source.profile.id;
+  source.opportunity.closer_id = "different-current-owner";
   const progress = await readCaseProgress(
     db,
     source.profile,
@@ -152,6 +159,7 @@ test("AC009: a seller never queries financial processes, submissions, offers or 
     "analyses",
     "documents",
     "opportunity_workspace",
+    "underwriting_runs",
   ]);
   assert.ok(progress.phases.slice(2).every((p) => p.state === "restricted"));
 });
