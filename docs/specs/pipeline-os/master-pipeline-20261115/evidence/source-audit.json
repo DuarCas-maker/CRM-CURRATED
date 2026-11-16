@@ -1,0 +1,15 @@
+{
+  "base": "01b6d3f8c2f61ba09ef60ff07a7ef4a17b9c681b",
+  "currentReference": "01b6d3f8c2f61ba09ef60ff07a7ef4a17b9c681b",
+  "trackedFilesChecked": 1209,
+  "trackedChanged": [
+    "src/components/pipeline-os/workspace.tsx",
+    "src/lib/pipeline-os/module.ts"
+  ],
+  "newApplicationFiles": 11,
+  "upstreamChanges": [],
+  "upstreamScopeCollisions": [],
+  "coordinatorWrites": false,
+  "rawHtmlRecordsCopied": false,
+  "patchApplyCheck": true
+}

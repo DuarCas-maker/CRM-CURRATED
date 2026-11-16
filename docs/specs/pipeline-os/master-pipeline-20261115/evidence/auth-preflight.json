@@ -1,0 +1,10 @@
+{
+  "active": true,
+  "realWorkspace": true,
+  "role": "superadmin",
+  "success": true,
+  "route": "/api/workspace",
+  "mfa": "Existing requireUser entry point enforces aal2",
+  "tokensReadOrStored": false,
+  "customerRowsStored": false
+}

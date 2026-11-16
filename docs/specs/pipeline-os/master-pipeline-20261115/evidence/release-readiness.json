@@ -1,0 +1,95 @@
+{
+  "at": "2026-11-16T04:26:43.346Z",
+  "base": "70c1efb65f541d53fcaca7ea7a37c967c54afa46",
+  "candidateBase": "01b6d3f8c2f61ba09ef60ff07a7ef4a17b9c681b",
+  "upstreamPathsPreserved": [
+    "next.config.ts"
+  ],
+  "branch": "codex/master-pipeline-release-20261115",
+  "sourceFiles": 13,
+  "sourceHashesVerified": true,
+  "tests": {
+    "passed": 85,
+    "failed": 0,
+    "skipped": 0
+  },
+  "productionBuild": {
+    "exit": 0,
+    "typescript": true,
+    "mode": "webpack",
+    "credentials": "fixture only"
+  },
+  "productionReads": {
+    "catalogRelations": 15,
+    "columnsAndGrants": true,
+    "realMfaSession": true,
+    "activeRole": "superadmin",
+    "otherActiveRoles": 0,
+    "sqlContextReplay": true,
+    "jwtMinted": false,
+    "rlsProjections": 15,
+    "scopeBelowRowLimit": true,
+    "customerRowsStored": false,
+    "remoteBusinessWrites": 0
+  },
+  "newMasterHttpOnProduction": "pending deployment postflight",
+  "publication": {
+    "executed": false,
+    "remoteBase": "70c1efb65f541d53fcaca7ea7a37c967c54afa46",
+    "requiresExplicitPromotion": true
+  },
+  "files": [
+    {
+      "path": "src/lib/pipeline-os/module.ts",
+      "sha256": "730396f994c29c6e31d662dd395dfae64f61ded79aeaa38cc029e7b53d549624"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "7a15110e473eb4192aae1cfb8b8798552bf9413b2d6e968782fa5a8654711dbb"
+    },
+    {
+      "path": "src/lib/pipeline-os/master-pipeline.ts",
+      "sha256": "ac5ad20342ab0f454da91bf181128c028bded1b4e31df572b26f16aff148f0fd"
+    },
+    {
+      "path": "src/lib/pipeline-os/master-demo.ts",
+      "sha256": "8e31990a91f0e39499e456f7d0c85e3f3589e53e7d2ee27765adfc9cdb9a179f"
+    },
+    {
+      "path": "src/lib/server/pipeline-master.ts",
+      "sha256": "ae223b27f2a96138aa5ed04e1061af07148ccad9790b801a2795b0194d4479ed"
+    },
+    {
+      "path": "src/lib/server/pipeline-master-http.ts",
+      "sha256": "fddb80a6503a0cf220b7d8491ae41cd36ff032ccae7a6376f106c3d2d67deaeb"
+    },
+    {
+      "path": "src/app/api/pipeline-os/master/route.ts",
+      "sha256": "863334855fe9c95137fd75be3b6d49cd778f9bbfb7e381bf81f5f52fb2e668a2"
+    },
+    {
+      "path": "src/components/pipeline-os/master-pipeline.tsx",
+      "sha256": "c242abc4fd7f994fcdfd31f0b4302bd526f9590e73e07b43d5d36fab4cc5b1ed"
+    },
+    {
+      "path": "src/components/pipeline-os/master-pipeline.css",
+      "sha256": "f20932f64dac69caf9d1e3cca884020cebc4eb8ac440e56bb6f927a03573f628"
+    },
+    {
+      "path": "tests/pipeline-master.test.ts",
+      "sha256": "3e8053c2e9b8aed054edec454625c3c6f326337e660e4d7bca8fe498ac3a99ae"
+    },
+    {
+      "path": "tests/pipeline-master-http.test.ts",
+      "sha256": "5cdb08918e3b50d3165988a316f16cfb4ee3c060ac8abb8e35838c4d2b0958f6"
+    },
+    {
+      "path": "tests/pipeline-master-reader.test.ts",
+      "sha256": "dbe31220a52a61535f2b6bbb7163173074673137e080f165c44e72fb3f196d2e"
+    },
+    {
+      "path": "tests/pipeline-master-ui.test.ts",
+      "sha256": "ac3dba99bf74df9db8c68ecf0df2f62dbc7232435f2c192a4f48596a33112d8d"
+    }
+  ]
+}

@@ -60,9 +60,11 @@ import {
   type CaseSection,
 } from "./board";
 import { PipelineLeads } from "./leads";
+import { MasterPipeline } from "./master-pipeline";
 import "./workspace.css";
 
 type Page =
+  | "master"
   | "tasks"
   | "app"
   | "need"
@@ -81,6 +83,7 @@ type Page =
   | "lenders"
   | "settings";
 const pageNames: Record<Page, [string, string]> = {
+  master: ["Master Pipeline", "Master Pipeline"],
   tasks: ["Tareas abiertas", "Open tasks"],
   app: ["Aplicación pendiente", "App needed"],
   need: ["Oferta pendiente", "Offer needed"],
@@ -172,6 +175,9 @@ export function PipelineOSWorkspace({
       setTree(saved.tree === true);
       setDark(saved.dark === true);
     } catch {}
+    if (new URLSearchParams(window.location.search).get("view") === "master") {
+      setPath(["master"]);
+    }
     setReady(true);
   }, []);
   function appearance(nextTree: boolean, nextDark: boolean) {
@@ -583,6 +589,19 @@ export function PipelineOSWorkspace({
     );
   }
   function pageBody(p: Page, level: number) {
+    if (p === "master")
+      return (
+        <MasterPipeline
+          data={data}
+          processes={processes}
+          locale={locale}
+          search={query}
+          owner={owner}
+          onOwner={changeOwner}
+          open={rowOpen}
+          mail={mail}
+        />
+      );
     if (
       !boardReady &&
       (isGroup(p) || ["stats", "updates", "recap"].includes(p))
@@ -973,6 +992,7 @@ export function PipelineOSWorkspace({
   }
 
   const nav = [
+    { id: "master" as Page, icon: BarChart3 },
     { id: "tasks" as Page, icon: ListChecks },
     { id: "campaigns" as Page, icon: Megaphone },
     { id: "conversations" as Page, icon: Mail },
@@ -1018,7 +1038,8 @@ export function PipelineOSWorkspace({
             onChange={(e) => {
               setQuery(e.target.value);
               setPage(0);
-              if (!current || !isGroup(current)) setPath(["files"]);
+              if (current !== "master" && (!current || !isGroup(current)))
+                setPath(["files"]);
             }}
           />
         </div>
@@ -1230,6 +1251,19 @@ export function PipelineOSWorkspace({
               </button>
             </div>
             <div className="pos-tiles">
+              {tile(
+                BarChart3,
+                l("master"),
+                t(
+                  locale,
+                  "Por asesor: tareas, ofertas, pipeline y resultados",
+                  "By rep: tasks, offers, pipeline and results",
+                ),
+                board.counts.files,
+                t(locale, "expedientes visibles", "visible files"),
+                "master",
+                0,
+              )}
               {tile(
                 ListChecks,
                 l("tasks"),
@@ -1444,7 +1478,7 @@ export function PipelineOSWorkspace({
               ) : caseData?.opportunities.find((o) => o.id === caseId) ? (
                 <>
                   <PipelineCaseProgress
-                    key={caseId}
+                    key={`progress:${caseId}`}
                     data={caseData}
                     caseId={caseId}
                     processes={processes}

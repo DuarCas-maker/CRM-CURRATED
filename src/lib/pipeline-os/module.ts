@@ -226,6 +226,7 @@ export function buildPipelineBoard(
   processes: PipelineProcess[] = [],
   input: Partial<PipelineQuery> = {},
   now = Date.now(),
+  pageSize = 50,
 ): PipelineBoard {
   const q = querySchema.parse(input);
   const allowed = data.opportunities.filter((o) =>
@@ -466,8 +467,8 @@ export function buildPipelineBoard(
     hours: q.hours,
     page: q.page,
     total: filtered.length,
-    hasMore: (q.page + 1) * 50 < filtered.length,
-    rows: filtered.slice(q.page * 50, q.page * 50 + 50),
+    hasMore: (q.page + 1) * pageSize < filtered.length,
+    rows: filtered.slice(q.page * pageSize, q.page * pageSize + pageSize),
     counts,
     byRep,
     summary: {

@@ -1,0 +1,14 @@
+[
+  {
+    "query": "?days=200",
+    "status": 400,
+    "expected": 400,
+    "passed": true
+  },
+  {
+    "query": "",
+    "status": 401,
+    "expected": 401,
+    "passed": true
+  }
+]

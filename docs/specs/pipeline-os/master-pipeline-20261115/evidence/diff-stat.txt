@@ -1,0 +1,14 @@
+ src/app/api/pipeline-os/master/route.ts        |    6 +
+ src/components/pipeline-os/master-pipeline.css |  368 +++++++
+ src/components/pipeline-os/master-pipeline.tsx | 1246 ++++++++++++++++++++++++
+ src/components/pipeline-os/workspace.tsx       |   38 +-
+ src/lib/pipeline-os/master-demo.ts             |   74 ++
+ src/lib/pipeline-os/master-pipeline.ts         |  932 ++++++++++++++++++
+ src/lib/pipeline-os/module.ts                  |    5 +-
+ src/lib/server/pipeline-master-http.ts         |   25 +
+ src/lib/server/pipeline-master.ts              |  229 +++++
+ tests/pipeline-master-http.test.ts             |   49 +
+ tests/pipeline-master-reader.test.ts           |  274 ++++++
+ tests/pipeline-master-ui.test.ts               |   65 ++
+ tests/pipeline-master.test.ts                  |  638 ++++++++++++
+ 13 files changed, 3945 insertions(+), 4 deletions(-)

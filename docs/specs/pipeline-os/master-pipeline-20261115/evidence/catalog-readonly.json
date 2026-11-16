@@ -1,0 +1,1031 @@
+{
+  "at": "2026-11-16T04:10:33.431Z",
+  "origin": "https://supabase.finlabinc.com",
+  "readOnly": true,
+  "maxRequests": 1,
+  "retries": 0,
+  "querySha256": "b577e489926598554c19ec565149b111dbedc56aa205de525b953cea6202bcc7",
+  "scope": "Selected columns/grants/RLS metadata and aggregated active roles; no credentials, customer rows or Auth operations",
+  "status": 200,
+  "requests": 1,
+  "metadata": {
+    "database": "postgres",
+    "policies": [
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "case_history_read",
+        "command": "SELECT",
+        "relation": "case_events"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "s01_i02_bound",
+        "command": "SELECT",
+        "relation": "case_events"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "documents_read",
+        "command": "SELECT",
+        "relation": "documents"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "s01_i02_bound",
+        "command": "SELECT",
+        "relation": "documents"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "case_history_read",
+        "command": "SELECT",
+        "relation": "financing_processes"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "s01_i02_bound",
+        "command": "SELECT",
+        "relation": "financing_processes"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "lenders_read",
+        "command": "SELECT",
+        "relation": "lenders"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "accounts_read",
+        "command": "SELECT",
+        "relation": "mail_accounts"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "brand_account_read",
+        "command": "SELECT",
+        "relation": "mail_accounts"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "messages_read",
+        "command": "SELECT",
+        "relation": "messages"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "s01_i02_bound",
+        "command": "SELECT",
+        "relation": "messages"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "offers_read",
+        "command": "SELECT",
+        "relation": "offers"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "pipeline_mail_reviews_read",
+        "command": "SELECT",
+        "relation": "pipeline_mail_reviews"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "profiles_read",
+        "command": "SELECT",
+        "relation": "profiles"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "submissions_read",
+        "command": "SELECT",
+        "relation": "submissions"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "s01_i02_bound",
+        "command": "SELECT",
+        "relation": "tasks"
+      },
+      {
+        "roles": [
+          "authenticated"
+        ],
+        "policy": "tasks_read",
+        "command": "SELECT",
+        "relation": "tasks"
+      }
+    ],
+    "read_only": "on",
+    "relations": [
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "archive_message_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "area",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "evidence_type",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "kind",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "occurred_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "opportunity_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "process_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "submission_id",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "case_events",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "content_hash",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "created_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "kind",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "opportunity_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "required",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "status",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "storage_path",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "documents",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "actual_funded_amount",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "classification",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "funded_lender_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "is_unclassified_archive",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "opportunity_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "sequence_number",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "started_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "state",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "financing_processes",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": false,
+        "kind": "v",
+        "columns": [
+          {
+            "column": "company",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "contact",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "contact_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "created_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "email",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "opportunity_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "seller_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "suppressed",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "verification",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "lead_workspace",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": true,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "email",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "name",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "lenders",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "email",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "owner_id",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "mail_accounts",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": false,
+        "kind": "v",
+        "columns": [
+          {
+            "column": "account_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "direction",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "gmail_thread_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "nature",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "participants",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "reply_intent",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "sent_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "subject",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "mail_archive_visible",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": true,
+        "authenticated_select": true
+      },
+      {
+        "rls": false,
+        "kind": "v",
+        "columns": [
+          {
+            "column": "account_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "area",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "needs_attention",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "opportunity_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "process_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "subject",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "submission_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "updated_at",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "mail_conversations_visible",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": true,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "archive_message_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "area",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "body",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "conversation_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "direction",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "nature",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "reply_intent",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "sender",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "sent_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "status",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "messages",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "amount",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "cost",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "created_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "expires_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "fees",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "frequency",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "opportunity_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "product",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "status",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "submission_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "term",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "offers",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": false,
+        "kind": "v",
+        "columns": [
+          {
+            "column": "amount",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "application_complete",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "application_signed",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "closer_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "company",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "contact",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "created_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "email",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "funded_amount",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "funded_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "funded_lender_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "handed_off_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "industry",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "next_action",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "next_action_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "phone",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "seller_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "stage",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "updated_at",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "opportunity_workspace",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": true,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "message_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "opportunity_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "result",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "status",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "pipeline_mail_reviews",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "active",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "email",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "name",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "role",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "profiles",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "closer_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "lender_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "next_action",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "next_action_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "opportunity_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "process_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "status",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "submitted_at",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "submissions",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      },
+      {
+        "rls": true,
+        "kind": "r",
+        "columns": [
+          {
+            "column": "area",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "due_at",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "opportunity_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "owner_id",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "status",
+            "present": true,
+            "authenticated_select": true
+          },
+          {
+            "column": "title",
+            "present": true,
+            "authenticated_select": true
+          }
+        ],
+        "relation": "tasks",
+        "columns_present": true,
+        "relation_present": true,
+        "security_invoker": false,
+        "authenticated_select": true
+      }
+    ],
+    "observed_at": "2026-11-16T04:10:33.897991+00:00",
+    "database_role": "supabase_admin",
+    "active_role_counts": [
+      {
+        "role": "superadmin",
+        "count": 1
+      }
+    ],
+    "authorization_functions": [
+      {
+        "name": "can_area",
+        "schema": "public",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "definition_hash": "d99fd0b6a3a4c6c09344f94fbc9f69de"
+      },
+      {
+        "name": "can_case",
+        "schema": "public",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "definition_hash": "da04375618f2bda22078d7d76bf15393"
+      },
+      {
+        "name": "current_app_role",
+        "schema": "public",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "definition_hash": "f81c041915e2a0d97e6eaeb529c1d347"
+      },
+      {
+        "name": "can_archive",
+        "schema": "s01_i02",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "definition_hash": "3deef78aa3213d84711b6c258c53f9b6"
+      },
+      {
+        "name": "visible_archive",
+        "schema": "s01_i02",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "definition_hash": "4969b859aa611686d6ce0f4faab71e43"
+      },
+      {
+        "name": "visible_conversations",
+        "schema": "s01_i02",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "definition_hash": "084a8b1c0f058da519cfbfa5e1e1f762"
+      }
+    ]
+  },
+  "compatible": true,
+  "problems": []
+}

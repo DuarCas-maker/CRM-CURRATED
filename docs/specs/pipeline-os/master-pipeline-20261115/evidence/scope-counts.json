@@ -1,0 +1,89 @@
+{
+  "at": "2026-11-16T04:18:11.494Z",
+  "readOnly": true,
+  "maxRequests": 2,
+  "retries": 0,
+  "querySha256": "3e40c097d5ddafbec9490ce25970583765019fbc6ea8901dc46866c4caef74d8",
+  "scope": "Actual production policies/grants in a temporary SQL context reproducing the sole existing profile and its separately verified aal2 session; count at most one row per projection",
+  "notAnAdditionalUserJwtSession": true,
+  "jwtMinted": false,
+  "authOperations": 0,
+  "mfaContextReplayedAtSqlLevel": true,
+  "previousControl": "Without aal, effective database role authenticated and subject present did not resolve an application role; expected MFA denial",
+  "status": 200,
+  "passed": true,
+  "metadata": {
+    "reads": [
+      {
+        "relation": "case_events",
+        "visible_rows": 544
+      },
+      {
+        "relation": "documents",
+        "visible_rows": 210
+      },
+      {
+        "relation": "financing_processes",
+        "visible_rows": 12
+      },
+      {
+        "relation": "lead_workspace",
+        "visible_rows": 1905
+      },
+      {
+        "relation": "lenders",
+        "visible_rows": 78
+      },
+      {
+        "relation": "mail_accounts",
+        "visible_rows": 1
+      },
+      {
+        "relation": "mail_archive_visible",
+        "visible_rows": 8214
+      },
+      {
+        "relation": "mail_conversations_visible",
+        "visible_rows": 30
+      },
+      {
+        "relation": "messages",
+        "visible_rows": 531
+      },
+      {
+        "relation": "offers",
+        "visible_rows": 0
+      },
+      {
+        "relation": "opportunity_workspace",
+        "visible_rows": 46
+      },
+      {
+        "relation": "pipeline_mail_reviews",
+        "visible_rows": 0
+      },
+      {
+        "relation": "profiles",
+        "visible_rows": 1
+      },
+      {
+        "relation": "submissions",
+        "visible_rows": 1
+      },
+      {
+        "relation": "tasks",
+        "visible_rows": 18
+      }
+    ],
+    "database": "postgres",
+    "read_only": "on",
+    "observed_at": "2026-11-16T04:18:11.587302+00:00",
+    "subject_present": true,
+    "application_role": "superadmin",
+    "mfa_context_replayed": true,
+    "effective_database_role": "authenticated"
+  },
+  "realSessionEntryPoint": "/api/workspace",
+  "realSessionVerifiedSeparately": true,
+  "otherActiveRoles": 0
+}

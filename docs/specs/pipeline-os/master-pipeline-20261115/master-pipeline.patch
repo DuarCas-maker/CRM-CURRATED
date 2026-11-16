@@ -1,0 +1,4096 @@
+diff --git a/src/app/api/pipeline-os/master/route.ts b/src/app/api/pipeline-os/master/route.ts
+new file mode 100644
+index 0000000..849a4c0
+--- /dev/null
++++ b/src/app/api/pipeline-os/master/route.ts
+@@ -0,0 +1,6 @@
++import { loadMasterPipeline } from "@/lib/server/pipeline-master";
++import { masterPipelineResponse } from "@/lib/server/pipeline-master-http";
++export const dynamic = "force-dynamic";
++export async function GET(request: Request) {
++  return masterPipelineResponse(request, loadMasterPipeline);
++}
+diff --git a/src/components/pipeline-os/master-pipeline.css b/src/components/pipeline-os/master-pipeline.css
+new file mode 100644
+index 0000000..3ca9386
+--- /dev/null
++++ b/src/components/pipeline-os/master-pipeline.css
+@@ -0,0 +1,368 @@
++.master-pipeline {
++  display: grid;
++  gap: 20px;
++  min-width: 0;
++}
++.master-pipeline h2,
++.master-pipeline h3,
++.master-pipeline p {
++  margin: 0;
++}
++.master-pipeline h2 {
++  font-family: "Instrument Serif", serif;
++  font-size: 32px;
++  line-height: 1.1;
++  margin: 8px 0;
++}
++.mp-intro {
++  justify-content: space-between;
++  align-items: center;
++}
++.mp-controls {
++  display: flex;
++  gap: 14px;
++  align-items: end;
++  flex-wrap: wrap;
++  background: var(--pos-panel);
++  border: 1px solid var(--pos-line);
++  border-radius: 12px;
++  padding: 14px;
++}
++.mp-controls > svg {
++  align-self: center;
++  color: var(--pos-muted);
++}
++.master-pipeline label {
++  display: grid;
++  gap: 5px;
++  font-size: 12px;
++  color: var(--pos-muted);
++}
++.master-pipeline select {
++  min-height: 38px;
++  max-width: 100%;
++  border: 1px solid var(--pos-line2);
++  border-radius: 7px;
++  background: var(--pos-panel);
++  color: var(--pos-ink);
++  padding: 7px 28px 7px 10px;
++}
++.mp-section-head {
++  display: flex;
++  justify-content: space-between;
++  gap: 16px;
++  align-items: start;
++  margin-bottom: 16px;
++}
++.mp-section-head p {
++  margin-top: 6px;
++  font-size: 13px;
++}
++.mp-reps table {
++  min-width: 940px;
++}
++.mp-reps .mp-number {
++  text-align: right;
++  font-variant-numeric: tabular-nums;
++  white-space: nowrap;
++}
++.mp-reps tbody th {
++  text-align: left;
++  font-weight: 600;
++}
++.mp-p1 {
++  color: var(--pos-bad-ink);
++  font-weight: 650;
++}
++.mp-selected {
++  background: var(--pos-soft);
++}
++.mp-summary {
++  display: grid;
++  grid-template-columns: repeat(4, minmax(0, 1fr));
++  gap: 12px;
++}
++.mp-summary .pos-card {
++  display: grid;
++  gap: 8px;
++}
++.mp-summary span {
++  font-size: 12px;
++  color: var(--pos-muted);
++}
++.mp-summary strong {
++  font-size: 30px;
++  line-height: 1;
++  font-weight: 600;
++  font-variant-numeric: tabular-nums;
++}
++.mp-tablist {
++  display: flex;
++  gap: 4px;
++  overflow-x: auto;
++  border-bottom: 1px solid var(--pos-line);
++  padding-bottom: 2px;
++}
++.mp-tablist button {
++  display: flex;
++  align-items: center;
++  gap: 7px;
++  min-height: 44px;
++  padding: 10px 14px;
++  white-space: nowrap;
++  border: 0;
++  border-bottom: 2px solid transparent;
++  background: none;
++  color: var(--pos-muted);
++}
++.mp-tablist button[aria-selected="true"] {
++  color: var(--pos-accent);
++  border-bottom-color: var(--pos-accent);
++  font-weight: 650;
++}
++.mp-tablist span {
++  font-size: 11px;
++  background: var(--pos-panel2);
++  border: 1px solid var(--pos-line);
++  padding: 1px 6px;
++  border-radius: 10px;
++}
++.master-pipeline [role="tabpanel"] {
++  display: grid;
++  gap: 18px;
++  min-width: 0;
++}
++.master-pipeline button:focus-visible,
++.master-pipeline select:focus-visible,
++.master-pipeline [role="tabpanel"]:focus-visible {
++  outline: 2px solid var(--pos-accent);
++  outline-offset: 3px;
++}
++.mp-task-filter {
++  align-items: center;
++  gap: 18px;
++}
++.mp-task-filter p {
++  max-width: 670px;
++}
++.mp-data h3 {
++  margin-bottom: 12px;
++}
++.mp-data .pos-table {
++  min-width: 780px;
++}
++.mp-data td {
++  max-width: 300px;
++  vertical-align: top;
++}
++.mp-data td small {
++  display: block;
++  color: var(--pos-muted);
++  margin-top: 4px;
++  font-size: 12px;
++}
++.mp-data .pos-actions {
++  flex-wrap: nowrap;
++}
++.mp-data .pos-table th {
++  white-space: nowrap;
++}
++.mp-stage {
++  display: inline-block;
++  font-size: 11px;
++  border-radius: 6px;
++  padding: 4px 7px;
++  background: var(--pos-panel2);
++  border: 1px solid var(--pos-line);
++  color: var(--pos-ink);
++}
++.mp-stage-funded {
++  background: var(--pos-good);
++  color: var(--pos-good-ink);
++}
++.mp-stage-declined {
++  background: var(--pos-bad);
++  color: var(--pos-bad-ink);
++}
++.mp-stage-requirements,
++.mp-stage-contracts_out {
++  background: var(--pos-warn);
++  color: var(--pos-warn-ink);
++}
++.mp-priority {
++  display: inline-block;
++  font-size: 11px;
++  font-weight: 650;
++  border: 1px solid var(--pos-line);
++  padding: 3px 6px;
++  border-radius: 5px;
++}
++.mp-priority-1 {
++  background: var(--pos-bad);
++  color: var(--pos-bad-ink);
++}
++.mp-excerpt {
++  display: block;
++  max-width: 340px;
++  overflow-wrap: anywhere;
++  white-space: pre-wrap;
++  font-size: 12px;
++  color: var(--pos-muted);
++}
++.mp-pagination {
++  display: flex;
++  gap: 12px;
++  justify-content: space-between;
++  align-items: center;
++  font-size: 12px;
++  color: var(--pos-muted);
++}
++.mp-pagination > div {
++  display: flex;
++  gap: 8px;
++}
++.mp-notes {
++  display: grid;
++  gap: 7px;
++  border-top: 1px solid var(--pos-line);
++  padding-top: 14px;
++}
++.mp-stats-grid {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 16px;
++  min-width: 0;
++}
++.mp-stats-grid > * {
++  min-width: 0;
++}
++.mp-bars {
++  display: grid;
++  height: 190px;
++  align-items: end;
++  gap: 2px;
++  padding: 15px 0 25px;
++}
++.mp-bars > div {
++  height: 100%;
++  display: flex;
++  align-items: end;
++  position: relative;
++}
++.mp-bars span {
++  display: block;
++  width: 100%;
++  max-width: 32px;
++  background: var(--pos-accent);
++  border-radius: 3px 3px 0 0;
++}
++.mp-bars small {
++  position: absolute;
++  bottom: -20px;
++  font-size: 9px;
++  color: var(--pos-muted);
++}
++.mp-bars > div:last-child small {
++  right: 0;
++}
++.mp-chart details {
++  font-size: 12px;
++  margin-top: 12px;
++}
++.mp-chart summary {
++  cursor: pointer;
++}
++.mp-results .pos-table {
++  min-width: 650px;
++}
++.mp-results h3 {
++  margin-bottom: 12px;
++}
++.mp-offer-list {
++  display: grid;
++  grid-template-columns: repeat(2, minmax(0, 1fr));
++  gap: 12px;
++  padding: 10px 0;
++}
++.mp-offer-list article {
++  background: var(--pos-panel2);
++  border: 1px solid var(--pos-line);
++  padding: 14px;
++  border-radius: 8px;
++}
++.mp-offer-list p {
++  font-size: 12px;
++  color: var(--pos-muted);
++  margin-top: 6px;
++}
++.mp-offer-list .pos-pill {
++  margin-left: 8px;
++}
++.mp-reader {
++  display: grid;
++  gap: 16px;
++}
++.mp-reader article {
++  border: 1px solid var(--pos-line);
++  border-radius: 8px;
++  padding: 16px;
++}
++.mp-reader pre {
++  font: inherit;
++  white-space: pre-wrap;
++  overflow-wrap: anywhere;
++}
++.mp-error {
++  border-color: var(--pos-bad-ink);
++}
++.mp-error button {
++  margin-top: 12px;
++}
++.master-pipeline .pos-scroll {
++  max-width: 100%;
++  overflow-x: auto;
++}
++.pos-sr {
++  position: absolute;
++  width: 1px;
++  height: 1px;
++  overflow: hidden;
++  clip-path: inset(50%);
++  white-space: nowrap;
++}
++@media (max-width: 760px) {
++  .mp-summary {
++    grid-template-columns: repeat(2, minmax(0, 1fr));
++  }
++  .mp-stats-grid {
++    grid-template-columns: 1fr;
++  }
++  .mp-controls {
++    gap: 10px;
++  }
++  .mp-controls label {
++    flex: 1 1 145px;
++  }
++  .mp-controls > svg {
++    display: none;
++  }
++  .mp-intro {
++    align-items: start;
++  }
++  .mp-intro h2 {
++    font-size: 28px;
++  }
++  .mp-pagination {
++    align-items: start;
++    flex-direction: column;
++  }
++  .mp-offer-list {
++    grid-template-columns: 1fr;
++  }
++  .mp-section-head {
++    flex-direction: column;
++  }
++  .mp-reader article {
++    padding: 10px;
++  }
++}
+diff --git a/src/components/pipeline-os/master-pipeline.tsx b/src/components/pipeline-os/master-pipeline.tsx
+new file mode 100644
+index 0000000..a0abe9f
+--- /dev/null
++++ b/src/components/pipeline-os/master-pipeline.tsx
+@@ -0,0 +1,1246 @@
++"use client";
++import {
++  Fragment,
++  useEffect,
++  useId,
++  useRef,
++  useState,
++  type ReactNode,
++} from "react";
++import {
++  ArrowUpRight,
++  ChevronDown,
++  Mail,
++  RefreshCw,
++  SlidersHorizontal,
++} from "lucide-react";
++import type { Locale, Workspace, Stage as CrmStage } from "@/lib/domain";
++import { currency, stageLabels } from "@/lib/domain";
++import { readableMail } from "@/lib/mail-display";
++import {
++  buildMasterPipeline,
++  masterStages,
++  masterTabs,
++  parseMasterQuery,
++  type MasterDashboard,
++  type MasterRow,
++  type MasterStage,
++  type MasterTab,
++} from "@/lib/pipeline-os/master-pipeline";
++import { masterDemoSource } from "@/lib/pipeline-os/master-demo";
++import type { PipelineProcess } from "@/lib/pipeline-os/module";
++import { Modal, t } from "../ui";
++import type { CaseSection } from "./board";
++import "./master-pipeline.css";
++
++export const masterTabLabels: Record<MasterTab, [string, string]> = {
++  tasks: ["Tareas", "Tasks"],
++  offers: ["Ofertas", "Offers"],
++  pipeline: ["Pipeline", "Pipeline"],
++  stats: ["Indicadores", "Stats"],
++  comms: ["Comunicaciones", "Communications"],
++  leads: ["Respuestas de leads", "Lead replies"],
++};
++export const masterStageLabels: Record<MasterStage, [string, string]> = {
++  submitted: ["Enviado a lenders", "Submitted"],
++  requirements: ["Requisitos solicitados", "Stips requested"],
++  approved: ["Ofertas / aprobación registrada", "Approved / offers"],
++  contracts_out: ["Contratos enviados", "Contracts out"],
++  contracts_signed: ["Contratos firmados", "Contracts signed"],
++  funded: ["Desembolsado", "Funded"],
++  declined: ["Sin financiación", "Declined"],
++  withdrawn: ["Cliente retirado", "Customer withdrew"],
++  application: ["Aplicación y preparación", "Application / preparation"],
++  paused: ["En pausa", "On hold"],
++  unclassified: ["Por clasificar", "Unclassified"],
++};
++const milestoneLabels: Record<string, [string, string]> = {
++  application_received: ["Aplicación recibida", "Application received"],
++  contract_sent: ["Contrato enviado", "Contract sent"],
++  contract_signed: ["Contrato firmado", "Contract signed"],
++  disbursed: ["Desembolso registrado", "Recorded funding"],
++};
++const number = (n: number | null | undefined) =>
++  n === null || n === undefined
++    ? "—"
++    : new Intl.NumberFormat("es-CO").format(n);
++const date = (at: string | null | undefined, locale: Locale) =>
++  at && Number.isFinite(Date.parse(at))
++    ? new Intl.DateTimeFormat(locale === "es" ? "es-CO" : "en-US", {
++        day: "numeric",
++        month: "short",
++        year: "numeric",
++        timeZone: "UTC",
++      }).format(new Date(at))
++    : "—";
++const safeError = (e: unknown) =>
++  e instanceof Error ? e.message : "No se pudo cargar / Could not load";
++type Props = {
++  data: Workspace;
++  processes: PipelineProcess[];
++  locale: Locale;
++  search: string;
++  owner: string;
++  onOwner(id: string): void;
++  open(id: string, section?: CaseSection): void;
++  mail(id?: string, conversation?: string): void;
++};
++
++export function MasterPipeline({
++  data,
++  processes,
++  locale,
++  search,
++  owner,
++  onOwner,
++  open,
++  mail,
++}: Props) {
++  const [tab, setTab] = useState<MasterTab>("tasks"),
++    [stage, setStage] = useState("all"),
++    [priority, setPriority] = useState("all"),
++    [days, setDays] = useState(30),
++    [page, setPage] = useState(0),
++    [revision, setRevision] = useState(0);
++  const [dashboard, setDashboard] = useState<MasterDashboard | null>(null),
++    [loadedKey, setLoadedKey] = useState(""),
++    [loading, setLoading] = useState(true),
++    [error, setError] = useState("");
++  const queryString = new URLSearchParams({
++    tab,
++    q: search,
++    owner,
++    stage,
++    priority,
++    days: String(days),
++    page: String(page),
++  }).toString();
++  const requestId = useRef(0),
++    tabId = useId();
++  const [archive, setArchive] = useState<string | null>(null);
++  useEffect(() => {
++    setPage(0);
++  }, [search, owner]);
++  useEffect(() => {
++    const controller = new AbortController(),
++      id = ++requestId.current;
++    setLoading(true);
++    setError("");
++    const timer = setTimeout(
++      async () => {
++        try {
++          let value: MasterDashboard;
++          if (data.demo) {
++            value = buildMasterPipeline(
++              masterDemoSource(data, processes),
++              parseMasterQuery(new URLSearchParams(queryString)),
++            );
++            value.rows = value.rows.map((r) => ({
++              ...r,
++              excerpt: readableMail(
++                data.messages.find((m) => m.id === r.messageId)?.body || "",
++              ).text.slice(0, 600),
++            }));
++          } else {
++            const r = await fetch(`/api/pipeline-os/master?${queryString}`, {
++              cache: "no-store",
++              signal: controller.signal,
++            });
++            const body = await r.json();
++            if (!r.ok)
++              throw Error(
++                typeof body.error === "string"
++                  ? body.error
++                  : "No se pudo cargar Master Pipeline / Could not load Master Pipeline",
++              );
++            value = body;
++          }
++          if (!controller.signal.aborted && id === requestId.current) {
++            setDashboard(value);
++            setLoadedKey(queryString);
++          }
++        } catch (e) {
++          if (!controller.signal.aborted && id === requestId.current)
++            setError(safeError(e));
++        } finally {
++          if (!controller.signal.aborted && id === requestId.current)
++            setLoading(false);
++        }
++      },
++      data.demo ? 0 : 200,
++    );
++    return () => {
++      clearTimeout(timer);
++      controller.abort();
++    };
++  }, [queryString, revision, data, processes]);
++  const current =
++    dashboard && loadedKey === queryString && !error && !loading
++      ? dashboard
++      : null;
++  const sectionRef = useRef<HTMLElement>(null),
++    initialScroll = useRef(false);
++  useEffect(() => {
++    if (!current || initialScroll.current) return;
++    initialScroll.current = true;
++    if (new URLSearchParams(window.location.search).get("view") === "master")
++      sectionRef.current
++        ?.closest(".pos-level")
++        ?.scrollIntoView({ block: "start" });
++  }, [current]);
++  const chooseTab = (next: MasterTab) => {
++    setTab(next);
++    setPage(0);
++  };
++  const reply = (r: MasterRow) =>
++    r.archiveMessageId
++      ? setArchive(r.archiveMessageId)
++      : mail(r.caseId || undefined, r.conversationId);
++  return (
++    <section
++      className="master-pipeline"
++      ref={sectionRef}
++      aria-label="Master Pipeline"
++      aria-busy={loading}
++    >
++      <div className="pos-row mp-intro">
++        <div>
++          <div className="pos-caption">
++            {data.demo
++              ? t(locale, "DEMO · DATOS FICTICIOS", "DEMO · SAMPLE DATA")
++              : t(locale, "OPERACIÓN ACTUAL DEL CRM", "CURRENT CRM WORKLOAD")}
++          </div>
++          <p className="pos-muted">
++            {t(
++              locale,
++              "Cada asesor, cada expediente y el siguiente paso.",
++              "Every rep, every file, and the next step.",
++            )}
++          </p>
++        </div>
++        <button
++          className="pos-btn"
++          onClick={() => setRevision((r) => r + 1)}
++          disabled={loading}
++        >
++          <RefreshCw size={15} />
++          {t(locale, "Actualizar", "Refresh")}
++        </button>
++      </div>
++      <div className="mp-controls">
++        <SlidersHorizontal size={16} aria-hidden="true" />
++        <label>
++          {t(locale, "Responsable", "Rep")}
++          <select
++            value={owner}
++            onChange={(e) => {
++              onOwner(e.target.value);
++              setPage(0);
++            }}
++          >
++            <option value="all">
++              {t(locale, "Todos los visibles", "All visible")}
++            </option>
++            {(dashboard?.byRep || []).map((r) => (
++              <option key={r.id} value={r.id}>
++                {r.id === "unassigned"
++                  ? t(locale, "Sin asignar", "Unassigned")
++                  : r.name}
++              </option>
++            ))}
++          </select>
++        </label>
++        <label>
++          {t(locale, "Etapa equivalente", "Equivalent stage")}
++          <select
++            value={stage}
++            onChange={(e) => {
++              setStage(e.target.value);
++              setPage(0);
++            }}
++          >
++            <option value="all">
++              {t(locale, "Todas las etapas", "All stages")}
++            </option>
++            {masterStages.map((s) => (
++              <option key={s} value={s}>
++                {t(locale, ...masterStageLabels[s])}
++              </option>
++            ))}
++          </select>
++        </label>
++        <label>
++          {t(locale, "Actividad", "Activity")}
++          <select
++            value={days}
++            onChange={(e) => {
++              setDays(Number(e.target.value));
++              setPage(0);
++            }}
++          >
++            {[7, 30, 90].map((d) => (
++              <option key={d} value={d}>
++                {d} {t(locale, "días", "days")}
++              </option>
++            ))}
++          </select>
++        </label>
++        {(owner !== "all" || stage !== "all") && (
++          <button
++            className="pos-text-btn"
++            onClick={() => {
++              onOwner("all");
++              setStage("all");
++              setPriority("all");
++              setPage(0);
++            }}
++          >
++            {t(locale, "Limpiar filtros", "Clear filters")}
++          </button>
++        )}
++      </div>
++      <p className="pos-small pos-muted">
++        {t(
++          locale,
++          "Carga actual de tareas y expedientes. El período se aplica a actividad, correo y resultados diarios (UTC).",
++          "Current task and case workload. The period applies to activity, mail and daily results (UTC).",
++        )}
++      </p>
++      {error && (
++        <div className="pos-card mp-error" role="alert">
++          <p>{error}</p>
++          <button className="pos-btn" onClick={() => setRevision((r) => r + 1)}>
++            {t(locale, "Reintentar lectura", "Retry read")}
++          </button>
++        </div>
++      )}
++      {current ? (
++        <>
++          <MasterRepTable
++            dashboard={current}
++            locale={locale}
++            owner={owner}
++            onOwner={(id) => {
++              onOwner(id === owner ? "all" : id);
++              setPage(0);
++            }}
++          />
++          <div className="mp-summary">
++            {[
++              [
++                t(locale, "Tareas abiertas", "Open tasks"),
++                current.counts.tasks,
++              ],
++              [
++                "P1",
++                current.byRep
++                  .filter((r) => owner === "all" || r.id === owner)
++                  .reduce((n, r) => n + r.p1, 0),
++              ],
++              [
++                t(locale, "Casos activos", "Live deals"),
++                current.byRep
++                  .filter((r) => owner === "all" || r.id === owner)
++                  .reduce((n, r) => n + r.live, 0),
++              ],
++              [
++                t(locale, "Desembolsados", "Funded"),
++                current.byRep
++                  .filter((r) => owner === "all" || r.id === owner)
++                  .reduce((n, r) => n + r.funded, 0),
++              ],
++            ].map(([label, value]) => (
++              <div className="pos-card" key={label}>
++                <span>{label}</span>
++                <strong>{number(Number(value))}</strong>
++              </div>
++            ))}
++          </div>
++        </>
++      ) : (
++        !error && (
++          <div className="pos-card pos-empty" role="status">
++            {t(
++              locale,
++              "Cargando el pipeline y sus conteos…",
++              "Loading pipeline and counts…",
++            )}
++          </div>
++        )
++      )}
++      <div
++        className="mp-tablist"
++        role="tablist"
++        aria-label={t(
++          locale,
++          "Vistas de Master Pipeline",
++          "Master Pipeline views",
++        )}
++        onKeyDown={(e) => {
++          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key))
++            return;
++          e.preventDefault();
++          const i = masterTabs.indexOf(tab),
++            next =
++              e.key === "Home"
++                ? masterTabs[0]
++                : e.key === "End"
++                  ? masterTabs.at(-1)!
++                  : masterTabs[
++                      (i +
++                        (e.key === "ArrowRight" ? 1 : -1) +
++                        masterTabs.length) %
++                        masterTabs.length
++                    ];
++          chooseTab(next);
++          requestAnimationFrame(() =>
++            document.getElementById(`${tabId}-${next}`)?.focus(),
++          );
++        }}
++      >
++        {masterTabs.map((x) => (
++          <button
++            key={x}
++            id={`${tabId}-${x}`}
++            role="tab"
++            aria-selected={tab === x}
++            aria-controls={`${tabId}-panel`}
++            tabIndex={tab === x ? 0 : -1}
++            onClick={() => chooseTab(x)}
++          >
++            {t(locale, ...masterTabLabels[x])}
++            {current && <span>{number(current.counts[x])}</span>}
++          </button>
++        ))}
++      </div>
++      <div
++        role="tabpanel"
++        id={`${tabId}-panel`}
++        aria-labelledby={`${tabId}-${tab}`}
++        tabIndex={0}
++      >
++        {tab === "tasks" && (
++          <div className="pos-row mp-task-filter">
++            <label>
++              {t(locale, "Prioridad operativa", "Operational priority")}
++              <select
++                value={priority}
++                onChange={(e) => {
++                  setPriority(e.target.value);
++                  setPage(0);
++                }}
++              >
++                <option value="all">{t(locale, "Todas", "All")}</option>
++                {[1, 2, 3].map((p) => (
++                  <option key={p} value={p}>
++                    P{p}
++                  </option>
++                ))}
++              </select>
++            </label>
++            <p className="pos-small pos-muted">
++              {t(
++                locale,
++                "Cada tarea abierta se cuenta una vez, por su responsable. P1/P2/P3 conserva la prioridad operativa de su expediente.",
++                "Each open task is counted once, by its owner. P1/P2/P3 preserves the file's operational priority.",
++              )}
++            </p>
++          </div>
++        )}
++        {current && tab === "stats" && (
++          <MasterStats dashboard={current} locale={locale} owner={owner} />
++        )}
++        {current && (
++          <MasterRows
++            dashboard={current}
++            locale={locale}
++            open={open}
++            mail={reply}
++          />
++        )}
++        {!current && !error && (
++          <p role="status">
++            {t(locale, "Actualizando esta vista…", "Updating this view…")}
++          </p>
++        )}
++        {current && (
++          <div className="mp-pagination">
++            <span>
++              {number(current.total)} {t(locale, "registros", "records")} ·{" "}
++              {t(locale, "Página", "Page")} {page + 1}
++            </span>
++            <div>
++              <button
++                className="pos-btn pos-sm"
++                disabled={page === 0 || loading}
++                onClick={() => setPage((p) => p - 1)}
++              >
++                {t(locale, "Anterior", "Previous")}
++              </button>
++              <button
++                className="pos-btn pos-sm"
++                disabled={!current.hasMore || loading}
++                onClick={() => setPage((p) => p + 1)}
++              >
++                {t(locale, "Siguiente", "Next")}
++              </button>
++            </div>
++          </div>
++        )}
++      </div>
++      {current && (
++        <div className="mp-notes pos-small pos-muted">
++          <p>
++            {t(
++              locale,
++              "«Sin respuesta registrada» usa evidencia del hilo de la oferta. No incluye llamadas, SMS ni respuestas fuera del CRM. «—» indica falta de evidencia o acceso, no cero.",
++              "“No recorded reply” uses evidence from the offer's thread. It excludes calls, SMS and replies outside the CRM. “—” means missing evidence or access, not zero.",
++            )}
++          </p>
++          {current.coverage.bestWithoutEvidence > 0 && (
++            <p>
++              {number(current.coverage.bestWithoutEvidence)}{" "}
++              {t(
++                locale,
++                "ofertas de mayor monto requieren vincular su correo de origen para comprobar respuesta.",
++                "highest offers need their source mail linked before a reply can be checked.",
++              )}
++            </p>
++          )}
++          {!current.coverage.leadReplies && (
++            <p>
++              {t(
++                locale,
++                "Respuestas de leads: cobertura parcial según los permisos del archivo. Los pendientes sin cobertura no se contabilizan como cero.",
++                "Lead replies: partial coverage under archive permissions. Uncovered pending replies are not counted as zero.",
++              )}
++            </p>
++          )}
++          <p>
++            {t(locale, "Actualizado", "As of")} {date(current.asOf, locale)} ·
++            UTC ·{" "}
++            {t(
++              locale,
++              "Solo registros existentes; esta vista no consulta Gmail ni envía correos.",
++              "Existing records only; this view does not scan Gmail or send mail.",
++            )}
++          </p>
++        </div>
++      )}
++      {archive && (
++        <ArchiveReader
++          id={archive}
++          locale={locale}
++          demo={data.demo}
++          close={() => setArchive(null)}
++        />
++      )}
++    </section>
++  );
++}
++
++export function MasterRepTable({
++  dashboard: b,
++  locale,
++  owner,
++  onOwner,
++}: {
++  dashboard: MasterDashboard;
++  locale: Locale;
++  owner: string;
++  onOwner(id: string): void;
++}) {
++  const headers = [
++    t(locale, "Asesor", "Rep"),
++    t(locale, "Tareas", "Tasks"),
++    "P1",
++    t(locale, "Ofertas", "Offers"),
++    t(locale, "Mayor oferta sin respuesta", "Best unanswered"),
++    t(locale, "Casos activos", "Live deals"),
++    t(locale, "Desembolsados", "Funded"),
++    t(locale, "Correos", "Emails"),
++    t(locale, "Leads pendientes", "Leads open"),
++  ];
++  return (
++    <section className="pos-card mp-reps">
++      <div className="mp-section-head">
++        <div>
++          <h3>{t(locale, "Por asesor", "By rep")}</h3>
++          <p className="pos-muted">
++            {t(
++              locale,
++              "Selecciona un asesor para filtrar todas las vistas de abajo.",
++              "Select a rep to filter every view below.",
++            )}
++          </p>
++        </div>
++        {owner !== "all" && (
++          <button className="pos-text-btn" onClick={() => onOwner("all")}>
++            {t(locale, "Ver todos", "View all")}
++          </button>
++        )}
++      </div>
++      <div className="pos-scroll">
++        <table className="pos-table">
++          <caption className="pos-sr">
++            {t(
++              locale,
++              "Carga actual por responsable y correo registrado en el período.",
++              "Current workload by rep and mail recorded in the period.",
++            )}
++          </caption>
++          <thead>
++            <tr>
++              {headers.map((h) => (
++                <th key={h} scope="col">
++                  {h}
++                </th>
++              ))}
++            </tr>
++          </thead>
++          <tbody>
++            {b.byRep.map((r) => (
++              <tr key={r.id} className={owner === r.id ? "mp-selected" : ""}>
++                <th scope="row">
++                  <button
++                    className="pos-text-btn"
++                    aria-pressed={owner === r.id}
++                    onClick={() => onOwner(owner === r.id ? "all" : r.id)}
++                  >
++                    {r.id === "unassigned"
++                      ? t(locale, "Sin asignar", "Unassigned")
++                      : r.name}
++                  </button>
++                </th>
++                {[
++                  r.tasks,
++                  r.p1,
++                  r.offers,
++                  r.unansweredBest,
++                  r.live,
++                  r.funded,
++                  r.emails,
++                  r.leadsOpen,
++                ].map((value, i) => (
++                  <td
++                    key={i}
++                    className={`mp-number ${i === 1 && value ? "mp-p1" : ""}`}
++                  >
++                    {number(value)}
++                  </td>
++                ))}
++              </tr>
++            ))}
++          </tbody>
++        </table>
++      </div>
++      {!b.byRep.length && (
++        <p>
++          {t(
++            locale,
++            "No hay asesores visibles en este ámbito.",
++            "No visible reps in this scope.",
++          )}
++        </p>
++      )}
++    </section>
++  );
++}
++
++function Stage({ row, locale }: { row: MasterRow; locale: Locale }) {
++  return (
++    <span className={`mp-stage mp-stage-${row.stage}`} title={row.sourceStage}>
++      {t(locale, ...masterStageLabels[row.stage])}
++      {row.stage === "unclassified" && row.sourceStage && (
++        <small>
++          CRM:{" "}
++          {stageLabels[locale][row.sourceStage as CrmStage] || row.sourceStage}
++        </small>
++      )}
++    </span>
++  );
++}
++function Answer({
++  value,
++  locale,
++}: {
++  value: boolean | null | undefined;
++  locale: Locale;
++}) {
++  return (
++    <span className={value === false ? "mp-p1" : ""}>
++      {value === true
++        ? t(locale, "Respuesta registrada", "Reply recorded")
++        : value === false
++          ? t(locale, "Sin respuesta registrada", "No recorded reply")
++          : t(locale, "Por verificar", "Not established")}
++    </span>
++  );
++}
++function Empty({ locale }: { locale: Locale }) {
++  return (
++    <div className="pos-empty">
++      <Mail size={24} />
++      <strong>
++        {t(locale, "Sin registros en esta vista", "No records in this view")}
++      </strong>
++      <span>
++        {t(
++          locale,
++          "Prueba otro asesor, período o búsqueda.",
++          "Try another rep, period or search.",
++        )}
++      </span>
++    </div>
++  );
++}
++
++export function MasterRows({
++  dashboard: b,
++  locale,
++  open,
++  mail,
++}: {
++  dashboard: MasterDashboard;
++  locale: Locale;
++  open(id: string, section?: CaseSection): void;
++  mail(row: MasterRow): void;
++}) {
++  const [expanded, setExpanded] = useState<string[]>([]);
++  const tab = b.query.tab;
++  const labels: Record<MasterTab, string[]> = {
++    tasks: [
++      "P",
++      t(locale, "Asesor", "Rep"),
++      t(locale, "Tarea", "Task"),
++      t(locale, "Negocio / contacto", "Business / contact"),
++      t(locale, "Qué dijeron", "What they said"),
++      t(locale, "Vencimiento", "Due date"),
++    ],
++    offers: [
++      t(locale, "Expediente", "File"),
++      t(locale, "Asesor", "Rep"),
++      t(locale, "Etapa", "Stage"),
++      t(locale, "Mayor oferta vigente", "Highest active offer"),
++      "Lender",
++      t(locale, "Condiciones", "Terms"),
++      t(locale, "Respuesta", "Reply"),
++      t(locale, "Ofertas", "Offers"),
++    ],
++    pipeline: [
++      t(locale, "Negocio", "Merchant"),
++      t(locale, "Asesor", "Rep"),
++      t(locale, "Etapa", "Stage"),
++      t(locale, "Ofertas", "Offers"),
++      t(locale, "Mayor oferta", "Highest offer"),
++      "Lenders",
++      t(locale, "Rechazos", "Declines"),
++      t(locale, "Lender registrado", "Recorded lender"),
++      t(locale, "Requisito registrado", "Recorded requirement"),
++      t(locale, "Última actividad", "Last activity"),
++      t(locale, "Sin actividad", "Quiet"),
++    ],
++    stats: [
++      t(locale, "Fecha", "Date"),
++      t(locale, "Asesor", "Rep"),
++      t(locale, "Negocio", "Business"),
++      t(locale, "Evento registrado", "Recorded milestone"),
++    ],
++    comms: [
++      t(locale, "Fecha", "Date"),
++      t(locale, "Asesor", "Rep"),
++      t(locale, "Negocio / remitente", "Business / sender"),
++      t(locale, "Dirección", "Direction"),
++      t(locale, "Asunto / extracto", "Subject / excerpt"),
++    ],
++    leads: [
++      t(locale, "Fecha", "Date"),
++      t(locale, "Asesor", "Rep"),
++      t(locale, "Negocio", "Business"),
++      t(locale, "Interés registrado", "Recorded intent"),
++      t(locale, "Qué dijeron", "What they said"),
++      t(locale, "Correo", "Email"),
++      t(locale, "Respuesta", "Answered"),
++      t(locale, "Convertido", "Converted"),
++    ],
++  };
++  const cells = (r: MasterRow): ReactNode[] => {
++    if (tab === "tasks")
++      return [
++        <span className={`mp-priority mp-priority-${r.priority}`}>
++          P{r.priority}
++        </span>,
++        r.ownerName,
++        <strong>{r.title}</strong>,
++        <>
++          <b>{r.company}</b>
++          <small>{r.contact}</small>
++        </>,
++        <span className="mp-excerpt">{r.excerpt || "—"}</span>,
++        <>
++          {date(r.at, locale)}
++          {r.waitingDays !== null && r.waitingDays !== undefined && (
++            <small>
++              {r.waitingDays === 0
++                ? t(locale, "Hoy", "Today")
++                : `${r.waitingDays} ${t(locale, "días vencida", "days overdue")}`}
++            </small>
++          )}
++        </>,
++      ];
++    if (tab === "offers")
++      return [
++        <strong>{r.company}</strong>,
++        r.ownerName,
++        <Stage row={r} locale={locale} />,
++        r.best ? currency(r.best.amount, locale) : "—",
++        r.best?.lender || "—",
++        <>
++          {r.best?.term || "—"}
++          <small>
++            {r.best?.cost} · {r.best?.frequency}
++          </small>
++        </>,
++        <Answer value={r.best?.answered} locale={locale} />,
++        <button
++          className="pos-text-btn"
++          aria-expanded={expanded.includes(r.id)}
++          aria-controls={`master-offers-${r.id}`}
++          onClick={() =>
++            setExpanded((old) =>
++              old.includes(r.id)
++                ? old.filter((id) => id !== r.id)
++                : [...old, r.id],
++            )
++          }
++        >
++          {number(r.offers?.length)} <ChevronDown size={12} />
++        </button>,
++      ];
++    if (tab === "pipeline")
++      return [
++        <strong>{r.company}</strong>,
++        r.ownerName,
++        <Stage row={r} locale={locale} />,
++        number(r.offers?.length),
++        r.best ? currency(r.best.amount, locale) : "—",
++        number(r.lenders),
++        number(r.declines),
++        r.fundedBy || "—",
++        r.requirement || "—",
++        date(r.at, locale),
++        r.waitingDays === null ? "—" : `${r.waitingDays} d`,
++      ];
++    if (tab === "stats")
++      return [
++        date(r.at, locale),
++        r.ownerName,
++        <strong>{r.company}</strong>,
++        milestoneLabels[r.title || ""]
++          ? t(locale, ...milestoneLabels[r.title!])
++          : r.title,
++      ];
++    if (tab === "comms")
++      return [
++        date(r.at, locale),
++        r.ownerName,
++        <>
++          <strong>{r.company}</strong>
++          <small>{r.email}</small>
++        </>,
++        r.direction === "inbound"
++          ? t(locale, "Recibido", "Inbound")
++          : t(locale, "Enviado / registrado", "Outbound / recorded"),
++        <>
++          <strong>{r.subject}</strong>
++          <small className="mp-excerpt">
++            {r.excerpt ||
++              t(
++                locale,
++                "Abre el correo para consultar su contenido.",
++                "Open the email to read its content.",
++              )}
++          </small>
++        </>,
++      ];
++    return [
++      date(r.at, locale),
++      r.ownerName,
++      <strong>{r.company}</strong>,
++      r.intent === "positive"
++        ? t(locale, "Positivo", "Positive")
++        : t(locale, "Revisión pendiente", "Needs review"),
++      <span className="mp-excerpt">{r.excerpt || r.subject || "—"}</span>,
++      r.email,
++      <Answer value={r.answered} locale={locale} />,
++      r.converted ? t(locale, "Sí", "Yes") : t(locale, "No", "No"),
++    ];
++  };
++  return (
++    <section className="pos-card mp-data">
++      <h3>{t(locale, ...masterTabLabels[tab])}</h3>
++      {tab === "offers" && (
++        <p className="pos-small pos-muted">
++          {t(
++            locale,
++            "Mayor monto y oferta elegida son distintos. Revisa costo, plazo y requisitos antes de decidir.",
++            "Highest amount and selected offer are different. Review cost, term and requirements before deciding.",
++          )}
++        </p>
++      )}
++      <div className="pos-scroll">
++        <table className="pos-table">
++          <thead>
++            <tr>
++              {[...labels[tab], t(locale, "Abrir", "Open")].map((h, i) => (
++                <th key={i} scope="col">
++                  {h}
++                </th>
++              ))}
++            </tr>
++          </thead>
++          <tbody>
++            {b.rows.map((r) => (
++              <Fragment key={r.id}>
++                <tr>
++                  {cells(r).map((c, i) => (
++                    <td key={i}>{c}</td>
++                  ))}
++                  <td>
++                    <div className="pos-actions">
++                      {r.caseId && (
++                        <button
++                          className="pos-btn pos-sm"
++                          onClick={() =>
++                            open(
++                              r.caseId!,
++                              tab === "offers" ? "lenders" : "activity",
++                            )
++                          }
++                          aria-label={`${t(locale, "Abrir expediente", "Open file")} ${r.company}`}
++                        >
++                          <ArrowUpRight size={14} />
++                          {t(locale, "Expediente", "File")}
++                        </button>
++                      )}
++                      {(r.conversationId ||
++                        r.archiveMessageId ||
++                        r.messageId) && (
++                        <button
++                          className="pos-btn pos-sm"
++                          onClick={() => mail(r)}
++                          aria-label={t(locale, "Abrir correo", "Open email")}
++                        >
++                          <Mail size={14} />
++                        </button>
++                      )}
++                    </div>
++                  </td>
++                </tr>
++                {tab === "offers" && expanded.includes(r.id) && (
++                  <tr id={`master-offers-${r.id}`}>
++                    <td colSpan={labels[tab].length + 1}>
++                      <div className="mp-offer-list">
++                        {r.offers?.map((o) => (
++                          <article key={o.id}>
++                            <strong>
++                              {o.lender} · {currency(o.amount, locale)}
++                            </strong>
++                            {o.selected && (
++                              <span className="pos-pill pos-good">
++                                {t(locale, "Elegida en CRM", "Selected in CRM")}
++                              </span>
++                            )}
++                            <p>
++                              {o.term} · {o.cost} · {o.frequency}
++                            </p>
++                            <p>
++                              {o.fees ||
++                                t(
++                                  locale,
++                                  "Comisiones no registradas",
++                                  "Fees not recorded",
++                                )}
++                            </p>
++                          </article>
++                        ))}
++                      </div>
++                    </td>
++                  </tr>
++                )}
++              </Fragment>
++            ))}
++          </tbody>
++        </table>
++      </div>
++      {!b.rows.length && <Empty locale={locale} />}
++    </section>
++  );
++}
++
++export function MasterStats({
++  dashboard: b,
++  locale,
++  owner,
++}: {
++  dashboard: MasterDashboard;
++  locale: Locale;
++  owner: string;
++}) {
++  const reps = b.byRep.filter((r) => owner === "all" || r.id === owner);
++  const graph = (kind: "applications" | "offers", label: string) => {
++    const max = Math.max(1, ...b.daily.map((d) => d[kind]));
++    return (
++      <section className="pos-card mp-chart">
++        <h3>{label}</h3>
++        <p className="pos-small pos-muted">
++          {t(
++            locale,
++            "Solo fechas registradas · UTC",
++            "Recorded dates only · UTC",
++          )}
++        </p>
++        {kind === "offers" && !b.coverage.financial ? (
++          <p>
++            {t(
++              locale,
++              "Sin acceso a datos de ofertas.",
++              "Offer data is restricted.",
++            )}
++          </p>
++        ) : (
++          <>
++            <div className="pos-scroll">
++              <div
++                className="mp-bars"
++                role="img"
++                aria-label={`${label}: ${b.daily.reduce((n, d) => n + d[kind], 0)}`}
++                style={{
++                  gridTemplateColumns: `repeat(${b.daily.length}, minmax(0, 1fr))`,
++                }}
++              >
++                {b.daily.map((d, i) => (
++                  <div key={d.day} title={`${d.day}: ${d[kind]}`}>
++                    <span style={{ height: `${(d[kind] / max) * 100}%` }} />
++                    {(i % Math.ceil(b.daily.length / 10) === 0 ||
++                      i === b.daily.length - 1) && (
++                      <small>{d.day.slice(8)}</small>
++                    )}
++                  </div>
++                ))}
++              </div>
++            </div>
++            <details>
++              <summary>
++                {t(locale, "Ver datos del gráfico", "View chart data")}
++              </summary>
++              <table className="pos-table">
++                <thead>
++                  <tr>
++                    <th scope="col">{t(locale, "Día", "Day")}</th>
++                    <th scope="col">{label}</th>
++                  </tr>
++                </thead>
++                <tbody>
++                  {b.daily.map((d) => (
++                    <tr key={d.day}>
++                      <td>{d.day}</td>
++                      <td>{d[kind]}</td>
++                    </tr>
++                  ))}
++                </tbody>
++              </table>
++            </details>
++          </>
++        )}
++      </section>
++    );
++  };
++  return (
++    <>
++      <div className="mp-stats-grid">
++        {graph(
++          "applications",
++          t(
++            locale,
++            "Aplicaciones recibidas por día",
++            "New applications per day",
++          ),
++        )}
++        {graph(
++          "offers",
++          t(locale, "Ofertas registradas por día", "Offers recorded per day"),
++        )}
++      </div>
++      <section className="pos-card mp-results">
++        <h3>
++          {t(
++            locale,
++            "Resultados por asesor en el período",
++            "Results by rep in the period",
++          )}
++        </h3>
++        <div className="pos-scroll">
++          <table className="pos-table">
++            <thead>
++              <tr>
++                {[
++                  t(locale, "Asesor", "Rep"),
++                  t(locale, "Aplicaciones", "Applications"),
++                  t(
++                    locale,
++                    "Casos con ofertas registradas",
++                    "Files with recorded offers",
++                  ),
++                  t(locale, "Contratos enviados", "Contracts out"),
++                  t(locale, "Firmados", "Signed"),
++                  t(locale, "Desembolsos", "Fundings"),
++                ].map((h) => (
++                  <th key={h} scope="col">
++                    {h}
++                  </th>
++                ))}
++              </tr>
++            </thead>
++            <tbody>
++              {reps.map((r) => (
++                <tr key={r.id}>
++                  <th scope="row">{r.name}</th>
++                  {[
++                    r.applications,
++                    r.offerFiles,
++                    r.contractsOut,
++                    r.signed,
++                    r.fundings,
++                  ].map((v, i) => (
++                    <td key={i}>{number(v)}</td>
++                  ))}
++                </tr>
++              ))}
++            </tbody>
++          </table>
++        </div>
++        {b.coverage.undatedApplications > 0 && (
++          <p className="pos-small pos-muted">
++            {b.coverage.undatedApplications}{" "}
++            {t(
++              locale,
++              "aplicaciones completas no tienen fecha de recepción acreditada y no se agregan a un día ficticio.",
++              "complete applications have no evidenced receipt date and are not assigned to an invented day.",
++            )}
++          </p>
++        )}
++      </section>
++    </>
++  );
++}
++
++function ArchiveReader({
++  id,
++  locale,
++  demo,
++  close,
++}: {
++  id: string;
++  locale: Locale;
++  demo: boolean;
++  close(): void;
++}) {
++  const [messages, setMessages] = useState<
++      { archive_id: string; subject: string; body: string; sent_at: string }[]
++    >([]),
++    [loading, setLoading] = useState(true),
++    [error, setError] = useState("");
++  const [cursor, setCursor] = useState<{
++      before: string;
++      cursor: string;
++    } | null>(null),
++    [more, setMore] = useState(false),
++    [page, setPage] = useState(0);
++  const before = useRef<{ before: string; cursor: string } | null>(null);
++  useEffect(() => {
++    const controller = new AbortController();
++    setLoading(true);
++    setError("");
++    if (demo) {
++      setMessages([
++        {
++          archive_id: id,
++          subject: "Correo de demostración",
++          body: "Datos ficticios. Esta vista no consulta proveedores.",
++          sent_at: new Date().toISOString(),
++        },
++      ]);
++      setLoading(false);
++      return () => controller.abort();
++    }
++    const suffix = before.current
++      ? "?" + new URLSearchParams(before.current).toString()
++      : "";
++    void fetch(`/api/gmail/archive/${encodeURIComponent(id)}/thread${suffix}`, {
++      signal: controller.signal,
++      cache: "no-store",
++    })
++      .then(async (r) => {
++        const body = await r.json();
++        if (!r.ok)
++          throw Error(
++            typeof body.error === "string"
++              ? body.error
++              : "No se pudo leer el hilo / Could not read thread",
++          );
++        if (!controller.signal.aborted) {
++          setMessages((old) =>
++            page ? [...body.messages, ...old] : body.messages,
++          );
++          setMore(body.hasMore);
++          setCursor(body.cursor);
++        }
++      })
++      .catch((e) => {
++        if (!controller.signal.aborted) setError(safeError(e));
++      })
++      .finally(() => {
++        if (!controller.signal.aborted) setLoading(false);
++      });
++    return () => controller.abort();
++  }, [id, page, demo]);
++  return (
++    <Modal
++      title={t(
++        locale,
++        "Correo registrado · solo lectura",
++        "Recorded email · read only",
++      )}
++      locale={locale}
++      close={close}
++      wide
++    >
++      <div className="mp-reader">
++        {loading && (
++          <p role="status">{t(locale, "Cargando correo…", "Loading email…")}</p>
++        )}
++        {error && <p role="alert">{error}</p>}
++        {more && (
++          <button
++            className="pos-btn"
++            disabled={loading}
++            onClick={() => {
++              before.current = cursor;
++              setPage((p) => p + 1);
++            }}
++          >
++            {t(locale, "Cargar anteriores", "Load older messages")}
++          </button>
++        )}
++        {messages.map((m) => (
++          <article key={m.archive_id}>
++            <h3>{m.subject}</h3>
++            <time>{date(m.sent_at, locale)}</time>
++            <pre>{readableMail(m.body).text.slice(0, 50000)}</pre>
++          </article>
++        ))}
++      </div>
++    </Modal>
++  );
++}
+diff --git a/src/components/pipeline-os/workspace.tsx b/src/components/pipeline-os/workspace.tsx
+index 5972a8e..ce6d2de 100644
+--- a/src/components/pipeline-os/workspace.tsx
++++ b/src/components/pipeline-os/workspace.tsx
+@@ -60,9 +60,11 @@ import {
+   type CaseSection,
+ } from "./board";
+ import { PipelineLeads } from "./leads";
++import { MasterPipeline } from "./master-pipeline";
+ import "./workspace.css";
+ 
+ type Page =
++  | "master"
+   | "tasks"
+   | "app"
+   | "need"
+@@ -81,6 +83,7 @@ type Page =
+   | "lenders"
+   | "settings";
+ const pageNames: Record<Page, [string, string]> = {
++  master: ["Master Pipeline", "Master Pipeline"],
+   tasks: ["Tareas abiertas", "Open tasks"],
+   app: ["Aplicación pendiente", "App needed"],
+   need: ["Oferta pendiente", "Offer needed"],
+@@ -172,6 +175,9 @@ export function PipelineOSWorkspace({
+       setTree(saved.tree === true);
+       setDark(saved.dark === true);
+     } catch {}
++    if (new URLSearchParams(window.location.search).get("view") === "master") {
++      setPath(["master"]);
++    }
+     setReady(true);
+   }, []);
+   function appearance(nextTree: boolean, nextDark: boolean) {
+@@ -583,6 +589,19 @@ export function PipelineOSWorkspace({
+     );
+   }
+   function pageBody(p: Page, level: number) {
++    if (p === "master")
++      return (
++        <MasterPipeline
++          data={data}
++          processes={processes}
++          locale={locale}
++          search={query}
++          owner={owner}
++          onOwner={changeOwner}
++          open={rowOpen}
++          mail={mail}
++        />
++      );
+     if (
+       !boardReady &&
+       (isGroup(p) || ["stats", "updates", "recap"].includes(p))
+@@ -973,6 +992,7 @@ export function PipelineOSWorkspace({
+   }
+ 
+   const nav = [
++    { id: "master" as Page, icon: BarChart3 },
+     { id: "tasks" as Page, icon: ListChecks },
+     { id: "campaigns" as Page, icon: Megaphone },
+     { id: "conversations" as Page, icon: Mail },
+@@ -1018,7 +1038,8 @@ export function PipelineOSWorkspace({
+             onChange={(e) => {
+               setQuery(e.target.value);
+               setPage(0);
+-              if (!current || !isGroup(current)) setPath(["files"]);
++              if (current !== "master" && (!current || !isGroup(current)))
++                setPath(["files"]);
+             }}
+           />
+         </div>
+@@ -1230,6 +1251,19 @@ export function PipelineOSWorkspace({
+               </button>
+             </div>
+             <div className="pos-tiles">
++              {tile(
++                BarChart3,
++                l("master"),
++                t(
++                  locale,
++                  "Por asesor: tareas, ofertas, pipeline y resultados",
++                  "By rep: tasks, offers, pipeline and results",
++                ),
++                board.counts.files,
++                t(locale, "expedientes visibles", "visible files"),
++                "master",
++                0,
++              )}
+               {tile(
+                 ListChecks,
+                 l("tasks"),
+@@ -1444,7 +1478,7 @@ export function PipelineOSWorkspace({
+               ) : caseData?.opportunities.find((o) => o.id === caseId) ? (
+                 <>
+                   <PipelineCaseProgress
+-                    key={caseId}
++                    key={`progress:${caseId}`}
+                     data={caseData}
+                     caseId={caseId}
+                     processes={processes}
+diff --git a/src/lib/pipeline-os/master-demo.ts b/src/lib/pipeline-os/master-demo.ts
+new file mode 100644
+index 0000000..ecba023
+--- /dev/null
++++ b/src/lib/pipeline-os/master-demo.ts
+@@ -0,0 +1,74 @@
++import type { Workspace } from "../domain";
++import type { PipelineProcess } from "./module";
++import type { MasterSource } from "./master-pipeline";
++/** Synthetic read-model enrichment only. Never called for a real workspace. */
++export function masterDemoSource(
++  data: Workspace,
++  processes: PipelineProcess[],
++  now = Date.now(),
++): MasterSource {
++  if (!data.demo) throw Error("MASTER_DEMO_ONLY");
++  const at = (days: number) => new Date(now - days * 86400000).toISOString();
++  const lead = data.leads.find((l) => !l.suppressed && !l.opportunity_id),
++    account = data.accounts[0];
++  const applications: MasterSource["events"] = data.opportunities.flatMap(
++    (o, i) =>
++      o.application_complete
++        ? [
++            {
++              id: "demo-app-" + o.id,
++              opportunity_id: o.id,
++              process_id: null,
++              submission_id: null,
++              kind: "application_received",
++              area: "seller",
++              evidence_type: "manual",
++              occurred_at: at(1 + (i % 12)),
++            },
++          ]
++        : [],
++  );
++  const milestones: MasterSource["events"] = processes.map((p, i) => ({
++    id: "demo-process-" + p.id,
++    opportunity_id: p.opportunity_id,
++    process_id: p.id,
++    submission_id: null,
++    kind: p.state,
++    area: "closer",
++    evidence_type: "manual",
++    occurred_at: at(1 + i),
++  }));
++  return {
++    ...data,
++    offers: data.offers.map((o, i) => ({ ...o, created_at: at(1 + (i % 6)) })),
++    processes,
++    archive:
++      lead && account
++        ? [
++            {
++              id: "demo-lead-reply",
++              account_id: account.id,
++              gmail_thread_id: "demo-lead-thread",
++              subject: "Respuesta ficticia: quiero conocer los requisitos",
++              sent_at: at(1),
++              direction: "inbound",
++              nature: "personal",
++              reply_intent: "positive",
++              participants: [{ email: lead.email, role: "from" }],
++            },
++          ]
++        : [],
++    accountOwners: lead && account ? { [account.id]: lead.seller_id } : {},
++    leadCoverage: true,
++    offerEvidence: data.offers.flatMap((o) => {
++      const c = data.conversations.find(
++          (c) => c.submission_id === o.submission_id,
++        ),
++        m = data.messages.find(
++          (m) => m.conversation_id === c?.id && m.direction === "inbound",
++        );
++      return m ? [{ offer_id: o.id, message_id: m.id }] : [];
++    }),
++    events: [...applications, ...milestones],
++  };
++}
+diff --git a/src/lib/pipeline-os/master-pipeline.ts b/src/lib/pipeline-os/master-pipeline.ts
+new file mode 100644
+index 0000000..06a41f9
+--- /dev/null
++++ b/src/lib/pipeline-os/master-pipeline.ts
+@@ -0,0 +1,932 @@
++import { z } from "zod";
++import type {
++  Area,
++  Lead,
++  Message,
++  Offer,
++  Opportunity,
++  Profile,
++} from "../domain";
++import {
++  canSeeArea,
++  canSeeOpportunity,
++  isCloserRole,
++  isSellerRole,
++} from "../domain";
++import { automatedSender, MAIL_ENGAGEMENT_START } from "../mail-interest";
++import {
++  buildPipelineBoard,
++  comparePipelineOffers,
++  type PipelineProcess,
++  type PipelineSource,
++} from "./module";
++
++export const masterTabs = [
++  "tasks",
++  "offers",
++  "pipeline",
++  "stats",
++  "comms",
++  "leads",
++] as const;
++export type MasterTab = (typeof masterTabs)[number];
++export const masterStages = [
++  "submitted",
++  "requirements",
++  "approved",
++  "contracts_out",
++  "contracts_signed",
++  "funded",
++  "declined",
++  "withdrawn",
++  "application",
++  "paused",
++  "unclassified",
++] as const;
++export type MasterStage = (typeof masterStages)[number];
++const querySchema = z.strictObject({
++  tab: z.enum(masterTabs).default("tasks"),
++  q: z.string().trim().max(200).default(""),
++  owner: z.string().min(1).max(100).default("all"),
++  stage: z.enum(["all", ...masterStages]).default("all"),
++  priority: z.enum(["all", "1", "2", "3"]).default("all"),
++  days: z.coerce
++    .number()
++    .refine((n) => [7, 30, 90].includes(n))
++    .default(30),
++  page: z.coerce.number().int().min(0).max(100000).default(0),
++});
++export type MasterQuery = z.infer<typeof querySchema>;
++export const parseMasterQuery = (params: URLSearchParams) =>
++  querySchema.parse(Object.fromEntries(params));
++export type MasterEvent = {
++  id: string;
++  opportunity_id: string;
++  process_id: string | null;
++  submission_id: string | null;
++  archive_message_id?: string | null;
++  kind: string;
++  area: Area;
++  evidence_type: string;
++  occurred_at: string;
++};
++export type MasterArchive = {
++  id: string;
++  account_id: string;
++  gmail_thread_id: string;
++  subject: string;
++  sent_at: string;
++  direction: string;
++  nature: string;
++  reply_intent?: string | null;
++  participants: { email: string; role: string }[];
++};
++export type MasterSource = Omit<PipelineSource, "offers"> & {
++  offers: (Offer & { created_at?: string })[];
++  processes: (PipelineProcess & {
++    started_at?: string;
++    actual_funded_amount?: number | null;
++    funded_lender_id?: string | null;
++  })[];
++  events: MasterEvent[];
++  offerEvidence: { offer_id: string; message_id: string }[];
++  leads?: Lead[];
++  archive: MasterArchive[];
++  leadCoverage: boolean;
++  accountOwners?: Record<string, string>;
++};
++export type MasterOffer = {
++  id: string;
++  submissionId: string;
++  lender: string;
++  amount: number;
++  term: string;
++  cost: string;
++  fees: string;
++  frequency: string;
++  selected: boolean;
++  date: string | null;
++  answered: boolean | null;
++};
++export type MasterRow = {
++  id: string;
++  caseId: string | null;
++  conversationId?: string;
++  ownerId: string;
++  ownerName: string;
++  company: string;
++  contact: string;
++  email: string;
++  stage: MasterStage;
++  sourceStage?: string;
++  priority?: 1 | 2 | 3;
++  title?: string;
++  at?: string | null;
++  waitingDays?: number | null;
++  offers?: MasterOffer[];
++  best?: MasterOffer | null;
++  lenders?: number;
++  declines?: number;
++  requirement?: string;
++  fundedBy?: string;
++  messageId?: string;
++  archiveMessageId?: string;
++  excerpt?: string;
++  subject?: string;
++  direction?: string;
++  intent?: string;
++  answered?: boolean | null;
++  converted?: boolean;
++};
++export type MasterRep = {
++  id: string;
++  name: string;
++  tasks: number;
++  p1: number;
++  offers: number | null;
++  unansweredBest: number | null;
++  live: number;
++  funded: number;
++  emails: number;
++  leadsOpen: number | null;
++  applications: number;
++  offerFiles: number | null;
++  contractsOut: number | null;
++  signed: number | null;
++  fundings: number | null;
++};
++export type MasterMilestone = {
++  id: string;
++  caseId: string;
++  ownerId: string;
++  ownerName: string;
++  company: string;
++  kind: string;
++  at: string;
++};
++export type MasterDashboard = {
++  source: "crm";
++  asOf: string;
++  query: MasterQuery;
++  byRep: MasterRep[];
++  rows: MasterRow[];
++  total: number;
++  hasMore: boolean;
++  counts: Record<MasterTab, number>;
++  daily: { day: string; applications: number; offers: number }[];
++  events: MasterMilestone[];
++  coverage: {
++    financial: boolean;
++    leadReplies: boolean;
++    undatedApplications: number;
++    bestWithoutEvidence: number;
++  };
++};
++const unique = <T extends { id: string }>(rows: T[]) => [
++  ...new Map(rows.map((r) => [r.id, r])).values(),
++];
++const lower = (s: string) => s.trim().toLowerCase();
++const validAt = (s: string | undefined | null, now: number) =>
++  !!s && Number.isFinite(Date.parse(s)) && Date.parse(s) <= now;
++const emailOf = (s: string) =>
++  s
++    .match(/<([^<>]+)>/)?.[1]
++    ?.trim()
++    .toLowerCase() || lower(s);
++const age = (s: string | undefined | null, now: number) =>
++  validAt(s, now) ? Math.floor((now - Date.parse(s!)) / 86400000) : null;
++const dayOf = (at: string) => new Date(at).toISOString().slice(0, 10);
++const group = <T>(rows: T[], key: (r: T) => string) => {
++  const m = new Map<string, T[]>();
++  for (const r of rows) {
++    const k = key(r),
++      list = m.get(k) || [];
++    list.push(r);
++    m.set(k, list);
++  }
++  return m;
++};
++const newest = <T>(rows: T[], at: (r: T) => string) =>
++  [...rows].sort((a, b) => Date.parse(at(b)) - Date.parse(at(a)))[0];
++export function equivalentMasterStage(
++  o: Opportunity,
++  state: string | null,
++  hasOffers: boolean,
++  funded: boolean,
++): MasterStage {
++  if (funded) return "funded";
++  if (state === "client_withdrew") return "withdrawn";
++  if (state === "funding_declined") return "declined";
++  if (o.stage === "paused") return "paused";
++  if (["contract_signed", "final_approval"].includes(state || ""))
++    return "contracts_signed";
++  if (state === "contract_sent") return "contracts_out";
++  if (state === "requirements") return "requirements";
++  if (hasOffers || ["offers", "lender_selected"].includes(state || ""))
++    return "approved";
++  if (["submitted", "lender_evaluation"].includes(state || ""))
++    return "submitted";
++  if (
++    [
++      "new",
++      "contacting",
++      "replied",
++      "application_pending",
++      "documents_pending",
++      "analysis",
++      "ready_for_closer",
++      "unassigned",
++    ].includes(o.stage)
++  )
++    return "application";
++  return "unclassified";
++}
++
++/** A read model only: no writes, provider access, environment or HTML snapshot records. */
++export function buildMasterPipeline(
++  source: MasterSource,
++  input: Partial<MasterQuery> = {},
++  now = Date.now(),
++): MasterDashboard {
++  const q = querySchema.parse(input),
++    finance = isCloserRole(source.profile.role);
++  const profiles = new Map(source.profiles.map((p) => [p.id, p]));
++  profiles.set(source.profile.id, source.profile);
++  const name = (id: string) =>
++    id === "unassigned" ? "—" : profiles.get(id)?.name || "—";
++  const opportunities = unique(source.opportunities).filter((o) =>
++    canSeeOpportunity(source.profile, o),
++  );
++  const allowed = new Map(opportunities.map((o) => [o.id, o]));
++  const tasks = unique(source.tasks).filter(
++    (t) =>
++      t.status === "open" &&
++      allowed.has(t.opportunity_id) &&
++      canSeeArea(source.profile, allowed.get(t.opportunity_id)!, t.area),
++  );
++  const submissions = source.submissions.filter(
++    (s) =>
++      allowed.has(s.opportunity_id) &&
++      canSeeArea(source.profile, allowed.get(s.opportunity_id)!, "closer"),
++  );
++  const processes = source.processes.filter(
++    (p) =>
++      allowed.has(p.opportunity_id) &&
++      canSeeArea(source.profile, allowed.get(p.opportunity_id)!, "closer"),
++  );
++  const processByCase = group(processes, (p) => p.opportunity_id),
++    subByCase = group(submissions, (s) => s.opportunity_id);
++  const conv = source.conversations.filter(
++    (c) =>
++      allowed.has(c.opportunity_id) &&
++      canSeeArea(source.profile, allowed.get(c.opportunity_id)!, c.area),
++  );
++  const convMap = new Map(conv.map((c) => [c.id, c]));
++  const messages = unique(source.messages).filter((m) => {
++    const c = convMap.get(m.conversation_id);
++    return (
++      c &&
++      canSeeArea(
++        source.profile,
++        allowed.get(c.opportunity_id)!,
++        m.area || c.area,
++      ) &&
++      validAt(m.sent_at, now) &&
++      ((m.direction === "outbound" && m.status === "sent") ||
++        (m.direction === "inbound" && m.status === "received"))
++    );
++  });
++  const messageMap = new Map(messages.map((m) => [m.id, m])),
++    mailByConversation = group(messages, (m) => m.conversation_id);
++  const caseMail = group(
++    messages,
++    (m) => convMap.get(m.conversation_id)!.opportunity_id,
++  );
++  const mappedOffers = unique(source.offers).map((o) =>
++    o.status === "selected" ? { ...o, status: "accepted" } : o,
++  );
++  // Preserve the legacy board's priority and classification. Its public routes still page by50.
++  const baseline = buildPipelineBoard(
++    {
++      ...source,
++      opportunities,
++      tasks,
++      offers: mappedOffers,
++      conversations: [],
++      messages: [],
++    },
++    processes,
++    { group: "files" },
++    now,
++    100000,
++  );
++  const priorityByCase = new Map(baseline.rows.map((r) => [r.id, r.priority]));
++  const goodEvents = unique(source.events).filter((e) => {
++    const o = allowed.get(e.opportunity_id);
++    return (
++      o &&
++      canSeeArea(source.profile, o, e.area) &&
++      ["manual", "explicit"].includes(e.evidence_type) &&
++      validAt(e.occurred_at, now) &&
++      (!e.process_id ||
++        e.area !== "closer" ||
++        processes.some(
++          (p) =>
++            p.id === e.process_id &&
++            p.opportunity_id === o.id &&
++            !p.is_unclassified_archive,
++        ))
++    );
++  });
++  const eventsByCase = group(goodEvents, (e) => e.opportunity_id);
++  const caseRows: MasterRow[] = opportunities.map((o) => {
++    const process = (processByCase.get(o.id) || [])
++      .filter(
++        (p) => p.classification === "active" && !p.is_unclassified_archive,
++      )
++      .sort((a, b) => b.sequence_number - a.sequence_number)[0];
++    const subs = (subByCase.get(o.id) || []).filter(
++        (s) => !process || s.process_id === process.id,
++      ),
++      subIds = new Set(subs.map((s) => s.id));
++    const compared = finance
++      ? comparePipelineOffers(
++          o,
++          mappedOffers.filter(
++            (f) => f.opportunity_id === o.id && subIds.has(f.submission_id),
++          ),
++          subs,
++          source.lenders,
++          now,
++        )
++      : null;
++    const offers: MasterOffer[] = (compared?.active || []).map((f) => {
++      const evidence = source.offerEvidence.find((e) => e.offer_id === f.id),
++        message = evidence ? messageMap.get(evidence.message_id) : undefined;
++      const c = message ? convMap.get(message.conversation_id) : undefined;
++      const anchored =
++        message?.direction === "inbound" &&
++        c?.submission_id === f.submission_id &&
++        c.opportunity_id === o.id;
++      const answered = anchored
++        ? (mailByConversation.get(c!.id) || []).some(
++            (m) =>
++              m.direction === "outbound" &&
++              Date.parse(m.sent_at) > Date.parse(message!.sent_at),
++          )
++        : null;
++      return {
++        id: f.id,
++        submissionId: f.submission_id,
++        lender: f.lenderName,
++        amount: f.amount,
++        term: f.term,
++        cost: f.cost,
++        fees: f.fees,
++        frequency: f.frequency,
++        selected: f.status === "accepted",
++        date: source.offers.find((x) => x.id === f.id)?.created_at || null,
++        answered,
++      };
++    });
++    const best =
++      [...offers].sort(
++        (a, b) => b.amount - a.amount || a.id.localeCompare(b.id),
++      )[0] || null;
++    const funded = Boolean(
++      ((!process || process.state === "disbursed") &&
++        validAt(o.funded_at, now) &&
++        o.funded_amount !== null &&
++        o.funded_amount > 0) ||
++      (process?.state === "disbursed" &&
++        (process.actual_funded_amount || 0) > 0 &&
++        process.funded_lender_id &&
++        (eventsByCase.get(o.id) || []).some(
++          (e) => e.process_id === process.id && e.kind === "disbursed",
++        )),
++    );
++    const ownerId = o.closer_id || o.seller_id || "unassigned",
++      last = newest(caseMail.get(o.id) || [], (m) => m.sent_at);
++    const chosen = offers.find((f) => f.selected),
++      fundedLender = source.lenders.find(
++        (l) =>
++          l.id === process?.funded_lender_id || l.id === o.funded_lender_id,
++      );
++    return {
++      id: o.id,
++      caseId: o.id,
++      ownerId,
++      ownerName: name(ownerId),
++      company: o.company,
++      contact: o.contact,
++      email: o.email,
++      stage: equivalentMasterStage(
++        o,
++        process?.state || null,
++        offers.length > 0,
++        funded,
++      ),
++      sourceStage: process?.state || o.stage,
++      priority: priorityByCase.get(o.id) || 3,
++      offers: finance ? offers : undefined,
++      best: finance ? best : undefined,
++      lenders: finance ? new Set(subs.map((s) => s.lender_id)).size : undefined,
++      declines: finance
++        ? subs.filter((s) => s.status === "rejected").length
++        : undefined,
++      requirement: finance
++        ? newest(
++            subs.filter((s) => s.status === "requirements"),
++            (s) => s.submitted_at,
++          )?.next_action || ""
++        : undefined,
++      fundedBy: finance
++        ? (funded ? fundedLender?.name : chosen?.lender) || ""
++        : undefined,
++      at: last?.sent_at || o.updated_at,
++      waitingDays: age(last?.sent_at || o.updated_at, now),
++      messageId: last?.id,
++    };
++  });
++  const caseMap = new Map(caseRows.map((r) => [r.id, r]));
++  const search = q.q.toLocaleLowerCase();
++  const matches = (r: MasterRow) =>
++    (q.stage === "all" || r.stage === q.stage) &&
++    (!search ||
++      `${r.company} ${r.contact} ${r.email} ${r.ownerName} ${r.title || ""} ${r.subject || ""} ${(r.offers || []).map((o) => o.lender).join(" ")}`
++        .toLocaleLowerCase()
++        .includes(search));
++  const ownerMatches = (r: { ownerId: string }) =>
++    q.owner === "all" || r.ownerId === q.owner;
++  const cases = caseRows.filter(matches),
++    caseIds = new Set(cases.map((r) => r.id));
++  const start = new Date(now);
++  start.setUTCHours(0, 0, 0, 0);
++  start.setUTCDate(start.getUTCDate() - q.days + 1);
++  const inWindow = (at: string | undefined | null) =>
++    validAt(at, now) && Date.parse(at!) >= start.getTime();
++  // Registration is historical activity; expiry and the current process only affect live workload.
++  const submissionIds = new Set(submissions.map((s) => s.id));
++  const recordedOffers = finance
++    ? unique(source.offers).filter(
++        (f) =>
++          caseIds.has(f.opportunity_id) &&
++          submissionIds.has(f.submission_id) &&
++          Number.isFinite(f.amount) &&
++          f.amount > 0 &&
++          [
++            "received",
++            "approved",
++            "accepted",
++            "selected",
++            "offered",
++            "active",
++            "expired",
++            "rejected",
++            "withdrawn",
++          ].includes(f.status.toLowerCase()) &&
++          inWindow(f.created_at),
++      )
++    : [];
++  const taskRows: MasterRow[] = tasks
++    .map((t) => ({
++      ...caseMap.get(t.opportunity_id)!,
++      id: t.id,
++      ownerId: t.owner_id || "unassigned",
++      ownerName: name(t.owner_id || "unassigned"),
++      title: t.title,
++      at: t.due_at,
++      waitingDays: age(t.due_at, now),
++      messageId: newest(
++        (caseMail.get(t.opportunity_id) || []).filter(
++          (m) => m.direction === "inbound",
++        ),
++        (m) => m.sent_at,
++      )?.id,
++    }))
++    .filter(
++      (r) =>
++        matches(r) &&
++        (q.priority === "all" || r.priority === Number(q.priority)),
++    );
++  const commRows: MasterRow[] = messages
++    .filter((m) => inWindow(m.sent_at))
++    .map((m) => {
++      const c = convMap.get(m.conversation_id)!,
++        r = caseMap.get(c.opportunity_id)!;
++      return {
++        ...r,
++        id: m.id,
++        messageId: m.id,
++        conversationId: c.id,
++        subject: c.subject,
++        direction: m.direction,
++        at: m.sent_at,
++        email: m.sender,
++        offers: undefined,
++        best: undefined,
++      };
++    })
++    .filter(matches);
++  const eligibleLead = (l: Lead) =>
++    !l.suppressed &&
++    (source.profile.role === "superadmin" ||
++      source.profile.role === "seller_admin" ||
++      (source.profile.role === "seller" && l.seller_id === source.profile.id));
++  const leads = (source.leads || []).filter(eligibleLead),
++    leadByEmail = new Map(leads.map((l) => [lower(l.email), l]));
++  const archiveEvidence = new Set([
++    ...messages.flatMap((m) =>
++      m.archive_message_id ? [m.archive_message_id] : [],
++    ),
++    ...goodEvents.flatMap((e) =>
++      e.archive_message_id ? [e.archive_message_id] : [],
++    ),
++  ]);
++  const visibleArchive = unique(source.archive).filter(
++    (m) => source.profile.role === "superadmin" || archiveEvidence.has(m.id),
++  );
++  const incorporatedArchives = new Set(
++    messages.flatMap((m) =>
++      m.archive_message_id ? [m.archive_message_id] : [],
++    ),
++  );
++  for (const m of visibleArchive) {
++    if (!inWindow(m.sent_at) || incorporatedArchives.has(m.id)) continue;
++    const sender = m.participants.find((p) => p.role === "from")?.email || "",
++      lead = leadByEmail.get(lower(sender));
++    const linked = goodEvents.find((e) => e.archive_message_id === m.id),
++      r = linked ? caseMap.get(linked.opportunity_id) : undefined;
++    const ownerId =
++      r?.ownerId || source.accountOwners?.[m.account_id] || "unassigned";
++    const row: MasterRow = {
++      id: "archive:" + m.id,
++      caseId: r?.caseId || null,
++      archiveMessageId: m.id,
++      ownerId,
++      ownerName: name(ownerId),
++      company: r?.company || lead?.company || "—",
++      contact: r?.contact || lead?.contact || "",
++      email: sender,
++      stage: r?.stage || "unclassified",
++      at: m.sent_at,
++      subject: m.subject,
++      direction: m.direction,
++    };
++    if (matches(row)) commRows.push(row);
++  }
++  const replyRows: MasterRow[] = [];
++  for (const c of conv) {
++    const o = allowed.get(c.opportunity_id)!,
++      r = caseMap.get(o.id)!;
++    const latest = newest(
++      (mailByConversation.get(c.id) || []).filter(
++        (m) =>
++          m.direction === "inbound" &&
++          m.nature === "personal" &&
++          !automatedSender(emailOf(m.sender)) &&
++          emailOf(m.sender) === lower(o.email),
++      ),
++      (m) => m.sent_at,
++    );
++    if (
++      !latest ||
++      !["positive", "review"].includes(latest.reply_intent || "") ||
++      !inWindow(latest.sent_at) ||
++      Date.parse(latest.sent_at) < Date.parse(MAIL_ENGAGEMENT_START)
++    )
++      continue;
++    const answered = (mailByConversation.get(c.id) || []).some(
++      (m) =>
++        m.direction === "outbound" &&
++        Date.parse(m.sent_at) > Date.parse(latest.sent_at),
++    );
++    replyRows.push({
++      ...r,
++      id: latest.id,
++      messageId: latest.id,
++      conversationId: c.id,
++      at: latest.sent_at,
++      intent: latest.reply_intent!,
++      answered,
++      converted: true,
++      subject: c.subject,
++      offers: undefined,
++      best: undefined,
++    });
++  }
++  if (source.profile.role === "superadmin") {
++    const archivedByThread = group(
++      visibleArchive,
++      (m) => m.account_id + ":" + m.gmail_thread_id,
++    );
++    const incorporated = new Set(
++      messages.flatMap((m) =>
++        m.archive_message_id ? [m.archive_message_id] : [],
++      ),
++    );
++    for (const thread of archivedByThread.values()) {
++      const latest = newest(
++        thread.filter(
++          (m) =>
++            m.direction === "inbound" &&
++            m.nature === "personal" &&
++            validAt(m.sent_at, now),
++        ),
++        (m) => m.sent_at,
++      );
++      if (
++        !latest ||
++        incorporated.has(latest.id) ||
++        !["positive", "review"].includes(latest.reply_intent || "") ||
++        !inWindow(latest.sent_at) ||
++        Date.parse(latest.sent_at) < Date.parse(MAIL_ENGAGEMENT_START)
++      )
++        continue;
++      const sender = latest.participants.find((p) => p.role === "from")?.email,
++        lead = sender ? leadByEmail.get(lower(sender)) : undefined;
++      if (
++        !lead ||
++        automatedSender(sender!) ||
++        (lead.opportunity_id && !allowed.has(lead.opportunity_id))
++      )
++        continue;
++      const answered = thread.some(
++        (m) =>
++          m.direction === "outbound" &&
++          validAt(m.sent_at, now) &&
++          Date.parse(m.sent_at) > Date.parse(latest.sent_at),
++      );
++      const row: MasterRow = {
++        id: "archive:" + latest.id,
++        caseId: lead.opportunity_id,
++        archiveMessageId: latest.id,
++        ownerId: lead.seller_id || "unassigned",
++        ownerName: name(lead.seller_id || "unassigned"),
++        company: lead.company,
++        contact: lead.contact,
++        email: lead.email,
++        stage: lead.opportunity_id
++          ? caseMap.get(lead.opportunity_id)?.stage || "unclassified"
++          : "application",
++        at: latest.sent_at,
++        intent: latest.reply_intent!,
++        answered,
++        converted: !!lead.opportunity_id,
++        subject: latest.subject,
++        excerpt: "",
++        messageId: undefined,
++      };
++      if (matches(row)) replyRows.push(row);
++    }
++  }
++  const milestones: MasterMilestone[] = [];
++  const seenMilestones = new Set<string>();
++  for (const e of [...goodEvents].sort(
++    (a, b) => Date.parse(a.occurred_at) - Date.parse(b.occurred_at),
++  )) {
++    if (
++      ![
++        "application_received",
++        "contract_sent",
++        "contract_signed",
++        "disbursed",
++      ].includes(e.kind) ||
++      !caseIds.has(e.opportunity_id)
++    )
++      continue;
++    const key = `${e.opportunity_id}:${e.process_id || "case"}:${e.kind}`;
++    if (seenMilestones.has(key)) continue;
++    seenMilestones.add(key);
++    if (inWindow(e.occurred_at)) {
++      const r = caseMap.get(e.opportunity_id)!;
++      milestones.push({
++        id: e.id,
++        caseId: r.id,
++        ownerId: r.ownerId,
++        ownerName: r.ownerName,
++        company: r.company,
++        kind: e.kind,
++        at: e.occurred_at,
++      });
++    }
++  }
++  // Legacy files can already record an actual amount/date without a case_event.
++  // Do not add a second milestone when process evidence exists for the same file.
++  if (finance)
++    for (const o of opportunities) {
++      if (
++        !caseIds.has(o.id) ||
++        !inWindow(o.funded_at) ||
++        !(o.funded_amount && o.funded_amount > 0) ||
++        goodEvents.some(
++          (e) => e.opportunity_id === o.id && e.kind === "disbursed",
++        )
++      )
++        continue;
++      const r = caseMap.get(o.id)!;
++      milestones.push({
++        id: "recorded-funding:" + o.id,
++        caseId: o.id,
++        ownerId: r.ownerId,
++        ownerName: r.ownerName,
++        company: r.company,
++        kind: "disbursed",
++        at: o.funded_at!,
++      });
++    }
++  const docs = source.documents.filter(
++    (d) =>
++      d.kind === "application" &&
++      ["received", "approved"].includes(d.status) &&
++      d.storage_path &&
++      allowed.has(d.opportunity_id) &&
++      canSeeArea(source.profile, allowed.get(d.opportunity_id)!, "seller"),
++  );
++  for (const [caseId, list] of group(docs, (d) => d.opportunity_id)) {
++    if (
++      goodEvents.some(
++        (e) => e.opportunity_id === caseId && e.kind === "application_received",
++      )
++    )
++      continue;
++    const first = [...list]
++        .filter((d) => validAt(d.created_at, now))
++        .sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at))[0],
++      r = caseMap.get(caseId)!;
++    if (first && caseIds.has(caseId) && inWindow(first.created_at))
++      milestones.push({
++        id: "document:" + first.id,
++        caseId,
++        ownerId: r.ownerId,
++        ownerName: r.ownerName,
++        company: r.company,
++        kind: "application_received",
++        at: first.created_at,
++      });
++  }
++  const permittedRepIds = new Set([
++    source.profile.id,
++    ...caseRows.map((r) => r.ownerId),
++    ...tasks.map((t) => t.owner_id),
++  ]);
++  if (
++    ["superadmin", "seller_admin", "closer_admin"].includes(source.profile.role)
++  )
++    for (const p of source.profiles)
++      if (p.active !== false) permittedRepIds.add(p.id);
++  const repIds = [...permittedRepIds].filter(Boolean);
++  const byRep: MasterRep[] = repIds
++    .map((id) => {
++      const own = cases.filter((r) => r.ownerId === id),
++        ownTasks = taskRows.filter((r) => r.ownerId === id),
++        best = own.filter((r) => r.best);
++      const ownEvents = milestones.filter((e) => e.ownerId === id),
++        ownMail = commRows.filter((r) => r.ownerId === id);
++      return {
++        id,
++        name: name(id),
++        tasks: ownTasks.length,
++        p1: ownTasks.filter((r) => r.priority === 1).length,
++        offers: finance
++          ? own.reduce((n, r) => n + (r.offers?.length || 0), 0)
++          : null,
++        unansweredBest:
++          finance && !best.some((r) => r.best!.answered === null)
++            ? best.filter((r) => r.best!.answered === false).length
++            : null,
++        live: own.filter(
++          (r) =>
++            !["funded", "declined", "withdrawn", "paused"].includes(r.stage),
++        ).length,
++        funded: own.filter((r) => r.stage === "funded").length,
++        emails: new Set(
++          ownMail.map((r) => messageMap.get(r.id)?.archive_message_id || r.id),
++        ).size,
++        leadsOpen:
++          source.leadCoverage && isSellerRole(source.profile.role)
++            ? replyRows.filter(
++                (r) => r.ownerId === id && !r.converted && r.answered === false,
++              ).length
++            : null,
++        applications: ownEvents.filter((e) => e.kind === "application_received")
++          .length,
++        offerFiles: finance
++          ? new Set(
++              recordedOffers
++                .filter((f) => caseMap.get(f.opportunity_id)?.ownerId === id)
++                .map((f) => f.opportunity_id),
++            ).size
++          : null,
++        contractsOut: finance
++          ? ownEvents.filter((e) => e.kind === "contract_sent").length
++          : null,
++        signed: finance
++          ? ownEvents.filter((e) => e.kind === "contract_signed").length
++          : null,
++        fundings: finance
++          ? ownEvents.filter((e) => e.kind === "disbursed").length
++          : null,
++      };
++    })
++    .sort(
++      (a, b) =>
++        b.tasks - a.tasks ||
++        a.name.localeCompare(b.name) ||
++        a.id.localeCompare(b.id),
++    );
++  const selectedCases = cases.filter(ownerMatches),
++    selectedEvents = milestones
++      .filter(ownerMatches)
++      .sort(
++        (a, b) =>
++          Date.parse(b.at) - Date.parse(a.at) || a.id.localeCompare(b.id),
++      );
++  const daily = Array.from({ length: q.days }, (_, i) => {
++    const day = new Date(start.getTime() + i * 86400000)
++      .toISOString()
++      .slice(0, 10);
++    return {
++      day,
++      applications: selectedEvents.filter(
++        (e) => e.kind === "application_received" && dayOf(e.at) === day,
++      ).length,
++      offers: recordedOffers.filter(
++        (f) =>
++          ownerMatches(caseMap.get(f.opportunity_id)!) &&
++          dayOf(f.created_at!) === day,
++      ).length,
++    };
++  });
++  const allRows: Record<MasterTab, MasterRow[]> = {
++    tasks: taskRows
++      .filter(ownerMatches)
++      .sort(
++        (a, b) =>
++          (a.priority || 3) - (b.priority || 3) ||
++          (Date.parse(a.at || "") || Infinity) -
++            (Date.parse(b.at || "") || Infinity) ||
++          a.id.localeCompare(b.id),
++      ),
++    offers: selectedCases.filter((r) => r.offers?.length),
++    pipeline: selectedCases,
++    stats: selectedEvents.map((e) => ({
++      id: e.id,
++      caseId: e.caseId,
++      ownerId: e.ownerId,
++      ownerName: e.ownerName,
++      company: e.company,
++      contact: "",
++      email: "",
++      stage: caseMap.get(e.caseId)!.stage,
++      title: e.kind,
++      at: e.at,
++    })),
++    comms: commRows
++      .filter(ownerMatches)
++      .sort(
++        (a, b) =>
++          Date.parse(b.at!) - Date.parse(a.at!) || a.id.localeCompare(b.id),
++      ),
++    leads: replyRows
++      .filter(ownerMatches)
++      .sort(
++        (a, b) =>
++          Date.parse(b.at!) - Date.parse(a.at!) || a.id.localeCompare(b.id),
++      ),
++  };
++  const list = allRows[q.tab],
++    counts = Object.fromEntries(
++      masterTabs.map((t) => [t, allRows[t].length]),
++    ) as Record<MasterTab, number>;
++  return {
++    source: "crm",
++    asOf: new Date(now).toISOString(),
++    query: q,
++    byRep,
++    rows: list.slice(q.page * 50, q.page * 50 + 50),
++    total: list.length,
++    hasMore: (q.page + 1) * 50 < list.length,
++    counts,
++    daily,
++    events: selectedEvents.slice(q.page * 50, q.page * 50 + 50),
++    coverage: {
++      financial: finance,
++      leadReplies: source.leadCoverage && isSellerRole(source.profile.role),
++      undatedApplications: selectedCases.filter(
++        (r) =>
++          allowed.get(r.id)!.application_complete &&
++          !goodEvents.some(
++            (e) =>
++              e.opportunity_id === r.id && e.kind === "application_received",
++          ) &&
++          !docs.some(
++            (d) => d.opportunity_id === r.id && validAt(d.created_at, now),
++          ),
++      ).length,
++      bestWithoutEvidence: selectedCases.filter(
++        (r) => r.best?.answered === null,
++      ).length,
++    },
++  };
++}
+diff --git a/src/lib/pipeline-os/module.ts b/src/lib/pipeline-os/module.ts
+index 0c660dc..e2a107a 100644
+--- a/src/lib/pipeline-os/module.ts
++++ b/src/lib/pipeline-os/module.ts
+@@ -226,6 +226,7 @@ export function buildPipelineBoard(
+   processes: PipelineProcess[] = [],
+   input: Partial<PipelineQuery> = {},
+   now = Date.now(),
++  pageSize = 50,
+ ): PipelineBoard {
+   const q = querySchema.parse(input);
+   const allowed = data.opportunities.filter((o) =>
+@@ -466,8 +467,8 @@ export function buildPipelineBoard(
+     hours: q.hours,
+     page: q.page,
+     total: filtered.length,
+-    hasMore: (q.page + 1) * 50 < filtered.length,
+-    rows: filtered.slice(q.page * 50, q.page * 50 + 50),
++    hasMore: (q.page + 1) * pageSize < filtered.length,
++    rows: filtered.slice(q.page * pageSize, q.page * pageSize + pageSize),
+     counts,
+     byRep,
+     summary: {
+diff --git a/src/lib/server/pipeline-master-http.ts b/src/lib/server/pipeline-master-http.ts
+new file mode 100644
+index 0000000..43ce82e
+--- /dev/null
++++ b/src/lib/server/pipeline-master-http.ts
+@@ -0,0 +1,25 @@
++import { z } from "zod";
++import {
++  parseMasterQuery,
++  type MasterQuery,
++  type MasterDashboard,
++} from "../pipeline-os/master-pipeline";
++import { jsonError } from "./supabase";
++export async function masterPipelineResponse(
++  request: Request,
++  load: (q: MasterQuery) => Promise<MasterDashboard>,
++) {
++  try {
++    const query = parseMasterQuery(new URL(request.url).searchParams);
++    return Response.json(await load(query), {
++      headers: { "Cache-Control": "private, no-store" },
++    });
++  } catch (e) {
++    if (e instanceof z.ZodError)
++      return Response.json(
++        { error: "Filtros inválidos / Invalid filters" },
++        { status: 400, headers: { "Cache-Control": "private, no-store" } },
++      );
++    return jsonError(e);
++  }
++}
+diff --git a/src/lib/server/pipeline-master.ts b/src/lib/server/pipeline-master.ts
+new file mode 100644
+index 0000000..e1fd7a7
+--- /dev/null
++++ b/src/lib/server/pipeline-master.ts
+@@ -0,0 +1,229 @@
++import type { SupabaseClient } from "@supabase/supabase-js";
++import type { Profile, Opportunity, Workspace } from "../domain";
++import {
++  canSeeOpportunity,
++  canSeeArea,
++  isSellerRole,
++  isCloserRole,
++} from "../domain";
++import { readableMail } from "../mail-display";
++import {
++  buildMasterPipeline,
++  type MasterQuery,
++  type MasterSource,
++  type MasterArchive,
++  type MasterEvent,
++} from "../pipeline-os/master-pipeline";
++import { readPipelinePages } from "./pipeline-os-module";
++import { checkDb, requireUser } from "./supabase";
++
++async function readRows<T>(
++  db: SupabaseClient,
++  table: string,
++  columns: string,
++  ids?: string[],
++  key = "opportunity_id",
++  since?: string,
++): Promise<T[]> {
++  if (ids && !ids.length) return [];
++  const batches = ids
++    ? Array.from({ length: Math.ceil(ids.length / 50) }, (_, i) =>
++        ids.slice(i * 50, i * 50 + 50),
++      )
++    : [undefined];
++  const rows: T[] = [];
++  for (const batch of batches)
++    rows.push(
++      ...(await readPipelinePages<T>(async (offset) => {
++        let q = db.from(table).select(columns, { count: "exact" }).order("id");
++        if (batch) q = q.in(key, batch);
++        if (table === "opportunity_workspace") q = q.is("archived_at", null);
++        if (since) q = q.gte("sent_at", since);
++        const result = await q.range(offset, offset + 499);
++        return {
++          rows: (checkDb(result, "master_pipeline." + table) ||
++            []) as unknown as T[],
++          total: result.count,
++        };
++      })),
++    );
++  return rows;
++}
++
++export async function readMasterPipeline(
++  db: SupabaseClient,
++  profile: Profile,
++  query: MasterQuery,
++  now = Date.now(),
++) {
++  const opportunities = (
++    await readRows<Opportunity>(
++      db,
++      "opportunity_workspace",
++      "id,company,contact,email,phone,industry,amount,stage,seller_id,closer_id,next_action,next_action_at,created_at,updated_at,application_complete,application_signed,funded_at,funded_amount,funded_lender_id,handed_off_at",
++    )
++  ).filter((o) => canSeeOpportunity(profile, o));
++  const ids = opportunities.map((o) => o.id),
++    closerIds = opportunities
++      .filter((o) => canSeeArea(profile, o, "closer"))
++      .map((o) => o.id);
++  const start = new Date(now);
++  start.setUTCHours(0, 0, 0, 0);
++  start.setUTCDate(start.getUTCDate() - query.days + 1);
++  const [
++    profiles,
++    accounts,
++    lenders,
++    tasks,
++    offers,
++    submissions,
++    processes,
++    documents,
++    events,
++    conversations,
++    leads,
++    archive,
++  ] = await Promise.all([
++    readRows<Profile>(db, "profiles", "id,name,email,role,active"),
++    readRows<Workspace["accounts"][number] & { owner_id: string | null }>(
++      db,
++      "mail_accounts",
++      "id,email,owner_id",
++    ),
++    isCloserRole(profile.role)
++      ? readRows<Workspace["lenders"][number]>(db, "lenders", "id,name,email")
++      : Promise.resolve([]),
++    readRows<Workspace["tasks"][number]>(
++      db,
++      "tasks",
++      "id,opportunity_id,owner_id,title,due_at,status,area",
++      ids,
++    ),
++    readRows<MasterSource["offers"][number]>(
++      db,
++      "offers",
++      "id,opportunity_id,submission_id,product,amount,term,cost,frequency,fees,expires_at,status,created_at",
++      closerIds,
++    ),
++    readRows<Workspace["submissions"][number]>(
++      db,
++      "submissions",
++      "id,opportunity_id,process_id,lender_id,closer_id,status,submitted_at,next_action,next_action_at",
++      closerIds,
++    ),
++    readRows<MasterSource["processes"][number]>(
++      db,
++      "financing_processes",
++      "id,opportunity_id,sequence_number,state,classification,is_unclassified_archive,started_at,actual_funded_amount,funded_lender_id",
++      closerIds,
++    ),
++    readRows<Workspace["documents"][number]>(
++      db,
++      "documents",
++      "id,opportunity_id,kind,status,storage_path,created_at,required,content_hash",
++      ids,
++    ),
++    readRows<MasterEvent>(
++      db,
++      "case_events",
++      "id,opportunity_id,process_id,submission_id,archive_message_id,kind,area,evidence_type,occurred_at",
++      ids,
++    ),
++    readRows<Workspace["conversations"][number]>(
++      db,
++      "mail_conversations_visible",
++      "id,opportunity_id,submission_id,process_id,account_id,subject,area,needs_attention,updated_at",
++      ids,
++    ),
++    isSellerRole(profile.role)
++      ? readRows<Workspace["leads"][number]>(
++          db,
++          "lead_workspace",
++          "id,contact_id,company,contact,email,seller_id,suppressed,opportunity_id,verification,created_at",
++        )
++      : Promise.resolve([]),
++    // The existing view applies its original archive/case visibility. Never read encrypted_payload.
++    readRows<MasterArchive>(
++      db,
++      "mail_archive_visible",
++      "id,account_id,gmail_thread_id,subject,sent_at,direction,nature,reply_intent,participants",
++      undefined,
++      undefined,
++      start.toISOString(),
++    ),
++  ]);
++  const visibleConversations = conversations.filter((c) => {
++    const o = opportunities.find((o) => o.id === c.opportunity_id);
++    return !!o && canSeeArea(profile, o, c.area);
++  });
++  const messages = await readRows<Workspace["messages"][number]>(
++    db,
++    "messages",
++    "id,conversation_id,direction,sender,sent_at,status,area,nature,reply_intent,archive_message_id",
++    visibleConversations.map((c) => c.id),
++    "conversation_id",
++  );
++  const reviewed = await readRows<{
++    message_id: string;
++    status: string;
++    result: { offer_id?: string } | null;
++  }>(
++    db,
++    "pipeline_mail_reviews",
++    "id,opportunity_id,message_id,status,result",
++    closerIds,
++  );
++  const source: MasterSource = {
++    profile,
++    profiles,
++    opportunities,
++    tasks,
++    offers,
++    submissions,
++    processes,
++    documents,
++    events,
++    conversations: visibleConversations,
++    messages,
++    accounts,
++    lenders,
++    lender_contacts: [],
++    leads,
++    archive,
++    leadCoverage: profile.role === "superadmin",
++    accountOwners: Object.fromEntries(
++      accounts.map((a) => [a.id, a.owner_id || "unassigned"]),
++    ),
++    offerEvidence: reviewed.flatMap((r) =>
++      r.status === "approved" && r.result?.offer_id
++        ? [{ offer_id: r.result.offer_id, message_id: r.message_id }]
++        : [],
++    ),
++  };
++  const dashboard = buildMasterPipeline(source, query, now);
++  // Page first, bodies second. The client receives text excerpts only, never a whole mailbox payload.
++  const bodyIds = [
++    ...new Set(
++      dashboard.rows.flatMap((r) => (r.messageId ? [r.messageId] : [])),
++    ),
++  ];
++  const bodies = await readRows<{ id: string; body: string }>(
++    db,
++    "messages",
++    "id,body",
++    bodyIds,
++    "id",
++  );
++  const excerpts = new Map(
++    bodies.map((m) => [m.id, readableMail(m.body).text.slice(0, 600)]),
++  );
++  dashboard.rows = dashboard.rows.map((r) =>
++    r.messageId ? { ...r, excerpt: excerpts.get(r.messageId) || "" } : r,
++  );
++  return dashboard;
++}
++
++export async function loadMasterPipeline(query: MasterQuery) {
++  const { db, profile } = await requireUser();
++  return readMasterPipeline(db, profile, query);
++}
+diff --git a/tests/pipeline-master-http.test.ts b/tests/pipeline-master-http.test.ts
+new file mode 100644
+index 0000000..a420a39
+--- /dev/null
++++ b/tests/pipeline-master-http.test.ts
+@@ -0,0 +1,49 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { masterPipelineResponse } from "../src/lib/server/pipeline-master-http";
++import { HttpError } from "../src/lib/server/supabase";
++import type { MasterDashboard } from "../src/lib/pipeline-os/master-pipeline";
++test("Master GET rejects invalid filters before reaching the authenticated reader", async () => {
++  let calls = 0;
++  for (const search of [
++    "days=200",
++    "page=-1",
++    "operation=send",
++    "tab=unknown",
++  ]) {
++    const r = await masterPipelineResponse(
++      new Request("https://crm.invalid/api/pipeline-os/master?" + search),
++      async () => {
++        calls++;
++        return {} as MasterDashboard;
++      },
++    );
++    assert.equal(r.status, 400);
++  }
++  assert.equal(calls, 0);
++});
++test("Master authentication and MFA failures remain denied without public caching", async () => {
++  for (const status of [401, 403]) {
++    const r = await masterPipelineResponse(
++      new Request("https://crm.invalid/api/pipeline-os/master"),
++      async () => {
++        throw new HttpError(status, "Denied fixture");
++      },
++    );
++    assert.equal(r.status, status);
++    assert(!r.headers.get("Cache-Control")?.includes("public"));
++  }
++});
++test("Master response is private/no-store and passes a bounded read query only", async () => {
++  const r = await masterPipelineResponse(
++    new Request("https://crm.invalid/api/pipeline-os/master?tab=leads&days=7"),
++    async (q) => {
++      assert.equal(q.tab, "leads");
++      assert.equal(q.days, 7);
++      assert.equal(q.page, 0);
++      return { source: "crm" } as MasterDashboard;
++    },
++  );
++  assert.equal(r.status, 200);
++  assert.equal(r.headers.get("Cache-Control"), "private, no-store");
++});
+diff --git a/tests/pipeline-master-reader.test.ts b/tests/pipeline-master-reader.test.ts
+new file mode 100644
+index 0000000..16e26d6
+--- /dev/null
++++ b/tests/pipeline-master-reader.test.ts
+@@ -0,0 +1,274 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import type { SupabaseClient } from "@supabase/supabase-js";
++import { pipelineModuleDemo } from "../src/lib/pipeline-os/demo";
++import { parseMasterQuery } from "../src/lib/pipeline-os/master-pipeline";
++import { readMasterPipeline } from "../src/lib/server/pipeline-master";
++
++type Row = Record<string, unknown>;
++function database(
++  tables: Record<string, Row[]>,
++  cap = 500,
++  missingCount = false,
++) {
++  const calls: {
++    table: string;
++    columns: string;
++    filters: { key: string; values: unknown[] }[];
++    start: number;
++    end: number;
++  }[] = [];
++  class Query {
++    columns = "";
++    filters: { key: string; values: unknown[] }[] = [];
++    since: { key: string; value: string } | null = null;
++    constructor(readonly table: string) {}
++    select(columns: string) {
++      this.columns = columns;
++      return this;
++    }
++    order() {
++      return this;
++    }
++    in(key: string, values: unknown[]) {
++      this.filters.push({ key, values });
++      return this;
++    }
++    is() {
++      return this;
++    }
++    gte(key: string, value: string) {
++      this.since = { key, value };
++      return this;
++    }
++    async range(start: number, end: number) {
++      calls.push({
++        table: this.table,
++        columns: this.columns,
++        filters: this.filters,
++        start,
++        end,
++      });
++      const rows = (tables[this.table] || []).filter(
++        (r) =>
++          this.filters.every((f) => f.values.includes(r[f.key])) &&
++          (!this.since || String(r[this.since.key]) >= this.since.value),
++      );
++      return {
++        data: rows.slice(start, Math.min(end + 1, start + cap)),
++        count: missingCount ? null : rows.length,
++        error: null,
++      };
++    }
++  }
++  return {
++    client: {
++      from: (table: string) => new Query(table),
++    } as unknown as SupabaseClient,
++    calls,
++  };
++}
++function fixture(count = 1) {
++  const { data } = pipelineModuleDemo(),
++    seed = {
++      ...data.opportunities[0],
++      funded_at: null,
++      funded_amount: null,
++      closer_id: data.profile.id,
++      seller_id: data.profile.id,
++    };
++  const opportunities = Array.from({ length: count }, (_, i) => ({
++    ...seed,
++    id: "case-" + i,
++    company: "Fixture " + i,
++  }));
++  const tasks = opportunities.map((o, i) => ({
++    id: "task-" + i,
++    opportunity_id: o.id,
++    owner_id: data.profile.id,
++    title: "Fixture task",
++    status: "open",
++    area: "seller",
++    due_at: "2026-11-14T12:00:00Z",
++  }));
++  return {
++    data,
++    opportunities,
++    tables: {
++      opportunity_workspace: opportunities,
++      profiles: data.profiles,
++      mail_accounts: [],
++      lenders: [],
++      tasks,
++      offers: [],
++      submissions: [],
++      financing_processes: [],
++      documents: [],
++      case_events: [],
++      mail_conversations_visible: [],
++      messages: [],
++      lead_workspace: [],
++      mail_archive_visible: [],
++      pipeline_mail_reviews: [],
++    } as unknown as Record<string, Row[]>,
++  };
++}
++test("Master reader follows a smaller REST cap and aggregates all73 cases before paging", async () => {
++  const f = fixture(73),
++    db = database(f.tables, 2),
++    q = parseMasterQuery(new URLSearchParams("tab=tasks&page=1"));
++  const b = await readMasterPipeline(
++    db.client,
++    f.data.profile,
++    q,
++    Date.parse("2026-11-15T18:00:00Z"),
++  );
++  assert.equal(b.total, 73);
++  assert.equal(b.rows.length, 23);
++  assert.equal(b.byRep.find((r) => r.id === f.data.profile.id)?.tasks, 73);
++  assert(
++    db.calls.filter((c) => c.table === "opportunity_workspace").length > 1,
++  );
++  assert(db.calls.every((c) => !c.columns.includes("encrypted_payload")));
++  assert(
++    db.calls
++      .filter((c) => c.filters.length)
++      .every((c) => c.filters.every((f) => f.values.length <= 50)),
++  );
++});
++test("Master seller reads exclude financial IDs and bodies outside the visible page", async () => {
++  const f = fixture();
++  f.data.profile = { ...f.data.profile, role: "seller" };
++  f.tables.opportunity_workspace.push({
++    ...f.opportunities[0],
++    id: "foreign",
++    seller_id: "other",
++    company: "Foreign fixture",
++  });
++  f.tables.mail_conversations_visible = [
++    {
++      id: "conv",
++      opportunity_id: "case-0",
++      submission_id: null,
++      account_id: "account",
++      area: "seller",
++      subject: "Fixture subject",
++    },
++  ];
++  f.tables.messages = [
++    {
++      id: "message",
++      conversation_id: "conv",
++      direction: "inbound",
++      sender: f.opportunities[0].email,
++      sent_at: "2026-11-14T12:00:00Z",
++      status: "received",
++      area: "seller",
++      nature: "personal",
++      body: "Fixture content\n> Quoted content",
++    },
++  ];
++  const db = database(f.tables),
++    q = parseMasterQuery(new URLSearchParams("tab=comms"));
++  const b = await readMasterPipeline(
++    db.client,
++    f.data.profile,
++    q,
++    Date.parse("2026-11-15T18:00:00Z"),
++  );
++  assert.equal(b.rows[0].excerpt, "Fixture content");
++  assert(!JSON.stringify(b).includes("Foreign fixture"));
++  for (const name of [
++    "offers",
++    "submissions",
++    "financing_processes",
++    "pipeline_mail_reviews",
++  ])
++    assert(!db.calls.some((c) => c.table === name));
++  assert(
++    db.calls
++      .filter((c) => c.table === "messages" && c.columns === "id,body")
++      .every((c) => c.filters[0].values.length <= 50),
++  );
++  assert(
++    db.calls
++      .filter((c) => c.table === "messages" && c.columns !== "id,body")
++      .every((c) => !c.columns.split(",").includes("body")),
++  );
++});
++test("Master unapproved review results cannot prove an offer reply", async () => {
++  const f = fixture(),
++    o = f.opportunities[0];
++  f.tables.submissions = [
++    { id: "sub", opportunity_id: o.id, lender_id: "l", status: "offer" },
++  ];
++  f.tables.offers = [
++    {
++      id: "offer",
++      opportunity_id: o.id,
++      submission_id: "sub",
++      amount: 50000,
++      status: "received",
++      expires_at: null,
++      created_at: "2026-11-13T12:00:00Z",
++    },
++  ];
++  f.tables.mail_conversations_visible = [
++    {
++      id: "c",
++      opportunity_id: o.id,
++      submission_id: "sub",
++      account_id: "a",
++      area: "closer",
++      subject: "Fixture",
++    },
++  ];
++  f.tables.messages = [
++    {
++      id: "m",
++      conversation_id: "c",
++      direction: "inbound",
++      status: "received",
++      area: "closer",
++      sent_at: "2026-11-13T12:00:00Z",
++      sender: "lender@fixture.example",
++      body: "Synthetic offer body",
++    },
++  ];
++  const review = {
++    id: "r",
++    opportunity_id: o.id,
++    message_id: "m",
++    status: "pending",
++    result: { offer_id: "offer" },
++  };
++  f.tables.pipeline_mail_reviews = [review];
++  const q = parseMasterQuery(new URLSearchParams("tab=offers"));
++  let b = await readMasterPipeline(
++    database(f.tables).client,
++    f.data.profile,
++    q,
++    Date.parse("2026-11-15T18:00:00Z"),
++  );
++  assert.equal(b.rows[0].best?.answered, null);
++  review.status = "approved";
++  b = await readMasterPipeline(
++    database(f.tables).client,
++    f.data.profile,
++    q,
++    Date.parse("2026-11-15T18:00:00Z"),
++  );
++  assert.equal(b.rows[0].best?.answered, false);
++});
++test("Master incomplete catalog metadata fails closed instead of reporting a false zero", async () => {
++  const f = fixture(),
++    db = database(f.tables, 500, true);
++  await assert.rejects(
++    readMasterPipeline(
++      db.client,
++      f.data.profile,
++      parseMasterQuery(new URLSearchParams()),
++    ),
++    /Catalog count unavailable/,
++  );
++});
+diff --git a/tests/pipeline-master-ui.test.ts b/tests/pipeline-master-ui.test.ts
+new file mode 100644
+index 0000000..35343c3
+--- /dev/null
++++ b/tests/pipeline-master-ui.test.ts
+@@ -0,0 +1,65 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { createElement } from "react";
++import { renderToStaticMarkup } from "react-dom/server";
++import { registerHooks } from "node:module";
++import { pipelineModuleDemo } from "../src/lib/pipeline-os/demo";
++import { masterDemoSource } from "../src/lib/pipeline-os/master-demo";
++import {
++  buildMasterPipeline,
++  masterTabs,
++} from "../src/lib/pipeline-os/master-pipeline";
++
++test("all six Master views render semantic headers, safe text, and explicit unknowns in both languages", async () => {
++  const hook = registerHooks({
++    load(url, context, next) {
++      return url.endsWith(".css")
++        ? { format: "module", source: "", shortCircuit: true }
++        : next(url, context);
++    },
++  });
++  const { MasterRows, MasterRepTable, MasterStats } =
++    await import("../src/components/pipeline-os/master-pipeline");
++  hook.deregister();
++  for (const locale of ["es", "en"] as const) {
++    const { data, processes } = pipelineModuleDemo();
++    data.opportunities[0].company = "<img src=x onerror=alert(1)>";
++    const s = masterDemoSource(data, processes);
++    for (const tab of masterTabs) {
++      const b = buildMasterPipeline(s, { tab });
++      const html = renderToStaticMarkup(
++        createElement(MasterRows, {
++          dashboard: b,
++          locale,
++          open() {},
++          mail() {},
++        }),
++      );
++      assert(html.includes('scope="col"'));
++      assert(!html.includes("<img src=x"));
++      assert(!html.includes('onerror="'));
++    }
++    const b = buildMasterPipeline(s, {});
++    const reps = renderToStaticMarkup(
++      createElement(MasterRepTable, {
++        dashboard: b,
++        locale,
++        owner: "all",
++        onOwner() {},
++      }),
++    );
++    assert(reps.includes('aria-pressed="false"'));
++    assert(reps.includes('scope="row"'));
++    assert(reps.includes("—"));
++    const stats = renderToStaticMarkup(
++      createElement(MasterStats, { dashboard: b, locale, owner: "all" }),
++    );
++    assert(stats.includes("UTC"));
++    assert(stats.includes("<summary>"));
++  }
++});
++test("demo source rejects live workspaces instead of fabricating live timestamps", () => {
++  const { data } = pipelineModuleDemo();
++  data.demo = false;
++  assert.throws(() => masterDemoSource(data, []), /MASTER_DEMO_ONLY/);
++});
+diff --git a/tests/pipeline-master.test.ts b/tests/pipeline-master.test.ts
+new file mode 100644
+index 0000000..6e2f8cb
+--- /dev/null
++++ b/tests/pipeline-master.test.ts
+@@ -0,0 +1,638 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { pipelineModuleDemo } from "../src/lib/pipeline-os/demo";
++import {
++  buildMasterPipeline,
++  parseMasterQuery,
++  type MasterSource,
++} from "../src/lib/pipeline-os/master-pipeline";
++
++const now = Date.parse("2026-11-15T18:00:00Z");
++function fixture(): MasterSource {
++  const { data } = pipelineModuleDemo();
++  const o = {
++    ...data.opportunities[0],
++    id: "case-a",
++    company: "Fixture Market",
++    seller_id: data.profile.id,
++    closer_id: data.profile.id,
++    stage: "lenders" as const,
++    funded_at: null,
++    funded_amount: null,
++    next_action_at: null,
++  };
++  return {
++    ...data,
++    opportunities: [o],
++    tasks: [],
++    offers: [],
++    submissions: [],
++    documents: [],
++    conversations: [],
++    messages: [],
++    opportunity_signals: {},
++    processes: [],
++    events: [],
++    offerEvidence: [],
++    archive: [],
++    leadCoverage: true,
++  };
++}
++test("individual tasks use their owner, deduplicate IDs, and never count completed work", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  const task = {
++    id: "t1",
++    opportunity_id: o.id,
++    owner_id: s.profile.id,
++    title: "Review fixture",
++    due_at: "2026-11-14T12:00:00Z",
++    status: "open" as const,
++    area: "seller" as const,
++  };
++  s.tasks = [
++    task,
++    { ...task, id: "t2" },
++    { ...task },
++    { ...task, id: "done", status: "done" },
++  ];
++  const b = buildMasterPipeline(s, { tab: "tasks" }, now),
++    rep = b.byRep.find((r) => r.id === s.profile.id)!;
++  assert.equal(rep.tasks, 2);
++  assert.equal(rep.p1, 2);
++  assert.equal(b.total, 2);
++});
++test("all authorized reps include zero workload and no name exclusions", () => {
++  const s = fixture();
++  s.profiles.push({
++    id: "rep-empty",
++    name: "Alejandro",
++    email: "rep@fixture.example",
++    role: "seller",
++    active: true,
++  });
++  assert(
++    buildMasterPipeline(s, {}, now).byRep.some(
++      (r) => r.id === "rep-empty" && r.tasks === 0,
++    ),
++  );
++});
++test("seller cannot receive another case, closer-only financial data, or another rep by forged owner", () => {
++  const s = fixture();
++  s.profile = { ...s.profile, role: "seller" };
++  s.opportunities.push({
++    ...s.opportunities[0],
++    id: "foreign",
++    seller_id: "other",
++    company: "Secret fixture",
++  });
++  s.offers = [
++    {
++      id: "secret-offer",
++      opportunity_id: s.opportunities[0].id,
++      submission_id: "sub",
++      amount: 970000,
++      product: "MCA",
++      term: "",
++      cost: "",
++      fees: "",
++      frequency: "",
++      expires_at: "2027-01-01",
++      status: "received",
++    },
++  ];
++  const b = buildMasterPipeline(s, { tab: "offers", owner: "other" }, now);
++  assert.equal(b.total, 0);
++  assert(!JSON.stringify(b).includes("970000"));
++  assert(!JSON.stringify(b).includes("Secret fixture"));
++  assert.equal(b.byRep.find((r) => r.id === s.profile.id)?.offers, null);
++});
++test("application signature and inactive history cannot become lender contract or funding", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  o.application_signed = true;
++  o.application_complete = true;
++  s.processes = [
++    {
++      id: "history",
++      opportunity_id: o.id,
++      sequence_number: 1,
++      state: "contract_signed",
++      classification: "inactive",
++      is_unclassified_archive: false,
++    },
++    {
++      id: "current",
++      opportunity_id: o.id,
++      sequence_number: 2,
++      state: "submitted",
++      classification: "active",
++      is_unclassified_archive: false,
++    },
++  ];
++  const b = buildMasterPipeline(s, { tab: "pipeline" }, now);
++  assert.equal(b.rows[0].stage, "submitted");
++  assert.equal(b.byRep.find((r) => r.id === s.profile.id)?.funded, 0);
++});
++test("withdrawal stays distinct from lender decline and current requirements map without writes", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  const p = {
++    id: "p",
++    opportunity_id: o.id,
++    sequence_number: 1,
++    state: "requirements",
++    classification: "active",
++    is_unclassified_archive: false,
++  };
++  s.processes = [p];
++  assert.equal(
++    buildMasterPipeline(s, { tab: "pipeline" }, now).rows[0].stage,
++    "requirements",
++  );
++  p.state = "client_withdrew";
++  assert.equal(
++    buildMasterPipeline(s, { tab: "pipeline" }, now).rows[0].stage,
++    "withdrawn",
++  );
++});
++test("aggregate totals precede pagination across more than fifty cases", () => {
++  const s = fixture(),
++    seed = s.opportunities[0];
++  s.opportunities = Array.from({ length: 73 }, (_, i) => ({
++    ...seed,
++    id: "c" + i,
++    company: "Fixture " + String(i).padStart(3, "0"),
++  }));
++  const a = buildMasterPipeline(s, { tab: "pipeline" }, now),
++    b = buildMasterPipeline(s, { tab: "pipeline", page: 1 }, now);
++  assert.equal(a.total, 73);
++  assert.equal(a.rows.length, 50);
++  assert.equal(b.rows.length, 23);
++  assert.deepEqual(a.byRep, b.byRep);
++});
++test("events need explicit evidence and valid historical dates; editing does not create a milestone", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  o.updated_at = new Date(now).toISOString();
++  o.application_complete = true;
++  s.events = [
++    {
++      id: "e",
++      opportunity_id: o.id,
++      process_id: null,
++      submission_id: null,
++      kind: "application_received",
++      area: "seller",
++      evidence_type: "manual",
++      occurred_at: "2026-11-14T23:00:00Z",
++    },
++    {
++      id: "bad",
++      opportunity_id: o.id,
++      process_id: null,
++      submission_id: null,
++      kind: "contract_signed",
++      area: "closer",
++      evidence_type: "inference",
++      occurred_at: new Date(now).toISOString(),
++    },
++  ];
++  const b = buildMasterPipeline(s, { tab: "stats", days: 7 }, now);
++  assert.equal(
++    b.daily.reduce((n, d) => n + d.applications, 0),
++    1,
++  );
++  assert.equal(b.events.length, 1);
++  assert.equal(b.daily.find((d) => d.day === "2026-11-15")?.applications, 0);
++});
++test("query rejects invalid ranges, pages and unexpected commands", () => {
++  assert.throws(() => parseMasterQuery(new URLSearchParams("days=365")));
++  assert.throws(() => parseMasterQuery(new URLSearchParams("page=-1")));
++  assert.throws(() => parseMasterQuery(new URLSearchParams("operation=send")));
++  assert.equal(parseMasterQuery(new URLSearchParams()).tab, "tasks");
++});
++
++test("a task follows its assigned rep even when the file belongs to another rep", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  s.profiles.push({
++    id: "helper",
++    name: "Helper Fixture",
++    email: "helper@fixture.example",
++    role: "seller",
++    active: true,
++  });
++  s.tasks = [
++    {
++      id: "t",
++      opportunity_id: o.id,
++      owner_id: "helper",
++      title: "Assigned task",
++      due_at: "2026-11-14T12:00:00Z",
++      area: "seller",
++      status: "open",
++    },
++  ];
++  const b = buildMasterPipeline(s, { owner: "helper", tab: "tasks" }, now);
++  assert.equal(b.total, 1);
++  assert.equal(b.byRep.find((r) => r.id === "helper")?.tasks, 1);
++  assert.equal(b.byRep.find((r) => r.id === s.profile.id)?.tasks, 0);
++});
++test("renewal uses the current process rather than a historical funding on the file", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  o.funded_at = "2026-10-01T10:00:00Z";
++  o.funded_amount = 45000;
++  s.processes = [
++    {
++      id: "renewal",
++      opportunity_id: o.id,
++      sequence_number: 2,
++      state: "submitted",
++      classification: "active",
++      is_unclassified_archive: false,
++    },
++  ];
++  assert.equal(
++    buildMasterPipeline(s, { tab: "pipeline" }, now).rows[0].stage,
++    "submitted",
++  );
++});
++test("highest offer and selected offer stay distinct; only the anchored thread can prove a reply", () => {
++  const s = fixture(),
++    o = s.opportunities[0],
++    sub = {
++      id: "sub",
++      opportunity_id: o.id,
++      lender_id: s.lenders[0]?.id || "l",
++      closer_id: s.profile.id,
++      status: "offer",
++      channel: "email",
++      submitted_at: "2026-11-13T12:00:00Z",
++      next_action: "Review",
++      next_action_at: "2026-11-16T12:00:00Z",
++      external_reference: "",
++    };
++  s.submissions = [sub, { ...sub, id: "sub2" }];
++  const offer = {
++    id: "large",
++    opportunity_id: o.id,
++    submission_id: sub.id,
++    product: "MCA",
++    amount: 70000,
++    term: "20 weeks",
++    cost: "1.3",
++    fees: "0",
++    frequency: "weekly",
++    status: "received",
++    expires_at: "2027-01-01",
++    created_at: "2026-11-13T12:00:00Z",
++  };
++  s.offers = [
++    offer,
++    { ...offer },
++    {
++      ...offer,
++      id: "chosen",
++      submission_id: "sub2",
++      amount: 40000,
++      status: "selected",
++    },
++  ];
++  s.conversations = [
++    {
++      id: "right",
++      opportunity_id: o.id,
++      submission_id: sub.id,
++      account_id: "account",
++      subject: "Fixture offer",
++      area: "closer",
++      needs_attention: true,
++      updated_at: null,
++    },
++    {
++      id: "other",
++      opportunity_id: o.id,
++      submission_id: "sub2",
++      account_id: "account",
++      subject: "Different thread",
++      area: "closer",
++      needs_attention: false,
++      updated_at: null,
++    },
++  ];
++  const inbound = {
++    id: "in",
++    conversation_id: "right",
++    direction: "inbound" as const,
++    sender: "lender@fixture.example",
++    body: "Fixture offer",
++    sent_at: "2026-11-13T12:00:00Z",
++    status: "received",
++    area: "closer" as const,
++  };
++  s.messages = [
++    inbound,
++    {
++      ...inbound,
++      id: "unrelated",
++      conversation_id: "other",
++      direction: "outbound",
++      status: "sent",
++      sent_at: "2026-11-14T12:00:00Z",
++    },
++    {
++      ...inbound,
++      id: "draft",
++      direction: "outbound",
++      status: "draft",
++      sent_at: "2026-11-14T13:00:00Z",
++    },
++  ];
++  s.offerEvidence = [{ offer_id: offer.id, message_id: inbound.id }];
++  let row = buildMasterPipeline(s, { tab: "offers" }, now).rows[0];
++  assert.equal(row.offers?.length, 2);
++  assert.equal(row.best?.amount, 70000);
++  assert.equal(row.best?.selected, false);
++  assert.equal(row.offers?.find((o) => o.id === "chosen")?.selected, true);
++  assert.equal(row.best?.answered, false);
++  s.messages.push({
++    ...inbound,
++    id: "answer",
++    direction: "outbound",
++    status: "sent",
++    sent_at: "2026-11-14T14:00:00Z",
++  });
++  row = buildMasterPipeline(s, { tab: "offers" }, now).rows[0];
++  assert.equal(row.best?.answered, true);
++  s.offerEvidence = [];
++  assert.equal(
++    buildMasterPipeline(s, { tab: "offers" }, now).rows[0].best?.answered,
++    null,
++  );
++});
++test("recorded legacy funding contributes its actual date once even during a renewal", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  o.funded_at = "2026-11-10T12:00:00Z";
++  o.funded_amount = 45000;
++  s.processes = [
++    {
++      id: "renewal",
++      opportunity_id: o.id,
++      sequence_number: 2,
++      state: "submitted",
++      classification: "active",
++      is_unclassified_archive: false,
++    },
++  ];
++  let b = buildMasterPipeline(s, { tab: "stats" }, now);
++  assert.equal(b.events.filter((e) => e.kind === "disbursed").length, 1);
++  assert.equal(b.events.find((e) => e.kind === "disbursed")?.at, o.funded_at);
++  s.events = [
++    {
++      id: "funded-event",
++      opportunity_id: o.id,
++      process_id: null,
++      submission_id: null,
++      kind: "disbursed",
++      area: "closer",
++      evidence_type: "manual",
++      occurred_at: o.funded_at,
++    },
++  ];
++  b = buildMasterPipeline(s, { tab: "stats" }, now);
++  assert.equal(b.events.filter((e) => e.kind === "disbursed").length, 1);
++  assert.equal(
++    b.events.find((e) => e.kind === "disbursed")?.id,
++    "funded-event",
++  );
++});
++test("expired offers remain dated activity without inflating active workload", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  s.submissions = [
++    {
++      ...pipelineModuleDemo().data.submissions[0],
++      id: "history",
++      opportunity_id: o.id,
++      lender_id: "l",
++    },
++  ];
++  const f = {
++    ...pipelineModuleDemo().data.offers[0],
++    id: "expired",
++    opportunity_id: o.id,
++    submission_id: "history",
++    amount: 45000,
++    status: "received",
++    expires_at: "2026-11-14T12:00:00Z",
++    created_at: "2026-11-13T12:00:00Z",
++  };
++  s.offers = [f, { ...f }, { ...f, id: "draft", status: "draft" }];
++  const b = buildMasterPipeline(s, { tab: "stats" }, now);
++  assert.equal(b.daily.find((d) => d.day === "2026-11-13")?.offers, 1);
++  assert.equal(b.byRep.find((r) => r.id === s.profile.id)?.offerFiles, 1);
++  assert.equal(b.byRep.find((r) => r.id === s.profile.id)?.offers, 0);
++});
++test("task excerpts point to the latest received message rather than an outbound response", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  s.tasks = [
++    {
++      id: "task",
++      opportunity_id: o.id,
++      owner_id: s.profile.id,
++      title: "Review",
++      due_at: "2026-11-14T12:00:00Z",
++      status: "open",
++      area: "seller",
++    },
++  ];
++  s.conversations = [
++    {
++      id: "c",
++      opportunity_id: o.id,
++      submission_id: null,
++      account_id: "a",
++      subject: "Fixture",
++      area: "seller",
++      needs_attention: false,
++      updated_at: null,
++    },
++  ];
++  const m = {
++    id: "in",
++    conversation_id: "c",
++    direction: "inbound" as const,
++    sender: o.email,
++    body: "Client words",
++    sent_at: "2026-11-13T12:00:00Z",
++    status: "received",
++    area: "seller" as const,
++  };
++  s.messages = [
++    m,
++    {
++      ...m,
++      id: "out",
++      direction: "outbound",
++      status: "sent",
++      sent_at: "2026-11-14T12:00:00Z",
++    },
++  ];
++  assert.equal(
++    buildMasterPipeline(s, { tab: "tasks" }, now).rows[0].messageId,
++    "in",
++  );
++});
++test("mail counts deduplicate the same physical archive message and exclude failed drafts", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  s.conversations = [
++    {
++      id: "c",
++      opportunity_id: o.id,
++      submission_id: null,
++      account_id: "account",
++      subject: "Fixture",
++      area: "seller",
++      needs_attention: false,
++      updated_at: null,
++    },
++  ];
++  const m = {
++    id: "one",
++    archive_message_id: "physical",
++    conversation_id: "c",
++    direction: "inbound" as const,
++    sender: o.email,
++    body: "Hello",
++    sent_at: "2026-11-14T12:00:00Z",
++    status: "received",
++    area: "seller" as const,
++  };
++  s.messages = [
++    m,
++    { ...m, id: "copy" },
++    {
++      ...m,
++      id: "failed",
++      archive_message_id: "other",
++      direction: "outbound",
++      status: "failed",
++    },
++  ];
++  assert.equal(
++    buildMasterPipeline(s, { tab: "comms" }, now).byRep.find(
++      (r) => r.id === s.profile.id,
++    )?.emails,
++    1,
++  );
++});
++test("negative and automatic archived lead replies do not become open leads; later recorded reply closes the count", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  s.leads = [
++    {
++      id: "lead",
++      contact_id: "contact",
++      company: "Fixture Lead",
++      contact: "Sample",
++      email: "lead@fixture.example",
++      phone: "",
++      industry: "",
++      product: "",
++      amount: 0,
++      seller_id: s.profile.id,
++      next_action: "",
++      next_action_at: null,
++      verification: "valid",
++      suppressed: false,
++      opportunity_id: null,
++      created_at: "2026-11-01T12:00:00Z",
++    },
++  ];
++  const m = {
++    id: "a",
++    account_id: "account",
++    gmail_thread_id: "thread",
++    subject: "Fixture lead reply",
++    sent_at: "2026-11-14T12:00:00Z",
++    direction: "inbound",
++    nature: "personal",
++    reply_intent: "positive",
++    participants: [{ email: "lead@fixture.example", role: "from" }],
++  };
++  s.archive = [m];
++  let b = buildMasterPipeline(s, { tab: "leads" }, now);
++  assert.equal(b.total, 1);
++  assert.equal(b.byRep.find((r) => r.id === s.profile.id)?.leadsOpen, 1);
++  s.archive.push({
++    ...m,
++    id: "negative",
++    reply_intent: "negative",
++    sent_at: "2026-11-15T12:00:00Z",
++  });
++  assert.equal(buildMasterPipeline(s, { tab: "leads" }, now).total, 0);
++  s.archive = [
++    m,
++    { ...m, id: "out", direction: "outbound", sent_at: "2026-11-15T12:00:00Z" },
++  ];
++  b = buildMasterPipeline(s, { tab: "leads" }, now);
++  assert.equal(b.rows[0].answered, true);
++  assert.equal(b.byRep.find((r) => r.id === s.profile.id)?.leadsOpen, 0);
++  s.archive = [{ ...m, nature: "automatic" }];
++  assert.equal(buildMasterPipeline(s, { tab: "leads" }, now).total, 0);
++});
++test("UTC calendar keys normalize offsets independently of the server timezone", () => {
++  const s = fixture(),
++    o = s.opportunities[0];
++  s.events = [
++    {
++      id: "offset",
++      opportunity_id: o.id,
++      process_id: null,
++      submission_id: null,
++      kind: "application_received",
++      area: "seller",
++      evidence_type: "manual",
++      occurred_at: "2026-11-14T23:30:00-05:00",
++    },
++  ];
++  const before = process.env.TZ;
++  try {
++    for (const zone of ["UTC", "America/Bogota", "Asia/Tokyo"]) {
++      process.env.TZ = zone;
++      const b = buildMasterPipeline(s, { tab: "stats", days: 7 }, now);
++      assert.equal(
++        b.daily.find((d) => d.day === "2026-11-15")?.applications,
++        1,
++      );
++    }
++  } finally {
++    if (before === undefined) delete process.env.TZ;
++    else process.env.TZ = before;
++  }
++});
++test("seller archive metadata without visible case evidence stays out of the payload", () => {
++  const s = fixture();
++  s.profile = { ...s.profile, role: "seller" };
++  s.archive = [
++    {
++      id: "unreadable",
++      account_id: "other",
++      gmail_thread_id: "foreign",
++      subject: "Hidden fixture archive",
++      sent_at: "2026-11-14T12:00:00Z",
++      direction: "inbound",
++      nature: "personal",
++      participants: [],
++    },
++  ];
++  s.leadCoverage = false;
++  const b = buildMasterPipeline(s, { tab: "comms" }, now);
++  assert(!JSON.stringify(b).includes("Hidden fixture archive"));
++  assert.equal(b.byRep[0].leadsOpen, null);
++});

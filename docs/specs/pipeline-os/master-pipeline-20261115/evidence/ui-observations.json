@@ -1,0 +1,59 @@
+{
+  "fixtureOnly": true,
+  "productionAccess": false,
+  "viewports": [
+    {
+      "width": 360,
+      "bodyOverflow": false
+    },
+    {
+      "width": 768,
+      "bodyOverflow": false,
+      "chartOverflow": false
+    },
+    {
+      "width": 1280,
+      "bodyOverflow": false
+    }
+  ],
+  "views": [
+    "tasks",
+    "offers",
+    "pipeline",
+    "stats",
+    "comms",
+    "leads"
+  ],
+  "checks": [
+    "rep filter persists across tabs",
+    "highest and selected offers separated",
+    "offer expansion",
+    "ArrowRight/Home/End tab navigation",
+    "search keeps Master view",
+    "loading and empty states",
+    "read-only archive demo modal",
+    "Escape closes modal",
+    "existing case drawer opens and returns",
+    "light and dark theme",
+    "Ver todos resets rep to all",
+    "clicking selected rep resets to all",
+    "Master opens the newly published evidence-based case checklist without replacing it",
+    "MP-INT01: distinct case panel keys, fresh-page console has no errors"
+  ],
+  "consoleErrors": 0,
+  "notVisuallyForced": [
+    "network error",
+    "live role-specific RLS"
+  ],
+  "screenshots": [
+    "desktop-light.jpg",
+    "desktop-dark.jpg",
+    "mobile-360.jpg",
+    "tablet-768.jpg",
+    "mail-reader.jpg",
+    "rep-filter-reset.jpg",
+    "integrated-case-checklist.jpg"
+  ],
+  "reconciledBase": "01b6d3f8c2f61ba09ef60ff07a7ef4a17b9c681b",
+  "consoleErrorsAfterReconciliation": 0
+}

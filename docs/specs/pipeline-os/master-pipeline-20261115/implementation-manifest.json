@@ -1,0 +1,110 @@
+{
+  "feature": "Master Pipeline",
+  "base": "01b6d3f8c2f61ba09ef60ff07a7ef4a17b9c681b",
+  "originalBase": "5f38ec650b16642c5d97c3a488d8f39ee1b1a764",
+  "compatibleReference": "01b6d3f8c2f61ba09ef60ff07a7ef4a17b9c681b",
+  "candidate": ".local/f2-connect-t002/master-current-01b6d3f",
+  "files": [
+    {
+      "path": "src/lib/pipeline-os/module.ts",
+      "operation": "modify",
+      "beforeSha256": "232d75d45ffe9e7903cb445d5543547396da5d2a9652f7d810539f0b8d7dc969",
+      "afterSha256": "730396f994c29c6e31d662dd395dfae64f61ded79aeaa38cc029e7b53d549624"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "operation": "modify",
+      "beforeSha256": "36f1ac54f0dbc1378dd5e2607e375a116c9f0b4fb7b11a466858292414a6d7a4",
+      "afterSha256": "7a15110e473eb4192aae1cfb8b8798552bf9413b2d6e968782fa5a8654711dbb"
+    },
+    {
+      "path": "src/lib/pipeline-os/master-pipeline.ts",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "ac5ad20342ab0f454da91bf181128c028bded1b4e31df572b26f16aff148f0fd"
+    },
+    {
+      "path": "src/lib/pipeline-os/master-demo.ts",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "8e31990a91f0e39499e456f7d0c85e3f3589e53e7d2ee27765adfc9cdb9a179f"
+    },
+    {
+      "path": "src/lib/server/pipeline-master.ts",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "ae223b27f2a96138aa5ed04e1061af07148ccad9790b801a2795b0194d4479ed"
+    },
+    {
+      "path": "src/lib/server/pipeline-master-http.ts",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "fddb80a6503a0cf220b7d8491ae41cd36ff032ccae7a6376f106c3d2d67deaeb"
+    },
+    {
+      "path": "src/app/api/pipeline-os/master/route.ts",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "863334855fe9c95137fd75be3b6d49cd778f9bbfb7e381bf81f5f52fb2e668a2"
+    },
+    {
+      "path": "src/components/pipeline-os/master-pipeline.tsx",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "c242abc4fd7f994fcdfd31f0b4302bd526f9590e73e07b43d5d36fab4cc5b1ed"
+    },
+    {
+      "path": "src/components/pipeline-os/master-pipeline.css",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "f20932f64dac69caf9d1e3cca884020cebc4eb8ac440e56bb6f927a03573f628"
+    },
+    {
+      "path": "tests/pipeline-master.test.ts",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "3e8053c2e9b8aed054edec454625c3c6f326337e660e4d7bca8fe498ac3a99ae"
+    },
+    {
+      "path": "tests/pipeline-master-http.test.ts",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "5cdb08918e3b50d3165988a316f16cfb4ee3c060ac8abb8e35838c4d2b0958f6"
+    },
+    {
+      "path": "tests/pipeline-master-reader.test.ts",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "dbe31220a52a61535f2b6bbb7163173074673137e080f165c44e72fb3f196d2e"
+    },
+    {
+      "path": "tests/pipeline-master-ui.test.ts",
+      "operation": "add",
+      "beforeSha256": null,
+      "afterSha256": "ac3dba99bf74df9db8c68ecf0df2f62dbc7232435f2c192a4f48596a33112d8d"
+    }
+  ],
+  "patch": {
+    "path": "master-pipeline.patch",
+    "sha256": "4d89db40c0388823238d1d3a2f2d5137a07747a39713780dbcee710af4ce19e6"
+  },
+  "databaseChanges": false,
+  "dependenciesChanged": false,
+  "environmentChanged": false,
+  "externalCalls": false,
+  "deploymentAuthorized": false,
+  "verification": {
+    "tests": 65,
+    "passed": 65,
+    "failed": 0,
+    "typecheck": true,
+    "prettier": true,
+    "webpackProductionBuild": true,
+    "localHttp": {
+      "invalidFilter": 400,
+      "unauthenticated": 401
+    },
+    "visualFixtureOnly": true
+  },
+  "sourceAudit": "evidence/source-audit.json"
+}
