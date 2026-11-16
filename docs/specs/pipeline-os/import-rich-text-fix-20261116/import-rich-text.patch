@@ -1,0 +1,211 @@
+diff --git a/src/lib/server/parse-import.ts b/src/lib/server/parse-import.ts
+index df6bb7d..11d5204 100644
+--- a/src/lib/server/parse-import.ts
++++ b/src/lib/server/parse-import.ts
+@@ -1,6 +1,43 @@
+ import Papa from "papaparse";
+ import ExcelJS from "exceljs";
+ import { HttpError } from "./supabase";
++
++function cellText(cell: ExcelJS.Cell): string {
++  // ExcelJS can return a rich-text object from .text when a shared string
++  // also has a hyperlink. Keep its visible text for both preview and ingest.
++  const value: unknown = cell.text;
++  if (typeof value === "string") return value;
++  if (value === null || value === undefined) return "";
++  if (typeof value === "number" || typeof value === "boolean")
++    return String(value);
++  // An empty <si/> shared string can become {} when used as a link label.
++  if (
++    typeof value === "object" &&
++    !Array.isArray(value) &&
++    !Object.keys(value).length
++  )
++    return "";
++  if (
++    typeof value === "object" &&
++    "richText" in value &&
++    Array.isArray(value.richText)
++  ) {
++    const parts: string[] = [];
++    for (const run of value.richText) {
++      if (
++        !run ||
++        typeof run !== "object" ||
++        !("text" in run) ||
++        typeof run.text !== "string"
++      )
++        throw new HttpError(400, "Unsupported XLSX cell text");
++      parts.push(run.text);
++    }
++    return parts.join("");
++  }
++  throw new HttpError(400, "Unsupported XLSX cell text");
++}
++
+ export async function parseImport(file: File, chosen = "") {
+   if (file.size > 50 * 1024 * 1024)
+     throw new HttpError(413, "Maximum file size: 50 MB");
+@@ -36,7 +73,7 @@ export async function parseImport(file: File, chosen = "") {
+     if (header.cellCount > 200) throw new HttpError(400, "Maximum 200 columns");
+     headers = Array.from(
+       { length: header.cellCount },
+-      (_, i) => header.getCell(i + 1).text.trim() || `Column ${i + 1}`,
++      (_, i) => cellText(header.getCell(i + 1)).trim() || `Column ${i + 1}`,
+     );
+     if (selected.rowCount > 50001)
+       throw new HttpError(400, "Maximum 50,000 rows");
+@@ -44,7 +81,7 @@ export async function parseImport(file: File, chosen = "") {
+       if (index > 1)
+         rows.push(
+           Object.fromEntries(
+-            headers.map((h, i) => [h, row.getCell(i + 1).text]),
++            headers.map((h, i) => [h, cellText(row.getCell(i + 1))]),
+           ),
+         );
+     });
+diff --git a/tests/import-rich-text.test.ts b/tests/import-rich-text.test.ts
+new file mode 100644
+index 0000000..e519233
+--- /dev/null
++++ b/tests/import-rich-text.test.ts
+@@ -0,0 +1,139 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import ExcelJS from "exceljs";
++import { createElement } from "react";
++import { renderToStaticMarkup } from "react-dom/server";
++import { parseImport } from "../src/lib/server/parse-import";
++import { detectMapping, normalizeRow } from "../src/lib/imports";
++
++const rich = (...text: string[]) => ({
++  richText: text.map((value) => ({ text: value, font: { bold: true } })),
++});
++const link = (value: unknown) =>
++  ({
++    text: value,
++    hyperlink: "https://example.invalid/display-only",
++  }) as ExcelJS.CellHyperlinkValue;
++async function file(book: ExcelJS.Workbook) {
++  const bytes = await book.xlsx.writeBuffer();
++  return new File([new Uint8Array(bytes)], "fixture.xlsx");
++}
++
++test("imports flatten rich display text inside hyperlinks before preview and normalization", async () => {
++  const book = new ExcelJS.Workbook();
++  const sheet = book.addWorksheet("Leads");
++  sheet.addRow(["Email", "Company", "Owner", "Phone", "Industry"]);
++  sheet.addRow([
++    link(rich("alex", "@example.test")),
++    link(rich("Café ", "Horizonte & Hijos")),
++    rich("Álex ", "Pérez"),
++    "+1 555 0100",
++    "Retail",
++  ]);
++  sheet.addRow([
++    "second@example.test",
++    link(rich("<script>", "literal text</script>")),
++    "Sam",
++    "",
++    "",
++  ]);
++  sheet.addRow(["third@example.test", link(rich()), "", "", ""]);
++  const parsed = await parseImport(await file(book));
++  assert(
++    parsed.rows.every((row) =>
++      Object.values(row).every((v) => typeof v === "string"),
++    ),
++  );
++  assert.equal(parsed.rows[0].Email, "alex@example.test");
++  assert.equal(parsed.rows[0].Company, "Café Horizonte & Hijos");
++  assert.equal(parsed.rows[0].Owner, "Álex Pérez");
++  assert.equal(parsed.rows[2].Company, "");
++  assert.deepEqual(
++    normalizeRow(parsed.rows[0], detectMapping(parsed.headers)),
++    {
++      valid: true,
++      email: "alex@example.test",
++      company: "Café Horizonte & Hijos",
++      contact: "Álex Pérez",
++      phone: "+1 555 0100",
++      industry: "Retail",
++    },
++  );
++  const preview = renderToStaticMarkup(
++    createElement(
++      "table",
++      null,
++      createElement(
++        "tbody",
++        null,
++        parsed.rows.map((row, i) =>
++          createElement(
++            "tr",
++            { key: i },
++            parsed.headers.map((header) =>
++              createElement("td", { key: header }, row[header]),
++            ),
++          ),
++        ),
++      ),
++    ),
++  );
++  assert(preview.includes("Café Horizonte &amp; Hijos"));
++  assert(!preview.includes("[object Object]"));
++  assert(!preview.includes("<script>"));
++  assert(preview.includes("&lt;script&gt;literal text&lt;/script&gt;"));
++});
++
++test("imports flatten rich hyperlink headers and still reject duplicate display labels", async () => {
++  const book = new ExcelJS.Workbook();
++  const sheet = book.addWorksheet("Leads");
++  sheet.addRow([link(rich(" Em", "ail ")), link(rich("Com", "pany"))]);
++  sheet.addRow(["alex@example.test", "Example"]);
++  const parsed = await parseImport(await file(book));
++  assert.deepEqual(parsed.headers, ["Email", "Company"]);
++  assert.equal(detectMapping(parsed.headers).email, "Email");
++  sheet.getCell("B1").value = link(rich("Em", "ail"));
++  await assert.rejects(parseImport(await file(book)), /Invalid headers/);
++});
++
++test("imports preserve ordinary spreadsheet and CSV text without evaluating formulas or URLs", async () => {
++  const book = new ExcelJS.Workbook();
++  const sheet = book.addWorksheet("Leads");
++  sheet.addRow([
++    "Email",
++    "Company",
++    "Number",
++    "Boolean",
++    "Formula",
++    "Uncalculated",
++  ]);
++  sheet.addRow([
++    "alex@example.test",
++    { text: "Display name", hyperlink: "https://example.invalid/not-followed" },
++    42,
++    true,
++    { formula: "1+2", result: 3 },
++    { formula: 'WEBSERVICE("https://example.invalid/not-executed")' },
++  ]);
++  const parsed = await parseImport(await file(book));
++  assert.deepEqual(parsed.rows[0], {
++    Email: "alex@example.test",
++    Company: "Display name",
++    Number: "42",
++    Boolean: "true",
++    Formula: "3",
++    Uncalculated: "",
++  });
++  const csv = await parseImport(
++    new File(
++      [
++        'Email,Company\nalex@example.test,"=HYPERLINK(""https://example.invalid"",""Visible"")"',
++      ],
++      "fixture.csv",
++    ),
++  );
++  assert.equal(
++    csv.rows[0].Company,
++    '=HYPERLINK("https://example.invalid","Visible")',
++  );
++});

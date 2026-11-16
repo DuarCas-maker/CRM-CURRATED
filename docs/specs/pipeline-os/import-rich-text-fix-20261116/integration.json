@@ -1,0 +1,8 @@
+{
+  "candidateBase": "2ef0826f44da22c415b97fce34108907b157680d",
+  "integrationBase": "26d3f1454f0f62f13bff3ac7c008ce0609edb38d",
+  "upstreamPreserved": "user-management release",
+  "payloadIdentical": true,
+  "sqlChanges": 0,
+  "coordinatorTouched": false
+}

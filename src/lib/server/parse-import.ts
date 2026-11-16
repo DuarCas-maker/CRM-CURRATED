@@ -1,6 +1,43 @@
 import Papa from "papaparse";
 import ExcelJS from "exceljs";
 import { HttpError } from "./supabase";
+
+function cellText(cell: ExcelJS.Cell): string {
+  // ExcelJS can return a rich-text object from .text when a shared string
+  // also has a hyperlink. Keep its visible text for both preview and ingest.
+  const value: unknown = cell.text;
+  if (typeof value === "string") return value;
+  if (value === null || value === undefined) return "";
+  if (typeof value === "number" || typeof value === "boolean")
+    return String(value);
+  // An empty <si/> shared string can become {} when used as a link label.
+  if (
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    !Object.keys(value).length
+  )
+    return "";
+  if (
+    typeof value === "object" &&
+    "richText" in value &&
+    Array.isArray(value.richText)
+  ) {
+    const parts: string[] = [];
+    for (const run of value.richText) {
+      if (
+        !run ||
+        typeof run !== "object" ||
+        !("text" in run) ||
+        typeof run.text !== "string"
+      )
+        throw new HttpError(400, "Unsupported XLSX cell text");
+      parts.push(run.text);
+    }
+    return parts.join("");
+  }
+  throw new HttpError(400, "Unsupported XLSX cell text");
+}
+
 export async function parseImport(file: File, chosen = "") {
   if (file.size > 50 * 1024 * 1024)
     throw new HttpError(413, "Maximum file size: 50 MB");
@@ -36,7 +73,7 @@ export async function parseImport(file: File, chosen = "") {
     if (header.cellCount > 200) throw new HttpError(400, "Maximum 200 columns");
     headers = Array.from(
       { length: header.cellCount },
-      (_, i) => header.getCell(i + 1).text.trim() || `Column ${i + 1}`,
+      (_, i) => cellText(header.getCell(i + 1)).trim() || `Column ${i + 1}`,
     );
     if (selected.rowCount > 50001)
       throw new HttpError(400, "Maximum 50,000 rows");
@@ -44,7 +81,7 @@ export async function parseImport(file: File, chosen = "") {
       if (index > 1)
         rows.push(
           Object.fromEntries(
-            headers.map((h, i) => [h, row.getCell(i + 1).text]),
+            headers.map((h, i) => [h, cellText(row.getCell(i + 1))]),
           ),
         );
     });

@@ -1,0 +1,17 @@
+{
+  "statusReads": 1,
+  "verifyRequests": 0,
+  "createRequests": 0,
+  "uploadRequests": 1,
+  "registeredBatches": 1,
+  "previews": 1,
+  "actions": [],
+  "realProviderRequests": 0,
+  "uniqueUploadKeys": 1,
+  "uniqueCreationKeys": 0,
+  "richHyperlinkPreviewRendered": true,
+  "confirmationSucceeded": true,
+  "continuedToClassification": true,
+  "consoleErrors": 0,
+  "productionWrites": 0
+}
