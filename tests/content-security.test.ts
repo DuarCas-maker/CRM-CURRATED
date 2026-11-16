@@ -19,6 +19,7 @@ test("OAuth form redirects permit reviewed Google and Composio hosts while other
     "'self'",
     "https://accounts.google.com",
     "https://connect.composio.dev",
+    "https://dashboard.composio.dev",
   ]);
   assert.deepEqual(directives.get("default-src"), ["'self'"]);
   assert.deepEqual(directives.get("base-uri"), ["'self'"]);
