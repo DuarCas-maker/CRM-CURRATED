@@ -1,0 +1,16 @@
+{
+  "source": "user-supplied XLSX, processed only in memory",
+  "rows": 1851,
+  "columns": 4,
+  "nonStringCellsBefore": 1070,
+  "recoveredRichTextLabels": 1068,
+  "emptyHyperlinkLabels": 2,
+  "nonStringCellsAfter": 0,
+  "unchangedStringCells": 6334,
+  "allRecoveredTextMatchesOriginalFragments": true,
+  "previousPreviewFailed": true,
+  "fixedPreviewRendered": true,
+  "originalFileUnchanged": true,
+  "personalCellValuesPrintedOrSaved": false,
+  "remoteRequests": 0
+}

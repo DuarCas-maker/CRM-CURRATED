@@ -1,0 +1,35 @@
+{
+  "base": "2ef0826f44da22c415b97fce34108907b157680d",
+  "branch": "codex/import-rich-text-fix-20261116",
+  "status": "verified-local-awaiting-production-approval",
+  "at": "2026-11-16T07:01:14.712Z",
+  "files": [
+    {
+      "path": "src/lib/server/parse-import.ts",
+      "beforeGitBlob": "df6bb7d66156031ab6d0cc363365e3a95b1918ad",
+      "afterGitBlob": "11d5204300a2787d586f5076c1ea5d6d095685cf",
+      "afterSha256": "896cfa3e5bbd65fe3231f90f58f34d8f95d149dc954fa4ba48222b65181b1c18"
+    },
+    {
+      "path": "tests/import-rich-text.test.ts",
+      "beforeGitBlob": null,
+      "afterGitBlob": "e519233ebbfb283e29e2207f6eff26b8a87b4122",
+      "afterSha256": "5e7f4d9bbd1974a0dde6c4874d2e3a66ae30bee984d4a9f8623f2c060bc105c3"
+    }
+  ],
+  "patchSha256": "c3883553ede961407273f2767cf72f0cef8cc81bdb8735a58ad7ffe53661ce2f",
+  "baseApplyCheck": true,
+  "testsPassed": 51,
+  "testsFailed": 0,
+  "typesExit": 0,
+  "buildExit": 0,
+  "sourceFiles": 1,
+  "testFiles": 1,
+  "sqlChanges": 0,
+  "environmentChanges": 0,
+  "productionDataChanges": 0,
+  "originalFileUnchanged": true,
+  "privateWorkbookOrContactDataIncluded": false,
+  "proposedTarget": "https://crm.finlabinc.com",
+  "smoke": "fictitious XLSX preview only; no production import registration/Bouncer/campaign activation/email"
+}

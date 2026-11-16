@@ -1,0 +1,53 @@
+{
+  "realProviderRequests": 0,
+  "realEnvironmentFiles": false,
+  "results": [
+    {
+      "name": "tests",
+      "exit": 0,
+      "tail": [
+        "  ---",
+        "  duration_ms: 16.1718",
+        "  type: 'test'",
+        "  ...",
+        "1..39",
+        "# tests 51",
+        "# suites 0",
+        "# pass 51",
+        "# fail 0",
+        "# cancelled 0",
+        "# skipped 0",
+        "# todo 0",
+        "# duration_ms 27606.0419",
+        ""
+      ]
+    },
+    {
+      "name": "types",
+      "exit": 0,
+      "tail": [
+        ""
+      ]
+    },
+    {
+      "name": "build",
+      "exit": 0,
+      "tail": [
+        "├ ƒ /auth/confirm",
+        "├ ○ /auth/password",
+        "├ ƒ /demo",
+        "├ ƒ /login",
+        "├ ○ /manifest.webmanifest",
+        "├ ƒ /pipeline-os",
+        "├ ƒ /pipeline-os/demo",
+        "└ ƒ /unsubscribe/[token]",
+        "",
+        "",
+        "○  (Static)   prerendered as static content",
+        "ƒ  (Dynamic)  server-rendered on demand",
+        "",
+        ""
+      ]
+    }
+  ]
+}
