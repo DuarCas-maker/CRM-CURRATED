@@ -102,3 +102,12 @@ export function connectReturnAttempt(search: URLSearchParams) {
     ? id
     : null;
 }
+
+// A reference only: reading its state still requires the original session and server cookie.
+export function connectAttemptHref(current: string, attempt: string | null) {
+  const url = new URL(current, "https://crm.invalid");
+  if (attempt === null) url.searchParams.delete("composio_connect");
+  else url.searchParams.set("composio_connect", z.uuid().parse(attempt));
+  url.searchParams.delete("connect_error");
+  return url.pathname + url.search + url.hash;
+}

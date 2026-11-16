@@ -6,6 +6,7 @@ import {
   connectOptionsHttp,
   connectViewHttp,
   connectReturnAttempt,
+  connectAttemptHref,
   type ConnectHttpOptions,
   type ConnectHttpView,
 } from "@/lib/composio-connect-http";
@@ -414,6 +415,11 @@ export function ComposioConnectView(p: ViewProps) {
             {t(locale, "Preparar otra conexión", "Prepare another connection")}
           </button>
         )}
+      {p.attempt && !status && p.error && (
+        <button className="button" disabled={p.busy} onClick={p.onNew}>
+          {t(locale, "Volver al formulario", "Back to connection form")}
+        </button>
+      )}
     </section>
   );
 }
@@ -448,7 +454,10 @@ export function ComposioConnect({
       const id = connectReturnAttempt(
         new URLSearchParams(window.location.search),
       );
-      if (id) setAttempt(id);
+      if (id) {
+        setAttempt(id);
+        void status(id);
+      }
     }
     return () => {
       generation.current++;
@@ -475,11 +484,29 @@ export function ComposioConnect({
               "El Gmail autorizado no coincide con el esperado.",
               "The authorized Gmail does not match the expected account.",
             )
-          : t(
-              locale,
-              "No se confirmó la operación. Revisa el contexto y el estado antes de continuar.",
-              "The operation was not confirmed. Review the context and status before continuing.",
-            );
+          : code === "CONNECT_CONFLICT"
+            ? t(
+                locale,
+                "Ya hay un intento o una cuenta para este correo. Retoma el intento original o revisa el tipo de conexión antes de preparar otro.",
+                "An attempt or account already exists for this address. Resume the original attempt or review the connection type before preparing another.",
+              )
+            : code === "CONNECT_STALE"
+              ? t(
+                  locale,
+                  "El contexto cambió. Vuelve a revisar disponibilidad, cuenta y marca antes de continuar.",
+                  "The context changed. Review availability, account and brand again before continuing.",
+                )
+              : code === "CONNECT_CLOSED"
+                ? t(
+                    locale,
+                    "El intento venció. Revisa el estado y vuelve al formulario si deseas iniciar otro.",
+                    "The attempt expired. Review its status and return to the form if you want to start another.",
+                  )
+                : t(
+                    locale,
+                    "No se confirmó la operación. Revisa el contexto y el estado antes de continuar.",
+                    "The operation was not confirmed. Review the context and status before continuing.",
+                  );
   const key = (value: unknown) => {
     const k = JSON.stringify(value);
     let id = keys.current.get(k);
@@ -529,13 +556,14 @@ export function ComposioConnect({
       if (gen === generation.current) setBusy(false);
     }
   }
-  async function status() {
+  async function status(currentAttempt = attempt) {
+    if (!currentAttempt) return;
     const gen = ++generation.current;
     setBusy(true);
     setError("");
     try {
       const r = await fetch(
-        `/api/mail/composio/connect/${encodeURIComponent(attempt)}`,
+        `/api/mail/composio/connect/${encodeURIComponent(currentAttempt)}`,
         { cache: "no-store" },
       );
       if (!r.ok) {
@@ -602,6 +630,11 @@ export function ComposioConnect({
       if (!result.status) throw Error();
       setAttempt(result.status.id);
       setView(result);
+      window.history.replaceState(
+        window.history.state,
+        "",
+        connectAttemptHref(window.location.href, result.status.id),
+      );
     } catch (e) {
       setError(text(e instanceof Error ? e.message : ""));
     } finally {
@@ -658,6 +691,12 @@ export function ComposioConnect({
       onAction={(a) => void action(a)}
       onNew={() => {
         generation.current++;
+        keys.current.clear();
+        window.history.replaceState(
+          window.history.state,
+          "",
+          connectAttemptHref(window.location.href, null),
+        );
         setAttempt("");
         setView(null);
         setError("");
