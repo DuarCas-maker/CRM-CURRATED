@@ -1,0 +1,46 @@
+{
+  "protocol": "ML-FAST-v1",
+  "level": "STRICT",
+  "implementation": "local-only",
+  "base": "01b6d3f",
+  "node": "22.23.5",
+  "postgresNative": "15.19",
+  "providerCallsDuringTests": 0,
+  "checks": {
+    "targeted": {
+      "tests": 57,
+      "pass": 57,
+      "fail": 0,
+      "skipped": 0,
+      "nativePhysicalSessions": true,
+      "pausedWithFastFlag": true
+    },
+    "databaseReadOnlyPrePostflight": {
+      "tests": 13,
+      "pass": 13
+    },
+    "typecheck": "passed",
+    "nextBuild": "passed",
+    "fullSuite": {
+      "tests": 1508,
+      "pass": 1496,
+      "fail": 3,
+      "skipped": 9,
+      "beforeLastSqlGuard": true
+    },
+    "ssrWithExplicitCssLoader": {
+      "tests": 9,
+      "pass": 9
+    }
+  },
+  "knownBaselineFailures": [
+    "connections-ui.test.tsx: CSS import without loader",
+    "pipeline-os-case-progress-ui.test.tsx: CSS import without loader",
+    "pipeline-os-s02-block-b-ui.test.ts: former Instantly panel location"
+  ],
+  "pending": [
+    "integration review against current coordinator HEAD",
+    "production SQL/publication/flag approval",
+    "real-message latency measurement with approved text and recipient"
+  ]
+}

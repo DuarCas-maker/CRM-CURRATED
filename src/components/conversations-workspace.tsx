@@ -32,6 +32,10 @@ import { OpportunityDetail } from "./opportunity-detail";
 import type { DocumentSelection } from "@/lib/document-review";
 import { MailSendStatus } from "./mail-composer";
 import { MailBody } from "./mail-bubble";
+import {
+  mailStatusPollDelay,
+  shouldPollMailStatus,
+} from "@/lib/mail-status-poll";
 import { forwardedBody, type MailDraft } from "@/lib/mail-manager";
 import { suggestedReply } from "@/lib/mail-display";
 import { lenderReplyRecipients, lenderEmailResolver } from "@/lib/lender-mail";
@@ -645,12 +649,21 @@ export function ConversationsWorkspace({
     ).values(),
   ];
   const awaiting = sends.some((s) => ["queued", "sending"].includes(s.status));
+  const mailRequestInFlight = useRef(false);
+  useEffect(() => {
+    mailRequestInFlight.current = loadingMail;
+  }, [loadingMail]);
   useEffect(() => {
     if (!awaiting) return;
-    const timer = setInterval(() => {
-      if (!document.hidden) bump();
-    }, 5000);
-    return () => clearInterval(timer);
+    const started = Date.now();
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = () => {
+      if (shouldPollMailStatus(document.hidden, mailRequestInFlight.current))
+        bump();
+      timer = setTimeout(poll, mailStatusPollDelay(Date.now() - started));
+    };
+    timer = setTimeout(poll, mailStatusPollDelay(0));
+    return () => clearTimeout(timer);
   }, [awaiting, bump]);
   const seen = new Set<string>();
   const rawMessages = Object.values(pages)

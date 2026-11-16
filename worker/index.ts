@@ -34,13 +34,20 @@ import { scheduleSendingUsage, syncSendingUsage } from "./gmail-sending-usage";
 import { setTimeout as delay } from "node:timers/promises";
 import { writeFile } from "node:fs/promises";
 import { workerExecutionMode, startWorkerPilot } from "./pilot-runtime";
+import { manualFastSendEnabled, startManualSender } from "./manual-sender";
 const executionMode = workerExecutionMode(process.env.WORKER_EXECUTION_MODE);
+const fastManualEnabled = manualFastSendEnabled(
+  process.env.MANUAL_MAIL_FAST_SEND_ENABLED,
+);
+let manualSender: ReturnType<typeof startManualSender> | null = null;
 let stopping = false;
 process.on("SIGTERM", () => {
   stopping = true;
+  manualSender?.requestStop();
 });
 process.on("SIGINT", () => {
   stopping = true;
+  manualSender?.requestStop();
 });
 async function importBatch(batchId: string) {
   const client = db();
@@ -184,6 +191,24 @@ console.log(
   `Curated CRM worker starting. Execution mode: ${executionMode}. Gmail sync mode: ${syncMode}. Logs exclude contact and application data.`,
 );
 let pilotClosedReported = false;
+if (executionMode === "normal" && fastManualEnabled) {
+  const manualClient = db();
+  manualSender = startManualSender({
+    readyAccounts: async () =>
+      checked(
+        await manualClient
+          .rpc("manual_mail_ready_accounts")
+          .abortSignal(AbortSignal.timeout(10000)),
+      ),
+    send: (account) => sendNext({ manualAccount: account }),
+    onError: (stage) =>
+      console.error(
+        stage === "discover"
+          ? "MANUAL_MAIL_DISCOVERY_FAILED"
+          : "MANUAL_MAIL_SEND_FAILED",
+      ),
+  });
+}
 const processHeartbeat = setInterval(() => {
   writeFile(
     process.env.WORKER_HEARTBEAT_FILE || ".local-worker-heartbeat",
@@ -365,6 +390,7 @@ while (!stopping) {
     await delay(5000);
   }
 }
+await manualSender?.stop();
 clearInterval(processHeartbeat);
 if (pilot) {
   try {
