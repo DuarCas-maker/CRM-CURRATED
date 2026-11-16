@@ -638,18 +638,41 @@ export async function syncLiveThread(accountId: string, threadId: string) {
   for (const message of thread.messages || [])
     await ingestLiveMessage(account, message);
 }
-export async function sendNext(pilot?: { pilotId: string; lease: string }) {
+export async function sendNext(
+  selection?: { pilotId: string; lease: string } | { manualAccount: string },
+) {
+  if (selection && "pilotId" in selection === "manualAccount" in selection)
+    throw new Error("INVALID_MAIL_SELECTION");
   const client = db();
-  const msg = pilot
+  const pilot = selection && "pilotId" in selection ? selection : undefined;
+  const manual =
+    selection && "manualAccount" in selection ? selection : undefined;
+  const msg = manual
     ? checked(
-        await client.rpc("worker_pilot_claim", {
-          pilot: pilot.pilotId,
-          lease: pilot.lease,
+        await client.rpc("claim_manual_outbox", {
+          account: manual.manualAccount,
         }),
       )?.[0]
-    : checked(await client.rpc("claim_outbox"))?.[0] ||
-      checked(await client.rpc("claim_notification_outbox"))?.[0];
+    : pilot
+      ? checked(
+          await client.rpc("worker_pilot_claim", {
+            pilot: pilot.pilotId,
+            lease: pilot.lease,
+          }),
+        )?.[0]
+      : checked(await client.rpc("claim_outbox"))?.[0] ||
+        checked(await client.rpc("claim_notification_outbox"))?.[0];
   if (!msg) return;
+  if (
+    manual &&
+    (msg.account_id !== manual.manualAccount ||
+      !msg.requested_by ||
+      msg.notification_id ||
+      msg.enrollment_id ||
+      msg.campaign_test ||
+      msg.brand_snapshot?.purpose !== "mail")
+  )
+    throw new Error("MANUAL_MAIL_SCOPE_MISMATCH");
   // A binary/schema mismatch must stop before settings, attachments or transport.
   if (
     !brandSnapshotSchema.safeParse(msg.brand_snapshot).success ||

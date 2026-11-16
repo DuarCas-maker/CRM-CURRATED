@@ -36,7 +36,7 @@ export async function userClient(fetchImpl?: typeof fetch) {
     },
   );
 }
-export function serviceClient(): SupabaseClient {
+export function serviceClient(fetchImpl?: typeof fetch): SupabaseClient {
   if (
     !process.env.SUPABASE_SERVICE_ROLE_KEY ||
     !process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -45,7 +45,10 @@ export function serviceClient(): SupabaseClient {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
-    { auth: { persistSession: false, autoRefreshToken: false } },
+    {
+      auth: { persistSession: false, autoRefreshToken: false },
+      ...(fetchImpl ? { global: { fetch: fetchImpl } } : {}),
+    },
   );
 }
 export class HttpError extends Error {

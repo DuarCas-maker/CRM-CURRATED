@@ -1,0 +1,14 @@
+{
+  "action": "backup",
+  "at": "2026-11-16T06:21:59.256Z",
+  "directory": "/var/lib/postgresql/data/users-054-20261116T062159Z",
+  "dump": "/var/lib/postgresql/data/users-054-20261116T062159Z/pre054.dump",
+  "status": "verified",
+  "retries": 0,
+  "bytes": 56517171,
+  "sha256": "529e78ed081790a7190858ad3b201b46dedf5236c0d94ed1ceced8bd518d1b9f",
+  "verified": true,
+  "serverOnly": true,
+  "recoveredByReadOnlyInspection": true,
+  "restorationTest": "pg_restore list and complete decode; not a full server disaster restore"
+}

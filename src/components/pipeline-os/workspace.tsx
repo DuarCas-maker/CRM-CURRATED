@@ -47,7 +47,7 @@ import { PipelineMailReview } from "./mail-review";
 import { PipelineCaseProgress } from "./case-progress";
 import { ConversationsWorkspace } from "../conversations-workspace";
 import { CampaignCenterWorkspace } from "../campaign-center";
-import { CampaignComposer } from "../campaign-composer";
+import { CampaignImportFlow } from "./campaign-import-flow";
 import { CampaignReview } from "../campaign-review";
 import { ImportWizard } from "../import-wizard";
 import { LenderDirectory } from "../lender-directory";
@@ -456,6 +456,7 @@ export function PipelineOSWorkspace({
   }
   function create(template?: EmailTemplate) {
     setComposer({ template: template || null });
+    go(["campaigns", "build"]);
   }
   async function saveLender(
     e: FormEvent<HTMLFormElement>,
@@ -799,6 +800,22 @@ export function PipelineOSWorkspace({
     if (p === "campaigns")
       return (
         <>
+          <div className="pos-card">
+            <h2>
+              {t(
+                locale,
+                "Crear campañas desde tu Excel",
+                "Create campaigns from your spreadsheet",
+              )}
+            </h2>
+            <p className="pos-muted">
+              {t(
+                locale,
+                "Carga tu base, revisa la clasificación de Bouncer y activa el correo cuando estés listo. Después sigue los envíos y las respuestas aquí.",
+                "Upload your list, review Bouncer classification and activate when ready. Then track sends and replies here.",
+              )}
+            </p>
+          </div>
           <div className="pos-row pos-module-actions">
             {isSellerRole(data.profile.role) && (
               <button className="pos-btn" onClick={() => push("scrub", level)}>
@@ -807,10 +824,7 @@ export function PipelineOSWorkspace({
               </button>
             )}
             {manageCampaigns && (
-              <button
-                className="pos-btn pos-primary"
-                onClick={() => push("build", level)}
-              >
+              <button className="pos-btn pos-primary" onClick={() => create()}>
                 <Megaphone size={15} />
                 {l("build")}
               </button>
@@ -842,39 +856,17 @@ export function PipelineOSWorkspace({
       );
     if (p === "build")
       return (
-        <div className="pos-card">
-          <h3>
-            {t(
-              locale,
-              "Prepara tu siguiente campaña",
-              "Prepare your next campaign",
-            )}
-          </h3>
-          <p className="pos-muted">
-            {t(
-              locale,
-              "Selecciona marca, remitente, plantilla y audiencia; revisa elegibilidad, cupos y horario antes de confirmar.",
-              "Choose brand, sender, template and audience; review eligibility, budgets and schedule before confirming.",
-            )}
-          </p>
-          <button
-            className="pos-btn pos-primary"
-            disabled={!manageCampaigns}
-            onClick={() => create()}
-          >
-            <Megaphone size={16} />
-            {t(locale, "Abrir creador de campaña", "Open campaign builder")}
-          </button>
-          {!manageCampaigns && (
-            <p className="pos-small">
-              {t(
-                locale,
-                "La creación de campañas requiere un administrador de sellers.",
-                "Campaign creation requires a seller administrator.",
-              )}
-            </p>
-          )}
-        </div>
+        <CampaignImportFlow
+          data={data}
+          locale={locale}
+          act={act}
+          refresh={refresh}
+          initialTemplate={composer?.template || null}
+          close={() => {
+            setComposer(null);
+            go(["campaigns"]);
+          }}
+        />
       );
     if (p === "conversations")
       return (
@@ -1594,33 +1586,6 @@ export function PipelineOSWorkspace({
           refresh={refresh}
           close={() => setImporting(false)}
         />
-      )}
-      {composer && (
-        <Modal
-          title={l("build")}
-          wide
-          locale={locale}
-          busy={busy}
-          close={() => setComposer(null)}
-        >
-          <div className="pos-existing">
-            {error && (
-              <p className="pos-alert" role="alert">
-                {error}
-              </p>
-            )}
-            <CampaignComposer
-              data={data}
-              locale={locale}
-              initialTemplate={composer.template}
-              act={act}
-              close={() => {
-                setComposer(null);
-                go(["campaigns"]);
-              }}
-            />
-          </div>
-        </Modal>
       )}
       {review && (
         <Modal

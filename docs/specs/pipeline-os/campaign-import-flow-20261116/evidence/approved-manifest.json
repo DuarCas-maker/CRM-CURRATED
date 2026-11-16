@@ -1,0 +1,141 @@
+{
+  "feature": "campaign-import-flow-20261116",
+  "base": "a34a08938cc637aa28b5176af31368cce30c554c",
+  "branch": "codex/campaign-import-flow-20261116",
+  "status": "local-candidate-awaiting-production-approval",
+  "generatedAt": "2026-11-16T05:59:43.153Z",
+  "files": [
+    {
+      "path": "src/components/import-wizard.tsx",
+      "operation": "modify",
+      "beforeGitBlob": "12970179bd18118f6cea341338d18a09fc792084",
+      "afterGitBlob": "a72440cdf1b795f5f252c97beb658c30772cb0d4",
+      "afterFileSha256": "5c8fbaa33fb3871f5111e3e505dc763fcab2dd6e76da8ff8d3dd9603513f5682"
+    },
+    {
+      "path": "src/components/campaign-composer.tsx",
+      "operation": "modify",
+      "beforeGitBlob": "3a962ce7f6f4002fb26de5881b8dbeb49c022cff",
+      "afterGitBlob": "240d38185828e378e22b25b69587aa059e931f34",
+      "afterFileSha256": "7f5368b82277bd69689e83a0ec3b635ce1808110f560609e656ece0ef2c4e75a"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "operation": "modify",
+      "beforeGitBlob": "ce6d2dea12e371dffa20df989781ed38bdaaad8b",
+      "afterGitBlob": "c4043d8aea5bf0d0642e42ef5a01bbb551dadcf7",
+      "afterFileSha256": "24448156895e9d32bfdac0b5039445601b4ddc67152692ee4be235f8f393b868"
+    },
+    {
+      "path": "src/lib/campaign-import.ts",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "3140f15ba2ea9576fcc591596f85df11f5b1ce27",
+      "afterFileSha256": "20d49a817281e258cd71513956458d776c333fcf301797c8ca6d9b42a6807002"
+    },
+    {
+      "path": "src/lib/server/campaign-import.ts",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "2354bdf74bd4b984e8e5d3479f6db2989a1f2bf2",
+      "afterFileSha256": "37584b22f6fc21d1e9b45b71f1dab928d124b3254897937f196ef782cb85faf2"
+    },
+    {
+      "path": "src/app/api/campaigns/import/route.ts",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "9eb43863712f5df5583d8984c55bc0bba5d07f15",
+      "afterFileSha256": "4b248b460a51ae039cc6b4d2e8e9665d20d4d1fdd36eba77041517301ff015a6"
+    },
+    {
+      "path": "src/components/pipeline-os/campaign-import-flow.tsx",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "29257e9b2ba3a9758bdba8d72eb7524e7dbff973",
+      "afterFileSha256": "aa7eadc767cb9604bf96dce27a403c416482a84e6c8d735c73c466d0b1c463d6"
+    },
+    {
+      "path": "src/components/pipeline-os/campaign-import-flow.css",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "70465ee91a4a267edd50ff06ba80d06b1c740181",
+      "afterFileSha256": "c6a30b05fa69ae15a4fa4cb2a2e0890343f4b9aaf4f5904014f610bcd3f603a9"
+    },
+    {
+      "path": "tests/campaign-import-flow.test.ts",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "075a30470540e3a21a974d63d341bd66d81b9a03",
+      "afterFileSha256": "fa1f12e7b3b1eb45eef047272f40c097091009198b644e629afb254c96c9dae0"
+    },
+    {
+      "path": "tests/fixtures/campaign-import-browser.tsx",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "60ded76afcb7651e5a379dabc1936bf7e9a601d8",
+      "afterFileSha256": "8c22802d65d59e27abad3d9fc217b5a25a29fb9df23cfd6e4bb6ba3737998308"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/up.sql",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "313b6e2aa1eb3149a57479e34c709c439869c657",
+      "afterFileSha256": "9ee3d8260106682fb802f001e7ec276b59d3acab5488f18628ba4a1835d7131e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/down.sql",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "5af544dbc567f7b8459e952a2f7bb0510fbdbcd5",
+      "afterFileSha256": "1310d43965b678db5855f50a3290ee75836babd06619e0a59e106f55742584e9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/preflight.sql",
+      "operation": "add",
+      "beforeGitBlob": null,
+      "afterGitBlob": "5eac7591744a785cc397ed2d560cd5e896b93faf",
+      "afterFileSha256": "d8ebfe38b77298e3ee1c09ea7ef8c584bb3d77120c99fd7cf1a2c8f677f3ae17"
+    }
+  ],
+  "patch": {
+    "path": "docs/specs/pipeline-os/campaign-import-flow-20261116/campaign-import.patch",
+    "sha256": "473ab725a7bd9438a980e441291cdc9a3ebab860c39afd4860ce9f673fd81dea",
+    "baseApplyCheck": "passed using isolated temporary index"
+  },
+  "localChecks": [
+    {
+      "name": "tests",
+      "exit": 0
+    },
+    {
+      "name": "types",
+      "exit": 0
+    },
+    {
+      "name": "build",
+      "exit": 0
+    }
+  ],
+  "tests": {
+    "pass": 26,
+    "fail": 0,
+    "skipped": 0
+  },
+  "productionChangesExecuted": false,
+  "realProviderRequests": 0,
+  "sqlFunctionsAdded": 5,
+  "scope": {
+    "applicationFiles": 8,
+    "testFiles": 2,
+    "sqlArtifacts": 3
+  },
+  "excluded": [
+    ".local",
+    "node_modules",
+    "real environment files",
+    "coordinator WIP",
+    "worker settings",
+    "dependencies",
+    "root AGENTS.md"
+  ]
+}

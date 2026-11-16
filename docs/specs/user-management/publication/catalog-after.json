@@ -1,0 +1,83 @@
+{
+  "action": "postflight",
+  "at": "2026-11-16T06:25:27.238Z",
+  "readOnly": true,
+  "result": {
+    "functions": [
+      {
+        "name": "user_management_access",
+        "owner": "supabase_admin",
+        "anon_execute": false,
+        "service_execute": true,
+        "security_definer": true,
+        "empty_search_path": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "user_management_assert_actor",
+        "owner": "supabase_admin",
+        "anon_execute": false,
+        "service_execute": true,
+        "security_definer": true,
+        "empty_search_path": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "user_management_finish_create",
+        "owner": "supabase_admin",
+        "anon_execute": false,
+        "service_execute": true,
+        "security_definer": true,
+        "empty_search_path": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "user_management_list",
+        "owner": "supabase_admin",
+        "anon_execute": false,
+        "service_execute": true,
+        "security_definer": true,
+        "empty_search_path": true,
+        "authenticated_execute": true
+      },
+      {
+        "name": "user_management_password_audit",
+        "owner": "supabase_admin",
+        "anon_execute": false,
+        "service_execute": true,
+        "security_definer": true,
+        "empty_search_path": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "user_management_private_read",
+        "owner": "supabase_admin",
+        "anon_execute": false,
+        "service_execute": true,
+        "security_definer": true,
+        "empty_search_path": true,
+        "authenticated_execute": false
+      },
+      {
+        "name": "user_management_private_write",
+        "owner": "supabase_admin",
+        "anon_execute": false,
+        "service_execute": true,
+        "security_definer": true,
+        "empty_search_path": true,
+        "authenticated_execute": false
+      }
+    ],
+    "private_table": {
+      "rls": true,
+      "owner": "supabase_admin",
+      "anon_select": false,
+      "service_select": true,
+      "authenticated_write": false,
+      "authenticated_select": false
+    },
+    "profile_access_hash": "9df7ccb994150c54fc2b05bb4229bf02",
+    "legacy_functions_hash": "189fd48f15725808951f34f537df66a8",
+    "legacy_functions_count": 300
+  }
+}

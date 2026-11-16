@@ -1,0 +1,2527 @@
+diff --git a/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/down.sql b/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/down.sql
+new file mode 100644
+index 0000000..5af544d
+--- /dev/null
++++ b/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/down.sql
+@@ -0,0 +1,8 @@
++begin;
++drop function if exists public.campaign_create_from_import(jsonb,uuid);
++drop function if exists public.campaign_verify_import(uuid,int,uuid);
++drop function if exists public.campaign_import_leads_page(uuid,uuid,uuid,text,int);
++drop function if exists public.campaign_import_status(uuid);
++drop function if exists public.campaign_import_contact_rows(uuid);
++notify pgrst,'reload schema';
++commit;
+diff --git a/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/preflight.sql b/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/preflight.sql
+new file mode 100644
+index 0000000..5eac759
+--- /dev/null
++++ b/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/preflight.sql
+@@ -0,0 +1,40 @@
++-- Proposed, metadata only. Do not run against production without release approval.
++begin transaction read only;
++set local statement_timeout='15s';
++set local lock_timeout='3s';
++select current_setting('server_version') as postgres_version;
++
++with required(signature) as (values
++ ('public.current_app_role()'),('public.can_lead(uuid)'),
++ ('public.crm_command(text,jsonb,uuid)'),
++ ('public.first_contact_candidates(text,text,uuid,uuid)'),
++ ('public.brand_prepare_context(uuid,jsonb,text,uuid)'))
++select r.signature,p.oid is not null as present,
++ pg_get_userbyid(p.proowner) as owner,p.prosecdef as security_definer,
++ p.proconfig,md5(pg_get_functiondef(p.oid)) as definition_hash
++from required r left join pg_proc p on p.oid=to_regprocedure(r.signature)
++order by r.signature;
++
++-- These names must be absent before first application; do not overwrite a collision.
++select n.nspname,p.proname,pg_get_function_identity_arguments(p.oid) as arguments,
++ md5(pg_get_functiondef(p.oid)) as definition_hash
++from pg_proc p join pg_namespace n on n.oid=p.pronamespace
++where n.nspname='public' and p.proname in
++ ('campaign_import_contact_rows','campaign_import_status','campaign_import_leads_page',
++  'campaign_verify_import','campaign_create_from_import') order by p.proname;
++
++select c.relname,c.relrowsecurity as rls,c.relforcerowsecurity as force_rls,
++ jsonb_agg(jsonb_build_object('column',a.attname,'type',format_type(a.atttypid,a.atttypmod),'not_null',a.attnotnull) order by a.attnum) as columns
++from pg_class c join pg_namespace n on n.oid=c.relnamespace
++join pg_attribute a on a.attrelid=c.oid and a.attnum>0 and not a.attisdropped
++where n.nspname='public' and c.relname in
++ ('import_batches','import_rows','contacts','leads','verifications','suppressions',
++  'command_receipts','email_templates','campaigns')
++group by c.relname,c.relrowsecurity,c.relforcerowsecurity order by c.relname;
++
++select t.tgname,t.tgenabled,md5(pg_get_triggerdef(t.oid)) as trigger_hash,
++ p.oid::regprocedure::text as handler,md5(pg_get_functiondef(p.oid)) as handler_hash
++from pg_trigger t join pg_proc p on p.oid=t.tgfoid
++where t.tgrelid=to_regclass('public.campaigns') and not t.tgisinternal
++order by t.tgname;
++rollback;
+diff --git a/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/revoke-inherited-service.sql b/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/revoke-inherited-service.sql
+new file mode 100644
+index 0000000..ab3c99e
+--- /dev/null
++++ b/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/revoke-inherited-service.sql
+@@ -0,0 +1,24 @@
++-- Completes this package's ACL contract on installations with inherited service grants.
++-- The initial application was confirmed before this correction; no function body changes.
++begin;
++do $$
++begin
++ if (select count(*) from (values
++  ('public.campaign_import_contact_rows(uuid)','7536e85f57bb1ebd09dddead0974afaf'),
++  ('public.campaign_import_status(uuid)','db488fdde79a5b7675ccb3ac177ee002'),
++  ('public.campaign_import_leads_page(uuid,uuid,uuid,text,integer)','f139068b066ec8208550176a7958313c'),
++  ('public.campaign_verify_import(uuid,integer,uuid)','77d06f18f0c6aec886c020fbb82402c1'),
++  ('public.campaign_create_from_import(jsonb,uuid)','710550a0cd856c99eb7694083a5a6afe')
++ ) expected(signature,source_hash) join pg_proc p on p.oid=to_regprocedure(expected.signature)
++ where md5(replace(p.prosrc,chr(13),''))=expected.source_hash
++ and pg_get_userbyid(p.proowner)='supabase_admin')<>5 then
++  raise exception 'CI_PRIVILEGE_SOURCE_DRIFT';
++ end if;
++end $$;
++revoke all on function public.campaign_import_contact_rows(uuid) from service_role;
++revoke all on function public.campaign_import_status(uuid) from service_role;
++revoke all on function public.campaign_import_leads_page(uuid,uuid,uuid,text,int) from service_role;
++revoke all on function public.campaign_verify_import(uuid,int,uuid) from service_role;
++revoke all on function public.campaign_create_from_import(jsonb,uuid) from service_role;
++notify pgrst,'reload schema';
++commit;
+diff --git a/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/up.sql b/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/up.sql
+new file mode 100644
+index 0000000..691ca00
+--- /dev/null
++++ b/docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/up.sql
+@@ -0,0 +1,140 @@
++begin;
++
++-- Additive package: no replacement of crm_command or delivery functions.
++create function public.campaign_import_contact_rows(batch uuid)
++returns table(contact_id uuid,verification text,verification_state text,suppressed boolean,can_verify boolean)
++language plpgsql stable security definer set search_path='' as $$
++begin
++ if public.current_app_role() is null or public.current_app_role() not in ('superadmin','seller_admin') then raise exception 'CI_FORBIDDEN' using errcode='42501';end if;
++ if not exists(select 1 from public.import_batches b where b.id=batch) then raise exception 'CI_BATCH_NOT_FOUND';end if;
++ return query select c.id,c.verification::text,v.state,
++  exists(select 1 from public.suppressions s where s.email=c.email),
++  exists(select 1 from public.leads l where l.contact_id=c.id and public.can_lead(l.id))
++ from (select distinct r.contact_id from public.import_rows r where r.batch_id=batch and r.contact_id is not null) r
++ join public.contacts c on c.id=r.contact_id
++ left join lateral(select x.state from public.verifications x where x.contact_id=c.id order by x.created_at desc,x.id desc limit 1) v on true;
++end $$;
++revoke all on function public.campaign_import_contact_rows(uuid) from public,anon,authenticated,service_role;
++
++create function public.campaign_import_status(batch uuid) returns jsonb
++language plpgsql stable security definer set search_path='' as $$
++declare b public.import_batches;r jsonb;
++begin
++ -- The helper checks the same admin/MFA access as import_batches before reads.
++ with contacts as materialized(select * from public.campaign_import_contact_rows(batch))
++ select jsonb_build_object(
++  'unique_contacts',count(*),'valid',count(*) filter(where verification='valid'),
++  'invalid',count(*) filter(where verification='invalid'),'uncertain',count(*) filter(where verification='uncertain'),
++  'pending',count(*) filter(where verification='pending' and can_verify and not suppressed and (verification_state is null or verification_state='completed')),
++  'running',count(*) filter(where verification_state in ('queued','submitted') and verification<>'valid'),
++  'attention',count(*) filter(where verification_state in ('technical_error','uncertain_request','review')),
++  'excluded',count(*) filter(where suppressed or not can_verify)
++ ) into r from contacts;
++ select * into b from public.import_batches where id=batch;
++ return jsonb_build_object('batch',jsonb_build_object('id',b.id,'name',b.name,'status',b.status,'total',b.total,'processed',b.processed,'imported',b.imported,'duplicates',b.duplicates,'errors',b.errors),
++ 'counts',r,'next_verification_count',least((r->>'pending')::int,5000),
++ 'ready',b.status='completed' and (r->>'pending')::int=0 and (r->>'running')::int=0);
++end $$;
++revoke all on function public.campaign_import_status(uuid) from public,anon,service_role;
++grant execute on function public.campaign_import_status(uuid) to authenticated;
++
++create function public.campaign_import_leads_page(batch uuid,template uuid,account uuid,search_text text default '',page_number int default 0) returns jsonb
++language plpgsql stable security definer set search_path='' as $$
++declare t public.email_templates;result jsonb;
++begin
++ if page_number<0 or page_number>1000000 or length(coalesce(search_text,''))>200 then raise exception 'CI_INVALID_INPUT';end if;
++ perform public.campaign_import_status(batch);
++ select * into t from public.email_templates where id=template and archived_at is null;
++ if t.id is null then raise exception 'CI_TEMPLATE_CHANGED';end if;
++ with scoped as materialized(
++  select a.* from public.first_contact_candidates(t.subject,t.body,account) a
++  join public.campaign_import_contact_rows(batch) b on b.contact_id=a.contact_id
++ ), filtered as materialized(
++  select * from scoped where coalesce(search_text,'')='' or concat_ws(' ',company,name,email) ilike '%'||search_text||'%'
++ ) select jsonb_build_object(
++  'eligible',(select count(*) from scoped where reason='eligible'),
++  'excluded',(select count(*) from scoped where reason<>'eligible'),
++  'reasons',(select coalesce(jsonb_object_agg(reason,n),'{}') from(select reason,count(*) n from scoped group by reason) x),
++  'total',(select count(*) from filtered),
++  'rows',coalesce((select jsonb_agg(to_jsonb(x)) from(select * from filtered order by email,contact_id limit 50 offset page_number*50) x),'[]')
++ ) into result;
++ return result;
++end $$;
++revoke all on function public.campaign_import_leads_page(uuid,uuid,uuid,text,int) from public,anon,service_role;
++grant execute on function public.campaign_import_leads_page(uuid,uuid,uuid,text,int) to authenticated;
++
++create function public.campaign_verify_import(batch uuid,expected_count int,request_key uuid) returns jsonb
++language plpgsql security definer set search_path='' as $$
++declare receipt public.command_receipts;payload jsonb:=jsonb_build_object('batch',batch,'expected_count',expected_count);ids uuid[];r jsonb;
++begin
++ perform public.campaign_import_status(batch);
++ if request_key is null or expected_count is null or expected_count not between 1 and 5000 then raise exception 'CI_INVALID_INPUT';end if;
++ perform pg_advisory_xact_lock(hashtextextended(auth.uid()::text||request_key::text,0));
++ select * into receipt from public.command_receipts c where c.user_id=auth.uid() and c.request_key=campaign_verify_import.request_key;
++ if found then
++  if receipt.kind<>'verify_import_batch' or receipt.fingerprint<>md5(payload::text) then raise exception 'Idempotency key reused';end if;
++  return receipt.result;
++ end if;
++ perform 1 from public.import_batches b where b.id=batch and b.status='completed' for update;
++ if not found then raise exception 'CI_IMPORT_RUNNING';end if;
++ perform 1 from public.contacts c where c.id in(select x.contact_id from public.campaign_import_contact_rows(batch) x) order by c.id for update;
++ select array(select x.contact_id from public.campaign_import_contact_rows(batch) x
++  where x.verification='pending' and x.can_verify and not x.suppressed and (x.verification_state is null or x.verification_state='completed')
++  order by x.contact_id limit 5000) into ids;
++ if cardinality(ids)<>expected_count then raise exception 'CI_STALE';end if;
++ r:=public.crm_command('verify_contacts',jsonb_build_object('contact_ids',to_jsonb(ids)),request_key);
++ update public.command_receipts c set kind='verify_import_batch',fingerprint=md5(payload::text) where c.user_id=auth.uid() and c.request_key=campaign_verify_import.request_key;
++ return r;
++end $$;
++revoke all on function public.campaign_verify_import(uuid,int,uuid) from public,anon,service_role;
++grant execute on function public.campaign_verify_import(uuid,int,uuid) to authenticated;
++
++create function public.campaign_create_from_import(p jsonb,request_key uuid) returns jsonb
++language plpgsql security definer set search_path='' as $$
++declare batch uuid:=nullif(p->>'import_batch_id','')::uuid;s jsonb;receipt public.command_receipts;r jsonb;c public.campaigns;ids uuid[];trusted_context jsonb;
++begin
++ s:=public.campaign_import_status(batch);
++ if request_key is null then raise exception 'CI_INVALID_INPUT';end if;
++ perform pg_advisory_xact_lock(hashtextextended(auth.uid()::text||request_key::text,0));
++ select * into receipt from public.command_receipts x where x.user_id=auth.uid() and x.request_key=campaign_create_from_import.request_key;
++ if found then
++  if receipt.kind<>'create_import_campaign' or receipt.fingerprint<>md5(p::text) then raise exception 'Idempotency key reused';end if;
++  return receipt.result;
++ end if;
++ perform 1 from public.import_batches b where b.id=batch for update;
++ if not coalesce((s->>'ready')::boolean,false) then raise exception 'CI_VERIFICATION_PENDING';end if;
++ -- Reuse the current command (including installed brand/template wrappers).
++ -- Empty selection prevents any fallback to global recipients during creation.
++ r:=public.crm_command('create_campaign',(p-'import_batch_id')||jsonb_build_object('selected_contact_ids','[]'::jsonb,'steps','[]'::jsonb),request_key);
++ select * into c from public.campaigns where id=(r->>'id')::uuid for update;
++ if c.id is null or c.created_by<>auth.uid() or c.status<>'draft' or not c.first_contact then raise exception 'CI_CREATE_UNAVAILABLE';end if;
++ if p ? 'selected_contact_ids' then
++  if jsonb_typeof(p->'selected_contact_ids')<>'array' or jsonb_array_length(p->'selected_contact_ids')>5000 then raise exception 'CI_SELECTION_LIMIT';end if;
++  ids:=array(select distinct value::uuid from jsonb_array_elements_text(p->'selected_contact_ids'));
++  if exists(select 1 from unnest(ids) id where not exists(
++   select 1 from public.first_contact_candidates(c.subject,c.body,c.account_id,c.id) a
++   join public.campaign_import_contact_rows(batch) b on b.contact_id=a.contact_id where a.contact_id=id and a.reason='eligible'
++  )) then raise exception 'CI_SELECTION_SCOPE';end if;
++ else
++  ids:=array(select a.contact_id from public.first_contact_candidates(c.subject,c.body,c.account_id,c.id) a
++   join public.campaign_import_contact_rows(batch) b on b.contact_id=a.contact_id where a.reason='eligible' order by a.contact_id limit 5001);
++  if cardinality(ids)>5000 then raise exception 'CI_SELECTION_LIMIT';end if;
++ end if;
++ -- The installed brand wrapper clears its transaction context before returning.
++ -- Reuse only the snapshot it just generated, never context supplied by the caller.
++ -- This keeps the existing audience guard active during the atomic scope update.
++ if to_jsonb(c) ? 'brand_snapshot' then
++  trusted_context:=to_jsonb(c)->'brand_snapshot';
++  if trusted_context is null or trusted_context='null'::jsonb or trusted_context->>'purpose' is distinct from 'campaign'
++   or trusted_context->>'actor_id' is distinct from auth.uid()::text or trusted_context->>'account_id' is distinct from c.account_id::text then raise exception 'CI_CREATE_UNAVAILABLE';end if;
++  perform set_config('pipeline_os.brand_context',trusted_context::text,true);
++ end if;
++ update public.campaigns set selected_contact_ids=ids,batch_id=batch where id=c.id;
++ perform set_config('pipeline_os.brand_context','',true);
++ update public.command_receipts x set kind='create_import_campaign',fingerprint=md5(p::text) where x.user_id=auth.uid() and x.request_key=campaign_create_from_import.request_key;
++ return r;
++end $$;
++revoke all on function public.campaign_create_from_import(jsonb,uuid) from public,anon,service_role;
++grant execute on function public.campaign_create_from_import(jsonb,uuid) to authenticated;
++notify pgrst,'reload schema';
++commit;
+diff --git a/src/app/api/campaigns/import/route.ts b/src/app/api/campaigns/import/route.ts
+new file mode 100644
+index 0000000..9eb4386
+--- /dev/null
++++ b/src/app/api/campaigns/import/route.ts
+@@ -0,0 +1,35 @@
++import { checkOrigin, requireUser } from "@/lib/server/supabase";
++import { readBounded } from "@/lib/server/body";
++import {
++  importCampaignError,
++  readImportCampaign,
++  writeImportCampaign,
++} from "@/lib/server/campaign-import";
++export async function GET(request: Request) {
++  try {
++    return Response.json(
++      await readImportCampaign(new URL(request.url), await requireUser()),
++      { headers: { "Cache-Control": "no-store" } },
++    );
++  } catch (e) {
++    return importCampaignError(e);
++  }
++}
++export async function POST(request: Request) {
++  try {
++    checkOrigin(request);
++    const ctx = await requireUser();
++    if (
++      request.headers.get("content-type")?.split(";")[0] !== "application/json"
++    )
++      return Response.json({ error: "JSON required" }, { status: 400 });
++    const body = JSON.parse(
++      (await readBounded(request, 350000)).toString("utf8"),
++    );
++    return Response.json(await writeImportCampaign(body, ctx), {
++      headers: { "Cache-Control": "no-store" },
++    });
++  } catch (e) {
++    return importCampaignError(e);
++  }
++}
+diff --git a/src/components/campaign-composer.tsx b/src/components/campaign-composer.tsx
+index 3a962ce..240d381 100644
+--- a/src/components/campaign-composer.tsx
++++ b/src/components/campaign-composer.tsx
+@@ -1,5 +1,7 @@
+ "use client";
+-import { useEffect, useState } from "react";
++import { useEffect, useRef, useState } from "react";
++import { importCampaignHref } from "@/lib/campaign-import";
++import { markFormSaved, useNativeChanges } from "./unsaved-changes";
+ import type { Workspace, Locale } from "@/lib/domain";
+ import type { EmailTemplate } from "@/lib/campaign-templates";
+ import { campaignPreviewValues } from "@/lib/campaign-templates";
+@@ -29,12 +31,14 @@ export function CampaignComposer({
+   initialTemplate,
+   act,
+   close,
++  sourceBatchId,
+ }: {
+   data: Workspace;
+   locale: Locale;
+   initialTemplate: EmailTemplate | null;
+   act: Action;
+   close: () => void;
++  sourceBatchId?: string;
+ }) {
+   const templates = [
+     ...(initialTemplate ? [initialTemplate] : []),
+@@ -69,6 +73,10 @@ export function CampaignComposer({
+     [scheduled, setScheduled] = useState("");
+   const [review, setReview] = useState(false),
+     [saved, setSaved] = useState<string | null>(null);
++  const formRef = useRef<HTMLFormElement>(null);
++  const leaving = useRef(false);
++  const importKeys = useRef(new Map<string, string>());
++  useNativeChanges(formRef, true, false, () => busy && !leaving.current);
+   const template = templates.find((t) => t.id === templateId);
+   useEffect(() => {
+     setLeads(null);
+@@ -78,14 +86,16 @@ export function CampaignComposer({
+     setLoading(true);
+     const timer = setTimeout(() => {
+       void fetch(
+-        "/api/campaigns/center?" +
+-          new URLSearchParams({
+-            mode: "leads",
+-            template: templateId,
+-            account,
+-            search: query,
+-            page: String(page),
+-          }),
++        sourceBatchId
++          ? importCampaignHref(sourceBatchId, templateId, account, query, page)
++          : "/api/campaigns/center?" +
++              new URLSearchParams({
++                mode: "leads",
++                template: templateId,
++                account,
++                search: query,
++                page: String(page),
++              }),
+         { signal: abort.signal },
+       )
+         .then(async (r) => {
+@@ -104,7 +114,7 @@ export function CampaignComposer({
+       abort.abort();
+       clearTimeout(timer);
+     };
+-  }, [data.demo, templateId, account, query, page]);
++  }, [data.demo, templateId, account, query, page, sourceBatchId]);
+   let preview = "";
+   try {
+     if (template)
+@@ -114,16 +124,21 @@ export function CampaignComposer({
+         template.body_format,
+       ).html;
+   } catch {}
+-  const selected = manual ? ids.length : Math.min(leads?.eligible || 0, 5000);
++  const selected = manual
++    ? ids.length
++    : sourceBatchId
++      ? leads?.eligible || 0
++      : Math.min(leads?.eligible || 0, 5000);
+   async function submit(form: HTMLFormElement, intent: string) {
+     if (!template || !brandCurrent || data.demo) return;
++    leaving.current = false;
+     setBusy(true);
+     setError("");
+     try {
+       const fields = Object.fromEntries(new FormData(form));
+       let id = saved;
+       if (!id) {
+-        const result = (await act("create_campaign", {
++        const payload = {
+           ...fields,
+           account_id: account,
+           brand_preparation: brandPreparation,
+@@ -134,7 +149,30 @@ export function CampaignComposer({
+           steps: [],
+           body_format: template.body_format || "plain",
+           ...(manual ? { selected_contact_ids: ids } : {}),
+-        })) as { id: string };
++        };
++        let result: { id: string };
++        if (sourceBatchId) {
++          const scoped = { ...payload, import_batch_id: sourceBatchId };
++          const fingerprint = JSON.stringify(scoped);
++          let request_key = importKeys.current.get(fingerprint);
++          if (!request_key) {
++            request_key = crypto.randomUUID();
++            importKeys.current.set(fingerprint, request_key);
++          }
++          const response = await fetch("/api/campaigns/import", {
++            method: "POST",
++            headers: { "Content-Type": "application/json" },
++            body: JSON.stringify({
++              kind: "create",
++              request_key,
++              payload: scoped,
++            }),
++          });
++          result = await response.json();
++          if (!response.ok)
++            throw new Error((result as unknown as { error: string }).error);
++        } else
++          result = (await act("create_campaign", payload)) as { id: string };
+         id = result.id;
+         setSaved(id);
+       }
+@@ -149,6 +187,8 @@ export function CampaignComposer({
+           id,
+           brand_preparation: brandPreparation,
+         });
++      markFormSaved(form);
++      leaving.current = true;
+       close();
+     } catch (e) {
+       setError((e as Error).message);
+@@ -158,6 +198,8 @@ export function CampaignComposer({
+   }
+   return (
+     <form
++      ref={formRef}
++      aria-busy={busy}
+       className="campaign-composer"
+       onSubmit={(e) => {
+         e.preventDefault();
+@@ -333,8 +375,23 @@ export function CampaignComposer({
+         </div>
+         <section className="campaign-note" aria-live="polite">
+           <strong>
+-            {t(locale, "Leads de Preparación", "Leads from Preparation")}
++            {sourceBatchId
++              ? t(
++                  locale,
++                  "Destinatarios de este archivo",
++                  "Recipients from this file",
++                )
++              : t(locale, "Leads de Preparación", "Leads from Preparation")}
+           </strong>
++          {sourceBatchId && (
++            <p>
++              {t(
++                locale,
++                "Solo se incluirán contactos elegibles de este lote. Máximo 5.000 por campaña; los lotes mayores requieren selección explícita.",
++                "Only eligible contacts from this import are included. Maximum 5,000 per campaign; larger imports require an explicit selection.",
++              )}
++            </p>
++          )}
+           <p>
+             {loading
+               ? t(locale, "Consultando elegibilidad…", "Checking eligibility…")
+@@ -551,11 +608,27 @@ export function CampaignComposer({
+           )}
+         </p>
+       )}
++      {sourceBatchId && selected > 5000 && (
++        <p role="alert" className="error">
++          {t(
++            locale,
++            "Selecciona hasta 5.000 destinatarios. No se recortará el archivo automáticamente.",
++            "Select up to 5,000 recipients. The file will not be truncated automatically.",
++          )}
++        </p>
++      )}
+       <div className="card-actions" style={{ marginTop: 18 }}>
+         <button
+           className="button"
+           value="draft"
+-          disabled={busy || !template || !account || !brandCurrent || data.demo}
++          disabled={
++            busy ||
++            !template ||
++            !account ||
++            !brandCurrent ||
++            data.demo ||
++            (Boolean(sourceBatchId) && selected > 5000)
++          }
+         >
+           {t(locale, "Guardar borrador", "Save draft")}
+         </button>
+@@ -563,7 +636,13 @@ export function CampaignComposer({
+           className="button"
+           value="schedule"
+           disabled={
+-            busy || !scheduled || !selected || loading || !leads || data.demo
++            busy ||
++            !scheduled ||
++            !selected ||
++            loading ||
++            !leads ||
++            data.demo ||
++            (Boolean(sourceBatchId) && selected > 5000)
+           }
+         >
+           {t(locale, "Programar campaña", "Schedule campaign")}
+@@ -571,7 +650,14 @@ export function CampaignComposer({
+         <button
+           className="button primary"
+           value={review ? "activate" : "review"}
+-          disabled={busy || !selected || loading || !leads || data.demo}
++          disabled={
++            busy ||
++            !selected ||
++            loading ||
++            !leads ||
++            data.demo ||
++            (Boolean(sourceBatchId) && selected > 5000)
++          }
+         >
+           {review
+             ? t(locale, "Confirmar y activar", "Confirm and activate")
+diff --git a/src/components/import-wizard.tsx b/src/components/import-wizard.tsx
+index 1297017..a72440c 100644
+--- a/src/components/import-wizard.tsx
++++ b/src/components/import-wizard.tsx
+@@ -1,6 +1,6 @@
+ "use client";
+ import { ProtectedForm } from "./unsaved-changes";
+-import { useState, type FormEvent } from "react";
++import { useRef, useState, type FormEvent } from "react";
+ import { Upload, FileSpreadsheet, CheckCircle2 } from "lucide-react";
+ import { detectMapping, type Mapping } from "@/lib/imports";
+ import type { Locale, Workspace } from "@/lib/domain";
+@@ -12,12 +12,16 @@ export function ImportWizard({
+   data,
+   act,
+   refresh,
++  onRegistered,
++  returnLabel,
+ }: {
+   locale: Locale;
+   close: () => void;
+   data: Workspace;
+   act: Action;
+   refresh: () => Promise<void>;
++  onRegistered?: (id: string) => void;
++  returnLabel?: string;
+ }) {
+   const [file, setFile] = useState<File | null>(null);
+   const [sheets, setSheets] = useState<string[]>([]);
+@@ -29,6 +33,7 @@ export function ImportWizard({
+   const [busy, setBusy] = useState(false);
+   const [error, setError] = useState("");
+   const [done, setDone] = useState(false);
++  const requestKeys = useRef(new WeakMap<File, Map<string, string>>());
+   async function preview(selected: File, chosen = "") {
+     setBusy(true);
+     setError("");
+@@ -68,15 +73,46 @@ export function ImportWizard({
+         body.set("file", file!);
+         body.set("sheet", sheet);
+         body.set("mapping", JSON.stringify(mapping));
+-        body.set("idempotency_key", crypto.randomUUID());
++        let keys = requestKeys.current.get(file!);
++        if (!keys) {
++          keys = new Map();
++          requestKeys.current.set(file!, keys);
++        }
++        const fingerprint = JSON.stringify([sheet, mapping]);
++        let requestKey = keys.get(fingerprint);
++        if (!requestKey) {
++          requestKey = crypto.randomUUID();
++          keys.set(fingerprint, requestKey);
++        }
++        body.set("idempotency_key", requestKey);
+         const res = await fetch("/api/import", { method: "POST", body });
+         const result = await res.json();
+         if (!res.ok) throw new Error(result.error);
+-        await refresh();
++        setDone(true);
++        if (typeof result.id === "string") onRegistered?.(result.id);
++        try {
++          await refresh();
++        } catch {
++          setError(
++            t(
++              locale,
++              "La importación quedó registrada. No repitas la carga; actualiza el progreso del lote.",
++              "The import was registered. Do not upload again; refresh the import progress.",
++            ),
++          );
++        }
+       }
+       setDone(true);
+     } catch (e) {
+-      setError((e as Error).message);
++      setError(
++        e instanceof TypeError
++          ? t(
++              locale,
++              "No se pudo confirmar la carga. Puedes reintentar sin duplicar la solicitud.",
++              "The upload could not be confirmed. You can retry without duplicating the request.",
++            )
++          : (e as Error).message,
++      );
+     } finally {
+       setBusy(false);
+     }
+@@ -101,7 +137,11 @@ export function ImportWizard({
+           3. {t(locale, "Procesamiento", "Processing")}
+         </span>
+       </div>
+-      {error && <div className="error-banner">{error}</div>}
++      {error && (
++        <div className="error-banner" role="alert">
++          {error}
++        </div>
++      )}
+       {done ? (
+         <div className="import-success">
+           <CheckCircle2 size={45} />
+@@ -120,7 +160,7 @@ export function ImportWizard({
+                 )}
+           </p>
+           <button className="button primary" onClick={close}>
+-            {t(locale, "Volver a leads", "Back to leads")}
++            {returnLabel || t(locale, "Volver a leads", "Back to leads")}
+           </button>
+         </div>
+       ) : (
+diff --git a/src/components/pipeline-os/campaign-import-flow.css b/src/components/pipeline-os/campaign-import-flow.css
+new file mode 100644
+index 0000000..70465ee
+--- /dev/null
++++ b/src/components/pipeline-os/campaign-import-flow.css
+@@ -0,0 +1,228 @@
++.ci-flow {
++  display: grid;
++  gap: 20px;
++  min-width: 0;
++}
++.ci-heading {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 24px;
++  padding: 8px 0;
++}
++.ci-heading h2 {
++  font-family: "Instrument Serif", serif;
++  font-size: clamp(28px, 4vw, 42px);
++  font-weight: 400;
++  margin: 8px 0;
++}
++.ci-heading p,
++.ci-section-title p {
++  margin: 6px 0;
++  color: var(--pos-muted);
++}
++.ci-eyebrow {
++  font-size: 10px;
++  font-weight: 700;
++  letter-spacing: 0.14em;
++  color: var(--pos-accent);
++}
++.ci-heading > svg {
++  color: var(--pos-accent);
++  flex-shrink: 0;
++}
++.ci-steps {
++  list-style: none;
++  display: grid;
++  grid-template-columns: repeat(6, minmax(0, 1fr));
++  padding: 0;
++  margin: 0;
++  border: 1px solid var(--pos-line);
++  border-radius: 12px;
++  overflow: hidden;
++  background: var(--pos-panel);
++}
++.ci-steps li {
++  display: flex;
++  align-items: center;
++  gap: 8px;
++  padding: 14px 10px;
++  color: var(--pos-muted);
++  font-size: 12px;
++  border-right: 1px solid var(--pos-line);
++}
++.ci-steps li:last-child {
++  border: 0;
++}
++.ci-steps li > span {
++  display: grid;
++  place-items: center;
++  width: 23px;
++  height: 23px;
++  border: 1px solid var(--pos-line2);
++  border-radius: 50%;
++  flex-shrink: 0;
++  font-size: 11px;
++}
++.ci-steps .current {
++  background: var(--pos-soft);
++  color: var(--pos-soft-ink);
++  font-weight: 700;
++}
++.ci-steps .current > span,
++.ci-steps .complete > span {
++  background: var(--pos-accent);
++  color: var(--pos-on-accent);
++  border-color: var(--pos-accent);
++}
++.ci-source-controls {
++  display: grid;
++  grid-template-columns: auto minmax(0, 1fr);
++  align-items: end;
++  gap: 18px;
++  margin-top: 20px;
++}
++.ci-source-controls label {
++  display: grid;
++  gap: 6px;
++  font-size: 12px;
++  color: var(--pos-muted);
++}
++.ci-source-controls select {
++  width: 100%;
++  min-width: 0;
++  padding: 10px;
++  border: 1px solid var(--pos-line2);
++  background: var(--pos-panel);
++  color: var(--pos-ink);
++  border-radius: 8px;
++}
++.ci-section-title {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 16px;
++}
++.ci-status {
++  font-size: 11px;
++  border-radius: 20px;
++  padding: 5px 10px;
++  background: var(--pos-soft);
++  color: var(--pos-soft-ink);
++  white-space: nowrap;
++}
++.ci-metrics {
++  display: grid;
++  grid-template-columns: repeat(4, minmax(0, 1fr));
++  gap: 12px;
++  margin: 20px 0;
++}
++.ci-metrics > div {
++  background: var(--pos-panel2);
++  border: 1px solid var(--pos-line);
++  border-radius: 10px;
++  padding: 14px;
++  display: grid;
++  gap: 8px;
++}
++.ci-metrics span {
++  font-size: 11px;
++  color: var(--pos-muted);
++}
++.ci-metrics strong {
++  font-size: 25px;
++  font-weight: 600;
++}
++.ci-classification {
++  grid-template-columns: repeat(3, minmax(0, 1fr));
++}
++.ci-classification .good {
++  border-color: var(--pos-good-ink);
++  color: var(--pos-good-ink);
++}
++.ci-classification .warn {
++  color: var(--pos-warn-ink);
++}
++.ci-classification .bad {
++  color: var(--pos-bad-ink);
++}
++.ci-confirm {
++  padding: 18px;
++  border: 1px solid var(--pos-warn-ink);
++  background: var(--pos-warn);
++  color: var(--pos-warn-ink);
++  border-radius: 10px;
++}
++.ci-empty {
++  padding: 36px 24px;
++  text-align: center;
++  border: 1px dashed var(--pos-line2);
++  border-radius: 12px;
++  color: var(--pos-muted);
++  max-width: 100%;
++}
++.ci-empty p {
++  max-width: 550px;
++  margin: 8px auto;
++}
++.ci-empty svg {
++  color: var(--pos-accent);
++}
++.ci-refresh {
++  justify-self: start;
++}
++.ci-compose h3 {
++  margin-bottom: 20px;
++}
++.ci-flow .pos-row {
++  flex-wrap: wrap;
++}
++.ci-flow h3 {
++  margin-top: 0;
++}
++.ci-flow .pos-existing {
++  min-width: 0;
++}
++@media (max-width: 800px) {
++  .ci-steps {
++    grid-template-columns: repeat(3, minmax(0, 1fr));
++  }
++  .ci-steps li:nth-child(3) {
++    border-right: 0;
++  }
++  .ci-steps li:nth-child(-n + 3) {
++    border-bottom: 1px solid var(--pos-line);
++  }
++  .ci-metrics {
++    grid-template-columns: repeat(2, minmax(0, 1fr));
++  }
++  .ci-source-controls {
++    grid-template-columns: 1fr;
++  }
++}
++@media (max-width: 440px) {
++  .ci-steps li {
++    padding: 10px 6px;
++    font-size: 10px;
++    gap: 5px;
++  }
++  .ci-steps li > span {
++    width: 20px;
++    height: 20px;
++  }
++  .ci-metrics > div {
++    padding: 10px;
++  }
++  .ci-section-title {
++    align-items: flex-start;
++  }
++  .ci-heading > svg {
++    display: none;
++  }
++  .ci-flow .pos-btn {
++    white-space: normal;
++  }
++  .ci-confirm {
++    padding: 12px;
++  }
++}
+diff --git a/src/components/pipeline-os/campaign-import-flow.tsx b/src/components/pipeline-os/campaign-import-flow.tsx
+new file mode 100644
+index 0000000..29257e9
+--- /dev/null
++++ b/src/components/pipeline-os/campaign-import-flow.tsx
+@@ -0,0 +1,527 @@
++"use client";
++import { useEffect, useRef, useState } from "react";
++import {
++  ArrowRight,
++  Check,
++  FileSpreadsheet,
++  RefreshCw,
++  ShieldCheck,
++  Upload,
++} from "lucide-react";
++import type { Locale, Workspace } from "@/lib/domain";
++import type { EmailTemplate } from "@/lib/campaign-templates";
++import {
++  campaignImportStatusSchema,
++  campaignImportSteps,
++  importCampaignHref,
++  type CampaignImportStatus,
++} from "@/lib/campaign-import";
++import type { Action } from "../crm";
++import { ImportWizard } from "../import-wizard";
++import { CampaignComposer } from "../campaign-composer";
++import { useProtection } from "../unsaved-changes";
++import { t } from "../ui";
++import "./campaign-import-flow.css";
++
++export function CampaignImportFlow({
++  data,
++  locale,
++  act,
++  refresh,
++  initialTemplate,
++  close,
++}: {
++  data: Workspace;
++  locale: Locale;
++  act: Action;
++  refresh: () => Promise<void>;
++  initialTemplate: EmailTemplate | null;
++  close: () => void;
++}) {
++  const manage = ["superadmin", "seller_admin"].includes(data.profile.role);
++  const [batch, setBatch] = useState("");
++  const [status, setStatus] = useState<CampaignImportStatus | null>(null);
++  const [importing, setImporting] = useState(false),
++    [confirm, setConfirm] = useState(false),
++    [composing, setComposing] = useState(false);
++  const [loading, setLoading] = useState(false),
++    [busy, setBusy] = useState(false),
++    [error, setError] = useState(""),
++    [notice, setNotice] = useState("");
++  const [revision, setRevision] = useState(0);
++  const verifyKeys = useRef(new Map<string, string>());
++  const rootRef = useRef<HTMLElement>(null);
++  useProtection({
++    element: () => rootRef.current,
++    dirty: () => false,
++    busy: () => busy,
++  });
++  useEffect(() => {
++    setStatus(null);
++    setConfirm(false);
++    setComposing(false);
++    setNotice("");
++  }, [batch]);
++  useEffect(() => {
++    if (!batch || data.demo || !manage) return;
++    const controller = new AbortController();
++    let timer: ReturnType<typeof setTimeout> | undefined;
++    async function read() {
++      setLoading(true);
++      setError("");
++      try {
++        const response = await fetch(importCampaignHref(batch), {
++          signal: controller.signal,
++          cache: "no-store",
++        });
++        const result = await response.json();
++        if (!response.ok) throw new Error(result.error);
++        const parsed = campaignImportStatusSchema.parse(result);
++        if (!controller.signal.aborted) {
++          setStatus(parsed);
++          if (
++            ["queued", "running"].includes(parsed.batch.status) ||
++            parsed.counts.running > 0
++          )
++            timer = setTimeout(() => void read(), 5000);
++        }
++      } catch (e) {
++        if (!controller.signal.aborted) setError((e as Error).message);
++      } finally {
++        if (!controller.signal.aborted) setLoading(false);
++      }
++    }
++    void read();
++    return () => {
++      controller.abort();
++      clearTimeout(timer);
++    };
++  }, [batch, data.demo, manage, revision]);
++  const next = status?.next_verification_count || 0;
++  async function verify() {
++    if (!status || !next || busy || data.demo) return;
++    setBusy(true);
++    setError("");
++    setNotice("");
++    const fingerprint = `${batch}:${next}`;
++    let request_key = verifyKeys.current.get(fingerprint);
++    if (!request_key) {
++      request_key = crypto.randomUUID();
++      verifyKeys.current.set(fingerprint, request_key);
++    }
++    try {
++      const response = await fetch("/api/campaigns/import", {
++        method: "POST",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify({
++          kind: "verify",
++          batch,
++          expected_count: next,
++          request_key,
++        }),
++      });
++      const result = await response.json();
++      if (!response.ok) throw new Error(result.error);
++      verifyKeys.current.delete(fingerprint);
++      setConfirm(false);
++      setRevision((x) => x + 1);
++      setNotice(
++        t(
++          locale,
++          `Verificación aprobada para ${result.queued ?? next} contactos. La campaña sigue sin activar.`,
++          `Verification approved for ${result.queued ?? next} contacts. The campaign is not active.`,
++        ),
++      );
++    } catch (e) {
++      setError((e as Error).message);
++      setConfirm(false);
++      setRevision((x) => x + 1);
++    } finally {
++      setBusy(false);
++    }
++  }
++  const step = composing
++    ? 3
++    : !batch
++      ? 0
++      : status?.batch.status !== "completed"
++        ? 1
++        : 2;
++  if (!manage)
++    return (
++      <p className="pos-info">
++        {t(
++          locale,
++          "La creación de campañas requiere un administrador con MFA.",
++          "Campaign creation requires an administrator with MFA.",
++        )}
++      </p>
++    );
++  return (
++    <section
++      ref={rootRef}
++      className="ci-flow"
++      aria-label={t(
++        locale,
++        "Crear campaña desde un archivo",
++        "Create a campaign from a file",
++      )}
++      aria-busy={busy}
++    >
++      <header className="ci-heading">
++        <div>
++          <span className="ci-eyebrow">
++            {t(
++              locale,
++              "DE TU ARCHIVO A UNA CONVERSACIÓN",
++              "FROM YOUR FILE TO A CONVERSATION",
++            )}
++          </span>
++          <h2>{t(locale, "Crear campaña", "Create campaign")}</h2>
++          <p>
++            {t(
++              locale,
++              "Una base, una audiencia revisada y un envío que tú decides.",
++              "One import, a reviewed audience, and a send you decide.",
++            )}
++          </p>
++        </div>
++        <FileSpreadsheet size={32} />
++      </header>
++      <ol
++        className="ci-steps"
++        aria-label={t(locale, "Etapas de la campaña", "Campaign stages")}
++      >
++        {campaignImportSteps.map(([es, en], i) => (
++          <li
++            key={en}
++            aria-current={i === step ? "step" : undefined}
++            className={i === step ? "current" : i < step ? "complete" : ""}
++          >
++            <span>{i < step ? <Check size={14} /> : i + 1}</span>
++            {t(locale, es, en)}
++          </li>
++        ))}
++      </ol>
++      {data.demo && (
++        <p className="pos-info">
++          {t(
++            locale,
++            "Demostración del recorrido. Las verificaciones, campañas y métricas requieren datos reales y no se ejecutan en demo.",
++            "Workflow demo. Verification, campaigns and metrics require real data and do not run in demo.",
++          )}
++        </p>
++      )}
++      <div className="ci-source pos-card">
++        <div>
++          <h3>
++            {t(
++              locale,
++              "1. Elige la base de contactos",
++              "1. Choose your contact list",
++            )}
++          </h3>
++          <p className="pos-muted">
++            {t(
++              locale,
++              "Reutiliza el importador del CRM: columnas, limpieza, duplicados y errores permanecen en el mismo lote.",
++              "Reuse CRM import: columns, cleanup, duplicates and errors stay in the same batch.",
++            )}
++          </p>
++        </div>
++        <div className="ci-source-controls">
++          <button
++            className="pos-btn pos-primary"
++            disabled={busy}
++            onClick={() => setImporting(true)}
++          >
++            <Upload size={16} />
++            {t(locale, "Cargar Excel / CSV", "Upload Excel / CSV")}
++          </button>
++          <label>
++            {t(
++              locale,
++              "O retoma un archivo importado",
++              "Or resume an imported file",
++            )}
++            <select
++              value={batch}
++              disabled={busy}
++              onChange={(e) => {
++                setBatch(e.target.value);
++                setError("");
++              }}
++            >
++              <option value="">
++                {t(locale, "Selecciona un lote", "Choose an import")}
++              </option>
++              {status &&
++                !data.imports.some((x) => x.id === status.batch.id) && (
++                  <option value={status.batch.id}>{status.batch.name}</option>
++                )}
++              {data.imports.map((b) => (
++                <option key={b.id} value={b.id}>
++                  {b.name}
++                </option>
++              ))}
++            </select>
++          </label>
++        </div>
++      </div>
++      {error && (
++        <p className="pos-alert" role="alert">
++          {error}
++        </p>
++      )}
++      {notice && (
++        <p className="pos-notice" role="status">
++          {notice}
++        </p>
++      )}
++      {loading && !status && (
++        <p role="status">
++          {t(locale, "Consultando el lote…", "Loading import…")}
++        </p>
++      )}
++      {batch && !data.demo && (
++        <button
++          className="pos-btn ci-refresh"
++          disabled={busy || loading}
++          onClick={() => setRevision((x) => x + 1)}
++        >
++          <RefreshCw size={14} />
++          {t(locale, "Actualizar progreso", "Refresh progress")}
++        </button>
++      )}
++      {status && (
++        <>
++          <section className="pos-card ci-review">
++            <div className="ci-section-title">
++              <div>
++                <h3>
++                  {t(locale, "2. Revisión del archivo", "2. File review")}
++                </h3>
++                <p>{status.batch.name}</p>
++              </div>
++              <span className="ci-status">
++                {status.batch.status === "completed"
++                  ? t(locale, "Procesado", "Processed")
++                  : ["queued", "running"].includes(status.batch.status)
++                    ? t(locale, "En procesamiento", "Processing")
++                    : t(locale, "Requiere revisión", "Needs review")}
++              </span>
++            </div>
++            <div className="ci-metrics">
++              {[
++                [
++                  "Filas procesadas",
++                  "Processed rows",
++                  `${status.batch.processed} / ${status.batch.total}`,
++                ],
++                [
++                  "Contactos únicos",
++                  "Unique contacts",
++                  status.counts.unique_contacts,
++                ],
++                ["Duplicados", "Duplicates", status.batch.duplicates],
++                [
++                  "Errores de importación",
++                  "Import errors",
++                  status.batch.errors,
++                ],
++              ].map(([es, en, n]) => (
++                <div key={es}>
++                  <span>{t(locale, String(es), String(en))}</span>
++                  <strong>{n}</strong>
++                </div>
++              ))}
++            </div>
++          </section>
++          <section className="pos-card ci-verification">
++            <div className="ci-section-title">
++              <div>
++                <h3>
++                  {t(
++                    locale,
++                    "3. Aprobación y clasificación con Bouncer",
++                    "3. Approval and classification with Bouncer",
++                  )}
++                </h3>
++                <p>
++                  {t(
++                    locale,
++                    "Los válidos previos se reutilizan. Los dudosos, inválidos, bajas y errores no se enviarán.",
++                    "Previously valid contacts are reused. Uncertain, invalid, suppressed and errored contacts will not be sent.",
++                  )}
++                </p>
++              </div>
++              <ShieldCheck size={24} />
++            </div>
++            <div className="ci-metrics ci-classification">
++              {[
++                ["Válidos", "Valid", status.counts.valid, "good"],
++                ["Dudosos", "Uncertain", status.counts.uncertain, "warn"],
++                ["Inválidos", "Invalid", status.counts.invalid, "bad"],
++                ["Por verificar", "To verify", status.counts.pending, ""],
++                ["En verificación", "Verifying", status.counts.running, ""],
++                [
++                  "Requieren revisión",
++                  "Need review",
++                  status.counts.attention,
++                  "warn",
++                ],
++              ].map(([es, en, n, tone]) => (
++                <div key={es} className={String(tone)}>
++                  <span>{t(locale, String(es), String(en))}</span>
++                  <strong>{n}</strong>
++                </div>
++              ))}
++            </div>
++            {!!status.counts.attention && (
++              <p className="pos-info">
++                {t(
++                  locale,
++                  "Los errores técnicos o resultados inciertos requieren revisión en Preparación de leads. No se repetirán automáticamente ni entrarán en el envío.",
++                  "Technical errors or uncertain requests require review in Lead preparation. They will not be retried automatically or included in sending.",
++                )}
++              </p>
++            )}
++            {confirm ? (
++              <div
++                className="ci-confirm"
++                role="group"
++                aria-label={t(
++                  locale,
++                  "Confirmar uso de Bouncer",
++                  "Confirm Bouncer usage",
++                )}
++              >
++                <strong>
++                  {t(
++                    locale,
++                    `¿Aprobar la verificación de ${next} contactos?`,
++                    `Approve verification of ${next} contacts?`,
++                  )}
++                </strong>
++                <p>
++                  {t(
++                    locale,
++                    "Se consumirán créditos de Bouncer. No se enviarán correos ni se activará la campaña.",
++                    "This uses Bouncer credits. No emails will be sent and the campaign will not be activated.",
++                  )}
++                </p>
++                <div className="pos-row">
++                  <button
++                    className="pos-btn pos-primary"
++                    disabled={busy}
++                    onClick={() => void verify()}
++                  >
++                    {busy
++                      ? t(locale, "Solicitando…", "Requesting…")
++                      : t(
++                          locale,
++                          "Confirmar verificación",
++                          "Confirm verification",
++                        )}
++                  </button>
++                  <button
++                    className="pos-btn"
++                    disabled={busy}
++                    onClick={() => setConfirm(false)}
++                  >
++                    {t(locale, "Cancelar", "Cancel")}
++                  </button>
++                </div>
++              </div>
++            ) : (
++              <div className="pos-row">
++                <button
++                  className="pos-btn"
++                  disabled={
++                    busy ||
++                    !next ||
++                    status.batch.status !== "completed" ||
++                    data.demo
++                  }
++                  onClick={() => setConfirm(true)}
++                >
++                  <ShieldCheck size={15} />
++                  {t(
++                    locale,
++                    `Verificar ${next} pendientes`,
++                    `Verify ${next} pending`,
++                  )}
++                </button>
++                <button
++                  className="pos-btn pos-primary"
++                  disabled={busy || !status.ready || data.demo}
++                  onClick={() => setComposing(true)}
++                >
++                  {t(
++                    locale,
++                    "Continuar con plantilla y remitente",
++                    "Continue with template and sender",
++                  )}
++                  <ArrowRight size={15} />
++                </button>
++              </div>
++            )}
++          </section>
++          {composing && status.ready && (
++            <section className="pos-card ci-compose">
++              <h3>
++                {t(
++                  locale,
++                  "4. Plantilla, destinatarios y activación manual",
++                  "4. Template, recipients and manual activation",
++                )}
++              </h3>
++              <div className="pos-existing">
++                <CampaignComposer
++                  key={batch}
++                  data={data}
++                  locale={locale}
++                  act={act}
++                  sourceBatchId={batch}
++                  initialTemplate={initialTemplate}
++                  close={() => {
++                    void refresh();
++                    close();
++                  }}
++                />
++              </div>
++            </section>
++          )}
++        </>
++      )}
++      {!batch && (
++        <div className="ci-empty">
++          <FileSpreadsheet size={42} />
++          <h3>{t(locale, "Empieza por tu archivo", "Start with your file")}</h3>
++          <p>
++            {t(
++              locale,
++              "Después podrás aprobar la verificación, revisar la plantilla y decidir cuándo enviar. Las respuestas se verán en Datos de campaña.",
++              "Then approve verification, review the template and decide when to send. Replies appear in Campaign data.",
++            )}
++          </p>
++        </div>
++      )}
++      {importing && (
++        <ImportWizard
++          data={data}
++          locale={locale}
++          act={act}
++          refresh={refresh}
++          close={() => setImporting(false)}
++          onRegistered={setBatch}
++          returnLabel={t(
++            locale,
++            "Continuar con esta campaña",
++            "Continue with this campaign",
++          )}
++        />
++      )}
++    </section>
++  );
++}
+diff --git a/src/components/pipeline-os/workspace.tsx b/src/components/pipeline-os/workspace.tsx
+index ce6d2de..c4043d8 100644
+--- a/src/components/pipeline-os/workspace.tsx
++++ b/src/components/pipeline-os/workspace.tsx
+@@ -47,7 +47,7 @@ import { PipelineMailReview } from "./mail-review";
+ import { PipelineCaseProgress } from "./case-progress";
+ import { ConversationsWorkspace } from "../conversations-workspace";
+ import { CampaignCenterWorkspace } from "../campaign-center";
+-import { CampaignComposer } from "../campaign-composer";
++import { CampaignImportFlow } from "./campaign-import-flow";
+ import { CampaignReview } from "../campaign-review";
+ import { ImportWizard } from "../import-wizard";
+ import { LenderDirectory } from "../lender-directory";
+@@ -456,6 +456,7 @@ export function PipelineOSWorkspace({
+   }
+   function create(template?: EmailTemplate) {
+     setComposer({ template: template || null });
++    go(["campaigns", "build"]);
+   }
+   async function saveLender(
+     e: FormEvent<HTMLFormElement>,
+@@ -799,6 +800,22 @@ export function PipelineOSWorkspace({
+     if (p === "campaigns")
+       return (
+         <>
++          <div className="pos-card">
++            <h2>
++              {t(
++                locale,
++                "Crear campañas desde tu Excel",
++                "Create campaigns from your spreadsheet",
++              )}
++            </h2>
++            <p className="pos-muted">
++              {t(
++                locale,
++                "Carga tu base, revisa la clasificación de Bouncer y activa el correo cuando estés listo. Después sigue los envíos y las respuestas aquí.",
++                "Upload your list, review Bouncer classification and activate when ready. Then track sends and replies here.",
++              )}
++            </p>
++          </div>
+           <div className="pos-row pos-module-actions">
+             {isSellerRole(data.profile.role) && (
+               <button className="pos-btn" onClick={() => push("scrub", level)}>
+@@ -807,10 +824,7 @@ export function PipelineOSWorkspace({
+               </button>
+             )}
+             {manageCampaigns && (
+-              <button
+-                className="pos-btn pos-primary"
+-                onClick={() => push("build", level)}
+-              >
++              <button className="pos-btn pos-primary" onClick={() => create()}>
+                 <Megaphone size={15} />
+                 {l("build")}
+               </button>
+@@ -842,39 +856,17 @@ export function PipelineOSWorkspace({
+       );
+     if (p === "build")
+       return (
+-        <div className="pos-card">
+-          <h3>
+-            {t(
+-              locale,
+-              "Prepara tu siguiente campaña",
+-              "Prepare your next campaign",
+-            )}
+-          </h3>
+-          <p className="pos-muted">
+-            {t(
+-              locale,
+-              "Selecciona marca, remitente, plantilla y audiencia; revisa elegibilidad, cupos y horario antes de confirmar.",
+-              "Choose brand, sender, template and audience; review eligibility, budgets and schedule before confirming.",
+-            )}
+-          </p>
+-          <button
+-            className="pos-btn pos-primary"
+-            disabled={!manageCampaigns}
+-            onClick={() => create()}
+-          >
+-            <Megaphone size={16} />
+-            {t(locale, "Abrir creador de campaña", "Open campaign builder")}
+-          </button>
+-          {!manageCampaigns && (
+-            <p className="pos-small">
+-              {t(
+-                locale,
+-                "La creación de campañas requiere un administrador de sellers.",
+-                "Campaign creation requires a seller administrator.",
+-              )}
+-            </p>
+-          )}
+-        </div>
++        <CampaignImportFlow
++          data={data}
++          locale={locale}
++          act={act}
++          refresh={refresh}
++          initialTemplate={composer?.template || null}
++          close={() => {
++            setComposer(null);
++            go(["campaigns"]);
++          }}
++        />
+       );
+     if (p === "conversations")
+       return (
+@@ -1589,33 +1581,6 @@ export function PipelineOSWorkspace({
+           close={() => setImporting(false)}
+         />
+       )}
+-      {composer && (
+-        <Modal
+-          title={l("build")}
+-          wide
+-          locale={locale}
+-          busy={busy}
+-          close={() => setComposer(null)}
+-        >
+-          <div className="pos-existing">
+-            {error && (
+-              <p className="pos-alert" role="alert">
+-                {error}
+-              </p>
+-            )}
+-            <CampaignComposer
+-              data={data}
+-              locale={locale}
+-              initialTemplate={composer.template}
+-              act={act}
+-              close={() => {
+-                setComposer(null);
+-                go(["campaigns"]);
+-              }}
+-            />
+-          </div>
+-        </Modal>
+-      )}
+       {review && (
+         <Modal
+           title={review.name}
+diff --git a/src/lib/campaign-import.ts b/src/lib/campaign-import.ts
+new file mode 100644
+index 0000000..3140f15
+--- /dev/null
++++ b/src/lib/campaign-import.ts
+@@ -0,0 +1,92 @@
++import { z } from "zod";
++
++const count = z.number().int().nonnegative();
++export const campaignImportStatusSchema = z.object({
++  batch: z.object({
++    id: z.uuid(),
++    name: z.string(),
++    status: z.string(),
++    total: count,
++    processed: count,
++    imported: count,
++    duplicates: count,
++    errors: count,
++  }),
++  counts: z.object({
++    unique_contacts: count,
++    valid: count,
++    invalid: count,
++    uncertain: count,
++    pending: count,
++    running: count,
++    attention: count,
++    excluded: count,
++  }),
++  next_verification_count: count.max(5000),
++  ready: z.boolean(),
++});
++export type CampaignImportStatus = z.infer<typeof campaignImportStatusSchema>;
++export const campaignImportSteps = [
++  ["Archivo", "File"],
++  ["Revisión", "Review"],
++  ["Bouncer", "Bouncer"],
++  ["Plantilla", "Template"],
++  ["Envío", "Sending"],
++  ["Respuestas", "Replies"],
++] as const;
++export const campaignImportErrors: Record<string, [string, string]> = {
++  CI_FORBIDDEN: [
++    "Se requiere un administrador con MFA.",
++    "An administrator with MFA is required.",
++  ],
++  CI_BATCH_NOT_FOUND: [
++    "El lote no está disponible.",
++    "Import batch unavailable.",
++  ],
++  CI_IMPORT_RUNNING: [
++    "La importación todavía se está procesando.",
++    "The import is still processing.",
++  ],
++  CI_STALE: [
++    "La cantidad pendiente cambió. Actualiza y vuelve a revisar antes de confirmar.",
++    "The pending count changed. Refresh and review before confirming.",
++  ],
++  CI_VERIFICATION_PENDING: [
++    "Termina la revisión y verificación del lote antes de crear la campaña.",
++    "Finish reviewing and verifying this import before creating the campaign.",
++  ],
++  CI_SELECTION_SCOPE: [
++    "Selecciona solo destinatarios elegibles de este archivo.",
++    "Select eligible recipients from this file only.",
++  ],
++  CI_SELECTION_LIMIT: [
++    "El límite es de 5.000 destinatarios por campaña. Elige una selección; no se recortó el lote.",
++    "The campaign limit is 5,000 recipients. Make a selection; the import was not truncated.",
++  ],
++  CI_TEMPLATE_CHANGED: [
++    "La plantilla cambió. Vuelve a seleccionarla.",
++    "The template changed. Select it again.",
++  ],
++  CI_UNAVAILABLE: [
++    "El recorrido de campañas por archivo todavía no está disponible. No se usará una audiencia global.",
++    "Import campaigns are unavailable. A global audience will not be used.",
++  ],
++};
++export function importCampaignHref(
++  batch: string,
++  template?: string,
++  account?: string,
++  search = "",
++  page = 0,
++) {
++  z.uuid().parse(batch);
++  const q = new URLSearchParams({ batch });
++  if (template && account) {
++    q.set("mode", "leads");
++    q.set("template", z.uuid().parse(template));
++    q.set("account", z.uuid().parse(account));
++    q.set("search", search);
++    q.set("page", String(page));
++  }
++  return "/api/campaigns/import?" + q;
++}
+diff --git a/src/lib/server/campaign-import.ts b/src/lib/server/campaign-import.ts
+new file mode 100644
+index 0000000..2354bdf
+--- /dev/null
++++ b/src/lib/server/campaign-import.ts
+@@ -0,0 +1,145 @@
++import { z } from "zod";
++import type { SupabaseClient } from "@supabase/supabase-js";
++import { campaignTemplateSchema } from "../campaign-templates";
++import { campaignImportErrors } from "../campaign-import";
++import { brandPreparationSchema } from "../brand-delivery";
++import {
++  deliveryContext,
++  deliveryJsonError,
++  deliveryResult,
++} from "./brand-delivery";
++import { HttpError } from "./supabase";
++
++export type ImportCampaignContext = {
++  db: SupabaseClient;
++  profile: { role: string };
++};
++function administrator(ctx: ImportCampaignContext) {
++  if (!["superadmin", "seller_admin"].includes(ctx.profile.role))
++    throw new HttpError(403, campaignImportErrors.CI_FORBIDDEN[0]);
++}
++export function importCampaignError(error: unknown) {
++  if (error instanceof SyntaxError)
++    return Response.json(
++      { error: "JSON inválido. / Invalid JSON." },
++      { status: 400 },
++    );
++  if (error instanceof z.ZodError)
++    return Response.json(
++      { error: "Revisa los campos del formulario. / Check the form fields." },
++      { status: 400 },
++    );
++  return deliveryJsonError(error);
++}
++async function rpc(
++  ctx: ImportCampaignContext,
++  name: string,
++  args: Record<string, unknown>,
++) {
++  const { data, error } = await ctx.db.rpc(name, args);
++  if (!error) return data;
++  if (["PGRST202", "42883"].includes(error.code || ""))
++    throw new HttpError(503, campaignImportErrors.CI_UNAVAILABLE[0]);
++  if (error.message in campaignImportErrors)
++    throw new HttpError(
++      error.message === "CI_FORBIDDEN"
++        ? 403
++        : error.message === "CI_BATCH_NOT_FOUND"
++          ? 404
++          : 409,
++      campaignImportErrors[error.message][0],
++    );
++  return deliveryResult({ data, error });
++}
++export async function readImportCampaign(url: URL, ctx: ImportCampaignContext) {
++  administrator(ctx);
++  const p = url.searchParams;
++  const batch = z.uuid().parse(p.get("batch"));
++  const mode = z.enum(["status", "leads"]).parse(p.get("mode") || "status");
++  return mode === "status"
++    ? rpc(ctx, "campaign_import_status", { batch })
++    : rpc(ctx, "campaign_import_leads_page", {
++        batch,
++        template: z.uuid().parse(p.get("template")),
++        account: z.uuid().parse(p.get("account")),
++        search_text: z
++          .string()
++          .max(200)
++          .parse(p.get("search") || ""),
++        page_number: z.coerce
++          .number()
++          .int()
++          .min(0)
++          .max(1000000)
++          .parse(p.get("page") || 0),
++      });
++}
++export async function writeImportCampaign(
++  body: unknown,
++  ctx: ImportCampaignContext,
++) {
++  administrator(ctx);
++  const envelope = z
++    .discriminatedUnion("kind", [
++      z
++        .object({
++          kind: z.literal("verify"),
++          batch: z.uuid(),
++          expected_count: z.number().int().min(1).max(5000),
++          request_key: z.uuid(),
++        })
++        .strict(),
++      z
++        .object({
++          kind: z.literal("create"),
++          request_key: z.uuid(),
++          payload: z.record(z.string(), z.unknown()),
++        })
++        .strict(),
++    ])
++    .parse(body);
++  if (envelope.kind === "verify") {
++    if (!process.env.BOUNCER_API_KEY)
++      throw new HttpError(
++        503,
++        "Bouncer no está configurado. / Bouncer is not configured.",
++      );
++    return rpc(ctx, "campaign_verify_import", {
++      batch: envelope.batch,
++      expected_count: envelope.expected_count,
++      request_key: envelope.request_key,
++    });
++  }
++  const p = envelope.payload;
++  const config = z
++    .object({
++      import_batch_id: z.uuid(),
++      account_id: z.uuid(),
++      seller_id: z.uuid(),
++      template_id: z.uuid(),
++      template_version: z.coerce.number().int().positive(),
++      daily_limit: z.coerce.number().int().min(1).max(2000),
++      timezone: z.string().min(1).max(80),
++      start_hour: z.coerce.number().int().min(0).max(23),
++      end_hour: z.coerce.number().int().min(1).max(24),
++      selected_contact_ids: z.array(z.uuid()).max(5000).optional(),
++      brand_preparation: brandPreparationSchema,
++    })
++    .parse(p);
++  if (config.start_hour >= config.end_hour)
++    throw new HttpError(
++      400,
++      "Revisa el horario de envío. / Check the sending hours.",
++    );
++  const content = campaignTemplateSchema.parse(p);
++  await deliveryContext(
++    ctx.db,
++    config.account_id,
++    config.brand_preparation,
++    "campaign",
++  );
++  return rpc(ctx, "campaign_create_from_import", {
++    p: { ...config, ...content, steps: [] },
++    request_key: envelope.request_key,
++  });
++}
+diff --git a/tests/campaign-import-flow.test.ts b/tests/campaign-import-flow.test.ts
+new file mode 100644
+index 0000000..ee17c87
+--- /dev/null
++++ b/tests/campaign-import-flow.test.ts
+@@ -0,0 +1,579 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { randomUUID } from "node:crypto";
++import { readFile } from "node:fs/promises";
++import { featureDatabase } from "./feature-database";
++import {
++  installBrandDelivery,
++  bindFixtureAccount,
++} from "./fixtures/pipeline-os-s02-brand-delivery";
++import {
++  campaignImportStatusSchema,
++  importCampaignHref,
++} from "../src/lib/campaign-import";
++import {
++  readImportCampaign,
++  writeImportCampaign,
++  importCampaignError,
++  type ImportCampaignContext,
++} from "../src/lib/server/campaign-import";
++const sqlRoot =
++  "docs/specs/pipeline-os/campaign-import-flow-20261116/migrations/";
++
++test("CI: HTTP creation validates sender brand and preserves file scope before the atomic RPC", async () => {
++  const batch = randomUUID(),
++    account = randomUUID(),
++    actor = randomUUID(),
++    brand = randomUUID(),
++    template = randomUUID(),
++    campaign = randomUUID();
++  const calls: { name: string; args: any }[] = [];
++  const ctx = {
++    profile: { role: "superadmin" },
++    db: {
++      rpc: async (name: string, args: any) => {
++        calls.push({ name, args });
++        return {
++          error: null,
++          data:
++            name === "brand_prepare_context"
++              ? {
++                  version: 1,
++                  brand_id: brand,
++                  brand_code: "fixture",
++                  brand_name: "Fixture",
++                  brand_revision: 1,
++                  account_id: account,
++                  account_revision: 1,
++                  actor_id: actor,
++                  purpose: "campaign",
++                  authorization: "human_aal2",
++                  prepared_at: "2026-11-16T12:00:00Z",
++                }
++              : { id: campaign },
++        };
++      },
++    },
++  } as unknown as ImportCampaignContext;
++  const result = await writeImportCampaign(
++    {
++      kind: "create",
++      request_key: randomUUID(),
++      payload: {
++        import_batch_id: batch,
++        account_id: account,
++        seller_id: actor,
++        template_id: template,
++        template_version: 1,
++        name: "Fixture campaign",
++        subject: "Hello",
++        body: "Hello {{unsubscribe_url}}",
++        steps: [
++          {
++            subject: "Old followup",
++            body: "Hi {{unsubscribe_url}}",
++            wait_days: 3,
++          },
++        ],
++        daily_limit: "100",
++        timezone: "UTC",
++        start_hour: "9",
++        end_hour: "17",
++        brand_preparation: {
++          brand_id: brand,
++          brand_revision: 1,
++          account_revision: 1,
++        },
++      },
++    },
++    ctx,
++  );
++  assert.deepEqual(result, { id: campaign });
++  assert.deepEqual(
++    calls.map((x) => x.name),
++    ["brand_prepare_context", "campaign_create_from_import"],
++  );
++  assert.equal(calls[1].args.p.import_batch_id, batch);
++  assert.equal(calls[1].args.p.daily_limit, 100);
++  assert.deepEqual(calls[1].args.p.steps, []);
++  assert.equal(importCampaignError(new SyntaxError("bad JSON")).status, 400);
++});
++test("CI: installed brand guards preserve the trusted snapshot while freezing file recipients", async () => {
++  const f = await fixture();
++  const { db } = f;
++  try {
++    await installBrandDelivery(f);
++    const preparation = await bindFixtureAccount(f, f.account);
++    const batch = await f.batch(),
++      other = await f.batch(),
++      inside = await f.contact(batch),
++      outside = await f.contact(other);
++    const payload = { ...f.payload(batch), brand_preparation: preparation };
++    await assert.rejects(
++      f.rpc("campaign_create_from_import", [f.payload(batch), randomUUID()]),
++      /BRAND_PREPARATION_(REQUIRED|STALE)/,
++    );
++    const key = randomUUID();
++    const created = await f.rpc("campaign_create_from_import", [payload, key]);
++    assert.equal(
++      (await f.rpc("campaign_create_from_import", [payload, key])).id,
++      created.id,
++    );
++    const saved = (
++      await db.query<any>(
++        "select batch_id,selected_contact_ids,brand_snapshot,status from campaigns where id=$1",
++        [created.id],
++      )
++    ).rows[0];
++    assert.equal(saved.batch_id, batch);
++    assert.equal(saved.status, "draft");
++    assert.deepEqual(saved.selected_contact_ids, [inside]);
++    assert.equal(saved.brand_snapshot.brand_id, preparation.brand_id);
++    assert.equal(saved.brand_snapshot.actor_id, f.users.admin);
++    assert.equal(
++      (
++        await db.query<any>(
++          "select current_setting('pipeline_os.brand_context',true) v",
++        )
++      ).rows[0].v,
++      "",
++    );
++    await assert.rejects(
++      f.rpc("campaign_create_from_import", [
++        {
++          ...payload,
++          brand_preparation: { ...preparation, account_revision: 999 },
++        },
++        randomUUID(),
++      ]),
++      /BRAND_PREPARATION_STALE/,
++    );
++    await f.asUser(f.users.admin);
++    await f.command("activate_campaign", {
++      id: created.id,
++      brand_preparation: preparation,
++    });
++    const enrolled = (
++      await db.query<any>(
++        "select contact_id from campaign_enrollments where campaign_id=$1",
++        [created.id],
++      )
++    ).rows.map((x: any) => x.contact_id);
++    assert.deepEqual(enrolled, [inside]);
++    assert(!enrolled.includes(outside));
++    await f.db.exec("reset role");
++    await assert.rejects(
++      db.query("update campaigns set selected_contact_ids=$2 where id=$1", [
++        created.id,
++        [outside],
++      ]),
++      /BRAND_PREPARATION_REQUIRED/,
++    );
++  } finally {
++    await db.close();
++  }
++});
++
++test("CI: inherited service privilege correction is source guarded and changes only the five ACLs", async () => {
++  const f = await fixture();
++  const { db } = f;
++  try {
++    await db.exec("create role supabase_admin superuser");
++    const names = [
++      "public.campaign_import_contact_rows(uuid)",
++      "public.campaign_import_status(uuid)",
++      "public.campaign_import_leads_page(uuid,uuid,uuid,text,int)",
++      "public.campaign_verify_import(uuid,int,uuid)",
++      "public.campaign_create_from_import(jsonb,uuid)",
++    ];
++    for (const name of names)
++      await db.exec(
++        `alter function ${name} owner to supabase_admin;grant execute on function ${name} to service_role`,
++      );
++    const sources = async () =>
++      (
++        await db.query<any>(
++          "select oid::regprocedure::text signature,md5(prosrc) source from pg_proc where pronamespace='public'::regnamespace order by oid",
++        )
++      ).rows;
++    const before = await sources();
++    const sql = await readFile(
++      sqlRoot + "revoke-inherited-service.sql",
++      "utf8",
++    );
++    await db.exec(sql);
++    await db.exec(sql);
++    assert.deepEqual(await sources(), before);
++    for (const name of names)
++      assert.equal(
++        (
++          await db.query<any>(
++            "select has_function_privilege('service_role',$1::regprocedure,'execute') v",
++            [name],
++          )
++        ).rows[0].v,
++        false,
++      );
++    await db.exec(`alter function ${names[0]} owner to postgres`);
++    await assert.rejects(db.exec(sql), /CI_PRIVILEGE_SOURCE_DRIFT/);
++    await db.exec("rollback");
++  } finally {
++    await db.close();
++  }
++});
++
++async function fixture() {
++  const f = await featureDatabase();
++  const { db, users, asUser } = f;
++  // Reproduce the production owner's inherited function grants before applying.
++  await db.exec(
++    "alter default privileges in schema public grant execute on functions to service_role",
++  );
++  await db.exec(await readFile(sqlRoot + "up.sql", "utf8"));
++  const account = randomUUID(),
++    template = randomUUID();
++  await db.query(
++    "insert into mail_accounts(id,email,organization,status,daily_limit,campaign_daily_limit,operational_reserve,external_usage_synced_at) values($1,'sender@example.test','Test','connected',120,100,20,now())",
++    [account],
++  );
++  await db.query(
++    "insert into email_templates(id,name,subject,body,created_by,updated_by) values($1,'Import template','Hello {{company}}','Hi {{name}} {{unsubscribe_url}}',$2,$2)",
++    [template, users.admin],
++  );
++  async function batch(status = "completed") {
++    await db.exec("reset role");
++    const id = randomUUID();
++    await db.query(
++      "insert into import_batches(id,name,status,total,processed,storage_path,mapping,created_by,request_key) values($1,'Fixture.xlsx',$2,3,3,'fixture.xlsx','{}',$3,$4)",
++      [id, status, users.admin, randomUUID()],
++    );
++    return id;
++  }
++  async function contact(b: string, verification = "valid") {
++    await db.exec("reset role");
++    const id = randomUUID();
++    await db.query(
++      "insert into contacts(id,email,name,verification) values($1,$2,'Alex',$3)",
++      [id, id + "@example.test", verification],
++    );
++    await db.query(
++      "insert into leads(contact_id,company,seller_id) values($1,'Fixture business',$2)",
++      [id, users.seller],
++    );
++    await db.query(
++      "insert into import_rows(batch_id,row_number,contact_id,result) select $1,coalesce(max(row_number),0)+1,$2,'imported' from import_rows where batch_id=$1",
++      [b, id],
++    );
++    return id;
++  }
++  const payload = (b: string) => ({
++    import_batch_id: b,
++    name: "Scoped campaign",
++    account_id: account,
++    seller_id: users.seller,
++    template_id: template,
++    template_version: 1,
++    daily_limit: 80,
++    timezone: "UTC",
++    start_hour: 0,
++    end_hour: 24,
++    subject: "Hello {{company}}",
++    body: "Hi {{name}} {{unsubscribe_url}}",
++    steps: [],
++  });
++  async function rpc<T = any>(name: string, args: unknown[]) {
++    await asUser(users.admin);
++    return (
++      await db.query<{ r: T }>(
++        `select ${name}(${args.map((_, i) => "$" + (i + 1)).join(",")}) r`,
++        args,
++      )
++    ).rows[0].r;
++  }
++  return { ...f, account, template, batch, contact, payload, rpc };
++}
++test("CI: preview, snapshot and manual activation stay inside the chosen file; rollback preserves history", async () => {
++  const f = await fixture();
++  const { db } = f;
++  try {
++    const a = await f.batch(),
++      b = await f.batch(),
++      inside = await f.contact(a),
++      outside = await f.contact(b),
++      invalid = await f.contact(a, "invalid");
++    await db.query(
++      "insert into import_rows(batch_id,row_number,contact_id,result) values($1,99,$2,'duplicate')",
++      [a, inside],
++    );
++    const status = campaignImportStatusSchema.parse(
++      await f.rpc("campaign_import_status", [a]),
++    );
++    assert.equal(status.counts.unique_contacts, 2);
++    assert.equal(status.counts.valid, 1);
++    assert.equal(status.ready, true);
++    const preview = await f.rpc("campaign_import_leads_page", [
++      a,
++      f.template,
++      f.account,
++      "",
++      0,
++    ]);
++    assert.equal(preview.eligible, 1);
++    assert(!preview.rows.some((x: any) => x.contact_id === outside));
++    await assert.rejects(
++      f.rpc("campaign_create_from_import", [
++        { ...f.payload(a), selected_contact_ids: [outside] },
++        randomUUID(),
++      ]),
++      /CI_SELECTION_SCOPE/,
++    );
++    await assert.rejects(
++      f.rpc("campaign_create_from_import", [
++        { ...f.payload(a), selected_contact_ids: Array(5001).fill(inside) },
++        randomUUID(),
++      ]),
++      /CI_SELECTION_LIMIT/,
++    );
++    const key = randomUUID(),
++      created = await f.rpc("campaign_create_from_import", [f.payload(a), key]);
++    assert.equal(
++      (await f.rpc("campaign_create_from_import", [f.payload(a), key])).id,
++      created.id,
++    );
++    await assert.rejects(
++      f.rpc("campaign_create_from_import", [
++        { ...f.payload(a), name: "Changed" },
++        key,
++      ]),
++      /Idempotency/,
++    );
++    const saved = (
++      await db.query<{
++        batch_id: string;
++        selected_contact_ids: string[];
++        status: string;
++      }>(
++        "select batch_id,selected_contact_ids,status from campaigns where id=$1",
++        [created.id],
++      )
++    ).rows[0];
++    assert.equal(saved.batch_id, a);
++    assert.deepEqual(saved.selected_contact_ids, [inside]);
++    assert.equal(saved.status, "draft");
++    assert.equal(
++      (
++        await db.query<{ n: number }>(
++          "select count(*)::int n from campaign_enrollments",
++        )
++      ).rows[0].n,
++      0,
++    );
++    assert.equal(
++      (await db.query<{ n: number }>("select count(*)::int n from outbox"))
++        .rows[0].n,
++      0,
++    );
++    await f.command("activate_campaign", { id: created.id });
++    assert.deepEqual(
++      (
++        await db.query<{ contact_id: string }>(
++          "select contact_id from campaign_enrollments where campaign_id=$1",
++          [created.id],
++        )
++      ).rows.map((x) => x.contact_id),
++      [inside],
++    );
++    assert(!saved.selected_contact_ids.includes(invalid));
++    await db.exec("reset role");
++    await db.exec(await readFile(sqlRoot + "down.sql", "utf8"));
++    assert.equal(
++      (
++        await db.query<{ n: number }>(
++          "select count(*)::int n from campaigns where id=$1",
++          [created.id],
++        )
++      ).rows[0].n,
++      1,
++    );
++    assert.equal(
++      (
++        await db.query<{ n: number }>(
++          "select count(*)::int n from campaign_enrollments where campaign_id=$1",
++          [created.id],
++        )
++      ).rows[0].n,
++      1,
++    );
++  } finally {
++    await db.close();
++  }
++});
++test("CI: Bouncer approval freezes the count, is idempotent and never activates or retries uncertain work", async () => {
++  const f = await fixture();
++  const { db } = f;
++  try {
++    const batch = await f.batch(),
++      pending = await f.contact(batch, "pending");
++    await f.contact(batch, "valid");
++    await f.contact(batch, "uncertain");
++    await assert.rejects(
++      f.rpc("campaign_create_from_import", [f.payload(batch), randomUUID()]),
++      /CI_VERIFICATION_PENDING/,
++    );
++    await assert.rejects(
++      f.rpc("campaign_verify_import", [batch, 2, randomUUID()]),
++      /CI_STALE/,
++    );
++    await assert.rejects(
++      f.rpc("campaign_verify_import", [batch, null, randomUUID()]),
++      /CI_INVALID_INPUT/,
++    );
++    const key = randomUUID(),
++      r = await f.rpc("campaign_verify_import", [batch, 1, key]);
++    assert.equal(r.queued, 1);
++    assert.deepEqual(await f.rpc("campaign_verify_import", [batch, 1, key]), r);
++    assert.equal(
++      (
++        await db.query<{ n: number }>(
++          "select count(*)::int n from verifications where contact_id=$1",
++          [pending],
++        )
++      ).rows[0].n,
++      1,
++    );
++    const status = await f.rpc("campaign_import_status", [batch]);
++    assert.equal(status.counts.pending, 0);
++    assert.equal(status.counts.running, 1);
++    assert.equal(status.ready, false);
++    await assert.rejects(
++      f.rpc("campaign_verify_import", [batch, 1, randomUUID()]),
++      /CI_STALE/,
++    );
++    await db.exec("reset role");
++    await db.query(
++      "update verifications set state='uncertain_request' where contact_id=$1",
++      [pending],
++    );
++    const review = await f.rpc("campaign_import_status", [batch]);
++    assert.equal(review.counts.attention, 1);
++    assert.equal(review.next_verification_count, 0);
++    const running = await f.batch("running");
++    await f.contact(running, "pending");
++    await assert.rejects(
++      f.rpc("campaign_verify_import", [running, 1, randomUUID()]),
++      /CI_IMPORT_RUNNING/,
++    );
++    assert.equal(
++      (await db.query<{ n: number }>("select count(*)::int n from campaigns"))
++        .rows[0].n,
++      0,
++    );
++    assert.equal(
++      (await db.query<{ n: number }>("select count(*)::int n from outbox"))
++        .rows[0].n,
++      0,
++    );
++  } finally {
++    await db.close();
++  }
++});
++test("CI: RPCs reject non-admin, aal1, missing batches and unauthorized senders", async () => {
++  const f = await fixture();
++  const { db, users, asUser } = f;
++  try {
++    const privileges = (
++      await db.query<{ service: boolean; anon: boolean; helper: boolean }>(
++        "select has_function_privilege('service_role',p.oid,'execute') service,has_function_privilege('anon',p.oid,'execute') anon,has_function_privilege('authenticated',p.oid,'execute') helper from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname in('campaign_import_contact_rows','campaign_import_status','campaign_import_leads_page','campaign_verify_import','campaign_create_from_import')",
++      )
++    ).rows;
++    assert.equal(privileges.length, 5);
++    assert(privileges.every((x) => !x.service && !x.anon));
++    assert.equal(privileges.filter((x) => x.helper).length, 4);
++    const batch = await f.batch();
++    await f.contact(batch);
++    await asUser(users.seller);
++    await assert.rejects(
++      db.query("select campaign_import_status($1)", [batch]),
++      /CI_FORBIDDEN/,
++    );
++    await asUser(users.admin, "aal1");
++    await assert.rejects(
++      db.query("select campaign_import_status($1)", [batch]),
++      /CI_FORBIDDEN/,
++    );
++    await asUser(users.admin);
++    await assert.rejects(
++      db.query("select campaign_import_status($1)", [randomUUID()]),
++      /CI_BATCH_NOT_FOUND/,
++    );
++    await asUser(users.admin);
++    await assert.rejects(
++      db.query("select campaign_import_contact_rows($1)", [batch]),
++      /permission denied/,
++    );
++    await db.exec("reset role");
++    await db.query("update profiles set role='seller_admin' where id=$1", [
++      users.seller,
++    ]);
++    await asUser(users.seller);
++    await assert.rejects(
++      db.query("select campaign_import_leads_page($1,$2,$3)", [
++        batch,
++        f.template,
++        f.account,
++      ]),
++      /sender access required/,
++    );
++    await db.exec("reset role;set role anon");
++    await assert.rejects(
++      db.query("select campaign_import_status($1)", [batch]),
++      /permission denied/,
++    );
++  } finally {
++    await db.close();
++  }
++});
++test("CI: HTTP contract fails closed on missing RPC and never falls back to global leads", async () => {
++  const calls: string[] = [];
++  const ctx = {
++    profile: { role: "superadmin" },
++    db: {
++      rpc: async (name: string) => {
++        calls.push(name);
++        return { data: null, error: { code: "PGRST202", message: "missing" } };
++      },
++    },
++  } as unknown as ImportCampaignContext;
++  await assert.rejects(
++    readImportCampaign(
++      new URL(
++        "https://crm.test" +
++          importCampaignHref(randomUUID(), randomUUID(), randomUUID()),
++      ),
++      ctx,
++    ),
++    (e: any) => e.status === 503,
++  );
++  assert.deepEqual(calls, ["campaign_import_leads_page"]);
++  await assert.rejects(
++    readImportCampaign(
++      new URL("https://crm.test" + importCampaignHref(randomUUID())),
++      { ...ctx, profile: { role: "seller" } },
++    ),
++    (e: any) => e.status === 403,
++  );
++  await assert.rejects(
++    writeImportCampaign(
++      {
++        kind: "verify",
++        batch: randomUUID(),
++        expected_count: 5001,
++        request_key: randomUUID(),
++      },
++      ctx,
++    ),
++  );
++  const bad = importCampaignError(new Error("sensitive provider details"));
++  assert.equal(bad.status, 500);
++  assert(!(await bad.text()).includes("sensitive"));
++});
+diff --git a/tests/fixtures/campaign-import-browser.tsx b/tests/fixtures/campaign-import-browser.tsx
+new file mode 100644
+index 0000000..60ded76
+--- /dev/null
++++ b/tests/fixtures/campaign-import-browser.tsx
+@@ -0,0 +1,161 @@
++// Inert local browser fixture. Not imported by app routes.
++import React, { useState } from "react";
++import { createRoot } from "react-dom/client";
++import { CampaignImportFlow } from "../../src/components/pipeline-os/campaign-import-flow";
++import { useLeaveConfirmation } from "../../src/components/unsaved-changes";
++import type { Workspace } from "../../src/lib/domain";
++import "../../src/app/globals.css";
++import "../../src/components/pipeline-os/workspace.css";
++const id = (n: number) =>
++  `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
++function Fixture() {
++  const { requestLeave, confirmation } = useLeaveConfirmation("es");
++  const [generation, setGeneration] = useState(0),
++    [closed, setClosed] = useState(false),
++    [role, setRole] = useState("superadmin");
++  const data = {
++    demo: false,
++    profile: {
++      id: id(1),
++      name: "Operador de ejemplo",
++      email: "operator@example.test",
++      role,
++    },
++    profiles: [
++      {
++        id: id(1),
++        name: "Operador de ejemplo",
++        email: "operator@example.test",
++        role: "superadmin",
++        active: true,
++      },
++    ],
++    accounts: [
++      {
++        id: id(2),
++        email: "campaigns@example.test",
++        status: "connected",
++        brand_context: {
++          account_id: id(2),
++          brand_id: id(3),
++          brand_name: "Marca de ejemplo",
++          brand_code: "example",
++          brand_revision: 1,
++          account_revision: 1,
++          can_campaign: true,
++        },
++      },
++    ],
++    imports: [
++      {
++        id: id(4),
++        name: "Base de ejemplo.xlsx",
++        status: "completed",
++        total: 6,
++        processed: 6,
++        imported: 5,
++        duplicates: 1,
++        skipped: 0,
++        errors: 0,
++        created_at: "2026-11-16T12:00:00Z",
++      },
++    ],
++    email_templates: [
++      {
++        id: id(5),
++        name: "Presentación de ejemplo",
++        subject: "Hola {{company}}",
++        body: "Hola {{name}}, conoce nuestra propuesta. {{unsubscribe_url}}",
++        version: 1,
++        body_format: "plain",
++        steps: [],
++        asset_ids: [],
++        archived_at: null,
++      },
++    ],
++    campaigns: [],
++    sender_account_ids: [id(2)],
++  } as unknown as Workspace;
++  async function control(action: string) {
++    await fetch("/qa/" + action, { method: "POST" });
++  }
++  return (
++    <main
++      className="pipeline-os"
++      data-pos-theme="light"
++      style={{ padding: 24 }}
++    >
++      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
++        <div
++          className="pos-info"
++          style={{
++            justifyContent: "space-between",
++            marginBottom: 20,
++            flexWrap: "wrap",
++          }}
++        >
++          <strong>ENSAYO LOCAL · DATOS FICTICIOS · SIN PROVEEDORES</strong>
++          <div className="pos-row" style={{ flexWrap: "wrap" }}>
++            <button
++              className="pos-btn"
++              onClick={() => void control("complete")}
++            >
++              Simular clasificación completada
++            </button>
++            <button
++              className="pos-btn"
++              onClick={() => void control("fail-upload")}
++            >
++              Simular fallo al registrar
++            </button>
++            <button
++              className="pos-btn"
++              onClick={() => {
++                void control("reset").then(() => {
++                  setClosed(false);
++                  setGeneration((x) => x + 1);
++                });
++              }}
++            >
++              Reiniciar ejemplo
++            </button>
++            <label>
++              Rol{" "}
++              <select value={role} onChange={(e) => setRole(e.target.value)}>
++                <option>superadmin</option>
++                <option>seller</option>
++              </select>
++            </label>
++          </div>
++        </div>
++        {closed ? (
++          <p role="status">
++            Campaña guardada. El envío requiere la activación manual elegida.
++          </p>
++        ) : (
++          <CampaignImportFlow
++            key={generation + role}
++            data={data}
++            locale="es"
++            initialTemplate={null}
++            close={() => requestLeave(() => setClosed(true))}
++            refresh={async () => {
++              const r = await fetch("/qa/refresh");
++              if (!r.ok) throw Error("fixture refresh failure");
++            }}
++            act={async (kind, payload) => {
++              const r = await fetch("/qa/action", {
++                method: "POST",
++                headers: { "Content-Type": "application/json" },
++                body: JSON.stringify({ kind, payload }),
++              });
++              return r.json();
++            }}
++          />
++        )}
++      </div>
++      {confirmation}
++    </main>
++  );
++}
++createRoot(document.getElementById("root")!).render(<Fixture />);

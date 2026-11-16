@@ -1,0 +1,100 @@
+{
+  "protocol": "ML-FAST-v1",
+  "base": "01b6d3f8c2f61ba09ef60ff07a7ef4a17b9c681b",
+  "coordinatorDryRun": "a34a08938cc637aa28b5176af31368cce30c554c",
+  "status": "local-reviewed-production-pending",
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "d3c977b4b5346c2e24fac12599ac0e18e8f5785676244e564ff60432e4de771c"
+    },
+    {
+      "path": "src/components/conversations-workspace.tsx",
+      "sha256": "ddd86581f952fe99558508e9c9b2cbe3ab67b406b3ee0a92d03aab3a5071ffce"
+    },
+    {
+      "path": "src/lib/mail-status-poll.ts",
+      "sha256": "df0e86412d97471d8eaa420ace40eafdea5156ee0d28a761995c46c2b95c30f5"
+    },
+    {
+      "path": "worker/index.ts",
+      "sha256": "1dace08ca60e2e936a31958ed4327b4d46847afbb0c2d8b07f0226c36a584ec2"
+    },
+    {
+      "path": "worker/gmail.ts",
+      "sha256": "6c43228fb24c364af2d3515c6d3008b7aed15e2c00d1abee1d0b82a95c6b880b"
+    },
+    {
+      "path": "worker/manual-sender.ts",
+      "sha256": "ab50f5ba2e92d0bc3454fa5f239463c76e35f2fe6a888dde1be0c7d0324ae100"
+    },
+    {
+      "path": "tests/manual-mail-api.test.ts",
+      "sha256": "7a73c6771678f2ac85b7d08882f41ed9225e34bf56c0ac226f3d1f291366a08b"
+    },
+    {
+      "path": "tests/manual-mail-dispatcher.test.ts",
+      "sha256": "ceb6777ade548b16d60bc048ccbb0562de00285db0224a5a1ef146a371986c8d"
+    },
+    {
+      "path": "tests/manual-mail-database.test.ts",
+      "sha256": "a395ffd6177780afe28b2609b6123fa8a49942d6543984086de154d96ff821c8"
+    },
+    {
+      "path": "tests/manual-mail-native.test.ts",
+      "sha256": "2e92b658e30c03e1a07e4bd02df715f1b623de8a9c4984da854e255ce1131288"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/spec.md",
+      "sha256": "cc5886f1859eb609c714b28cb0d0f1343137a402d267e297f866b260ae67e391"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/design.md",
+      "sha256": "ee167e9808371ec310e8cb3ee65b14d206edc40849736309f17e8567afc8a864"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/acceptance.md",
+      "sha256": "a3659e3bb9c00be8f644453e6b715463f3477a23cd3ff1214e60eed49986cad8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/tasks.md",
+      "sha256": "e683361dace814f235b2975d5db2a524b42fd0f8e3df00175b03958ad0746cde"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/verification.md",
+      "sha256": "ddf055d8eda9b1d7d47ecaa3ab6d5592e9ca51a5f4842eacde177a54ab114574"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/rollout.md",
+      "sha256": "cc3b88e449b4db6ba288e89e5127487c9a45cff9555edf39ba7ee0c19727870f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/review.md",
+      "sha256": "144acec2a90774e402fab190ada147f12d6990cc61b88a03279c6c906a21a7ed"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/adr-001.md",
+      "sha256": "afc1bc550efadce6384e865e700437856b4c0010c38d8f3202f82e2ff03db30f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/migrations/manual-mail-latency.sql",
+      "sha256": "b3d113d38a6969a777a07d38f07bde4c871c06a18a90d05ba92a1ad862fb180a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/migrations/manual-mail-latency.rollback.sql",
+      "sha256": "f74e045f10cc69fdf2c400e9fbdfe75a6acc31ca55a7b1247026e31b369b9a9e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/migrations/preflight.sql",
+      "sha256": "d18e83e7ace7e442a079149ec6b4e1a3f2261867d33a3d2fd1eefe71a31131ef"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/migrations/postflight.sql",
+      "sha256": "d04cc8565d412d864ad61901c69fb4bc3cc4e297a6190dd215c163d3255560d1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/manual-mail-latency/evidence/validation-summary.json",
+      "sha256": "8a28d8af766a2f33ef029694e0cc8a4be7ac492192adaa291796b2137b49531a"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 "use client";
 import { ProtectedForm } from "./unsaved-changes";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Upload, FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import { detectMapping, type Mapping } from "@/lib/imports";
 import type { Locale, Workspace } from "@/lib/domain";
@@ -12,12 +12,16 @@ export function ImportWizard({
   data,
   act,
   refresh,
+  onRegistered,
+  returnLabel,
 }: {
   locale: Locale;
   close: () => void;
   data: Workspace;
   act: Action;
   refresh: () => Promise<void>;
+  onRegistered?: (id: string) => void;
+  returnLabel?: string;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [sheets, setSheets] = useState<string[]>([]);
@@ -29,6 +33,7 @@ export function ImportWizard({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const requestKeys = useRef(new WeakMap<File, Map<string, string>>());
   async function preview(selected: File, chosen = "") {
     setBusy(true);
     setError("");
@@ -68,15 +73,46 @@ export function ImportWizard({
         body.set("file", file!);
         body.set("sheet", sheet);
         body.set("mapping", JSON.stringify(mapping));
-        body.set("idempotency_key", crypto.randomUUID());
+        let keys = requestKeys.current.get(file!);
+        if (!keys) {
+          keys = new Map();
+          requestKeys.current.set(file!, keys);
+        }
+        const fingerprint = JSON.stringify([sheet, mapping]);
+        let requestKey = keys.get(fingerprint);
+        if (!requestKey) {
+          requestKey = crypto.randomUUID();
+          keys.set(fingerprint, requestKey);
+        }
+        body.set("idempotency_key", requestKey);
         const res = await fetch("/api/import", { method: "POST", body });
         const result = await res.json();
         if (!res.ok) throw new Error(result.error);
-        await refresh();
+        setDone(true);
+        if (typeof result.id === "string") onRegistered?.(result.id);
+        try {
+          await refresh();
+        } catch {
+          setError(
+            t(
+              locale,
+              "La importación quedó registrada. No repitas la carga; actualiza el progreso del lote.",
+              "The import was registered. Do not upload again; refresh the import progress.",
+            ),
+          );
+        }
       }
       setDone(true);
     } catch (e) {
-      setError((e as Error).message);
+      setError(
+        e instanceof TypeError
+          ? t(
+              locale,
+              "No se pudo confirmar la carga. Puedes reintentar sin duplicar la solicitud.",
+              "The upload could not be confirmed. You can retry without duplicating the request.",
+            )
+          : (e as Error).message,
+      );
     } finally {
       setBusy(false);
     }
@@ -101,7 +137,11 @@ export function ImportWizard({
           3. {t(locale, "Procesamiento", "Processing")}
         </span>
       </div>
-      {error && <div className="error-banner">{error}</div>}
+      {error && (
+        <div className="error-banner" role="alert">
+          {error}
+        </div>
+      )}
       {done ? (
         <div className="import-success">
           <CheckCircle2 size={45} />
@@ -120,7 +160,7 @@ export function ImportWizard({
                 )}
           </p>
           <button className="button primary" onClick={close}>
-            {t(locale, "Volver a leads", "Back to leads")}
+            {returnLabel || t(locale, "Volver a leads", "Back to leads")}
           </button>
         </div>
       ) : (

@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-16T06:09:41.372Z",
+  "authorized": true,
+  "candidateBase": "a34a08938cc637aa28b5176af31368cce30c554c",
+  "integrationBase": "90a95ce139f3454e6dd33fb4d8b4b2a7c26d08ed",
+  "previousDeployment": "90a95ce139f3454e6dd33fb4d8b4b2a7c26d08ed",
+  "patchSha256": "473ab725a7bd9438a980e441291cdc9a3ebab860c39afd4860ce9f673fd81dea",
+  "all13PayloadFilesMatchCandidate": true,
+  "upstreamReleasePreserved": "manual-mail-latency",
+  "coordinatorWorkingTreeModified": false,
+  "sqlApplied": false,
+  "published": false
+}

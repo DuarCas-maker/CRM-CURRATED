@@ -1,0 +1,138 @@
+{
+  "at": "2026-11-16T06:08:30.590Z",
+  "postgres": "15.8",
+  "readOnlyCapture": true,
+  "functionsInventoried": 391,
+  "newFunctionNamesAbsent": true,
+  "relations": 9,
+  "comparison": [
+    {
+      "signature": "public.crm_command_v7(text, jsonb, uuid)",
+      "localHash": "1e192ba9c5145e2ee825841e401fe7ca",
+      "productionHash": "1e192ba9c5145e2ee825841e401fe7ca",
+      "matched": true
+    },
+    {
+      "signature": "public.current_app_role()",
+      "localHash": "a637b668565e491117467da85e567a0a",
+      "productionHash": "a637b668565e491117467da85e567a0a",
+      "matched": true
+    },
+    {
+      "signature": "public.can_lead(uuid)",
+      "localHash": "4d429a65b02788b6b286782e8e82a773",
+      "productionHash": "4d429a65b02788b6b286782e8e82a773",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_v18(text, jsonb, uuid)",
+      "localHash": "c189a3f3ed279670cda20dc6fb47f7f7",
+      "productionHash": "c189a3f3ed279670cda20dc6fb47f7f7",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_v26_underwriting(text, jsonb, uuid)",
+      "localHash": "e416f78f8918f5bbeb7e74288e2e6921",
+      "productionHash": "e416f78f8918f5bbeb7e74288e2e6921",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_before_brand_b2(text, jsonb, uuid)",
+      "localHash": "3c1f1a5279b897f541222e153322ca9a",
+      "productionHash": "3c1f1a5279b897f541222e153322ca9a",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_v24_documents(text, jsonb, uuid)",
+      "localHash": "9458badb3533bd833ef37885851e1d72",
+      "productionHash": "9458badb3533bd833ef37885851e1d72",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_v28_campaign_templates(text, jsonb, uuid)",
+      "localHash": "23561e8ab3219a04993b351d166d1eed",
+      "productionHash": "23561e8ab3219a04993b351d166d1eed",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_v31_banks(text, jsonb, uuid)",
+      "localHash": "3001b3d7470ba2b9de4c2a1e99ae680b",
+      "productionHash": "3001b3d7470ba2b9de4c2a1e99ae680b",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_v42_first_contact(text, jsonb, uuid)",
+      "localHash": "c26067abaa32090e1d1be03b68e54cc5",
+      "productionHash": "c26067abaa32090e1d1be03b68e54cc5",
+      "matched": true
+    },
+    {
+      "signature": "public.first_contact_candidates(text, text, uuid, uuid)",
+      "localHash": "be0e58f859834e83f8298a811afc5172",
+      "productionHash": "be0e58f859834e83f8298a811afc5172",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_before_brand_b1(text, jsonb, uuid)",
+      "localHash": "f0dc61300b01d6935ce2a50b84ebf21e",
+      "productionHash": "f0dc61300b01d6935ce2a50b84ebf21e",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_v20(text, jsonb, uuid)",
+      "localHash": "ef8b687f8d49bd976e9fbb391283fc81",
+      "productionHash": "ef8b687f8d49bd976e9fbb391283fc81",
+      "matched": true
+    },
+    {
+      "signature": "brand_b2.campaign_guard()",
+      "localHash": "caa5673f64b8be725ade43fd361e6a13",
+      "productionHash": "caa5673f64b8be725ade43fd361e6a13",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command_v37_campaign_delivery(text, jsonb, uuid)",
+      "localHash": "a7efebb20073364efbdce0a6ff7a569f",
+      "productionHash": "a7efebb20073364efbdce0a6ff7a569f",
+      "matched": true
+    },
+    {
+      "signature": "public.crm_command(text, jsonb, uuid)",
+      "localHash": "f519770bcd945aa7bc51c2a2bb722788",
+      "productionHash": "f519770bcd945aa7bc51c2a2bb722788",
+      "matched": true
+    },
+    {
+      "signature": "public.brand_prepare_context(uuid, jsonb, text, uuid)",
+      "localHash": "362bf10b8b8f39290850a3a63e9a6a18",
+      "productionHash": "362bf10b8b8f39290850a3a63e9a6a18",
+      "matched": true
+    }
+  ],
+  "expectedNewFunctions": [
+    {
+      "signature": "public.campaign_import_contact_rows(uuid)",
+      "source_hash": "7536e85f57bb1ebd09dddead0974afaf"
+    },
+    {
+      "signature": "public.campaign_import_status(uuid)",
+      "source_hash": "db488fdde79a5b7675ccb3ac177ee002"
+    },
+    {
+      "signature": "public.campaign_import_leads_page(uuid, uuid, uuid, text, integer)",
+      "source_hash": "f139068b066ec8208550176a7958313c"
+    },
+    {
+      "signature": "public.campaign_verify_import(uuid, integer, uuid)",
+      "source_hash": "77d06f18f0c6aec886c020fbb82402c1"
+    },
+    {
+      "signature": "public.campaign_create_from_import(jsonb, uuid)",
+      "source_hash": "710550a0cd856c99eb7694083a5a6afe"
+    }
+  ],
+  "columnsCompared": 99,
+  "columnDifferences": [],
+  "compatible": true,
+  "productionSqlChanges": 0
+}

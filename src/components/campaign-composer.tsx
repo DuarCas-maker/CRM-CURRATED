@@ -1,5 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { importCampaignHref } from "@/lib/campaign-import";
+import { markFormSaved, useNativeChanges } from "./unsaved-changes";
 import type { Workspace, Locale } from "@/lib/domain";
 import type { EmailTemplate } from "@/lib/campaign-templates";
 import { campaignPreviewValues } from "@/lib/campaign-templates";
@@ -29,12 +31,14 @@ export function CampaignComposer({
   initialTemplate,
   act,
   close,
+  sourceBatchId,
 }: {
   data: Workspace;
   locale: Locale;
   initialTemplate: EmailTemplate | null;
   act: Action;
   close: () => void;
+  sourceBatchId?: string;
 }) {
   const templates = [
     ...(initialTemplate ? [initialTemplate] : []),
@@ -69,6 +73,10 @@ export function CampaignComposer({
     [scheduled, setScheduled] = useState("");
   const [review, setReview] = useState(false),
     [saved, setSaved] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const leaving = useRef(false);
+  const importKeys = useRef(new Map<string, string>());
+  useNativeChanges(formRef, true, false, () => busy && !leaving.current);
   const template = templates.find((t) => t.id === templateId);
   useEffect(() => {
     setLeads(null);
@@ -78,14 +86,16 @@ export function CampaignComposer({
     setLoading(true);
     const timer = setTimeout(() => {
       void fetch(
-        "/api/campaigns/center?" +
-          new URLSearchParams({
-            mode: "leads",
-            template: templateId,
-            account,
-            search: query,
-            page: String(page),
-          }),
+        sourceBatchId
+          ? importCampaignHref(sourceBatchId, templateId, account, query, page)
+          : "/api/campaigns/center?" +
+              new URLSearchParams({
+                mode: "leads",
+                template: templateId,
+                account,
+                search: query,
+                page: String(page),
+              }),
         { signal: abort.signal },
       )
         .then(async (r) => {
@@ -104,7 +114,7 @@ export function CampaignComposer({
       abort.abort();
       clearTimeout(timer);
     };
-  }, [data.demo, templateId, account, query, page]);
+  }, [data.demo, templateId, account, query, page, sourceBatchId]);
   let preview = "";
   try {
     if (template)
@@ -114,16 +124,21 @@ export function CampaignComposer({
         template.body_format,
       ).html;
   } catch {}
-  const selected = manual ? ids.length : Math.min(leads?.eligible || 0, 5000);
+  const selected = manual
+    ? ids.length
+    : sourceBatchId
+      ? leads?.eligible || 0
+      : Math.min(leads?.eligible || 0, 5000);
   async function submit(form: HTMLFormElement, intent: string) {
     if (!template || !brandCurrent || data.demo) return;
+    leaving.current = false;
     setBusy(true);
     setError("");
     try {
       const fields = Object.fromEntries(new FormData(form));
       let id = saved;
       if (!id) {
-        const result = (await act("create_campaign", {
+        const payload = {
           ...fields,
           account_id: account,
           brand_preparation: brandPreparation,
@@ -134,7 +149,30 @@ export function CampaignComposer({
           steps: [],
           body_format: template.body_format || "plain",
           ...(manual ? { selected_contact_ids: ids } : {}),
-        })) as { id: string };
+        };
+        let result: { id: string };
+        if (sourceBatchId) {
+          const scoped = { ...payload, import_batch_id: sourceBatchId };
+          const fingerprint = JSON.stringify(scoped);
+          let request_key = importKeys.current.get(fingerprint);
+          if (!request_key) {
+            request_key = crypto.randomUUID();
+            importKeys.current.set(fingerprint, request_key);
+          }
+          const response = await fetch("/api/campaigns/import", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              kind: "create",
+              request_key,
+              payload: scoped,
+            }),
+          });
+          result = await response.json();
+          if (!response.ok)
+            throw new Error((result as unknown as { error: string }).error);
+        } else
+          result = (await act("create_campaign", payload)) as { id: string };
         id = result.id;
         setSaved(id);
       }
@@ -149,6 +187,8 @@ export function CampaignComposer({
           id,
           brand_preparation: brandPreparation,
         });
+      markFormSaved(form);
+      leaving.current = true;
       close();
     } catch (e) {
       setError((e as Error).message);
@@ -158,6 +198,8 @@ export function CampaignComposer({
   }
   return (
     <form
+      ref={formRef}
+      aria-busy={busy}
       className="campaign-composer"
       onSubmit={(e) => {
         e.preventDefault();
@@ -333,8 +375,23 @@ export function CampaignComposer({
         </div>
         <section className="campaign-note" aria-live="polite">
           <strong>
-            {t(locale, "Leads de Preparación", "Leads from Preparation")}
+            {sourceBatchId
+              ? t(
+                  locale,
+                  "Destinatarios de este archivo",
+                  "Recipients from this file",
+                )
+              : t(locale, "Leads de Preparación", "Leads from Preparation")}
           </strong>
+          {sourceBatchId && (
+            <p>
+              {t(
+                locale,
+                "Solo se incluirán contactos elegibles de este lote. Máximo 5.000 por campaña; los lotes mayores requieren selección explícita.",
+                "Only eligible contacts from this import are included. Maximum 5,000 per campaign; larger imports require an explicit selection.",
+              )}
+            </p>
+          )}
           <p>
             {loading
               ? t(locale, "Consultando elegibilidad…", "Checking eligibility…")
@@ -551,11 +608,27 @@ export function CampaignComposer({
           )}
         </p>
       )}
+      {sourceBatchId && selected > 5000 && (
+        <p role="alert" className="error">
+          {t(
+            locale,
+            "Selecciona hasta 5.000 destinatarios. No se recortará el archivo automáticamente.",
+            "Select up to 5,000 recipients. The file will not be truncated automatically.",
+          )}
+        </p>
+      )}
       <div className="card-actions" style={{ marginTop: 18 }}>
         <button
           className="button"
           value="draft"
-          disabled={busy || !template || !account || !brandCurrent || data.demo}
+          disabled={
+            busy ||
+            !template ||
+            !account ||
+            !brandCurrent ||
+            data.demo ||
+            (Boolean(sourceBatchId) && selected > 5000)
+          }
         >
           {t(locale, "Guardar borrador", "Save draft")}
         </button>
@@ -563,7 +636,13 @@ export function CampaignComposer({
           className="button"
           value="schedule"
           disabled={
-            busy || !scheduled || !selected || loading || !leads || data.demo
+            busy ||
+            !scheduled ||
+            !selected ||
+            loading ||
+            !leads ||
+            data.demo ||
+            (Boolean(sourceBatchId) && selected > 5000)
           }
         >
           {t(locale, "Programar campaña", "Schedule campaign")}
@@ -571,7 +650,14 @@ export function CampaignComposer({
         <button
           className="button primary"
           value={review ? "activate" : "review"}
-          disabled={busy || !selected || loading || !leads || data.demo}
+          disabled={
+            busy ||
+            !selected ||
+            loading ||
+            !leads ||
+            data.demo ||
+            (Boolean(sourceBatchId) && selected > 5000)
+          }
         >
           {review
             ? t(locale, "Confirmar y activar", "Confirm and activate")

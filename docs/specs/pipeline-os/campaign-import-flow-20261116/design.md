@@ -1,0 +1,15 @@
+# Diseño y ADR CI-001
+
+Reutilizar motores y agregar únicamente la coordinación por lote. El creador actual usa candidatos globales y043 borra batch_id al crear; no basta con filtrar la pantalla. Se agregan RPC aditivos para progreso, candidatos paginados, solicitud explícita de verificación y creación transaccional por lote. No se reemplaza crm_command ni la lógica de envío.
+
+La creación llama al crm_command vigente con audiencia vacía, conserva su validación y snapshot de plantilla/marca, deriva los elegibles del lote y fija selected_contact_ids y batch_id dentro de la misma transacción. La activación posterior usa el comando vigente y revalida los destinatarios. Fallos revierten toda la creación. Las campañas anteriores quedan intactas.
+
+Las nuevas funciones usan search_path vacío, gate de rol/MFA y acceso equivalente a import_batches existente. Un helper interno se revoca para roles API; los RPC públicos se conceden solo a authenticated. No service_role en la nueva ruta. Recibos por usuario/clave y huella del input completo impiden duplicados y reutilización de claves; verificación bloquea lote/contactos y revalida cantidad antes de encolar.
+
+La conciliación productiva detectó default privileges de supabase_admin que conceden EXECUTE a service_role. El paquete revoca explícitamente ese rol en las cinco funciones, sin alterar los default privileges globales; helper solo propietario y cuatro RPC para authenticated. La corrección versionada revoke-inherited-service.sql completa la primera aplicación ya confirmada y exige las cinco fuentes/propietario esperados. Se prueban defaults heredados, idempotencia de la corrección y rechazo de drift.
+
+Compatibilidad de marca comprobada con el trigger real de B2: el wrapper de crm_command limpia pipeline_os.brand_context antes de devolver el resultado. Para fijar la audiencia del lote en esa misma transacción, la función nueva recupera exclusivamente el snapshot recién creado por el comando, comprueba propósito/actor/cuenta, lo usa durante el UPDATE y vuelve a limpiar el contexto. No acepta un contexto del cliente ni desactiva triggers; la edición directa de destinatarios sin contexto sigue denegada. La prueba reproduce primero BRAND_PREPARATION_REQUIRED y después verifica creación, replay, snapshot, rechazo de preparación obsoleta y activación limitada al archivo.
+
+La UI integra un componente del recorrido en el segundo nivel, reutiliza ImportWizard con callback opcional de registro y CampaignComposer con lote opcional. Lo anterior sigue funcionando sin esas props. Solo una creación explícita puede enviar POST; refrescar progreso hace GET. Errores no borran el lote ni los campos. Pestañas y pasos con etiquetas, foco y estados accesibles; estilos usan tokens Pipeline OS.
+
+SQL en migrations/up.sql y down.sql del paquete, sin reservar un ordinal ya ocupado en producción. Tests aplican el candidato tras las migraciones públicas47; la promoción deberá conciliar el catálogo remoto posterior y sus wrappers sin reemplazarlos. Falta de RPC produce503 y cierra el nuevo recorrido. Los controles heredados de marca deben seguir instalados en el destino.
