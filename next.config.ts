@@ -26,6 +26,10 @@ const config: NextConfig = {
           },
         ],
       },
+      {
+        source: "/api/users",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }],
+      },
     ];
   },
 };

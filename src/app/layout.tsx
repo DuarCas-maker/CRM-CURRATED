@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "@/components/user-management.css";
 export const metadata: Metadata = {
   title: "Curated Financial · CRM",
   description: "Financing, thoughtfully managed.",

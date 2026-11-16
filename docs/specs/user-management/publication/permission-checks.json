@@ -1,0 +1,37 @@
+{
+  "action": "permissions",
+  "at": "2026-11-16T06:32:39.374Z",
+  "readOnly": true,
+  "sqlSessionContextOnly": true,
+  "noUserRoleOrPasswordChanges": true,
+  "checks": {
+    "aal1_blocked": true,
+    "missing_profile_blocked": true,
+    "superadmin_aal2_allowed": true,
+    "invalid_service_actor_blocked": true
+  },
+  "rest": [
+    {
+      "name": "anonymous_private_table",
+      "status": 401,
+      "allowed": false
+    },
+    {
+      "name": "anonymous_admin_rpc",
+      "status": 401,
+      "allowed": false
+    },
+    {
+      "name": "service_private_table",
+      "status": 200,
+      "allowed": true
+    },
+    {
+      "name": "service_cannot_impersonate_human",
+      "status": 400,
+      "allowed": false
+    }
+  ],
+  "publicAssetsRead": 6,
+  "nonAdminActualJwtSessionsTested": false
+}

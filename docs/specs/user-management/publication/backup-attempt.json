@@ -1,0 +1,8 @@
+{
+  "action": "backup",
+  "at": "2026-11-16T06:21:59.256Z",
+  "directory": "/var/lib/postgresql/data/users-054-20261116T062159Z",
+  "dump": "/var/lib/postgresql/data/users-054-20261116T062159Z/pre054.dump",
+  "status": "reserved",
+  "retries": 0
+}

@@ -3,6 +3,8 @@ import { BrandConnectionFields } from "./brand-settings";
 import { connectReturnAttempt } from "@/lib/composio-connect-http";
 import { connectionsAllowed, connectionsInitialView } from "@/lib/connections";
 import { ConnectionsWorkspace } from "./connections-workspace";
+import { UserManagement } from "./user-management";
+import { canManageUsers } from "@/lib/user-management";
 import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
@@ -110,6 +112,7 @@ type View =
   | "lenders"
   | "reports"
   | "connections"
+  | "users"
   | "settings";
 export type Action = (
   kind: string,
@@ -602,6 +605,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     { id: "lenders", es: "Lenders", en: "Lenders", icon: Landmark },
     { id: "reports", es: "Indicadores", en: "Reports", icon: BarChart3 },
     { id: "connections", es: "Conexiones", en: "Connections", icon: Cable },
+    { id: "users", es: "Usuarios", en: "Users", icon: ShieldCheck },
     { id: "settings", es: "Configuración", en: "Settings", icon: Settings },
   ];
   const titles: Record<View, [string, string]> = {
@@ -620,6 +624,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     lenders: ["Las conexiones correctas.", "The right connections."],
     reports: ["Resultados con contexto.", "Results in context."],
     connections: ["Conexiones", "Connections"],
+    users: ["Usuarios y permisos.", "Users and permissions."],
     settings: ["Un espacio a tu medida.", "Your workspace, your way."],
   };
   const activeOpportunity = visible.find((o) => o.id === selected);
@@ -919,8 +924,9 @@ export default function CRM({ initial }: { initial: Workspace }) {
           {nav
             .filter(
               (item) =>
-                item.id !== "connections" ||
-                connectionsAllowed(profile, data.demo),
+                (item.id !== "connections" ||
+                  connectionsAllowed(profile, data.demo)) &&
+                (item.id !== "users" || canManageUsers(profile, data.demo)),
             )
             .map((item) => (
               <button
@@ -1140,17 +1146,23 @@ export default function CRM({ initial }: { initial: Workspace }) {
                             `Tienes ${overdue.length} tareas vencidas y ${unread} respuesta pendiente de atención.`,
                             `You have ${overdue.length} overdue tasks and ${unread} reply awaiting attention.`,
                           )
-                        : view === "campaigns"
+                        : view === "users"
                           ? t(
                               locale,
-                              "De leads validados a respuestas reales.",
-                              "From validated leads to real replies.",
+                              "Controla quién puede acceder y qué rol tiene cada persona.",
+                              "Control access and each person's role.",
                             )
-                          : t(
-                              locale,
-                              "Cada caso, con un responsable y un próximo paso.",
-                              "Every case, with an owner and a next step.",
-                            )}
+                          : view === "campaigns"
+                            ? t(
+                                locale,
+                                "De leads validados a respuestas reales.",
+                                "From validated leads to real replies.",
+                              )
+                            : t(
+                                locale,
+                                "Cada caso, con un responsable y un próximo paso.",
+                                "Every case, with an owner and a next step.",
+                              )}
                     </p>
                   </div>
                   <div className="heading-actions">
@@ -2288,6 +2300,25 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   openCase={(id) => {
                     setSelected(id);
                     setView("pipeline");
+                  }}
+                />
+              )}
+              {view === "users" && (
+                <UserManagement
+                  profile={profile}
+                  locale={locale}
+                  demo={data.demo}
+                  profiles={data.profiles}
+                  onUpdated={() => {
+                    void refresh().catch(() =>
+                      setError(
+                        t(
+                          locale,
+                          "Los cambios de usuarios se guardaron, pero no se pudo actualizar el resto de la pantalla.",
+                          "User changes were saved, but the rest of the workspace could not be refreshed.",
+                        ),
+                      ),
+                    );
                   }}
                 />
               )}

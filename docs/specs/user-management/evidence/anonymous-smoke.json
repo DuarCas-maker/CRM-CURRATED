@@ -1,0 +1,27 @@
+{
+  "runtime": "v22.23.5",
+  "realProviderCalls": 0,
+  "note": "No Supabase configuration; GET denies with 503 and invalid POST origin with 403.",
+  "results": [
+    {
+      "path": "/login",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/demo",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "path": "/api/users",
+      "method": "GET",
+      "status": 503
+    },
+    {
+      "path": "/api/users",
+      "method": "POST",
+      "status": 403
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "action": "catalog",
+  "at": "2026-11-16T06:25:25.845Z",
+  "readOnly": true,
+  "result": {
+    "functions": [],
+    "private_table": null,
+    "profile_access_hash": "9df7ccb994150c54fc2b05bb4229bf02",
+    "legacy_functions_hash": "189fd48f15725808951f34f537df66a8",
+    "legacy_functions_count": 300
+  }
+}

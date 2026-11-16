@@ -1,0 +1,40 @@
+{
+  "base": "2ef0826f44da22c415b97fce34108907b157680d",
+  "branch": "codex/user-management-release-20261116",
+  "sources": {
+    "next.config.ts": "f80814635382a5c533196fd1bc7c250a682d3b67f4a4f818f811226c7f490c4c",
+    "src/app/layout.tsx": "0b5852d4339ae6e7158c858c8c96c3dd02cdc5cd8c28080478d4ad610b615be4",
+    "src/components/crm.tsx": "b422ee20f416b8b3b6f18097bb01a5225d38fd1cd23c23a5935902bce40f103f",
+    "src/lib/server/supabase.ts": "f08d8118b170fc9703ae538164299db7ba00ddabd4840b405e040c77fc31a729",
+    "src/lib/user-management.ts": "9eb5bc6560e80f0c58d44129ab5e4bef87b4b1e16d3fe378021c919e459b7df1",
+    "src/lib/server/user-management.ts": "7685178764ce8e7060d76b844db883e1b87ba2725168d9f32b9e90b5ce243e5b",
+    "src/lib/server/user-management-http.ts": "99c1aed277847681aa5c92b254310c261139e76e5a39406cfb9abd38b6d294ff",
+    "src/app/api/users/route.ts": "e8fbcf15a27f240906d5896de5bc11158e89ce8b64e9235d4b27d722e9f77b7e",
+    "src/components/user-management.tsx": "8993605cab6d0e32a78ec1efa93e2acf79c0d576d97a5d4dcc1d81b6c3cfe7c0",
+    "src/components/user-management.css": "66e5fb11e2151a72fe27bc2945df8b9465c51589e2886cc6b23bdc97f4d83461",
+    "docs/specs/user-management/migrations/054_user_management.sql": "aa7c0c3b3277a1389ca0371eacb36fd5df13ab56b4a5f76c55f5cdbe47a1fc08",
+    "docs/specs/user-management/migrations/054_user_management.rollback.sql": "ddf5038d6d0d60ca103984f51bf10e43c148f59fa4b6d04f49ad1f075fab3286",
+    "tests/user-management-database.test.ts": "27471aecfcccf4c88282811ce5b93841f45797787fce29fd0768eb8b6bc8d4f0",
+    "tests/user-management-http.test.ts": "9223b3d9a1167a3c716fd4d48a3329b862fc089086f5a7e0936709eb1e933e13",
+    "tests/user-management-service.test.ts": "0d2edcf2f229efbefc405414eaeb7f92849586440d0c509f76fc2ad2ce2090f0",
+    "tests/user-management-ui.test.tsx": "f05c73164c9d267dff8eb49efdabd67635a84c953eb8b124af031903b8ba68e7",
+    "tests/fixtures/user-management-ui.tsx": "c84367bd4593bc695e1461fe2c11891deb9ba792e6531ac489750cd1f80ec104",
+    "scripts/preview-user-management.mjs": "b395a25c6fe751ef00079f6abe471ddfd45408209187b0a8d92b4cf8a5ccb4da",
+    "scripts/verify-user-management-build.mjs": "2e30e3775cc93ea73bbc9f72d9f51fc2f93ebec5d5cb96f598c2cbb524bf88ca",
+    "scripts/verify-user-management-smoke.mjs": "74b26a44991ea641560adfb8aa23b6d6e211c9b38b7032e3f1eed529f7e9c07b",
+    "scripts/user-management-production-api.mjs": "0558b6667c40b85b443914635fa3368058ae3002d7e7d182b4789500615370a7"
+  },
+  "sourceCount": 21,
+  "appliedMigrationSha256": "aa7c0c3b3277a1389ca0371eacb36fd5df13ab56b4a5f76c55f5cdbe47a1fc08",
+  "integratedTests": {
+    "pass": 39,
+    "fail": 0,
+    "skipped": 0
+  },
+  "campaignRegression": {
+    "pass": 7,
+    "fail": 0
+  },
+  "isolatedBuild": "passed on integrated base",
+  "legacyWorkPreserved": true
+}

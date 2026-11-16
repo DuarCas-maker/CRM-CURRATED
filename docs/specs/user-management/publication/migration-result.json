@@ -1,0 +1,10 @@
+{
+  "action": "apply",
+  "at": "2026-11-16T06:25:25.907Z",
+  "sha256": "aa7c0c3b3277a1389ca0371eacb36fd5df13ab56b4a5f76c55f5cdbe47a1fc08",
+  "status": "applied",
+  "retries": 0,
+  "private_rows": 0,
+  "new_functions": 7,
+  "table_present": true
+}

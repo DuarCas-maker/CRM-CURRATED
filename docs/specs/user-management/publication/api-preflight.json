@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-16T06:19:23.955Z",
+  "origin": "https://supabase.finlabinc.com",
+  "readOnly": true,
+  "requests": 1,
+  "result": {
+    "roles": ["superadmin", "seller_admin", "seller", "closer_admin", "closer"],
+    "database": "postgres",
+    "sql_role": "supabase_admin",
+    "pg_version": "150008",
+    "audit_present": true,
+    "user_functions": 0,
+    "profiles_present": true,
+    "invitations_present": true,
+    "private_table_present": false,
+    "server_program_allowed": true
+  }
+}
