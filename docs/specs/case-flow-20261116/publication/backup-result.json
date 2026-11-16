@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-16T07:05:45.885Z",
+  "path": "/var/lib/postgresql/data/case-flow-055-20261116T070514Z",
+  "dump": "/var/lib/postgresql/data/case-flow-055-20261116T070514Z/pre055.dump",
+  "status": "verified",
+  "retries": 0,
+  "bytes": 56537581,
+  "sha256": "c6c58d6bb739cc4539ca7fe5910e544453a1d52bbeb5e6e57e65a66f76e23cdd",
+  "verified": true,
+  "serverOnly": true,
+  "recoveredByReadOnlyInspection": true,
+  "restorationCheck": "list and complete decode; no full disaster restore"
+}

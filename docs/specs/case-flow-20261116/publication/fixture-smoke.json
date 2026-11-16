@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-16T07:08:30.388Z",
+  "checks": {
+    "idempotency": true,
+    "mail_queued": false,
+    "aal1_blocked": true,
+    "provider_calls": false,
+    "report_approval": true,
+    "single_selected": true,
+    "without_handoff": true,
+    "real_data_import": false,
+    "alternatives_kept": true,
+    "stale_edit_blocked": true,
+    "agreement_not_funding": true,
+    "manual_correction_and_reset": true
+  },
+  "rolledBack": true,
+  "noPersistentBusinessWrites": true,
+  "sqlSessionContextOnly": true,
+  "realJwtSession": false
+}

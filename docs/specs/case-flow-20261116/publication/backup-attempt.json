@@ -1,0 +1,6 @@
+{
+  "path": "/var/lib/postgresql/data/case-flow-055-20261116T070514Z",
+  "dump": "/var/lib/postgresql/data/case-flow-055-20261116T070514Z/pre055.dump",
+  "status": "reserved",
+  "retries": 0
+}

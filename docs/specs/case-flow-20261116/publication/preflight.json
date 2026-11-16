@@ -1,0 +1,88 @@
+{
+  "at": "2026-11-16T07:04:17.137Z",
+  "readOnly": true,
+  "result": {
+    "columns": null,
+    "new_rpc": false,
+    "version": "150008",
+    "database": "postgres",
+    "sql_role": "supabase_admin",
+    "functions": [
+      {
+        "anon": false,
+        "hash": "e713f82093aaaecb8bbd48b328fdb9ea",
+        "name": "can_area",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "ab1514e0501feeb8c0fb892b8bbd3a77",
+        "name": "can_case",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "4a4595ad7abdf61685f5403256b427ba",
+        "name": "can_edit_case",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "7a7660acd191f34b440382dac7ed34ef",
+        "name": "gmail_select_lender",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": false
+      },
+      {
+        "anon": false,
+        "hash": "5e9d9f822b8c1b57d501a27321e802e2",
+        "name": "queue_lender_emails",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "01d87efe8e2c0b64dd642c130a373c03",
+        "name": "actor_can_read",
+        "owner": "supabase_admin",
+        "schema": "s01_i02",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": false
+      },
+      {
+        "anon": false,
+        "hash": "5af68d35f80ff2cfc9d1c03c61e2e55e",
+        "name": "actor_can_write",
+        "owner": "supabase_admin",
+        "schema": "s01_i02",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": false
+      }
+    ],
+    "users_054": true,
+    "index_ready": false,
+    "can_send_hash": "ab56404fac1fb2da4a14b4938e19dc6d",
+    "untouched_hash": "ac7b2341beb3b309f2d728d268142d42",
+    "queue_owner_recognized": true
+  }
+}

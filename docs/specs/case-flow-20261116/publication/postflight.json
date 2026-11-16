@@ -1,0 +1,108 @@
+{
+  "at": "2026-11-16T07:06:09.948Z",
+  "readOnly": true,
+  "result": {
+    "columns": ["agreed_amount", "requirements_state", "workflow_value"],
+    "new_rpc": true,
+    "version": "150008",
+    "database": "postgres",
+    "sql_role": "supabase_admin",
+    "functions": [
+      {
+        "anon": false,
+        "hash": "9093e806fd8187959071c17b9687bdcf",
+        "name": "can_area",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "93b96a56e9075566a7d1eab96d15357a",
+        "name": "can_case",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "8ee3205ceb1b3f04a88fe323a3c8f81d",
+        "name": "can_edit_case",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "0d4a3cf5aa12589ee951792ae41a827f",
+        "name": "can_manage_case_flow",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "958ddced3deb0af443db39630b8a2654",
+        "name": "case_flow_command",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "966cac5661168b5605aab8efd6fca218",
+        "name": "gmail_select_lender",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": false
+      },
+      {
+        "anon": false,
+        "hash": "dc7d786755cdcba31ec08540d1bcaa46",
+        "name": "queue_lender_emails",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "5f5f556f7edd2c68d71441d90a192acb",
+        "name": "actor_can_read",
+        "owner": "supabase_admin",
+        "schema": "s01_i02",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": false
+      },
+      {
+        "anon": false,
+        "hash": "b8401dfd8298f8512b172bc9104376de",
+        "name": "actor_can_write",
+        "owner": "supabase_admin",
+        "schema": "s01_i02",
+        "definer": true,
+        "search_path": ["search_path=\"\""],
+        "authenticated": false
+      }
+    ],
+    "users_054": true,
+    "index_ready": true,
+    "can_send_hash": "ab56404fac1fb2da4a14b4938e19dc6d",
+    "untouched_hash": "ac7b2341beb3b309f2d728d268142d42",
+    "queue_owner_recognized": false
+  }
+}
