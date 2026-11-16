@@ -1,7 +1,10 @@
 import test, { after } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
-import { ConnectError } from "../src/lib/composio-connect";
+import {
+  ConnectError,
+  connectIdentitySchema,
+} from "../src/lib/composio-connect";
 import { ConnectNotEmitted } from "../src/lib/server/mail-accounts/composio-connect/orchestrator";
 import { validateConnectProviderConfiguration } from "../src/lib/server/mail-accounts/composio-connect/config";
 import {
@@ -547,6 +550,58 @@ test("T004-UT06: identity reads connection/config/profile in order with exact ac
     /sensitive-fixture|scopes|credentials|quota|verified|can_send|state/,
   );
   assert.equal(f.timers.size, 0);
+});
+
+test("COMPAT01: OAuth2 auth config remains authoritative when root scheme is absent or null", async () => {
+  for (const value of [undefined, null, "OAUTH2"]) {
+    const f = fixture();
+    const wire = f.connection() as Record<string, unknown>;
+    if (value === undefined) delete wire.authScheme;
+    else wire.authScheme = value;
+    f.queue.push(response(wire), response(f.auth()), response(f.profile()));
+    const identity = connectIdentitySchema.parse(
+      await f.provider.readIdentity(f.identity()),
+    );
+    assert.equal(identity.primary_email, "MAILBOX@example.test");
+    assert.equal(identity.active, true);
+    assert.equal(f.calls.length, 3);
+    assert.deepEqual(
+      f.calls.map((c) => c.init.method),
+      ["GET", "GET", "POST"],
+    );
+    assert(!f.calls.some((c) => c.url.endsWith("/link")));
+  }
+});
+
+test("COMPAT02: missing root scheme never substitutes for valid nested OAuth2 metadata", async () => {
+  for (const change of [
+    (c: any) => {
+      delete c.auth_config.auth_scheme;
+    },
+    (c: any) => {
+      c.auth_config.auth_scheme = "API_KEY";
+    },
+    (c: any) => {
+      c.auth_config.is_disabled = true;
+    },
+    (c: any) => {
+      c.user_id = "foreign_owner";
+    },
+    (c: any) => {
+      c.authScheme = "API_KEY";
+    },
+    (c: any) => {
+      c.authScheme = {};
+    },
+  ]) {
+    const f = fixture();
+    const wire: any = f.connection();
+    delete wire.authScheme;
+    change(wire);
+    f.queue.push(response(wire));
+    await assert.rejects(f.provider.readIdentity(f.identity()), safe);
+    assert.equal(f.calls.length, 1);
+  }
 });
 
 test("T004-UT07: foreign connection metadata stops before config/profile", async () => {

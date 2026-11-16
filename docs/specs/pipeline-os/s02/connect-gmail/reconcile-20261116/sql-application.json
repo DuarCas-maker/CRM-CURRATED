@@ -1,0 +1,7 @@
+{
+  "at": "2026-11-16T17:08:59.525Z",
+  "applied": true,
+  "sqlSha256": "143531148acf6cc7a7cf955809152d23b54dca6e1644430900e94ac659ec605d",
+  "target": "supabase.finlabinc.com",
+  "retries": 0
+}

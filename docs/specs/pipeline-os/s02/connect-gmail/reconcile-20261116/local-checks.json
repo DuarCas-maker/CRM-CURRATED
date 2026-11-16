@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-16T17:01:29.212Z",
+  "checks": [
+    {
+      "check": "regression",
+      "exit": 0
+    },
+    {
+      "check": "typecheck",
+      "exit": 0
+    },
+    {
+      "check": "build-webpack",
+      "exit": 0
+    }
+  ],
+  "realCredentials": false,
+  "externalFetchGuard": true
+}

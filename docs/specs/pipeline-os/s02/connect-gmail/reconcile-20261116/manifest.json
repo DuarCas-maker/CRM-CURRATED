@@ -1,0 +1,126 @@
+{
+  "scope": "CONNECT-RECONCILE-20261116",
+  "base": "57b98f3e7a358ec7b9d3c3d33214015ae6d7dd0c",
+  "authorization": "Implement expired-attempt reconciliation and publish to production, user2026-11-16",
+  "files": [
+    {
+      "path": "src/components/composio-connect.tsx",
+      "operation": "modify",
+      "baseSha256": "7a3bca012f9e2c81f82d1353aae798d12aabf6ec82930787f75e07761172f958",
+      "sha256": "5004f15b189ce29eefad041361a80a9574a44ee3b9dff8f7fcebd6ade5ab40d1"
+    },
+    {
+      "path": "src/lib/composio-connect-http.ts",
+      "operation": "modify",
+      "baseSha256": "a84d625dea7ba5dbc840db629d744e4b9fd968f795aa55634960d9b98df9fd14",
+      "sha256": "8c5838eeefc851c4ad04dd73e909c5559b00197d1c51bb221311b394a4739e92"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "operation": "modify",
+      "baseSha256": "3cf4d9349aac115b471589e91c250d6f3517981fd7ee516f89bb27409a815b22",
+      "sha256": "c382beab440a9a828fb7220dabcafd538b6f053a06fb262e7702659aa182cb45"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/provider.ts",
+      "operation": "modify",
+      "baseSha256": "c4697d591a048e9b26780a1515d719030a173467ab588a9c08e4cb8ad2bc3ed3",
+      "sha256": "451d379756f7d2ea006b3b12fc430cbe4091eab10e7897b6254b15cc3601babb"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-http-ui.test.ts",
+      "operation": "modify",
+      "baseSha256": "2e99619232f4c347b9f8fe02fe4a26fd34d7dd20436f54d58d7a4982b0eff657",
+      "sha256": "50e46e43b00f67b80cb64c03ea386fec483be3d50ac17584b8fa165a8b9aa6ec"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-provider.test.ts",
+      "operation": "modify",
+      "baseSha256": "d4b88cebc36b4651671a20db03922b43d39e7bf944363c4da5515ddf0292d78e",
+      "sha256": "5f0d9164eb1d39db8ea00b263da974cdbb9d3c8950634fe9e11c280bb9825af7"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-recovery.test.ts",
+      "operation": "modify",
+      "baseSha256": "6b34294bf8a2f248293cadae7788be417cabd5a8bb56221c86adb53c85602774",
+      "sha256": "3ad12d7f39c813cd0ae1cc8f93e329c9f66b7c51791bda0ad17065dff1b762a9"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-v2.test.ts",
+      "operation": "modify",
+      "baseSha256": "a2dc3aa4a313d5808ed8f2be994449c01c00e8e1754500bbce2649294bb417f2",
+      "sha256": "5c3bc749da74a6c1a368b1bde4677a799ce5fb10fc13b06af144941052c5578a"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/recovery/route.ts",
+      "operation": "add",
+      "baseSha256": null,
+      "sha256": "70939ae5fc52d68f56826b55bcb8fa1c8fbf51a52c544dc2d33f305cf95289b2"
+    },
+    {
+      "path": "src/components/composio-connect-recovery.tsx",
+      "operation": "add",
+      "baseSha256": null,
+      "sha256": "0f975fc13bdca444486229cd143975ec78fff8137fdf510115e1de140c5b8428"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/recovery.ts",
+      "operation": "add",
+      "baseSha256": null,
+      "sha256": "9327c6be1258f1a5ca877f4778c1a52a932e538b80c94486ea3b46740862954a"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-reconcile.test.ts",
+      "operation": "add",
+      "baseSha256": null,
+      "sha256": "e1c44c310d30367a12f5a616d1f0a354881bc863ec793fcbfb7e5a90198d978e"
+    },
+    {
+      "path": "scripts/preview-connect-compat.mjs",
+      "operation": "add",
+      "baseSha256": null,
+      "sha256": "489c096242123d5703568ac2b55b6b9b324a2879e8ebbce1f3677fbc13dc3705"
+    },
+    {
+      "path": "scripts/run-connect-recovery-native.mjs",
+      "operation": "add",
+      "baseSha256": null,
+      "sha256": "28db25566cd4a518ceff3cd7539f809087c4949f28a06a8e192b8512ebf27609"
+    },
+    {
+      "path": "scripts/verify-connect-recovery.mjs",
+      "operation": "add",
+      "baseSha256": null,
+      "sha256": "f7cf8dc04d737c0910d2c900eb311fcf6bfca8dd5023c90d7bef07a1b9732390"
+    },
+    {
+      "path": "tests/fixtures/pipeline-os-s02-connect-compat-browser.tsx",
+      "operation": "add",
+      "baseSha256": null,
+      "sha256": "9dd315c11ed95459ff3f3811bffd672fe7d4356c1dee4aedc5a393cb797daa61"
+    }
+  ],
+  "sqlPath": "docs/specs/pipeline-os/s02/connect-gmail/reconcile-20261116/recovery.delta.sql",
+  "sqlSha256": "143531148acf6cc7a7cf955809152d23b54dca6e1644430900e94ac659ec605d",
+  "rollbackSha256": "383072b328b522954494154f7c83127a91af127daec53be9c90a8bc9f9c78f28",
+  "verification": {
+    "regression": 106,
+    "nativeTests": 9,
+    "typecheck": 0,
+    "buildWebpack": 0
+  },
+  "providerBudget": {
+    "metadataGets": 2,
+    "gmailProfileGets": 1,
+    "retries": 0,
+    "createLink": 0,
+    "sending": 0,
+    "transportActivation": 0
+  },
+  "deployment": {
+    "web": "rv8rpfxhf0mbxprge6h6ki9c",
+    "worker": "vc4aybj4ucje7zstpsp3zboh",
+    "origin": "https://crm.finlabinc.com",
+    "configurationChanges": 0
+  }
+}

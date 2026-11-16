@@ -13,6 +13,95 @@ import {
   connectReturnAttempt,
 } from "../src/lib/composio-connect-http";
 const noop = () => {};
+
+test("COMPAT04: failed identity return is visible and never offers another Google authorization", () => {
+  for (const locale of ["es", "en"] as const) {
+    const p = props(locale),
+      id = randomUUID();
+    const view = connectViewHttp.parse({
+      status: {
+        id,
+        revision: 4,
+        state: "awaiting_consent",
+        deadline_ms: 1799999999000,
+        expected_mailbox_email: "expected@fixture.test",
+        account_id: p.accounts[0].id,
+        brand_id: p.options.brands[0].id,
+        binding_id: null,
+        cleanup_required: true,
+        composio_enabled: false,
+        next: "resume",
+        expired: false,
+      },
+      pending: null,
+      context_changed: false,
+    });
+    for (const returnError of [null, "CONNECT_UNAVAILABLE"] as const) {
+      const html = renderToStaticMarkup(
+        h(ComposioConnectView, { ...p, attempt: id, view, returnError }),
+      );
+      assert.match(html, /role="alert"/);
+      assert.match(
+        html,
+        locale === "es"
+          ? /No repitas la autorización/
+          : /Do not repeat Google authorization/,
+      );
+      assert(!html.includes(`/connect/${id}/resume`));
+      assert(!html.includes("Esperando autorización en Google"));
+      assert.match(
+        html,
+        locale === "es" ? /Revisar intento/ : /Review attempt/,
+      );
+    }
+    const expired = renderToStaticMarkup(
+      h(ComposioConnectView, {
+        ...p,
+        attempt: id,
+        view: { ...view, status: { ...view.status!, expired: true } },
+        returnError: "CONNECT_CLOSED",
+      }),
+    );
+    assert.match(
+      expired,
+      locale === "es" ? /venció sin confirmar/ : /expired without confirming/,
+    );
+  }
+});
+
+test("COMPAT05: stale callback notice cannot block a server-verified candidate", () => {
+  const p = props(),
+    id = randomUUID();
+  const view = connectViewHttp.parse({
+    status: {
+      id,
+      revision: 5,
+      state: "ready_to_register",
+      deadline_ms: 1799999999000,
+      expected_mailbox_email: "expected@fixture.test",
+      account_id: p.accounts[0].id,
+      brand_id: p.options.brands[0].id,
+      binding_id: null,
+      cleanup_required: false,
+      composio_enabled: false,
+      next: "register_candidate",
+      expired: false,
+    },
+    pending: null,
+    context_changed: false,
+  });
+  const html = renderToStaticMarkup(
+    h(ComposioConnectView, {
+      ...p,
+      attempt: id,
+      view,
+      returnError: "CONNECT_UNAVAILABLE",
+    }),
+  );
+  assert.match(html, /Registrar candidato revisado/);
+  assert(!html.includes('role="alert"'));
+  assert(!html.includes("CONNECT_UNAVAILABLE"));
+});
 function props(locale: "es" | "en" = "es") {
   const id = randomUUID();
   return {

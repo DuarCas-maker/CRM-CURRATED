@@ -1,0 +1,11 @@
+begin;
+set local lock_timeout='3s';
+do $$begin if exists(select 1 from composio_recovery.runs) then raise exception 'RECOVERY_EVIDENCE_MUST_BE_PRESERVED';end if;end$$;
+drop function public.composio_connect_recovery_execute(text,jsonb,jsonb);
+drop function public.composio_connect_recovery_authorize(text,jsonb);
+drop function public.composio_connect_recovery_list();
+drop function composio_recovery.guard(composio_recovery.runs);
+drop table composio_recovery.runs;
+drop schema composio_recovery;
+notify pgrst,'reload schema';
+commit;

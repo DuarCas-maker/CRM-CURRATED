@@ -4,6 +4,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   ConnectError,
+  connectErrorCodes,
   connectStatus,
   type ConnectConfig,
   type ConnectSession,
@@ -35,6 +36,12 @@ import { parseBrandPage } from "../../../brand-management";
 import { composioBindingPage } from "../composio-binding";
 import { mailQuotaEnabled, reserveGmailQuota } from "../../mail-quota";
 import { reserveConnectProfileQuota } from "./profile-quota";
+import {
+  reconcileExistingConnection,
+  recoveryCommand,
+  recoveryResult,
+  type RecoveryOperation,
+} from "./recovery";
 const nonce = z.string().regex(/^[A-Za-z0-9_-]{32,256}$/),
   revision = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const cookieSchema = z.strictObject({
@@ -809,5 +816,144 @@ export async function connectCallback(request: Request) {
     );
   } catch (e) {
     return connectHttpError(e);
+  }
+}
+
+async function recoveryRpc(
+  client: ConnectRpcClient,
+  name: string,
+  args: Record<string, unknown>,
+) {
+  const result = await client.rpc(name, args);
+  if (result.error) {
+    const code = z
+      .enum(connectErrorCodes)
+      .safeParse((result.error as { message?: unknown }).message);
+    throw new ConnectError(code.success ? code.data : "CONNECT_UNAVAILABLE");
+  }
+  return result.data;
+}
+export async function connectRecoveryList(request: Request) {
+  try {
+    const ctx = await context(),
+      { p, u } = ctx;
+    if (!p.enabled()) return fail();
+    if (new URL(request.url).search) return fail("CONNECT_INVALID_INPUT");
+    const c = p.configuration(),
+      s = currentConnectSession(await u.session(), p.now());
+    const rows = parsed(
+      z
+        .array(
+          z.object({
+            source_id: z.uuid(),
+            source_revision: revision,
+            email: z.email(),
+            created_at: z.string(),
+            state: z.enum(["available", "verifying", "failed", "completed"]),
+            child_id: z.uuid().nullable(),
+            request_key: z.uuid().nullable(),
+            deadline_ms: revision.nullable(),
+          }),
+        )
+        .max(20),
+      await recoveryRpc(u.db, "composio_connect_recovery_list", {}),
+    );
+    for (const row of rows)
+      if (
+        row.state === "completed" &&
+        row.child_id &&
+        row.request_key &&
+        row.deadline_ms &&
+        row.deadline_ms > p.now()
+      ) {
+        const material = c.material(s, row.request_key);
+        if (material.id !== row.child_id) return fail("CONNECT_STALE");
+        await saveCookie(p, row.child_id, {
+          proof: material.proof,
+          actor_id: s.actor_id,
+          session_hash: connectDigest(s.session_id),
+          deadline_ms: row.deadline_ms,
+          callback_key: material.callbackKey,
+        });
+      }
+    return reply({
+      items: rows.map(
+        ({ request_key: _key, deadline_ms: _deadline, ...row }) => row,
+      ),
+    });
+  } catch (error) {
+    return connectHttpError(error);
+  }
+}
+export async function connectRecoveryRun(request: Request) {
+  try {
+    const ctx = await context(),
+      { p, u } = ctx;
+    if (!p.enabled()) return fail();
+    const c = p.configuration();
+    guardOrigin(request, c);
+    if (new URL(request.url).search) return fail("CONNECT_INVALID_INPUT");
+    const body = parsed(recoveryCommand, await jsonBody(request));
+    const s = currentConnectSession(await u.session(), p.now()),
+      material = c.material(s, body.idempotency_key);
+    const payload = {
+      source_id: body.source_id,
+      expected_revision: body.expected_revision,
+      request_key: body.idempotency_key,
+      id: material.id,
+      authority: connectAuthority(s, material.proof),
+      state_hash: connectDigest(material.state),
+      capability_hash: connectDigest(material.proof),
+    };
+    const execute = async (
+      operation: RecoveryOperation,
+      extra: Record<string, unknown> = {},
+    ) => {
+      if (!p.enabled() || p.configuration().fingerprint !== c.fingerprint)
+        return fail("CONNECT_STALE");
+      const current = currentConnectSession(await u.session(), p.now());
+      if (
+        current.actor_id !== s.actor_id ||
+        current.session_id !== s.session_id ||
+        current.authorization_revision !== s.authorization_revision
+      )
+        return fail("CONNECT_FORBIDDEN");
+      const value = { ...payload, ...extra };
+      const ticket = parsed(
+        z.strictObject({ id: z.uuid(), proof: nonce }),
+        await recoveryRpc(u.db, "composio_connect_recovery_authorize", {
+          operation,
+          p: value,
+        }),
+      );
+      return recoveryRpc(p.service(), "composio_connect_recovery_execute", {
+        operation,
+        p: value,
+        ticket,
+      });
+    };
+    const result = recoveryResult.parse(
+      await reconcileExistingConnection({
+        execute,
+        configuration: c.descriptor,
+        credential: c.credential,
+        fetchImpl: p.fetchImpl,
+        now: p.now,
+      }),
+    );
+    if (result.state !== "completed" || result.child_id !== material.id)
+      return fail("CONNECT_NEEDS_RECONCILIATION");
+    const { api } = await runtime(ctx, c),
+      cookie: Correlation = {
+        proof: material.proof,
+        actor_id: s.actor_id,
+        session_hash: connectDigest(s.session_id),
+        deadline_ms: result.deadline_ms,
+        callback_key: material.callbackKey,
+      };
+    const a = await inspect(p, api, s, result.child_id, cookie);
+    return reply(view(a, cookie.pending, p));
+  } catch (error) {
+    return connectHttpError(error);
   }
 }

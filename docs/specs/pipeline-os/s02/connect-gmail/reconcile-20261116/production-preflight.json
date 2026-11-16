@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-16T17:05:52.024Z",
+  "readOnly": true,
+  "validated": true,
+  "metadata": {
+    "role": "supabase_admin",
+    "version": "15.8",
+    "database": "postgres",
+    "read_only": "on",
+    "policy_live": true,
+    "schema_absent": true,
+    "helpers_pinned": true,
+    "public_names_absent": true
+  }
+}

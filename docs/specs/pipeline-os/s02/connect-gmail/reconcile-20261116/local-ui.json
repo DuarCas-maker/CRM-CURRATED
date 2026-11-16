@@ -1,0 +1,28 @@
+{
+  "metrics": [
+    {
+      "brandPending": true,
+      "innerWidth": 327,
+      "resumeForms": 0,
+      "scrollWidth": 314
+    },
+    {
+      "brandPending": true,
+      "innerWidth": 698,
+      "resumeForms": 0,
+      "scrollWidth": 698
+    },
+    {
+      "brandPending": true,
+      "innerWidth": 1164,
+      "resumeForms": 0,
+      "scrollWidth": 1164
+    }
+  ],
+  "statusGets": 2,
+  "recoveryPosts": 1,
+  "externalRequests": 0,
+  "deniedMutations": 0,
+  "brandReviewRequired": true,
+  "googleAuthorizationRepeated": false
+}

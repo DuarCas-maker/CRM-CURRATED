@@ -6,12 +6,15 @@ import {
   connectOptionsHttp,
   connectViewHttp,
   connectReturnAttempt,
+  connectReturnError,
   connectAttemptHref,
+  type ConnectReturnError,
   type ConnectHttpOptions,
   type ConnectHttpView,
 } from "@/lib/composio-connect-http";
 import { ProtectedForm } from "./unsaved-changes";
 import { t } from "./ui";
+import { ComposioConnectRecovery } from "./composio-connect-recovery";
 type Account = { id: string; email: string };
 const labels: Record<string, [string, string]> = {
   prepared: ["Intento preparado", "Attempt prepared"],
@@ -57,6 +60,7 @@ type ViewProps = {
   draft: Draft;
   busy: boolean;
   error: string;
+  returnError?: ConnectReturnError;
   onDraft(d: Draft): void;
   onOptions(): void;
   onMore(): void;
@@ -69,7 +73,15 @@ export function ComposioConnectView(p: ViewProps) {
   const title = useId(),
     { locale, view, options, draft } = p,
     status = view?.status,
-    expired = status?.expired;
+    expired = status?.expired,
+    returnFailure =
+      p.returnError &&
+      !["awaiting_brand", "ready_to_register", "completed"].includes(
+        status?.state ?? "",
+      ),
+    verificationFailure =
+      status?.state === "awaiting_consent" &&
+      (!!returnFailure || status.cleanup_required);
   return (
     <section
       className="panel settings-panel"
@@ -287,13 +299,46 @@ export function ComposioConnectView(p: ViewProps) {
           {p.error}
         </p>
       )}
+      {(returnFailure || verificationFailure) && (
+        <p role="alert" tabIndex={-1}>
+          {p.returnError === "CONNECT_IDENTITY_MISMATCH"
+            ? t(
+                locale,
+                "El Gmail autorizado no coincide con el esperado. No se registró la cuenta; revisa la conexión antes de continuar.",
+                "The authorized Gmail does not match the expected account. No account was registered; review the connection before continuing.",
+              )
+            : p.returnError === "CONNECT_CLOSED" || expired
+              ? t(
+                  locale,
+                  "El intento venció sin confirmar la conexión en el CRM. Requiere conciliación; no repitas la autorización en Google.",
+                  "The attempt expired without confirming the connection in the CRM. Reconciliation is required; do not repeat Google authorization.",
+                )
+              : t(
+                  locale,
+                  "El CRM no pudo verificar la conexión tras el retorno de Google/Composio. La conexión podría existir en Composio; requiere conciliación. No repitas la autorización en Google.",
+                  "The CRM could not verify the connection after the Google/Composio return. The connection may exist in Composio; reconciliation is required. Do not repeat Google authorization.",
+                )}
+          {returnFailure && (
+            <>
+              {" "}
+              {t(locale, "Código", "Code")}: {p.returnError}.
+            </>
+          )}
+        </p>
+      )}
       <div role="status" aria-live="polite">
         {status && (
           <>
             <h3>
               {expired
                 ? t(locale, ...labels.expired)
-                : t(locale, ...labels[status.state])}
+                : verificationFailure
+                  ? t(
+                      locale,
+                      "Verificación pendiente de conciliación",
+                      "Verification pending reconciliation",
+                    )
+                  : t(locale, ...labels[status.state])}
             </h3>
             <p>
               {t(locale, "Vigente hasta", "Valid until")}:{" "}
@@ -347,20 +392,22 @@ export function ComposioConnectView(p: ViewProps) {
               )}
             </button>
           )}
-          {status?.next === "resume" && (
-            <form
-              method="post"
-              action={`/api/mail/composio/connect/${encodeURIComponent(p.attempt)}/resume`}
-            >
-              <button className="button primary" disabled={p.busy}>
-                {t(
-                  locale,
-                  "Autorizar en Google / Retomar",
-                  "Authorize with Google / Resume",
-                )}
-              </button>
-            </form>
-          )}
+          {status?.next === "resume" &&
+            !verificationFailure &&
+            !returnFailure && (
+              <form
+                method="post"
+                action={`/api/mail/composio/connect/${encodeURIComponent(p.attempt)}/resume`}
+              >
+                <button className="button primary" disabled={p.busy}>
+                  {t(
+                    locale,
+                    "Autorizar en Google / Retomar",
+                    "Authorize with Google / Resume",
+                  )}
+                </button>
+              </form>
+            )}
           {view?.pending && (
             <button
               className="button primary"
@@ -439,6 +486,7 @@ export function ComposioConnect({
     [attempt, setAttempt] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
+    [returnError, setReturnError] = useState<ConnectReturnError>(null),
     [draft, setDraft] = useState<Draft>({
       mode: "new",
       account_id: "",
@@ -451,10 +499,10 @@ export function ComposioConnect({
     keys = useRef(new Map<string, string>());
   useEffect(() => {
     if (allowed && !demo) {
-      const id = connectReturnAttempt(
-        new URLSearchParams(window.location.search),
-      );
+      const search = new URLSearchParams(window.location.search),
+        id = connectReturnAttempt(search);
       if (id) {
+        setReturnError(connectReturnError(search));
         setAttempt(id);
         void status(id);
       }
@@ -665,6 +713,7 @@ export function ComposioConnect({
         throw Error(e.code);
       }
       setView(connectViewHttp.parse(await r.json()));
+      setReturnError(null);
     } catch (e) {
       setError(text(e instanceof Error ? e.message : ""));
     } finally {
@@ -681,27 +730,57 @@ export function ComposioConnect({
       setOptions((o) => (o ? { ...o, account: null } : null));
   }
   return (
-    <ComposioConnectView
-      {...{ locale, accounts, options, view, attempt, draft, busy, error }}
-      onDraft={change}
-      onOptions={() => void readOptions()}
-      onMore={() => void readOptions(true)}
-      onBegin={() => void begin()}
-      onStatus={() => void status()}
-      onAction={(a) => void action(a)}
-      onNew={() => {
-        generation.current++;
-        keys.current.clear();
-        window.history.replaceState(
-          window.history.state,
-          "",
-          connectAttemptHref(window.location.href, null),
-        );
-        setAttempt("");
-        setView(null);
-        setError("");
-        setOptions(null);
-      }}
-    />
+    <>
+      <ComposioConnectView
+        {...{
+          locale,
+          accounts,
+          options,
+          view,
+          attempt,
+          draft,
+          busy,
+          error,
+          returnError,
+        }}
+        onDraft={change}
+        onOptions={() => void readOptions()}
+        onMore={() => void readOptions(true)}
+        onBegin={() => void begin()}
+        onStatus={() => void status()}
+        onAction={(a) => void action(a)}
+        onNew={() => {
+          generation.current++;
+          keys.current.clear();
+          window.history.replaceState(
+            window.history.state,
+            "",
+            connectAttemptHref(window.location.href, null),
+          );
+          setAttempt("");
+          setView(null);
+          setError("");
+          setReturnError(null);
+          setOptions(null);
+        }}
+      />
+      <ComposioConnectRecovery
+        locale={locale}
+        onRecovered={(id) => {
+          generation.current++;
+          abort.current?.abort();
+          setReturnError(null);
+          setError("");
+          setView(null);
+          setAttempt(id);
+          window.history.replaceState(
+            window.history.state,
+            "",
+            connectAttemptHref(window.location.href, id),
+          );
+          void status(id);
+        }}
+      />
+    </>
   );
 }

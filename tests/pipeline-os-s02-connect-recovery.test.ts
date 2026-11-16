@@ -4,9 +4,35 @@ import { randomUUID } from "node:crypto";
 import {
   connectAttemptHref,
   connectReturnAttempt,
+  connectReturnError,
   connectViewHttp,
 } from "../src/lib/composio-connect-http";
 import { connectV2Fixture } from "./fixtures/pipeline-os-s02-connect-v2";
+
+test("COMPAT03: callback error is an allowlisted hint bound to a unique valid attempt reference", () => {
+  const base = `composio_connect=${randomUUID()}`;
+  for (const code of [
+    "CONNECT_UNAVAILABLE",
+    "CONNECT_CLOSED",
+    "CONNECT_STALE",
+    "CONNECT_IDENTITY_MISMATCH",
+  ])
+    assert.equal(
+      connectReturnError(new URLSearchParams(`${base}&connect_error=${code}`)),
+      code,
+    );
+  for (const query of [
+    `${base}&connect_error=unknown`,
+    `${base}&connect_error=${encodeURIComponent("<script>private-fixture</script>")}`,
+    `${base}&connect_error=CONNECT_UNAVAILABLE&connect_error=CONNECT_CLOSED`,
+    `${base}&${base}&connect_error=CONNECT_UNAVAILABLE`,
+    "composio_connect=invalid&connect_error=CONNECT_UNAVAILABLE",
+    "connect_error=CONNECT_UNAVAILABLE",
+    `${base}&connect_error=CONNECT_FORBIDDEN`,
+    `${base}&connect_error=CONNECT_INVALID_INPUT`,
+  ])
+    assert.equal(connectReturnError(new URLSearchParams(query)), null);
+});
 
 test("REC01: prepared attempt reference survives reload without mailbox or provider material", () => {
   const id = randomUUID();

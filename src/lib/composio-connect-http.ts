@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { connectStates } from "./composio-connect";
+import { connectErrorCodes, connectStates } from "./composio-connect";
 const revision = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER),
   digest = z.string().regex(/^[a-f0-9]{64}$/);
 export const connectBeginHttp = z
@@ -95,6 +95,20 @@ export const connectOptionsHttp = z.strictObject({
 });
 export type ConnectHttpView = z.infer<typeof connectViewHttp>;
 export type ConnectHttpOptions = z.infer<typeof connectOptionsHttp>;
+export const connectRecoveryItemsHttp = z.strictObject({
+  items: z
+    .array(
+      z.strictObject({
+        source_id: z.uuid(),
+        source_revision: revision,
+        email: z.email(),
+        created_at: z.string(),
+        state: z.enum(["available", "verifying", "failed", "completed"]),
+        child_id: z.uuid().nullable(),
+      }),
+    )
+    .max(20),
+});
 export function connectReturnAttempt(search: URLSearchParams) {
   const id = search.get("composio_connect");
   return search.getAll("composio_connect").length === 1 &&
@@ -102,6 +116,22 @@ export function connectReturnAttempt(search: URLSearchParams) {
     ? id
     : null;
 }
+
+// Display-only hint: never authorizes a state transition or a provider request.
+export function connectReturnError(search: URLSearchParams) {
+  if (
+    !connectReturnAttempt(search) ||
+    search.getAll("connect_error").length !== 1
+  )
+    return null;
+  const code = z.enum(connectErrorCodes).safeParse(search.get("connect_error"));
+  return code.success &&
+    code.data !== "CONNECT_FORBIDDEN" &&
+    code.data !== "CONNECT_INVALID_INPUT"
+    ? code.data
+    : null;
+}
+export type ConnectReturnError = ReturnType<typeof connectReturnError>;
 
 // A reference only: reading its state still requires the original session and server cookie.
 export function connectAttemptHref(current: string, attempt: string | null) {

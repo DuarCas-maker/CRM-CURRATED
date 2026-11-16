@@ -1,0 +1,13 @@
+{
+  "at": "2026-11-16T17:05:56.554Z",
+  "directory": "/var/lib/postgresql/data/connect-reconcile-20261116T170556Z",
+  "dump": "/var/lib/postgresql/data/connect-reconcile-20261116T170556Z/pre-reconcile.dump",
+  "serverOnly": true,
+  "retries": 0,
+  "bytes": 57497801,
+  "sha256": "6b1254dbf7071879637589146b13cddf91bf148ccde055436151a3c695a0ef67",
+  "verified": true,
+  "decodeVerified": true,
+  "fullDisasterRestoreTested": false,
+  "recoveredByReadOnlyInspection": true
+}

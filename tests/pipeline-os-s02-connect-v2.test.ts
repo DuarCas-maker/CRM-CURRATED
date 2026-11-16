@@ -39,6 +39,47 @@ async function begin(
   return { id: a.id, url, body };
 }
 
+test("COMPAT06: callback without duplicate scheme reaches brand review with one admitted profile and no second link", async () => {
+  const f = await connectV2Fixture();
+  try {
+    const fetchImpl = f.p.fetchImpl;
+    f.p.fetchImpl = async (input, init) => {
+      const response = await fetchImpl(input, init);
+      if (!String(input).includes("/connected_accounts/ca_")) return response;
+      const wire = await response.json();
+      delete wire.authScheme;
+      return Response.json(wire);
+    };
+    const { id, url } = await begin(f);
+    const returned = await f.callback(url);
+    assert.equal(returned.status, 303);
+    assert(
+      !new URL(returned.headers.get("location")!).searchParams.has(
+        "connect_error",
+      ),
+    );
+    assert.equal((await f.callback(url)).status, 303);
+    assert.equal(f.calls.length, 4);
+    assert.equal(f.calls.filter((c) => c.path.endsWith("/link")).length, 1);
+    const view = connectViewHttp.parse(await (await f.status(id)).json());
+    assert.equal(view.status?.state, "awaiting_brand");
+    assert.equal(view.status?.composio_enabled, false);
+    await f.owner();
+    assert.equal(
+      await f.scalar(
+        "select count(*)::int v from composio_connect.profile_reservations where admitted_at is not null",
+      ),
+      1,
+    );
+    assert.equal(
+      await f.scalar("select count(*)::int v from mail_runtime.routes"),
+      0,
+    );
+  } finally {
+    await f.db.close();
+  }
+});
+
 test("Connect v2: new mailbox reserves profile before materialization and registers only a candidate", async () => {
   const f = await connectV2Fixture();
   try {

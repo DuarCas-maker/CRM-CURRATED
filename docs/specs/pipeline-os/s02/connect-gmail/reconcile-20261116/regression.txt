@@ -1,0 +1,646 @@
+TAP version 13
+# Subtest: CW2-AC02/04: engine and real offline adapter register one candidate; replay emits no second link
+ok 1 - CW2-AC02/04: engine and real offline adapter register one candidate; replay emits no second link
+  ---
+  duration_ms: 55.83
+  type: 'test'
+  ...
+# Subtest: CW2-AC04: identity mismatch never registers or activates a transport
+ok 2 - CW2-AC04: identity mismatch never registers or activates a transport
+  ---
+  duration_ms: 4.8629
+  type: 'test'
+  ...
+# Subtest: CW2-AC04: unknown link emission becomes uncertain; neither start nor resume creates a retry
+ok 3 - CW2-AC04: unknown link emission becomes uncertain; neither start nor resume creates a retry
+  ---
+  duration_ms: 1.9335
+  type: 'test'
+  ...
+# Subtest: CW2-AC04: changed context and expired MFA session deny before provider
+ok 4 - CW2-AC04: changed context and expired MFA session deny before provider
+  ---
+  duration_ms: 1.084
+  type: 'test'
+  ...
+# Subtest: CW2-AC03: upstream descriptor uses the same C2/R06 context and rejects rotated expected version
+ok 5 - CW2-AC03: upstream descriptor uses the same C2/R06 context and rejects rotated expected version
+  ---
+  duration_ms: 0.5135
+  type: 'test'
+  ...
+# Subtest: CW2-AC03: a successful onboarding profile cannot replace effective-grant evidence C2
+ok 6 - CW2-AC03: a successful onboarding profile cannot replace effective-grant evidence C2
+  ---
+  duration_ms: 4.9694
+  type: 'test'
+  ...
+# Subtest: T003-UT01: role/AAL/active/session guards reject before effects and protect replay
+ok 7 - T003-UT01: role/AAL/active/session guards reject before effects and protect replay
+  ---
+  duration_ms: 21.7672
+  type: 'test'
+  ...
+# Subtest: T003-UT01: authorization revision and browser proof cannot be silently replaced
+ok 8 - T003-UT01: authorization revision and browser proof cannot be silently replaced
+  ---
+  duration_ms: 0.9719
+  type: 'test'
+  ...
+# Subtest: T003-UT02: concurrent starts/callbacks share a durable claim and one provider effect
+ok 9 - T003-UT02: concurrent starts/callbacks share a durable claim and one provider effect
+  ---
+  duration_ms: 4.5612
+  type: 'test'
+  ...
+# Subtest: T003-UT03: load/claim unavailable never emits and pending persistence is not a success
+ok 10 - T003-UT03: load/claim unavailable never emits and pending persistence is not a success
+  ---
+  duration_ms: 1.5706
+  type: 'test'
+  ...
+# Subtest: T003-UT03: a proven non-emission releases the claim; only a new explicit call can issue
+ok 11 - T003-UT03: a proven non-emission releases the claim; only a new explicit call can issue
+  ---
+  duration_ms: 4.6531
+  type: 'test'
+  ...
+# Subtest: T003-UT04: creation timeout aborts and persists uncertainty, never retries
+ok 12 - T003-UT04: creation timeout aborts and persists uncertainty, never retries
+  ---
+  duration_ms: 1.0773
+  type: 'test'
+  ...
+# Subtest: T003-UT04: elapsed deadline is enforced even if a scheduler callback is delayed
+ok 13 - T003-UT04: elapsed deadline is enforced even if a scheduler callback is delayed
+  ---
+  duration_ms: 0.853
+  type: 'test'
+  ...
+# Subtest: T003-UT04: failed uncertainty ledger is surfaced without exposing provider details
+ok 14 - T003-UT04: failed uncertainty ledger is surfaced without exposing provider details
+  ---
+  duration_ms: 0.9118
+  type: 'test'
+  ...
+# Subtest: T003-UT05: save-before-commit loss requires reconciliation; save-after-commit loss recovers durable result
+ok 15 - T003-UT05: save-before-commit loss requires reconciliation; save-after-commit loss recovers durable result
+  ---
+  duration_ms: 2.11
+  type: 'test'
+  ...
+# Subtest: T003-UT06: resume uses saved link, clamps expiry and never extends original deadline
+ok 16 - T003-UT06: resume uses saved link, clamps expiry and never extends original deadline
+  ---
+  duration_ms: 3.0208
+  type: 'test'
+  ...
+# Subtest: T003-UT06: completing registration purges navigation and a prior resume cannot reopen OAuth
+ok 17 - T003-UT06: completing registration purges navigation and a prior resume cannot reopen OAuth
+  ---
+  duration_ms: 2.4603
+  type: 'test'
+  ...
+# Subtest: T003-UT07: invalid callback/foreign correlation or connection never calls identity provider
+ok 18 - T003-UT07: invalid callback/foreign correlation or connection never calls identity provider
+  ---
+  duration_ms: 1.2941
+  type: 'test'
+  ...
+# Subtest: T003-UT07: actual primary identity/tuple mismatches reject without creating a candidate
+ok 19 - T003-UT07: actual primary identity/tuple mismatches reject without creating a candidate
+  ---
+  duration_ms: 12.7681
+  type: 'test'
+  ...
+# Subtest: T003-UT07: failed consent rejects locally without a profile read or revoke operation
+ok 20 - T003-UT07: failed consent rejects locally without a profile read or revoke operation
+  ---
+  duration_ms: 1.2115
+  type: 'test'
+  ...
+# Subtest: T003-UT08: cancellation wins over a late creation result and records residual only
+ok 21 - T003-UT08: cancellation wins over a late creation result and records residual only
+  ---
+  duration_ms: 1.3674
+  type: 'test'
+  ...
+# Subtest: T003-UT08: cancellation wins over a late identity result without resetting terminal state
+ok 22 - T003-UT08: cancellation wins over a late identity result without resetting terminal state
+  ---
+  duration_ms: 1.7158
+  type: 'test'
+  ...
+# Subtest: T003-UT09: changed context blocks before emission and after a claim
+ok 23 - T003-UT09: changed context blocks before emission and after a claim
+  ---
+  duration_ms: 0.7122
+  type: 'test'
+  ...
+# Subtest: T003-UT09: session/config changes during provider work cannot finish a positive operation
+ok 24 - T003-UT09: session/config changes during provider work cannot finish a positive operation
+  ---
+  duration_ms: 2.2596
+  type: 'test'
+  ...
+# Subtest: T003-UT10: exact receipt replays without effects; different fingerprint conflicts
+ok 25 - T003-UT10: exact receipt replays without effects; different fingerprint conflicts
+  ---
+  duration_ms: 1.6437
+  type: 'test'
+  ...
+# Subtest: T003-UT11: successful lifecycle yields one candidate and no transport/evidence grant
+ok 26 - T003-UT11: successful lifecycle yields one candidate and no transport/evidence grant
+  ---
+  duration_ms: 3.8175
+  type: 'test'
+  ...
+# Subtest: T003-UT11: committed registration with lost acknowledgement is recovered through receipt only
+ok 27 - T003-UT11: committed registration with lost acknowledgement is recovered through receipt only
+  ---
+  duration_ms: 2.9113
+  type: 'test'
+  ...
+# Subtest: T003-UT12: malformed dependencies/snapshots and hostile redirects fail closed
+ok 28 - T003-UT12: malformed dependencies/snapshots and hostile redirects fail closed
+  ---
+  duration_ms: 2.7017
+  type: 'test'
+  ...
+# Subtest: T003-UT12: only explicit navigation exposes the capability URL; status/errors stay minimal
+ok 29 - T003-UT12: only explicit navigation exposes the capability URL; status/errors stay minimal
+  ---
+  duration_ms: 1.799
+  type: 'test'
+  ...
+# Subtest: T003-UT12: dependency errors cannot smuggle a reconciliation result or private details
+ok 30 - T003-UT12: dependency errors cannot smuggle a reconciliation result or private details
+  ---
+  duration_ms: 1.2277
+  type: 'test'
+  ...
+# Subtest: T003-UT12: inconsistent persisted states cannot trigger a second link creation
+ok 31 - T003-UT12: inconsistent persisted states cannot trigger a second link creation
+  ---
+  duration_ms: 1.2459
+  type: 'test'
+  ...
+# Subtest: T003-UT10: omitted optional callback fields and undefined have the same receipt fingerprint
+ok 32 - T003-UT10: omitted optional callback fields and undefined have the same receipt fingerprint
+  ---
+  duration_ms: 3.2687
+  type: 'test'
+  ...
+# Subtest: T003-UT03: timer installation failure prevents provider emission and releases the claim
+ok 33 - T003-UT03: timer installation failure prevents provider emission and releases the claim
+  ---
+  duration_ms: 0.9952
+  type: 'test'
+  ...
+# Subtest: HTTP session consumes SDK-verified claims and rechecks the current exact profile
+ok 34 - HTTP session consumes SDK-verified claims and rechecks the current exact profile
+  ---
+  duration_ms: 5.8802
+  type: 'test'
+  ...
+# Subtest: COMPAT04: failed identity return is visible and never offers another Google authorization
+ok 35 - COMPAT04: failed identity return is visible and never offers another Google authorization
+  ---
+  duration_ms: 25.9319
+  type: 'test'
+  ...
+# Subtest: COMPAT05: stale callback notice cannot block a server-verified candidate
+ok 36 - COMPAT05: stale callback notice cannot block a server-verified candidate
+  ---
+  duration_ms: 0.9286
+  type: 'test'
+  ...
+# Subtest: HTTP UI: demo/non-admin hidden, no automatic account or provider work
+ok 37 - HTTP UI: demo/non-admin hidden, no automatic account or provider work
+  ---
+  duration_ms: 1.5233
+  type: 'test'
+  ...
+# Subtest: HTTP UI: ES/EN states never label consent or candidate as active transport
+ok 38 - HTTP UI: ES/EN states never label consent or candidate as active transport
+  ---
+  duration_ms: 5.4321
+  type: 'test'
+  ...
+# Subtest: HTTP UI: disabled, busy, empty and safe error states remain readable
+ok 39 - HTTP UI: disabled, busy, empty and safe error states remain readable
+  ---
+  duration_ms: 1.2974
+  type: 'test'
+  ...
+# Subtest: HTTP public schemas reject tuples/secrets, unsafe revisions and duplicate return IDs
+ok 40 - HTTP public schemas reject tuples/secrets, unsafe revisions and duplicate return IDs
+  ---
+  duration_ms: 0.4388
+  type: 'test'
+  ...
+# Subtest: HTTP correlation is deterministic per actor/session/receipt and domain separated
+ok 41 - HTTP correlation is deterministic per actor/session/receipt and domain separated
+  ---
+  duration_ms: 3.3132
+  type: 'test'
+  ...
+# Subtest: HTTP feature off denies mutations and reads no configuration/RPC/provider
+ok 42 - HTTP feature off denies mutations and reads no configuration/RPC/provider
+  ---
+  duration_ms: 2221.648
+  type: 'test'
+  ...
+# Subtest: HTTP origin, shape, foreign session and absent cookie deny before provider
+ok 43 - HTTP origin, shape, foreign session and absent cookie deny before provider
+  ---
+  duration_ms: 2228.2501
+  type: 'test'
+  ...
+# Subtest: HTTP full offline flow: begin ACK replay, secure cookie, POST navigation, callback replay, B1 adopt and candidate
+ok 44 - HTTP full offline flow: begin ACK replay, secure cookie, POST navigation, callback replay, B1 adopt and candidate
+  ---
+  duration_ms: 2574.8534
+  type: 'test'
+  ...
+# Subtest: HTTP wrong primary mailbox redirects to a safe result and never materializes a candidate
+ok 45 - HTTP wrong primary mailbox redirects to a safe result and never materializes a candidate
+  ---
+  duration_ms: 2200.0072
+  type: 'test'
+  ...
+# Subtest: HTTP unknown creation cannot be repeated and cookie expiry does not extend
+ok 46 - HTTP unknown creation cannot be repeated and cookie expiry does not extend
+  ---
+  duration_ms: 2127.8778
+  type: 'test'
+  ...
+# Subtest: T004-UT01: descriptor validation rejects missing/unknown provenance and inconsistent context before transport
+ok 47 - T004-UT01: descriptor validation rejects missing/unknown provenance and inconsistent context before transport
+  ---
+  duration_ms: 7.8468
+  type: 'test'
+  ...
+# Subtest: T004-UT01: exact generation, credential/config revisions, provenance and callback snapshot are required
+ok 48 - T004-UT01: exact generation, credential/config revisions, provenance and callback snapshot are required
+  ---
+  duration_ms: 1.8242
+  type: 'test'
+  ...
+# Subtest: T004-UT02: link creation uses exactly one fixed POST and returns only normalized link fields
+ok 49 - T004-UT02: link creation uses exactly one fixed POST and returns only normalized link fields
+  ---
+  duration_ms: 24.9988
+  type: 'test'
+  ...
+# Subtest: T004-UT02: factory snapshots configuration and credentials without exposing them
+ok 50 - T004-UT02: factory snapshots configuration and credentials without exposing them
+  ---
+  duration_ms: 1.0107
+  type: 'test'
+  ...
+# Subtest: T004-UT03: invalid link shape, timestamp, expiry, sharing or navigation is rejected after one emission
+ok 51 - T004-UT03: invalid link shape, timestamp, expiry, sharing or navigation is rejected after one emission
+  ---
+  duration_ms: 5.726
+  type: 'test'
+  ...
+# Subtest: T004-UT04: HTTP failures and thrown transport errors are unknown outcomes, with no automatic retry
+ok 52 - T004-UT04: HTTP failures and thrown transport errors are unknown outcomes, with no automatic retry
+  ---
+  duration_ms: 3.3065
+  type: 'test'
+  ...
+# Subtest: T004-UT04: header timeout aborts emitted creation and ignores a late acknowledgement
+ok 53 - T004-UT04: header timeout aborts emitted creation and ignores a late acknowledgement
+  ---
+  duration_ms: 0.5579
+  type: 'test'
+  ...
+# Subtest: T004-UT05: invalid tuple, path injection, callback and pre-abort do not emit
+ok 54 - T004-UT05: invalid tuple, path injection, callback and pre-abort do not emit
+  ---
+  duration_ms: 2.7974
+  type: 'test'
+  ...
+# Subtest: T004-UT05: timer/clock installation failures before emission are safe and leave no abort listener
+ok 55 - T004-UT05: timer/clock installation failures before emission are safe and leave no abort listener
+  ---
+  duration_ms: 1.0315
+  type: 'test'
+  ...
+# Subtest: T004-UT06: identity reads connection/config/profile in order with exact account and owner
+ok 56 - T004-UT06: identity reads connection/config/profile in order with exact account and owner
+  ---
+  duration_ms: 4.1707
+  type: 'test'
+  ...
+# Subtest: COMPAT01: OAuth2 auth config remains authoritative when root scheme is absent or null
+ok 57 - COMPAT01: OAuth2 auth config remains authoritative when root scheme is absent or null
+  ---
+  duration_ms: 2.9198
+  type: 'test'
+  ...
+# Subtest: COMPAT02: missing root scheme never substitutes for valid nested OAuth2 metadata
+ok 58 - COMPAT02: missing root scheme never substitutes for valid nested OAuth2 metadata
+  ---
+  duration_ms: 3.3507
+  type: 'test'
+  ...
+# Subtest: T004-UT07: foreign connection metadata stops before config/profile
+ok 59 - T004-UT07: foreign connection metadata stops before config/profile
+  ---
+  duration_ms: 4.995
+  type: 'test'
+  ...
+# Subtest: T004-UT08: missing/foreign/disabled auth config stops before profile
+ok 60 - T004-UT08: missing/foreign/disabled auth config stops before profile
+  ---
+  duration_ms: 2.9551
+  type: 'test'
+  ...
+# Subtest: T004-UT08: proxy outer/inner status and primary Gmail email must all be valid
+ok 61 - T004-UT08: proxy outer/inner status and primary Gmail email must all be valid
+  ---
+  duration_ms: 2.9359
+  type: 'test'
+  ...
+# Subtest: T004-UT09: non-JSON, redirects, empty/malformed bodies and declared oversize are rejected
+ok 62 - T004-UT09: non-JSON, redirects, empty/malformed bodies and declared oversize are rejected
+  ---
+  duration_ms: 2.9859
+  type: 'test'
+  ...
+# Subtest: T004-UT09: streamed oversize is bounded independently of Content-Length and the body is cancelled
+ok 63 - T004-UT09: streamed oversize is bounded independently of Content-Length and the body is cancelled
+  ---
+  duration_ms: 1.5868
+  type: 'test'
+  ...
+# Subtest: T004-UT10: stalled body is cancelled on abort, without a late parse or follow-up
+ok 64 - T004-UT10: stalled body is cancelled on abort, without a late parse or follow-up
+  ---
+  duration_ms: 0.8007
+  type: 'test'
+  ...
+# Subtest: T004-UT10: elapsed time rejects delayed scheduler success and stops identity between steps
+ok 65 - T004-UT10: elapsed time rejects delayed scheduler success and stops identity between steps
+  ---
+  duration_ms: 0.8307
+  type: 'test'
+  ...
+# Subtest: T004-UT10: identity per-read timeout aborts pending second request and never reaches profile
+ok 66 - T004-UT10: identity per-read timeout aborts pending second request and never reaches profile
+  ---
+  duration_ms: 0.6823
+  type: 'test'
+  ...
+# Subtest: T004-UT11: forged dependency exceptions never assert non-emission or leak private payloads
+ok 67 - T004-UT11: forged dependency exceptions never assert non-emission or leak private payloads
+  ---
+  duration_ms: 1.4991
+  type: 'test'
+  ...
+# Subtest: T004-UT12: required injected dependencies have no global fallback or eager effect
+ok 68 - T004-UT12: required injected dependencies have no global fallback or eager effect
+  ---
+  duration_ms: 1.7074
+  type: 'test'
+  ...
+# Subtest: T004-UT10: a progressing body stops at deadline even while timer callbacks are delayed
+ok 69 - T004-UT10: a progressing body stops at deadline even while timer callbacks are delayed
+  ---
+  duration_ms: 0.5454
+  type: 'test'
+  ...
+# Subtest: T004-UT10: three bounded identity reads can share the thirty-second phase without a ten-second global cutoff
+ok 70 - T004-UT10: three bounded identity reads can share the thirty-second phase without a ten-second global cutoff
+  ---
+  duration_ms: 0.708
+  type: 'test'
+  ...
+# Subtest: RECON01: expired connection is verified once, original deadline preserved, brand review continues without Google
+ok 71 - RECON01: expired connection is verified once, original deadline preserved, brand review continues without Google
+  ---
+  duration_ms: 2579.5872
+  type: 'test'
+  ...
+# Subtest: RECON02: bad origin and client connection substitution are rejected before provider access
+ok 72 - RECON02: bad origin and client connection substitution are rejected before provider access
+  ---
+  duration_ms: 2329.9414
+  type: 'test'
+  ...
+# Subtest: RECON03: wrong Gmail does not materialize; failed reconciliation never retries
+ok 73 - RECON03: wrong Gmail does not materialize; failed reconciliation never retries
+  ---
+  duration_ms: 2338.5247
+  type: 'test'
+  ...
+# Subtest: RECON04: revision drift and a still-live original attempt cannot be reconciled
+ok 74 - RECON04: revision drift and a still-live original attempt cannot be reconciled
+  ---
+  duration_ms: 2217.4464
+  type: 'test'
+  ...
+# Subtest: RECON05: tables and service executor closed to human/anon; empty rollback is exact
+ok 75 - RECON05: tables and service executor closed to human/anon; empty rollback is exact
+  ---
+  duration_ms: 2097.5801
+  type: 'test'
+  ...
+# Subtest: RECON06: lost MFA and disabled actor cannot issue a recovery
+ok 76 - RECON06: lost MFA and disabled actor cannot issue a recovery
+  ---
+  duration_ms: 2050.349
+  type: 'test'
+  ...
+# Subtest: RECON07: policy closure, brand drift and changed config stop before provider
+ok 77 - RECON07: policy closure, brand drift and changed config stop before provider
+  ---
+  duration_ms: 6423.2566
+  type: 'test'
+  ...
+# Subtest: RECON08: foreign connected-account owner stops before Gmail quota and retry is forbidden
+ok 78 - RECON08: foreign connected-account owner stops before Gmail quota and retry is forbidden
+  ---
+  duration_ms: 2333.9919
+  type: 'test'
+  ...
+# Subtest: RECON09: policy revocation between metadata reads blocks profile and materialization
+ok 79 - RECON09: policy revocation between metadata reads blocks profile and materialization
+  ---
+  duration_ms: 2505.9246
+  type: 'test'
+  ...
+# Subtest: COMPAT03: callback error is an allowlisted hint bound to a unique valid attempt reference
+ok 80 - COMPAT03: callback error is an allowlisted hint bound to a unique valid attempt reference
+  ---
+  duration_ms: 1.7413
+  type: 'test'
+  ...
+# Subtest: REC01: prepared attempt reference survives reload without mailbox or provider material
+ok 81 - REC01: prepared attempt reference survives reload without mailbox or provider material
+  ---
+  duration_ms: 1.0758
+  type: 'test'
+  ...
+# Subtest: REC02: explicit reset clears attempt and stale callback error, preserving CRM navigation
+ok 82 - REC02: explicit reset clears attempt and stale callback error, preserving CRM navigation
+  ---
+  duration_ms: 0.1786
+  type: 'test'
+  ...
+# Subtest: REC03: invalid references are rejected and duplicate callback arguments cannot be resumed
+ok 83 - REC03: invalid references are rejected and duplicate callback arguments cannot be resumed
+  ---
+  duration_ms: 0.9465
+  type: 'test'
+  ...
+# Subtest: REC04: active v2 conflict can resume only in original browser/session without recreating provider link
+ok 84 - REC04: active v2 conflict can resume only in original browser/session without recreating provider link
+  ---
+  duration_ms: 2164.2637
+  type: 'test'
+  ...
+# Subtest: REC05: expired receipt does not silently retry; explicit fresh preparation preserves prior evidence
+ok 85 - REC05: expired receipt does not silently retry; explicit fresh preparation preserves prior evidence
+  ---
+  duration_ms: 2358.0185
+  type: 'test'
+  ...
+# Subtest: Connect setup CLI prepares once only under private local storage, never prints key material
+ok 86 - Connect setup CLI prepares once only under private local storage, never prints key material
+  ---
+  duration_ms: 946.0825
+  type: 'test'
+  ...
+# Subtest: Connect setup prepares CAS publication and null Google quota without reading a key or activating transport
+ok 87 - Connect setup prepares CAS publication and null Google quota without reading a key or activating transport
+  ---
+  duration_ms: 6.7165
+  type: 'test'
+  ...
+# Subtest: Connect setup rejects wrong destination, duplicate organizations, disabled policy, secrets and unsafe generations
+ok 88 - Connect setup rejects wrong destination, duplicate organizations, disabled policy, secrets and unsafe generations
+  ---
+  duration_ms: 2.6037
+  type: 'test'
+  ...
+# Subtest: CW3 local SQL composes with R06; rollback restores ACL and existing function bodies
+ok 89 - CW3 local SQL composes with R06; rollback restores ACL and existing function bodies
+  ---
+  duration_ms: 2134.4974
+  type: 'test'
+  ...
+# Subtest: CW3 durable candidate remains inactive; C2 and R06 are explicit independent steps
+ok 90 - CW3 durable candidate remains inactive; C2 and R06 are explicit independent steps
+  ---
+  duration_ms: 2506.4393
+  type: 'test'
+  ...
+# Subtest: CW3 private state is encrypted and uncertain link never reopens or permits rollback
+ok 91 - CW3 private state is encrypted and uncertain link never reopens or permits rollback
+  ---
+  duration_ms: 2390.2276
+  type: 'test'
+  ...
+# Subtest: CW3 foreign mailbox is rejected without account materialization or candidate
+ok 92 - CW3 foreign mailbox is rejected without account materialization or candidate
+  ---
+  duration_ms: 2046.7739
+  type: 'test'
+  ...
+# Subtest: COMPAT06: callback without duplicate scheme reaches brand review with one admitted profile and no second link
+ok 93 - COMPAT06: callback without duplicate scheme reaches brand review with one admitted profile and no second link
+  ---
+  duration_ms: 2360.9655
+  type: 'test'
+  ...
+# Subtest: Connect v2: new mailbox reserves profile before materialization and registers only a candidate
+ok 94 - Connect v2: new mailbox reserves profile before materialization and registers only a candidate
+  ---
+  duration_ms: 2342.8948
+  type: 'test'
+  ...
+# Subtest: Connect v2: existing mailbox keeps direct credentials and transport while adding a v2 candidate
+ok 95 - Connect v2: existing mailbox keeps direct credentials and transport while adding a v2 candidate
+  ---
+  duration_ms: 2679.2848
+  type: 'test'
+  ...
+# Subtest: Connect v2: full quota window closes before profile emission or account materialization
+ok 96 - Connect v2: full quota window closes before profile emission or account materialization
+  ---
+  duration_ms: 2454.5981
+  type: 'test'
+  ...
+# Subtest: Connect v2: publisher CAS and strict context reject stale/extra settings without changing live generation
+ok 97 - Connect v2: publisher CAS and strict context reject stale/extra settings without changing live generation
+  ---
+  duration_ms: 2023.6326
+  type: 'test'
+  ...
+# Subtest: Connect v2: wrong Gmail consumes only the bounded profile and never materializes a candidate
+ok 98 - Connect v2: wrong Gmail consumes only the bounded profile and never materializes a candidate
+  ---
+  duration_ms: 2038.4232
+  type: 'test'
+  ...
+# Subtest: Connect v2: policy closure before link denies all provider calls
+ok 99 - Connect v2: policy closure before link denies all provider calls
+  ---
+  duration_ms: 2052.5018
+  type: 'test'
+  ...
+# Subtest: Connect v2: policy closure on return prevents profile emission
+ok 100 - Connect v2: policy closure on return prevents profile emission
+  ---
+  duration_ms: 1819.3949
+  type: 'test'
+  ...
+# Subtest: Connect v2: private ledger and RPCs deny anon/authenticated; foreign authority and replay deny service
+ok 101 - Connect v2: private ledger and RPCs deny anon/authenticated; foreign authority and replay deny service
+  ---
+  duration_ms: 1844.1812
+  type: 'test'
+  ...
+# Subtest: Connect v2: descriptor cannot mix Google project provenance or disabled policy
+ok 102 - Connect v2: descriptor cannot mix Google project provenance or disabled policy
+  ---
+  duration_ms: 1625.9359
+  type: 'test'
+  ...
+# Subtest: Connect v2 profile lease: abort, denial and one-use emit stay closed without network
+ok 103 - Connect v2 profile lease: abort, denial and one-use emit stay closed without network
+  ---
+  duration_ms: 1.2727
+  type: 'test'
+  ...
+# Subtest: QGR-I03 Connect existing profile is quota-reserved and admitted; no legacy double debit
+ok 104 - QGR-I03 Connect existing profile is quota-reserved and admitted; no legacy double debit
+  ---
+  duration_ms: 2344.7287
+  type: 'test'
+  ...
+# Subtest: QGR-I03 Connect policy changes while pacing cancel before profile proxy
+ok 105 - QGR-I03 Connect policy changes while pacing cancel before profile proxy
+  ---
+  duration_ms: 2496.9803
+  type: 'test'
+  ...
+# Subtest: QGR-I03 Connect new mailbox closes v2 before profile until pre-account quota scope exists
+ok 106 - QGR-I03 Connect new mailbox closes v2 before profile until pre-account quota scope exists
+  ---
+  duration_ms: 2443.5522
+  type: 'test'
+  ...
+1..106
+# tests 106
+# suites 0
+# pass 106
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 49516.6096

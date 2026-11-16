@@ -39,7 +39,8 @@ const wireConnection = z.object({
   id: connectionId,
   user_id: connectConfigSchema.shape.owner_id,
   toolkit: z.object({ slug: z.literal("gmail") }),
-  authScheme: z.literal("OAUTH2"),
+  // v3.1 may omit/null this duplicate. The nested auth_config scheme remains mandatory.
+  authScheme: z.literal("OAUTH2").nullish(),
   auth_config: z.object({
     id: connectConfigSchema.shape.auth_config_id,
     auth_scheme: z.literal("OAUTH2"),

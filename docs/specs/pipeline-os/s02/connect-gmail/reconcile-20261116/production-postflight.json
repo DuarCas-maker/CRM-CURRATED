@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-16T17:09:00.738Z",
+  "validated": true,
+  "readOnly": true,
+  "metadata": {
+    "rls": true,
+    "runs": 0,
+    "functions": [
+      {
+        "anon": false,
+        "hash": "8f389893b816a37dd3a5cf4d5d7aba8a",
+        "name": "composio_connect_recovery_execute",
+        "config": [
+          "search_path=\"\""
+        ],
+        "schema": "public",
+        "definer": true,
+        "service": true,
+        "authenticated": false
+      },
+      {
+        "anon": false,
+        "hash": "f31e3c58149beb0d8228ac073af745f8",
+        "name": "guard",
+        "config": [
+          "search_path=\"\""
+        ],
+        "schema": "composio_recovery",
+        "definer": true,
+        "service": false,
+        "authenticated": false
+      },
+      {
+        "anon": false,
+        "hash": "20258d9c6f35c4ed0d18bd5c1845f785",
+        "name": "composio_connect_recovery_list",
+        "config": [
+          "search_path=\"\""
+        ],
+        "schema": "public",
+        "definer": true,
+        "service": false,
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "hash": "afd15e507625da03d833643fd66ef746",
+        "name": "composio_connect_recovery_authorize",
+        "config": [
+          "search_path=\"\""
+        ],
+        "schema": "public",
+        "definer": true,
+        "service": false,
+        "authenticated": true
+      }
+    ],
+    "table_access": {
+      "anon": false,
+      "service_role": false,
+      "authenticated": false
+    },
+    "helpers_pinned": true
+  }
+}
