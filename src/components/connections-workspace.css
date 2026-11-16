@@ -1,0 +1,376 @@
+.connections-workspace {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.connections-workspace .cx-intro,
+.connections-workspace .cx-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.connections-workspace .cx-intro p,
+.connections-workspace .cx-heading p {
+  margin: 7px 0 0;
+  color: var(--muted);
+}
+.connections-workspace .cx-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+}
+.connections-workspace .cx-admin {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.connections-workspace .cx-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.connections-workspace .cx-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  text-align: left;
+  min-width: 0;
+}
+.connections-workspace .cx-tabs button[aria-selected="true"] {
+  border-color: var(--charcoal);
+  box-shadow: inset 0 -3px var(--charcoal);
+  background: color-mix(in srgb, var(--panel) 85%, var(--champagne));
+}
+.connections-workspace .cx-tabs button strong {
+  display: block;
+  font-size: 15px;
+}
+.connections-workspace .cx-tabs button small {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.connections-workspace .cx-provider-icon {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+.connections-workspace .cx-instantly {
+  background: #f5e9cf;
+  color: #715118;
+}
+.connections-workspace .cx-texttorrent {
+  background: #e6e8f4;
+  color: #42456c;
+}
+.connections-workspace .cx-composio {
+  background: #e4ece6;
+  color: #315a47;
+}
+.connections-workspace .cx-mini {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  vertical-align: middle;
+}
+.connections-workspace .cx-panel {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+.connections-workspace .cx-panel[hidden] {
+  display: none;
+}
+.connections-workspace .cx-heading h2 {
+  margin: 0;
+  font-size: 23px;
+  letter-spacing: -0.025em;
+}
+.connections-workspace .cx-heading h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.connections-workspace .cx-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 24px 0;
+}
+.connections-workspace .cx-stats > div {
+  padding: 0 24px;
+  border-right: 1px solid var(--line);
+}
+.connections-workspace .cx-stats > div:last-child {
+  border: 0;
+}
+.connections-workspace .cx-stats span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.connections-workspace .cx-stats strong {
+  display: block;
+  font-size: 32px;
+  line-height: 1.6;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.connections-workspace .cx-stats small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+.connections-workspace .cx-accounts {
+  padding: 24px;
+  min-width: 0;
+}
+.connections-workspace .cx-search {
+  width: 340px;
+  max-width: 100%;
+  margin: 22px 0;
+}
+.connections-workspace .cx-table-scroll {
+  overflow-x: auto;
+  width: 100%;
+}
+.connections-workspace table {
+  min-width: 1060px;
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+.connections-workspace th,
+.connections-workspace td {
+  text-align: left;
+  padding: 17px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.connections-workspace thead th {
+  background: var(--surface);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+.connections-workspace tbody th {
+  font-weight: 400;
+}
+.connections-workspace th strong {
+  font-weight: 600;
+  display: block;
+  overflow-wrap: anywhere;
+  max-width: 230px;
+}
+.connections-workspace td small,
+.connections-workspace th small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.connections-workspace .cx-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: var(--surface);
+  white-space: nowrap;
+}
+.connections-workspace .cx-good {
+  color: #24533f;
+  background: #e4eee6;
+}
+.connections-workspace .cx-pending {
+  color: #79571f;
+  background: #f4ecd9;
+}
+.connections-workspace .cx-numeric {
+  font-variant-numeric: tabular-nums;
+}
+.connections-workspace td details {
+  min-width: 145px;
+}
+.connections-workspace summary {
+  cursor: pointer;
+}
+.connections-workspace td details p {
+  margin: 8px 0;
+}
+.connections-workspace td details ul {
+  padding-left: 15px;
+}
+.connections-workspace .cx-footnote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 11px;
+  max-width: 900px;
+}
+.connections-workspace .cx-footnote svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.connections-workspace .cx-connect {
+  scroll-margin-top: 24px;
+}
+.connections-workspace .cx-tools {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  min-width: 0;
+}
+.connections-workspace .cx-tools > summary {
+  padding: 19px 22px;
+  font-weight: 600;
+}
+.connections-workspace .cx-tools > summary svg {
+  vertical-align: middle;
+  margin-right: 9px;
+}
+.connections-workspace .cx-tools-body {
+  padding: 0 18px 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.connections-workspace .cx-tools-body > * {
+  min-width: 0;
+}
+.connections-workspace .cx-provider-state {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 28px;
+  flex-wrap: wrap;
+}
+.connections-workspace .cx-provider-state > div {
+  flex: 1 1 260px;
+}
+.connections-workspace .cx-provider-state h3 {
+  margin: 0 0 7px;
+}
+.connections-workspace .cx-provider-state p {
+  margin: 0;
+  max-width: 650px;
+  color: var(--muted);
+}
+.connections-workspace .cx-placeholder {
+  text-align: center;
+  padding: 58px 24px;
+  display: grid;
+  justify-items: center;
+  gap: 17px;
+}
+.connections-workspace .cx-placeholder h2 {
+  margin: 0;
+  font-size: 26px;
+}
+.connections-workspace .cx-placeholder p {
+  margin: 0;
+  max-width: 530px;
+}
+.connections-workspace .cx-placeholder > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.connections-workspace .cx-empty {
+  padding: 35px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+.connections-workspace .cx-notice {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: var(--surface);
+  margin: 0;
+}
+@media (max-width: 900px) {
+  .connections-workspace .cx-tabs button {
+    padding: 15px;
+    gap: 9px;
+    flex-wrap: wrap;
+  }
+  .connections-workspace .cx-tabs .cx-mini {
+    display: none;
+  }
+  .connections-workspace .cx-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 0;
+  }
+  .connections-workspace .cx-stats > div:nth-child(2) {
+    border: 0;
+  }
+}
+@media (max-width: 520px) {
+  .connections-workspace {
+    gap: 20px;
+  }
+  .connections-workspace .cx-tabs {
+    gap: 6px;
+  }
+  .connections-workspace .cx-tabs button {
+    padding: 12px 7px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .connections-workspace .cx-tabs button strong {
+    font-size: 12px;
+  }
+  .connections-workspace .cx-tabs button small {
+    display: none;
+  }
+  .connections-workspace .cx-stats > div {
+    padding: 0 15px;
+  }
+  .connections-workspace .cx-stats strong {
+    font-size: 28px;
+  }
+  .connections-workspace .cx-heading > .button {
+    width: 100%;
+    justify-content: center;
+  }
+  .connections-workspace .cx-accounts {
+    padding: 16px;
+  }
+  .connections-workspace .cx-tools > summary {
+    padding: 17px 14px;
+  }
+  .connections-workspace .cx-tools-body {
+    padding: 0 8px 8px;
+  }
+  .connections-workspace .cx-admin {
+    font-size: 11px;
+  }
+}

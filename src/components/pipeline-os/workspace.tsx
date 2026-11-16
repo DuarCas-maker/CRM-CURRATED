@@ -948,15 +948,21 @@ export function PipelineOSWorkspace({
           <p className="pos-muted">
             {t(
               locale,
-              "Los permisos de usuarios, marcas, remitentes, cuotas y conexiones se administran en Configuración del CRM.",
-              "Manage user permissions, brands, senders, quotas and connections in CRM Settings.",
+              "Las cuentas y proveedores se administran en Conexiones. Los roles y las marcas permanecen en Configuración del CRM.",
+              "Manage accounts and providers in Connections. Roles and brands remain in CRM Settings.",
             )}
           </p>
           <button
             className="pos-btn"
-            onClick={() => requestLeave(() => window.location.assign(crmHref))}
+            onClick={() =>
+              requestLeave(() =>
+                window.location.assign(
+                  `${crmHref}${crmHref.includes("?") ? "&" : "?"}module=connections`,
+                ),
+              )
+            }
           >
-            {t(locale, "Abrir CRM", "Open CRM")}
+            {t(locale, "Abrir Conexiones", "Open Connections")}
             <ArrowUpRight size={14} />
           </button>
         </section>

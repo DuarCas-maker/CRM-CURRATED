@@ -5,34 +5,26 @@ import type { Workspace, Locale } from "@/lib/domain";
 import { roleLabels, dateLabel } from "@/lib/domain";
 import type { Action } from "./crm";
 import { Modal, Field, SaveButton, t, Empty } from "./ui";
-import { GmailHistory } from "./gmail-history";
-import { InstantlyTrialControl } from "./instantly-trial-control";
 import { BrandSettings } from "./brand-settings";
-import { ComposioAccountBindings } from "./composio-account-bindings";
-import { ComposioAccountBindingsV2 } from "./composio-account-bindings-v2";
-import { MailTransportSettings } from "./mail-transport-settings";
-import { ComposioConnect } from "./composio-connect";
 export function Integrations({
   data,
   locale,
   act,
   busy,
   openCase,
+  area = "settings",
 }: {
   data: Workspace;
   locale: Locale;
   act: Action;
   busy: boolean;
   openCase?: (id: string) => void;
+  area?: "settings" | "access";
 }) {
   const [modal, setModal] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [accountId, setAccountId] = useState(data.accounts[0]?.id || "");
   const account = data.accounts.find((a) => a.id === accountId);
-  const Bindings =
-    data.mail_binding_contract_version === 2
-      ? ComposioAccountBindingsV2
-      : ComposioAccountBindings;
   const [selectedCase, setSelectedCase] = useState(
     data.opportunities[0]?.id || "",
   );
@@ -55,137 +47,125 @@ export function Integrations({
   }
   return (
     <>
-      <InstantlyTrialControl
-        allowed={
-          data.profile.role === "superadmin" && data.profile.active === true
-        }
-      />
-      <GmailHistory workspace={data} locale={locale} openCase={openCase} />
-      <BrandSettings
-        locale={locale}
-        allowed={
-          data.profile.role === "superadmin" && data.profile.active === true
-        }
-        demo={data.demo}
-      />
-      <Bindings
-        locale={locale}
-        allowed={
-          data.profile.role === "superadmin" && data.profile.active === true
-        }
-        demo={data.demo}
-        accounts={data.accounts}
-      />
-      <ComposioConnect
-        locale={locale}
-        allowed={
-          data.profile.role === "superadmin" && data.profile.active === true
-        }
-        demo={data.demo}
-        accounts={data.accounts}
-      />
-      <MailTransportSettings
-        locale={locale}
-        allowed={
-          data.profile.role === "superadmin" && data.profile.active === true
-        }
-        demo={data.demo}
-        accounts={data.accounts}
-      />
+      {area === "settings" && (
+        <BrandSettings
+          locale={locale}
+          allowed={
+            data.profile.role === "superadmin" && data.profile.active === true
+          }
+          demo={data.demo}
+        />
+      )}
       <section className="panel settings-panel">
         <h2>
-          {t(locale, "Administración de accesos", "Access administration")}
+          {area === "access"
+            ? t(
+                locale,
+                "Permisos y límites de correo",
+                "Email permissions and limits",
+              )
+            : t(locale, "Administración de accesos", "Access administration")}
         </h2>
         <div className="card-actions">
-          <button className="button" onClick={() => setModal("permissions")}>
-            {t(locale, "Permisos de remitentes", "Sender permissions")}
-          </button>
-          <button className="button" onClick={() => setModal("role")}>
-            {t(locale, "Roles del equipo", "Team roles")}
-          </button>
-          <button className="button" onClick={() => setModal("account")}>
-            {t(locale, "Límites de envío", "Sending limits")}
-          </button>
+          {area === "access" && (
+            <button className="button" onClick={() => setModal("permissions")}>
+              {t(locale, "Permisos de remitentes", "Sender permissions")}
+            </button>
+          )}
+          {area === "settings" && (
+            <button className="button" onClick={() => setModal("role")}>
+              {t(locale, "Roles del equipo", "Team roles")}
+            </button>
+          )}
+          {area === "access" && (
+            <button className="button" onClick={() => setModal("account")}>
+              {t(locale, "Límites de envío", "Sending limits")}
+            </button>
+          )}
         </div>
       </section>
-      <section className="panel settings-panel">
-        <h2>
-          {t(locale, "Asociaciones por revisar", "Associations to review")}
-        </h2>
-        {(data.mail_review || [])
-          .filter((r) => r.status === "pending")
-          .map((r) => (
-            <div className="document-row" key={r.id}>
-              <div>
-                <strong>
-                  {data.accounts.find((a) => a.id === r.account_id)?.email}
-                </strong>
-                <small>{r.reason}</small>
+      {area === "settings" && (
+        <section className="panel settings-panel">
+          <h2>
+            {t(locale, "Asociaciones por revisar", "Associations to review")}
+          </h2>
+          {(data.mail_review || [])
+            .filter((r) => r.status === "pending")
+            .map((r) => (
+              <div className="document-row" key={r.id}>
+                <div>
+                  <strong>
+                    {data.accounts.find((a) => a.id === r.account_id)?.email}
+                  </strong>
+                  <small>{r.reason}</small>
+                </div>
+                <button
+                  className="button"
+                  onClick={() => setModal(`review:${r.id}`)}
+                >
+                  {t(locale, "Revisar", "Review")}
+                </button>
               </div>
-              <button
-                className="button"
-                onClick={() => setModal(`review:${r.id}`)}
-              >
-                {t(locale, "Revisar", "Review")}
-              </button>
-            </div>
-          ))}
-        {!data.mail_review?.some((r) => r.status === "pending") && (
+            ))}
+          {!data.mail_review?.some((r) => r.status === "pending") && (
+            <p className="muted">
+              {t(
+                locale,
+                "No hay hilos ambiguos pendientes.",
+                "No ambiguous threads are pending.",
+              )}
+            </p>
+          )}
+        </section>
+      )}
+      {area === "settings" && (
+        <section className="panel settings-panel">
+          <h2>
+            {t(locale, "Trabajos e integraciones", "Jobs and integrations")}
+          </h2>
+          {(data.integration_jobs || [])
+            .filter((j) =>
+              ["failed", "paused", "running", "queued"].includes(j.status),
+            )
+            .slice(0, 20)
+            .map((j) => (
+              <div className="account-row" key={j.id}>
+                <div>
+                  <strong>{j.kind}</strong>
+                  <small>
+                    {dateLabel(j.created_at, locale, true)} · {j.attempts}{" "}
+                    {t(locale, "intentos", "attempts")}
+                  </small>
+                </div>
+                <span className="badge">{j.status}</span>
+              </div>
+            ))}
           <p className="muted">
             {t(
               locale,
-              "No hay hilos ambiguos pendientes.",
-              "No ambiguous threads are pending.",
+              "Los errores no cambian el resultado del scrub a inválido. Los envíos inciertos requieren conciliación.",
+              "Errors do not turn a verification result into invalid. Uncertain sends require reconciliation.",
             )}
           </p>
-        )}
-      </section>
-      <section className="panel settings-panel">
-        <h2>
-          {t(locale, "Trabajos e integraciones", "Jobs and integrations")}
-        </h2>
-        {(data.integration_jobs || [])
-          .filter((j) =>
-            ["failed", "paused", "running", "queued"].includes(j.status),
-          )
-          .slice(0, 20)
-          .map((j) => (
-            <div className="account-row" key={j.id}>
-              <div>
-                <strong>{j.kind}</strong>
-                <small>
-                  {dateLabel(j.created_at, locale, true)} · {j.attempts}{" "}
-                  {t(locale, "intentos", "attempts")}
-                </small>
+          {(data.outbox_status || [])
+            .filter((o) => ["uncertain", "paused", "failed"].includes(o.status))
+            .map((o) => (
+              <div className="account-row" key={o.id}>
+                <div>
+                  <strong>
+                    {t(
+                      locale,
+                      "Envío pendiente de revisión",
+                      "Send awaiting review",
+                    )}
+                  </strong>
+                  <small>{o.id}</small>
+                </div>
+                <span className="badge">{o.status}</span>
               </div>
-              <span className="badge">{j.status}</span>
-            </div>
-          ))}
-        <p className="muted">
-          {t(
-            locale,
-            "Los errores no cambian el resultado del scrub a inválido. Los envíos inciertos requieren conciliación.",
-            "Errors do not turn a verification result into invalid. Uncertain sends require reconciliation.",
-          )}
-        </p>
-        {(data.outbox_status || [])
-          .filter((o) => ["uncertain", "paused", "failed"].includes(o.status))
-          .map((o) => (
-            <div className="account-row" key={o.id}>
-              <div>
-                <strong>
-                  {t(
-                    locale,
-                    "Envío pendiente de revisión",
-                    "Send awaiting review",
-                  )}
-                </strong>
-                <small>{o.id}</small>
-              </div>
-              <span className="badge">{o.status}</span>
-            </div>
-          ))}
-      </section>
+            ))}
+        </section>
+      )}
       {modal && (
         <Modal
           busy={busy}

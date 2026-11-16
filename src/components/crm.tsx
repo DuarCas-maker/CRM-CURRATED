@@ -1,6 +1,8 @@
 "use client";
 import { BrandConnectionFields } from "./brand-settings";
 import { connectReturnAttempt } from "@/lib/composio-connect-http";
+import { connectionsAllowed, connectionsInitialView } from "@/lib/connections";
+import { ConnectionsWorkspace } from "./connections-workspace";
 import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
@@ -33,6 +35,7 @@ import {
   Globe,
   FileText,
   RefreshCw,
+  Cable,
 } from "lucide-react";
 import type { Workspace, Opportunity, Locale, Role, Stage } from "@/lib/domain";
 import {
@@ -106,6 +109,7 @@ type View =
   | "tasks"
   | "lenders"
   | "reports"
+  | "connections"
   | "settings";
 export type Action = (
   kind: string,
@@ -159,13 +163,12 @@ export default function CRM({ initial }: { initial: Workspace }) {
   const [settingsSection, setSettingsSection] = useState("general");
   useEffect(() => {
     if (
-      !initial.demo &&
-      initial.profile.active &&
-      initial.profile.role === "superadmin" &&
-      connectReturnAttempt(new URLSearchParams(window.location.search))
+      connectionsAllowed(initial.profile, initial.demo) &&
+      ((!initial.demo &&
+        connectReturnAttempt(new URLSearchParams(window.location.search))) ||
+        connectionsInitialView(window.location.search, true))
     ) {
-      setView("settings");
-      setSettingsSection("general");
+      setView("connections");
     }
   }, [initial.demo, initial.profile.active, initial.profile.role]);
   const [attentionFilter, setAttentionFilter] = useState("all");
@@ -598,6 +601,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     },
     { id: "lenders", es: "Lenders", en: "Lenders", icon: Landmark },
     { id: "reports", es: "Indicadores", en: "Reports", icon: BarChart3 },
+    { id: "connections", es: "Conexiones", en: "Connections", icon: Cable },
     { id: "settings", es: "Configuración", en: "Settings", icon: Settings },
   ];
   const titles: Record<View, [string, string]> = {
@@ -615,6 +619,7 @@ export default function CRM({ initial }: { initial: Workspace }) {
     tasks: ["Enfócate en lo que sigue.", "Focus on what comes next."],
     lenders: ["Las conexiones correctas.", "The right connections."],
     reports: ["Resultados con contexto.", "Results in context."],
+    connections: ["Conexiones", "Connections"],
     settings: ["Un espacio a tu medida.", "Your workspace, your way."],
   };
   const activeOpportunity = visible.find((o) => o.id === selected);
@@ -911,17 +916,23 @@ export default function CRM({ initial }: { initial: Workspace }) {
             <span>Pipeline OS</span>
             <ArrowUpRight size={14} />
           </button>
-          {nav.map((item) => (
-            <button
-              key={item.id}
-              className={view === item.id ? "active" : ""}
-              onClick={() => navigate(item.id)}
-            >
-              <item.icon size={19} />
-              <span>{t(locale, item.es, item.en)}</span>
-              {!!item.count && <b>{item.count}</b>}
-            </button>
-          ))}
+          {nav
+            .filter(
+              (item) =>
+                item.id !== "connections" ||
+                connectionsAllowed(profile, data.demo),
+            )
+            .map((item) => (
+              <button
+                key={item.id}
+                className={view === item.id ? "active" : ""}
+                onClick={() => navigate(item.id)}
+              >
+                <item.icon size={19} />
+                <span>{t(locale, item.es, item.en)}</span>
+                {!!item.count && <b>{item.count}</b>}
+              </button>
+            ))}
         </nav>
         <div className="sidebar-bottom">
           <div className="workspace-note">
@@ -2267,6 +2278,19 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   </div>
                 </>
               )}
+              {view === "connections" && (
+                <ConnectionsWorkspace
+                  data={{ ...data, profile }}
+                  locale={locale}
+                  act={act}
+                  busy={busy}
+                  connectLegacy={() => setModal("google")}
+                  openCase={(id) => {
+                    setSelected(id);
+                    setView("pipeline");
+                  }}
+                />
+              )}
               {view === "settings" && (
                 <div
                   className="section-tabs"
@@ -2336,44 +2360,43 @@ export default function CRM({ initial }: { initial: Workspace }) {
                     />
                   )}
                   <section className="panel settings-panel">
-                    <h2>{t(locale, "Cuentas de correo", "Email accounts")}</h2>
+                    <h2>
+                      {t(
+                        locale,
+                        "Conexiones y proveedores",
+                        "Connections and providers",
+                      )}
+                    </h2>
                     <p>
                       {t(
                         locale,
-                        "El acceso al remitente es independiente del acceso a los casos.",
-                        "Sender access is separate from case access.",
+                        "Las cuentas, los permisos de remitentes y las conexiones de Composio, Instantly y TextTorrent se administran en Conexiones.",
+                        "Manage accounts, sender permissions, Composio, Instantly and TextTorrent in Connections.",
                       )}
                     </p>
-                    {data.accounts.map((a) => (
-                      <div className="account-row" key={a.id}>
-                        <span className="gmail-icon">M</span>
-                        <div>
-                          <strong>{a.email}</strong>
-                          <small>
-                            {a.organization} · {a.sent_today}/{a.daily_limit}
-                          </small>
+                    {connectionsAllowed(profile, data.demo) && (
+                      <button
+                        className="button"
+                        onClick={() => navigate("connections")}
+                      >
+                        <Cable size={16} />
+                        {t(locale, "Abrir Conexiones", "Open Connections")}
+                      </button>
+                    )}
+                    {!connectionsAllowed(profile, data.demo) &&
+                      data.accounts.map((account) => (
+                        <div className="account-row" key={account.id}>
+                          <span className="gmail-icon">M</span>
+                          <div>
+                            <strong>{account.email}</strong>
+                            <small>
+                              {account.organization} · {account.sent_today}/
+                              {account.daily_limit}
+                            </small>
+                          </div>
+                          <span className="badge">{account.status}</span>
                         </div>
-                        <span
-                          className={`badge ${a.status === "connected" ? "stage-funded" : "stage-documents_pending"}`}
-                        >
-                          {a.status}
-                        </span>
-                      </div>
-                    ))}
-                    {profile.role === "superadmin" &&
-                      !data.gmail_history_enabled && (
-                        <button
-                          className="button"
-                          onClick={() => setModal("google")}
-                        >
-                          <Plus size={16} />
-                          {t(
-                            locale,
-                            "Conectar Google Workspace",
-                            "Connect Google Workspace",
-                          )}
-                        </button>
-                      )}
+                      ))}
                   </section>
                   <section className="panel settings-panel">
                     <h2>
