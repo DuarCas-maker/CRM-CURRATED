@@ -7,6 +7,112 @@ import {
 } from "@/lib/composio-connect-http";
 import { t } from "./ui";
 
+function RecoveredCandidate({
+  source,
+  locale,
+}: {
+  source: string;
+  locale: Locale;
+}) {
+  const [review, setReview] = useState<{
+      state: string;
+      expected: Record<string, unknown>;
+      brand: string;
+    } | null>(null),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  const key = useRef("");
+  async function run(register: boolean) {
+    setBusy(true);
+    setError("");
+    try {
+      const endpoint = "/api/mail/composio/connect/recovery/candidate";
+      if (register && !key.current) key.current = crypto.randomUUID();
+      const response = await fetch(
+        register
+          ? endpoint
+          : endpoint + "?source_id=" + encodeURIComponent(source),
+        register
+          ? {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                source_id: source,
+                expected: review?.expected,
+                idempotency_key: key.current,
+              }),
+            }
+          : { cache: "no-store" },
+      );
+      if (!response.ok) throw Error();
+      const result = await response.json();
+      if (
+        !["ready", "candidate"].includes(result.state) ||
+        result.transport_active !== false ||
+        !result.expected ||
+        typeof result.brand !== "string"
+      )
+        throw Error();
+      setReview(result);
+    } catch {
+      setError(
+        t(
+          locale,
+          "No se pudo completar el registro. Revisa MFA, marca y el estado actual; no se activaron envíos.",
+          "Registration could not be completed. Check MFA, brand and current state; sending was not activated.",
+        ),
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div aria-busy={busy}>
+      {!review && (
+        <button
+          className="button"
+          disabled={busy}
+          onClick={() => void run(false)}
+        >
+          {t(
+            locale,
+            "Revisar candidato recuperado",
+            "Review recovered candidate",
+          )}
+        </button>
+      )}
+      {review?.state === "ready" && (
+        <>
+          <p>
+            {t(locale, "Marca confirmada", "Confirmed brand")}: {review.brand}
+          </p>
+          <button
+            className="button primary"
+            disabled={busy}
+            onClick={() => void run(true)}
+          >
+            {t(
+              locale,
+              "Registrar candidato sin activar envíos",
+              "Register candidate without activating sending",
+            )}
+          </button>
+        </>
+      )}
+      {review?.state === "candidate" && (
+        <p role="status">
+          {t(
+            locale,
+            "Candidato registrado; pendiente de verificar permisos. Envíos y transporte sin activar.",
+            "Candidate registered; permission verification pending. Sending and transport remain inactive.",
+          )}
+        </p>
+      )}
+      {error && <p role="alert">{error}</p>}
+    </div>
+  );
+}
+
 export function ComposioConnectRecovery({
   locale,
   onRecovered,
@@ -133,6 +239,9 @@ export function ComposioConnectRecovery({
               locale === "es" ? "es-CO" : "en-US",
             )}
           </p>
+          {row.state === "completed" && (
+            <RecoveredCandidate source={row.source_id} locale={locale} />
+          )}
           {row.state === "available" ? (
             <button
               className="button primary"

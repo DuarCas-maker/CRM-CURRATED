@@ -1,0 +1,43 @@
+{
+  "base": "69b2cfa7c092b577c49db2445cb6fb22f193694c",
+  "scope": "Fresh MFA approval to register the already-verified recovered connection as candidate only; original OAuth TTL unchanged",
+  "files": [
+    {
+      "path": "src/components/composio-connect-recovery.tsx",
+      "sha256": "d14ab29381331ed86e8a47600325189b1e497ff033a4e7995b7900996235bada"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "sha256": "a6af61058ac94fb3ec2f92f26999db7b56429fc22cfd24155dac15c01273c297"
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/recovery/candidate/route.ts",
+      "sha256": "5f99bda3c709e32b250f14d92662776ebef9dc40b9e80bfc6d749a004857d1ee"
+    },
+    {
+      "path": "tests/pipeline-os-s02-connect-reconcile.test.ts",
+      "sha256": "c38395bd99bbeef7af5cd5669830cd7b8e3c1fc183ac5e50093426fcfeccec47"
+    },
+    {
+      "path": "scripts/run-connect-recovery-native.mjs",
+      "sha256": "ad2b0c18f3ce300062b93cbe1253cf56534a850ab0da6cbc9b12b96b1946cf29"
+    },
+    {
+      "path": "scripts/preview-connect-compat.mjs",
+      "sha256": "42a9581f41ccdeef783db37ce821dfa591c3eb6dd1b3ae65eaba884737493c6d"
+    }
+  ],
+  "sqlSha256": "40df70021a1977c91c01c4d540be884b194f3472f78ea2d85bbaf45b6b13778c",
+  "checks": {
+    "regression": 110,
+    "native": 9,
+    "typecheck": 0,
+    "build": 0
+  },
+  "limits": {
+    "providerRequests": 0,
+    "googleAuthorization": 0,
+    "sending": 0,
+    "transportActivation": 0
+  }
+}

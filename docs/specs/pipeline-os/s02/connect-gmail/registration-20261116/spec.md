@@ -1,0 +1,11 @@
+# Registro del candidato recuperado — STRICT
+
+Autorizaciones encadenadas: publicar la conciliación (petición anterior) y confirmar la marca/registrar su candidato, sin repetir Google ni activar envíos (petición actual). Mismo origen/actor/marca; sin decisiones nuevas de identidad ni permisos. La marca original Curated Financial se confirmó mediante UI/MFA; impacto0/0/0/0, histórico no aprobado. La continuación OAuth ya venció y el formulario C1v2 general exige transporte ready, inapropiado para este buzón nuevo disconnected.
+
+FR01/AC01: aprobación humana nueva con MFA, origen y actor/revisión actuales; solo runs completed con identidad guardada y misma cuenta/marca confirmadas. FR02/AC02: reutilizar puente C1 que permite disconnected para crear candidate v2; no ampliar ni modificar plazo/capacidad/estado del intento vencido. FR03/AC03: CAS del contexto/revisión, recibo idempotente y no reemplazar binding revocado/cambiado. FR04/AC04: cero Google/proveedores, permisos nuevos, transporte y envíos; candidato sin verificar. FR05/AC05: SQL aditivo protegido, respaldo reciente, pruebas embebidas/nativas y web/worker saludables.
+
+Diseño: cuatro columnas de recibo en ledger RLS existente y un RPC humano exclusivamente. GET prepara snapshot del contexto bloqueado y revisión; POST revalida y llama al puente C1 existente bajo identidad real. No usa service_role para aprobar ni modifica guards heredados. UI muestra revisión/registro explícitos dentro de recuperación. La confirmación de marca separada conserva su recibo original.
+
+T01 SQL/HTTP/UI; T02 pruebas de éxito tras caducidad, replay, CAS, MFA, origen, política cerrada y ACL; T03 ensayo nativo; T04 respaldo/guard/postflight/push; T05 registrar desde sesión real y auditar candidate con flagsfalse/rutas0. Alcance pequeño dentro de la misma finalización autorizada; sin aumentar acceso ni habilitar verificación de proveedor.
+
+Rollout: respaldar privado y verificar pg_restore; instalar SQL aditivo antes del código; postflight ACL/RLS/helpers intactos; push fast-forward del delta propio y observar builds. Rollback de código a69b2cfa; conservar recibos/binding. SQL de retirada solo con registrados0: revocar/drop RPC, retirar columnas añadidas, sin borrar el ledger ni el candidato.

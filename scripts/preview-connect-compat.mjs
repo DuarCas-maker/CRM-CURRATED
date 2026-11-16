@@ -36,6 +36,9 @@ const server = createServer((req, res) => {
     "default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'none'; object-src 'none'",
   );
   const pathname = new URL(req.url, "http://fixture.invalid").pathname;
+  if(pathname==='/api/mail/composio/connect/recovery/candidate'){
+    req.resume();res.setHeader('Content-Type','application/json');res.end(JSON.stringify({state:req.method==='POST'?'candidate':'ready',expected:{context_hash:'fixture'},brand:'Marca de ensayo',binding_id:req.method==='POST'?'60000000-0000-4000-8000-000000000001':null,transport_active:false}));return;
+  }
   if(pathname==="/api/mail/composio/connect/recovery") {
     res.setHeader("Content-Type","application/json");
     if(req.method==="POST") {recoveryPosts++;req.resume();res.end(JSON.stringify(recoveredView()));}

@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-16T23:35:49.136Z",
+  "validated": true,
+  "metadata": {
+    "role": "supabase_admin",
+    "database": "postgres",
+    "helper_pinned": true,
+    "columns_absent": true,
+    "new_rpc_absent": true
+  },
+  "helperHash": "5384660484d33c3e6818bbe38225d1f7"
+}

@@ -1,0 +1,16 @@
+{
+  "at": "2026-11-16T23:38:40.634Z",
+  "validated": true,
+  "metadata": {
+    "rls": true,
+    "anon": false,
+    "config": [
+      "search_path=\"\""
+    ],
+    "columns": 4,
+    "definer": true,
+    "service": false,
+    "body_matches": true,
+    "authenticated": true
+  }
+}

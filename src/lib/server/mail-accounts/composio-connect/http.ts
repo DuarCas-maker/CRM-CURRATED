@@ -833,6 +833,60 @@ async function recoveryRpc(
   }
   return result.data;
 }
+
+export async function connectRecoveryCandidate(request: Request) {
+  try {
+    const { p, u } = await context();
+    if (!p.enabled()) return fail();
+    const c = p.configuration();
+    currentConnectSession(await u.session(), p.now());
+    let source: string,
+      expected: Record<string, unknown> | null = null,
+      key: string | null = null;
+    if (request.method === "GET") {
+      const q = new URL(request.url).searchParams;
+      if (
+        [...q.keys()].some((k) => k !== "source_id") ||
+        q.getAll("source_id").length !== 1
+      )
+        return fail("CONNECT_INVALID_INPUT");
+      source = parsed(z.uuid(), q.get("source_id"));
+    } else {
+      guardOrigin(request, c);
+      if (new URL(request.url).search) return fail("CONNECT_INVALID_INPUT");
+      const body = parsed(
+        z.strictObject({
+          source_id: z.uuid(),
+          expected: z.record(z.string(), z.unknown()),
+          idempotency_key: z.uuid(),
+        }),
+        await jsonBody(request),
+      );
+      source = body.source_id;
+      expected = body.expected;
+      key = body.idempotency_key;
+    }
+    const result = await recoveryRpc(
+      u.db,
+      "composio_connect_recovery_candidate",
+      { source, expected, request_key: key },
+    );
+    return reply(
+      parsed(
+        z.strictObject({
+          state: z.enum(["ready", "candidate"]),
+          expected: z.record(z.string(), z.unknown()),
+          brand: z.string(),
+          binding_id: z.uuid().nullable(),
+          transport_active: z.literal(false),
+        }),
+        result,
+      ),
+    );
+  } catch (error) {
+    return connectHttpError(error);
+  }
+}
 export async function connectRecoveryList(request: Request) {
   try {
     const ctx = await context(),

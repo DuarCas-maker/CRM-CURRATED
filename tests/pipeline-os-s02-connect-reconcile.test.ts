@@ -5,6 +5,10 @@ import { randomUUID } from "node:crypto";
 import { connectV2Fixture } from "./fixtures/pipeline-os-s02-connect-v2";
 import { connectViewHttp } from "../src/lib/composio-connect-http";
 import { GET, POST } from "../src/app/api/mail/composio/connect/recovery/route";
+import {
+  GET as candidateGet,
+  POST as candidatePost,
+} from "../src/app/api/mail/composio/connect/recovery/candidate/route";
 
 const directory =
   "docs/specs/pipeline-os/s02/connect-gmail/reconcile-20261116/";
@@ -15,6 +19,7 @@ async function fixture() {
     await f.db.exec(await readFile(directory + "recovery.delta.sql", "utf8"));
     const originalUser = f.p.user,
       originalService = f.p.service;
+    const recoveryRpcErrors: string[] = [];
     const rpc = async (
       human: boolean,
       name: string,
@@ -23,11 +28,13 @@ async function fixture() {
       try {
         if (human) await f.human();
         else await f.service();
-        const values = name.endsWith("_list")
-          ? []
-          : name.endsWith("_authorize")
-            ? [args.operation, args.p]
-            : [args.operation, args.p, args.ticket];
+        const values = name.endsWith("_candidate")
+          ? [args.source, args.expected, args.request_key]
+          : name.endsWith("_list")
+            ? []
+            : name.endsWith("_authorize")
+              ? [args.operation, args.p]
+              : [args.operation, args.p, args.ticket];
         return {
           data: await f.scalar(
             `select public.${name}(${values.map((_, i) => "$" + (i + 1)).join(",")}) v`,
@@ -36,6 +43,7 @@ async function fixture() {
           error: null,
         };
       } catch (e) {
+        recoveryRpcErrors.push((e as Error).message);
         return { data: null, error: { message: (e as Error).message } };
       }
     };
@@ -91,7 +99,15 @@ async function fixture() {
       );
     const list = () =>
       f.run(() => GET(f.request("/api/mail/composio/connect/recovery")));
-    return { ...f, a, snapshot, command, recover: run, list };
+    return {
+      ...f,
+      a,
+      snapshot,
+      command,
+      recover: run,
+      list,
+      recoveryRpcErrors,
+    };
   } catch (e) {
     await f.db.close();
     throw e;
@@ -332,6 +348,171 @@ test("RECON09: policy revocation between metadata reads blocks profile and mater
       ),
       0,
     );
+  } finally {
+    await f.db.close();
+  }
+});
+
+async function registrationFixture(confirm = true) {
+  const f = await fixture();
+  try {
+    const response = await f.recover();
+    assert.equal(response.status, 200);
+    const view = connectViewHttp.parse(await response.json());
+    await f.owner();
+    await f.db.exec(
+      await readFile(
+        "docs/specs/pipeline-os/s02/connect-gmail/registration-20261116/registration.sql",
+        "utf8",
+      ),
+    );
+    const review = await f.scalar<any>(
+      "select to_jsonb(r) v from mail_account_brand_reviews r where id=$1",
+      [view.pending!.review_id],
+    );
+    if (confirm) {
+      await f.human();
+      await f.brandCommand("brand_mapping_confirm", {
+        review_id: review.id,
+        expected_review_revision: review.revision,
+        expected_account_revision: review.expected_account_revision,
+        acknowledge_conflict: false,
+      });
+    }
+    await f.owner();
+    await f.db.query(
+      "update composio_connect.attempts set deadline=created_at where id=$1",
+      [view.status!.id],
+    );
+    const get = () =>
+      f.run(() =>
+        candidateGet(
+          new Request(
+            f.origin +
+              "/api/mail/composio/connect/recovery/candidate?source_id=" +
+              f.a.id,
+          ),
+        ),
+      );
+    const post = (
+      expected: unknown,
+      key = randomUUID(),
+      headers?: Record<string, string>,
+    ) =>
+      f.run(() =>
+        candidatePost(
+          f.request(
+            "/api/mail/composio/connect/recovery/candidate",
+            { source_id: f.a.id, expected, idempotency_key: key },
+            headers,
+          ),
+        ),
+      );
+    return { ...f, get, post, childId: view.status!.id };
+  } catch (e) {
+    await f.db.close();
+    throw e;
+  }
+}
+test("REG01: fresh human approval registers a candidate after expiry without provider or transport", async () => {
+  const f = await registrationFixture();
+  try {
+    const prepared = await f.get();
+    assert.equal(prepared.status, 200, await prepared.clone().text());
+    const p = await prepared.json();
+    const key = randomUUID();
+    const calls = f.calls.length;
+    const saved = await f.post(p.expected, key);
+    assert.equal(
+      saved.status,
+      200,
+      (await saved.clone().text()) + JSON.stringify(f.recoveryRpcErrors),
+    );
+    assert.equal((await saved.json()).state, "candidate");
+    assert.equal((await f.post(p.expected, key)).status, 200);
+    assert.equal(f.calls.length, calls);
+    await f.owner();
+    assert.equal(
+      await f.scalar(
+        "select count(*)::int v from mail_provider_bindings where status='candidate'",
+      ),
+      1,
+    );
+    assert.equal(
+      await f.scalar(
+        "select deadline=created_at v from composio_connect.attempts where id=$1",
+        [f.childId],
+      ),
+      true,
+    );
+    assert.equal(
+      await f.scalar("select count(*)::int v from mail_runtime.routes"),
+      0,
+    );
+  } finally {
+    await f.db.close();
+  }
+});
+test("REG02: pending brand, bad origin and missing MFA remain closed", async () => {
+  const f = await registrationFixture(false);
+  try {
+    assert.equal((await f.get()).status, 409);
+    assert.equal(
+      (await f.post({}, randomUUID(), { origin: "https://foreign.invalid" }))
+        .status,
+      403,
+    );
+    f.session.aal = "aal1" as typeof f.session.aal;
+    assert.equal((await f.get()).status, 403);
+    await f.owner();
+    assert.equal(
+      await f.scalar("select count(*)::int v from mail_provider_bindings"),
+      0,
+    );
+  } finally {
+    await f.db.close();
+  }
+});
+test("REG03: changed approval snapshot and closed policy cannot register", async () => {
+  const f = await registrationFixture();
+  try {
+    const p = await (await f.get()).json();
+    assert.equal(
+      (await f.post({ ...p.expected, review_revision: 999 })).status,
+      409,
+    );
+    await f.owner();
+    await f.db.exec("update mail_quota.head set closed=true where id=1");
+    assert.equal((await f.post(p.expected)).status, 409);
+    await f.owner();
+    assert.equal(
+      await f.scalar("select count(*)::int v from mail_provider_bindings"),
+      0,
+    );
+  } finally {
+    await f.db.close();
+  }
+});
+test("REG04: candidate approval has no anon/service entry point and revocation cannot be overwritten", async () => {
+  const f = await registrationFixture();
+  try {
+    await f.owner();
+    assert.equal(
+      await f.scalar(
+        "select has_function_privilege('anon','public.composio_connect_recovery_candidate(uuid,jsonb,uuid)','EXECUTE') v",
+      ),
+      false,
+    );
+    assert.equal(
+      await f.scalar(
+        "select has_function_privilege('service_role','public.composio_connect_recovery_candidate(uuid,jsonb,uuid)','EXECUTE') v",
+      ),
+      false,
+    );
+    const p = await (await f.get()).json(),
+      key = randomUUID();
+    assert.equal((await f.post(p.expected, key)).status, 200);
+    assert.equal((await f.post(p.expected, randomUUID())).status, 409);
   } finally {
     await f.db.close();
   }
