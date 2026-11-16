@@ -1,0 +1,28 @@
+{
+  "base": "4588665157d01cb1e3bcfa2914e27292da0d5dc4",
+  "scope": "Master postflight performance repair only; identical superadmin archive row scope and existing RLS, no changes for other roles",
+  "files": [
+    {
+      "path": "src/lib/server/pipeline-master.ts",
+      "beforeSha256": "ae223b27f2a96138aa5ed04e1061af07148ccad9790b801a2795b0194d4479ed",
+      "afterSha256": "f1b7c5ba1b5ecf9533dd4f4b2f5c81f2c05a83a8977e0f177532ac28b7116a6e"
+    },
+    {
+      "path": "tests/pipeline-master-reader.test.ts",
+      "beforeSha256": "dbe31220a52a61535f2b6bbb7163173074673137e080f165c44e72fb3f196d2e",
+      "afterSha256": "f99e2adec0deae27b24dd6890e96baff278cbe2635a7ca4ad946e56273929dad"
+    }
+  ],
+  "tests": {
+    "passed": 87,
+    "failed": 0,
+    "skipped": 0
+  },
+  "buildExit": 0,
+  "sqlChanges": 0,
+  "privilegeChanges": 0,
+  "environmentChanges": 0,
+  "serviceRoleReader": false,
+  "preflight": "evidence/archive-direct-preflight.json",
+  "authorization": "Same user instruction to integrate, verify real permissions before publication and complete the Master Pipeline delivery; repair addresses the observed postflight delay without expanding permissions"
+}

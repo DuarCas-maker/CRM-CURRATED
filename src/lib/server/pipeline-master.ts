@@ -24,6 +24,7 @@ async function readRows<T>(
   ids?: string[],
   key = "opportunity_id",
   since?: string,
+  pageSize = 500,
 ): Promise<T[]> {
   if (ids && !ids.length) return [];
   const batches = ids
@@ -39,7 +40,7 @@ async function readRows<T>(
         if (batch) q = q.in(key, batch);
         if (table === "opportunity_workspace") q = q.is("archived_at", null);
         if (since) q = q.gte("sent_at", since);
-        const result = await q.range(offset, offset + 499);
+        const result = await q.range(offset, offset + pageSize - 1);
         return {
           rows: (checkDb(result, "master_pipeline." + table) ||
             []) as unknown as T[],
@@ -142,14 +143,19 @@ export async function readMasterPipeline(
           "id,contact_id,company,contact,email,seller_id,suppressed,opportunity_id,verification,created_at",
         )
       : Promise.resolve([]),
-    // The existing view applies its original archive/case visibility. Never read encrypted_payload.
+    // The raw archive's existing RLS grants only superadmin access. It lets PostgreSQL
+    // filter/page metadata without materializing the security-definer view on every page.
+    // Other roles retain that view's original case visibility. Never read encrypted_payload.
     readRows<MasterArchive>(
       db,
-      "mail_archive_visible",
+      profile.role === "superadmin"
+        ? "gmail_archive_messages"
+        : "mail_archive_visible",
       "id,account_id,gmail_thread_id,subject,sent_at,direction,nature,reply_intent,participants",
       undefined,
       undefined,
       start.toISOString(),
+      profile.role === "superadmin" ? 1000 : 500,
     ),
   ]);
   const visibleConversations = conversations.filter((c) => {

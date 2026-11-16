@@ -1,0 +1,533 @@
+TAP version 13
+# Subtest: OAuth form redirects permit reviewed Google and Composio hosts while other external destinations remain excluded
+ok 1 - OAuth form redirects permit reviewed Google and Composio hosts while other external destinations remain excluded
+  ---
+  duration_ms: 1.7754
+  type: 'test'
+  ...
+# Subtest: Master GET rejects invalid filters before reaching the authenticated reader
+ok 2 - Master GET rejects invalid filters before reaching the authenticated reader
+  ---
+  duration_ms: 6.1727
+  type: 'test'
+  ...
+# Subtest: Master authentication and MFA failures remain denied without public caching
+ok 3 - Master authentication and MFA failures remain denied without public caching
+  ---
+  duration_ms: 0.6673
+  type: 'test'
+  ...
+# Subtest: Master response is private/no-store and passes a bounded read query only
+ok 4 - Master response is private/no-store and passes a bounded read query only
+  ---
+  duration_ms: 0.2965
+  type: 'test'
+  ...
+# Subtest: Master superadmin pages authorized archive metadata directly without encrypted content
+ok 5 - Master superadmin pages authorized archive metadata directly without encrypted content
+  ---
+  duration_ms: 17.6099
+  type: 'test'
+  ...
+# Subtest: Master reader follows a smaller REST cap and aggregates all73 cases before paging
+ok 6 - Master reader follows a smaller REST cap and aggregates all73 cases before paging
+  ---
+  duration_ms: 7.0206
+  type: 'test'
+  ...
+# Subtest: Master seller reads exclude financial IDs and bodies outside the visible page
+ok 7 - Master seller reads exclude financial IDs and bodies outside the visible page
+  ---
+  duration_ms: 2.4984
+  type: 'test'
+  ...
+# Subtest: Master unapproved review results cannot prove an offer reply
+ok 8 - Master unapproved review results cannot prove an offer reply
+  ---
+  duration_ms: 3.2321
+  type: 'test'
+  ...
+# Subtest: Master incomplete catalog metadata fails closed instead of reporting a false zero
+ok 9 - Master incomplete catalog metadata fails closed instead of reporting a false zero
+  ---
+  duration_ms: 1.6629
+  type: 'test'
+  ...
+# Subtest: all six Master views render semantic headers, safe text, and explicit unknowns in both languages
+ok 10 - all six Master views render semantic headers, safe text, and explicit unknowns in both languages
+  ---
+  duration_ms: 357.4338
+  type: 'test'
+  ...
+# Subtest: demo source rejects live workspaces instead of fabricating live timestamps
+ok 11 - demo source rejects live workspaces instead of fabricating live timestamps
+  ---
+  duration_ms: 0.9698
+  type: 'test'
+  ...
+# Subtest: individual tasks use their owner, deduplicate IDs, and never count completed work
+ok 12 - individual tasks use their owner, deduplicate IDs, and never count completed work
+  ---
+  duration_ms: 14.0117
+  type: 'test'
+  ...
+# Subtest: all authorized reps include zero workload and no name exclusions
+ok 13 - all authorized reps include zero workload and no name exclusions
+  ---
+  duration_ms: 1.3266
+  type: 'test'
+  ...
+# Subtest: seller cannot receive another case, closer-only financial data, or another rep by forged owner
+ok 14 - seller cannot receive another case, closer-only financial data, or another rep by forged owner
+  ---
+  duration_ms: 1.184
+  type: 'test'
+  ...
+# Subtest: application signature and inactive history cannot become lender contract or funding
+ok 15 - application signature and inactive history cannot become lender contract or funding
+  ---
+  duration_ms: 2.0027
+  type: 'test'
+  ...
+# Subtest: withdrawal stays distinct from lender decline and current requirements map without writes
+ok 16 - withdrawal stays distinct from lender decline and current requirements map without writes
+  ---
+  duration_ms: 1.0649
+  type: 'test'
+  ...
+# Subtest: aggregate totals precede pagination across more than fifty cases
+ok 17 - aggregate totals precede pagination across more than fifty cases
+  ---
+  duration_ms: 3.8064
+  type: 'test'
+  ...
+# Subtest: events need explicit evidence and valid historical dates; editing does not create a milestone
+ok 18 - events need explicit evidence and valid historical dates; editing does not create a milestone
+  ---
+  duration_ms: 1.3688
+  type: 'test'
+  ...
+# Subtest: query rejects invalid ranges, pages and unexpected commands
+ok 19 - query rejects invalid ranges, pages and unexpected commands
+  ---
+  duration_ms: 1.1369
+  type: 'test'
+  ...
+# Subtest: a task follows its assigned rep even when the file belongs to another rep
+ok 20 - a task follows its assigned rep even when the file belongs to another rep
+  ---
+  duration_ms: 2.0804
+  type: 'test'
+  ...
+# Subtest: renewal uses the current process rather than a historical funding on the file
+ok 21 - renewal uses the current process rather than a historical funding on the file
+  ---
+  duration_ms: 1.0274
+  type: 'test'
+  ...
+# Subtest: highest offer and selected offer stay distinct; only the anchored thread can prove a reply
+ok 22 - highest offer and selected offer stay distinct; only the anchored thread can prove a reply
+  ---
+  duration_ms: 1.901
+  type: 'test'
+  ...
+# Subtest: recorded legacy funding contributes its actual date once even during a renewal
+ok 23 - recorded legacy funding contributes its actual date once even during a renewal
+  ---
+  duration_ms: 0.8474
+  type: 'test'
+  ...
+# Subtest: expired offers remain dated activity without inflating active workload
+ok 24 - expired offers remain dated activity without inflating active workload
+  ---
+  duration_ms: 1.4411
+  type: 'test'
+  ...
+# Subtest: task excerpts point to the latest received message rather than an outbound response
+ok 25 - task excerpts point to the latest received message rather than an outbound response
+  ---
+  duration_ms: 0.6503
+  type: 'test'
+  ...
+# Subtest: mail counts deduplicate the same physical archive message and exclude failed drafts
+ok 26 - mail counts deduplicate the same physical archive message and exclude failed drafts
+  ---
+  duration_ms: 0.635
+  type: 'test'
+  ...
+# Subtest: negative and automatic archived lead replies do not become open leads; later recorded reply closes the count
+ok 27 - negative and automatic archived lead replies do not become open leads; later recorded reply closes the count
+  ---
+  duration_ms: 1.2721
+  type: 'test'
+  ...
+# Subtest: UTC calendar keys normalize offsets independently of the server timezone
+ok 28 - UTC calendar keys normalize offsets independently of the server timezone
+  ---
+  duration_ms: 0.9618
+  type: 'test'
+  ...
+# Subtest: seller archive metadata without visible case evidence stays out of the payload
+ok 29 - seller archive metadata without visible case evidence stays out of the payload
+  ---
+  duration_ms: 0.6386
+  type: 'test'
+  ...
+# Subtest: AC009/010: RLS client, one-case filters, complete pagination and projection-only response
+ok 30 - AC009/010: RLS client, one-case filters, complete pagination and projection-only response
+  ---
+  duration_ms: 10.8752
+  type: 'test'
+  ...
+# Subtest: AC009: access is checked before reading related metadata; missing and foreign cases are indistinguishable
+ok 31 - AC009: access is checked before reading related metadata; missing and foreign cases are indistinguishable
+  ---
+  duration_ms: 2.0538
+  type: 'test'
+  ...
+# Subtest: AC009: a seller never queries financial processes, submissions, offers or private events
+ok 32 - AC009: a seller never queries financial processes, submissions, offers or private events
+  ---
+  duration_ms: 0.8452
+  type: 'test'
+  ...
+# Subtest: AC010: duplicate pages, changing totals and database errors fail closed instead of reporting missing evidence
+ok 33 - AC010: duplicate pages, changing totals and database errors fail closed instead of reporting missing evidence
+  ---
+  duration_ms: 2.0766
+  type: 'test'
+  ...
+# Subtest: AC009/010: GET validates case before loader and keeps successes and errors private/no-store
+ok 34 - AC009/010: GET validates case before loader and keeps successes and errors private/no-store
+  ---
+  duration_ms: 9.265
+  type: 'test'
+  ...
+# Subtest: AC001/011: five numbered native step controls, evidence states and labeled regions in Spanish and English
+ok 35 - AC001/011: five numbered native step controls, evidence states and labeled regions in Spanish and English
+  ---
+  duration_ms: 25.3981
+  type: 'test'
+  ...
+# Subtest: AC004/009: unknown and restricted steps are explicit; sellers receive no lender-action buttons
+ok 36 - AC004/009: unknown and restricted steps are explicit; sellers receive no lender-action buttons
+  ---
+  duration_ms: 6.4919
+  type: 'test'
+  ...
+# Subtest: AC008: terminal decline shows review-closing action rather than instructions to advance funding
+ok 37 - AC008: terminal decline shows review-closing action rather than instructions to advance funding
+  ---
+  duration_ms: 4.8675
+  type: 'test'
+  ...
+# Subtest: AC001/010: loading is not fake zero progress; existing mail analysis starts collapsed
+ok 38 - AC001/010: loading is not fake zero progress; existing mail analysis starts collapsed
+  ---
+  duration_ms: 2.3962
+  type: 'test'
+  ...
+# Subtest: AC002/003: complete documentation, current human review and handoff verify the first two steps without mutating inputs
+ok 39 - AC002/003: complete documentation, current human review and handoff verify the first two steps without mutating inputs
+  ---
+  duration_ms: 17.596
+  type: 'test'
+  ...
+# Subtest: AC002: duplicate, missing, unapproved sources and report files do not satisfy documentary evidence
+ok 40 - AC002: duplicate, missing, unapproved sources and report files do not satisfy documentary evidence
+  ---
+  duration_ms: 1.5795
+  type: 'test'
+  ...
+# Subtest: AC002: application flags, extra requirements and source hash/size limits remain independent
+ok 41 - AC002: application flags, extra requirements and source hash/size limits remain independent
+  ---
+  duration_ms: 1.0444
+  type: 'test'
+  ...
+# Subtest: AC003: stale, incomplete, unreviewed analyses and missing handoff never finish risk
+ok 42 - AC003: stale, incomplete, unreviewed analyses and missing handoff never finish risk
+  ---
+  duration_ms: 1.9581
+  type: 'test'
+  ...
+# Subtest: AC004: no active process means unverified lender/offer/closing evidence rather than legacy completion
+ok 43 - AC004: no active process means unverified lender/offer/closing evidence rather than legacy completion
+  ---
+  duration_ms: 1.3095
+  type: 'test'
+  ...
+# Subtest: AC004: renewal uses only latest active process, excluding archives, previous offers, events and global funding
+ok 44 - AC004: renewal uses only latest active process, excluding archives, previous offers, events and global funding
+  ---
+  duration_ms: 1.7517
+  type: 'test'
+  ...
+# Subtest: AC005: draft/queued/uncertain/withdrawn, invalid dates and future submissions never count as sent
+ok 45 - AC005: draft/queued/uncertain/withdrawn, invalid dates and future submissions never count as sent
+  ---
+  duration_ms: 1.7173
+  type: 'test'
+  ...
+# Subtest: AC006: only positive, current offers count; selected and accepted are explicit choices, never highest amount
+ok 46 - AC006: only positive, current offers count; selected and accepted are explicit choices, never highest amount
+  ---
+  duration_ms: 3.3907
+  type: 'test'
+  ...
+# Subtest: AC006: conflicting selections and selected lender requirements remain visible; unselected alternatives do not block
+ok 47 - AC006: conflicting selections and selected lender requirements remain visible; unselected alternatives do not block
+  ---
+  duration_ms: 1.2352
+  type: 'test'
+  ...
+# Subtest: AC007: application signatures and offers do not prove contracts; evidence must belong to current case/process
+ok 48 - AC007: application signatures and offers do not prove contracts; evidence must belong to current case/process
+  ---
+  duration_ms: 2.1014
+  type: 'test'
+  ...
+# Subtest: AC007: contracted selected offers remain evidence after expiry; funding requires current state and process-specific amount/lender
+ok 49 - AC007: contracted selected offers remain evidence after expiry; funding requires current state and process-specific amount/lender
+  ---
+  duration_ms: 1.6181
+  type: 'test'
+  ...
+# Subtest: AC008/009: terminal loss is not funding; sellers receive no private process facts, unauthorized users receive nothing
+ok 50 - AC008/009: terminal loss is not funding; sellers receive no private process facts, unauthorized users receive nothing
+  ---
+  duration_ms: 1.519
+  type: 'test'
+  ...
+# Subtest: mail proposal rejects invented evidence, missing mandatory business data and untrusted extra fields
+ok 51 - mail proposal rejects invented evidence, missing mandatory business data and untrusted extra fields
+  ---
+  duration_ms: 8.0791
+  type: 'test'
+  ...
+# Subtest: durable review: real migrations, human approval, RLS, idempotency, context changes and rollback
+    # Subtest: analysis creates no business effects; same source has one attempt
+    ok 1 - analysis creates no business effects; same source has one attempt
+      ---
+      duration_ms: 37.3407
+      type: 'test'
+      ...
+    # Subtest: invalid owner/amount/revision roll back all effects
+    ok 2 - invalid owner/amount/revision roll back all effects
+      ---
+      duration_ms: 16.4261
+      type: 'test'
+      ...
+    # Subtest: approval commits offer, task, event, activity and source receipt exactly once
+    ok 3 - approval commits offer, task, event, activity and source receipt exactly once
+      ---
+      duration_ms: 32.2208
+      type: 'test'
+      ...
+    # Subtest: requirement preserves evidence and creates its own task/update without accepting an offer
+    ok 4 - requirement preserves evidence and creates its own task/update without accepting an offer
+      ---
+      duration_ms: 34.9472
+      type: 'test'
+      ...
+    # Subtest: changed source and mismatched process cannot be approved
+    ok 5 - changed source and mismatched process cannot be approved
+      ---
+      duration_ms: 43.278
+      type: 'test'
+      ...
+    # Subtest: seller, outsider, inactive user and missing MFA cannot read/review commercial mail
+    ok 6 - seller, outsider, inactive user and missing MFA cannot read/review commercial mail
+      ---
+      duration_ms: 50.4787
+      type: 'test'
+      ...
+    # Subtest: pagination has no skipped or repeated source messages; rollback keeps business records
+    ok 7 - pagination has no skipped or repeated source messages; rollback keeps business records
+      ---
+      duration_ms: 222.8649
+      type: 'test'
+      ...
+    # Subtest: failure retries are explicit and stale provider completions cannot replace the new attempt
+    ok 8 - failure retries are explicit and stale provider completions cannot replace the new attempt
+      ---
+      duration_ms: 45.0825
+      type: 'test'
+      ...
+    # Subtest: missing process/evaluation association is persisted only by human approval
+    ok 9 - missing process/evaluation association is persisted only by human approval
+      ---
+      duration_ms: 32.7607
+      type: 'test'
+      ...
+    # Subtest: review remains authorized and atomic after the integrated brand/content permission delta
+    ok 10 - review remains authorized and atomic after the integrated brand/content permission delta
+      ---
+      duration_ms: 151.6372
+      type: 'test'
+      ...
+    1..10
+ok 52 - durable review: real migrations, human approval, RLS, idempotency, context changes and rollback
+  ---
+  duration_ms: 4021.2384
+  type: 'test'
+  ...
+# Subtest: HTTP gate validates session/origin/input and never repeats an existing analysis
+ok 53 - HTTP gate validates session/origin/input and never repeats an existing analysis
+  ---
+  duration_ms: 14.3761
+  type: 'test'
+  ...
+# Subtest: reviewed events appear separately in Updates, retain source and obey seller visibility
+ok 54 - reviewed events appear separately in Updates, retain source and obey seller visibility
+  ---
+  duration_ms: 16.5415
+  type: 'test'
+  ...
+# Subtest: HTTP analysis uses existing configuration and bounded unquoted text; provider failures are not retried
+ok 55 - HTTP analysis uses existing configuration and bounded unquoted text; provider failures are not retried
+  ---
+  duration_ms: 11.7249
+  type: 'test'
+  ...
+# Subtest: GET validates before loading, preserves authentication/MFA errors and does not cache financial data
+ok 56 - GET validates before loading, preserves authentication/MFA errors and does not cache financial data
+  ---
+  duration_ms: 23.4694
+  type: 'test'
+  ...
+# Subtest: catalog follows the server's actual page cap without dropping rows
+ok 57 - catalog follows the server's actual page cap without dropping rows
+  ---
+  duration_ms: 3.1079
+  type: 'test'
+  ...
+# Subtest: a partial page, missing count or source failure cannot produce a plausible complete dashboard
+ok 58 - a partial page, missing count or source failure cannot produce a plausible complete dashboard
+  ---
+  duration_ms: 1.95
+  type: 'test'
+  ...
+# Subtest: concurrent count changes or repeated records fail closed instead of duplicating totals
+ok 59 - concurrent count changes or repeated records fail closed instead of duplicating totals
+  ---
+  duration_ms: 0.5927
+  type: 'test'
+  ...
+# Subtest: standalone module renders both languages, a real navigation control and an explicit synthetic-data marker
+ok 60 - standalone module renders both languages, a real navigation control and an explicit synthetic-data marker
+  ---
+  duration_ms: 592.5068
+  type: 'test'
+  ...
+# Subtest: tables identify no-result states and reports never claim they executed a Gmail scan
+ok 61 - tables identify no-result states and reports never claim they executed a Gmail scan
+  ---
+  duration_ms: 6.3667
+  type: 'test'
+  ...
+# Subtest: first workspace render matches across server/client time zones near UTC midnight in both languages
+ok 62 - first workspace render matches across server/client time zones near UTC midnight in both languages
+  ---
+  duration_ms: 85.489
+  type: 'test'
+  ...
+# Subtest: application signatures are not lender contract evidence; historical processes do not override the active one
+ok 63 - application signatures are not lender contract evidence; historical processes do not override the active one
+  ---
+  duration_ms: 10.6126
+  type: 'test'
+  ...
+# Subtest: a human choice and the highest amount are distinct; expired or declined offers are not active
+ok 64 - a human choice and the highest amount are distinct; expired or declined offers are not active
+  ---
+  duration_ms: 1.7926
+  type: 'test'
+  ...
+# Subtest: counts, owner filtering and search run before pagination; one business counts once
+ok 65 - counts, owner filtering and search run before pagination; one business counts once
+  ---
+  duration_ms: 19.6471
+  type: 'test'
+  ...
+# Subtest: seller projection never exposes closer offers, contract states, private tasks or other people's cases
+ok 66 - seller projection never exposes closer offers, contract states, private tasks or other people's cases
+  ---
+  duration_ms: 1.8653
+  type: 'test'
+  ...
+# Subtest: confirmed lender signal is reused, queued rows are not counted and funding is not multiplied by processes
+ok 67 - confirmed lender signal is reused, queued rows are not counted and funding is not multiplied by processes
+  ---
+  duration_ms: 4.3638
+  type: 'test'
+  ...
+# Subtest: filters reject invalid input and reports expose an observation time without claiming a Gmail scan
+ok 68 - filters reject invalid input and reports expose an observation time without claiming a Gmail scan
+  ---
+  duration_ms: 11.3874
+  type: 'test'
+  ...
+# Subtest: old-process offers and draft offers never turn a new submission into an active offer
+ok 69 - old-process offers and draft offers never turn a new submission into an active offer
+  ---
+  duration_ms: 1.7045
+  type: 'test'
+  ...
+# Subtest: document progress uses the existing five-document minimum and does not credit duplicate statements
+ok 70 - document progress uses the existing five-document minimum and does not credit duplicate statements
+  ---
+  duration_ms: 5.0221
+  type: 'test'
+  ...
+# Subtest: campaign summary counts the complete authorized source independently of the case page
+ok 71 - campaign summary counts the complete authorized source independently of the case page
+  ---
+  duration_ms: 2.8859
+  type: 'test'
+  ...
+# Subtest: a funded customer's new submitted renewal stays active without duplicating recorded funding
+ok 72 - a funded customer's new submitted renewal stays active without duplicating recorded funding
+  ---
+  duration_ms: 2.1811
+  type: 'test'
+  ...
+# Subtest: REC01: prepared attempt reference survives reload without mailbox or provider material
+ok 73 - REC01: prepared attempt reference survives reload without mailbox or provider material
+  ---
+  duration_ms: 2.3639
+  type: 'test'
+  ...
+# Subtest: REC02: explicit reset clears attempt and stale callback error, preserving CRM navigation
+ok 74 - REC02: explicit reset clears attempt and stale callback error, preserving CRM navigation
+  ---
+  duration_ms: 0.22
+  type: 'test'
+  ...
+# Subtest: REC03: invalid references are rejected and duplicate callback arguments cannot be resumed
+ok 75 - REC03: invalid references are rejected and duplicate callback arguments cannot be resumed
+  ---
+  duration_ms: 1.5598
+  type: 'test'
+  ...
+# Subtest: REC04: active v2 conflict can resume only in original browser/session without recreating provider link
+ok 76 - REC04: active v2 conflict can resume only in original browser/session without recreating provider link
+  ---
+  duration_ms: 3368.3219
+  type: 'test'
+  ...
+# Subtest: REC05: expired receipt does not silently retry; explicit fresh preparation preserves prior evidence
+ok 77 - REC05: expired receipt does not silently retry; explicit fresh preparation preserves prior evidence
+  ---
+  duration_ms: 2295.0786
+  type: 'test'
+  ...
+1..77
+# tests 87
+# suites 0
+# pass 87
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13192.9192

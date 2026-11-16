@@ -113,6 +113,46 @@ function fixture(count = 1) {
     } as unknown as Record<string, Row[]>,
   };
 }
+test("Master superadmin pages authorized archive metadata directly without encrypted content", async () => {
+  const f = fixture(),
+    account = "fixture-account";
+  f.tables.mail_accounts = [
+    { id: account, email: "rep@fixture.example", owner_id: f.data.profile.id },
+  ];
+  f.tables.gmail_archive_messages = Array.from({ length: 3 }, (_, i) => ({
+    id: "archive-" + i,
+    account_id: account,
+    gmail_thread_id: "thread-" + i,
+    subject: "Fixture metadata",
+    sent_at: "2026-11-14T12:00:00Z",
+    direction: "inbound",
+    nature: "personal",
+    reply_intent: null,
+    participants: [],
+  }));
+  const db = database(f.tables, 2);
+  const b = await readMasterPipeline(
+    db.client,
+    f.data.profile,
+    parseMasterQuery(new URLSearchParams("tab=comms")),
+    Date.parse("2026-11-15T18:00:00Z"),
+  );
+  assert.equal(b.total, 3);
+  assert.equal(b.byRep.find((r) => r.id === f.data.profile.id)?.emails, 3);
+  const reads = db.calls.filter((c) => c.table === "gmail_archive_messages");
+  assert.equal(reads.length, 2);
+  assert.deepEqual(
+    reads.map((r) => r.start),
+    [0, 2],
+  );
+  assert(
+    reads.every(
+      (r) =>
+        r.end - r.start === 999 && !r.columns.includes("encrypted_payload"),
+    ),
+  );
+  assert(!db.calls.some((c) => c.table === "mail_archive_visible"));
+});
 test("Master reader follows a smaller REST cap and aggregates all73 cases before paging", async () => {
   const f = fixture(73),
     db = database(f.tables, 2),
@@ -185,6 +225,8 @@ test("Master seller reads exclude financial IDs and bodies outside the visible p
     "pipeline_mail_reviews",
   ])
     assert(!db.calls.some((c) => c.table === name));
+  assert(!db.calls.some((c) => c.table === "gmail_archive_messages"));
+  assert(db.calls.some((c) => c.table === "mail_archive_visible"));
   assert(
     db.calls
       .filter((c) => c.table === "messages" && c.columns === "id,body")

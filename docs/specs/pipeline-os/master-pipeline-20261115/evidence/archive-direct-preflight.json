@@ -1,0 +1,65 @@
+{
+  "at": "2026-11-16T04:44:34.738Z",
+  "passed": true,
+  "metadata": {
+    "rls": true,
+    "role": "authenticated",
+    "columns": [
+      {
+        "name": "id",
+        "authenticated_select": true
+      },
+      {
+        "name": "account_id",
+        "authenticated_select": true
+      },
+      {
+        "name": "gmail_thread_id",
+        "authenticated_select": true
+      },
+      {
+        "name": "subject",
+        "authenticated_select": true
+      },
+      {
+        "name": "sent_at",
+        "authenticated_select": true
+      },
+      {
+        "name": "direction",
+        "authenticated_select": true
+      },
+      {
+        "name": "nature",
+        "authenticated_select": true
+      },
+      {
+        "name": "participants",
+        "authenticated_select": true
+      },
+      {
+        "name": "reply_intent",
+        "authenticated_select": true
+      }
+    ],
+    "app_role": "superadmin",
+    "policies": [
+      {
+        "name": "gmail_admin_read",
+        "roles": [
+          "authenticated"
+        ],
+        "using": "(current_app_role() = 'superadmin'::app_role)",
+        "command": "SELECT"
+      }
+    ],
+    "raw_count": 8215,
+    "read_only": "on",
+    "view_count": 8215
+  },
+  "elapsedMs": 1717,
+  "sqlContextReplay": true,
+  "realMfaSessionVerifiedSeparately": true,
+  "remoteChanges": 0,
+  "encryptedPayloadSelected": false
+}
