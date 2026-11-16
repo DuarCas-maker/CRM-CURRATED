@@ -1,0 +1,19 @@
+{
+  "verified": true,
+  "databaseContainer": "supabase-db-tzpxxufvp3zf6u7eyjdmxa4p",
+  "database": "postgres",
+  "pathOnServer": "/root/crm-campaign-backups/campaign-import-20261116-0605/postgres.dump",
+  "format": "PostgreSQL custom dump",
+  "bytes": 56502091,
+  "mode": "600",
+  "sha256": "2674c869f10d4b1e96c283ac74ebf36c89c96e2b134159aec6f44612bc7ba368",
+  "verifiedAtUtc": "2026-11-16T06:05:17Z",
+  "dumpExitCode": 0,
+  "listExitCode": 0,
+  "decodeExitCode": 0,
+  "decodeVerified": true,
+  "productionRestoreExecuted": false,
+  "restoreIntoIsolatedCopyExecuted": false,
+  "offServerBackupVerified": false,
+  "businessContentsPrinted": false
+}

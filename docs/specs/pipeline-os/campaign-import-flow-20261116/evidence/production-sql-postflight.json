@@ -1,0 +1,101 @@
+{
+  "at": "2026-11-16T06:13:50.283Z",
+  "target": "supabase.finlabinc.com",
+  "postgres": "15.8",
+  "verified": true,
+  "functionsBefore": 391,
+  "functionsAfter": 396,
+  "functionsAdded": [
+    {
+      "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin,authenticated=X/supabase_admin}",
+      "name": "campaign_create_from_import",
+      "owner": "supabase_admin",
+      "config": [
+        "search_path=\"\""
+      ],
+      "result": "jsonb",
+      "schema": "public",
+      "definer": true,
+      "arguments": "p jsonb, request_key uuid",
+      "signature": "public.campaign_create_from_import(jsonb, uuid)",
+      "source_hash": "710550a0cd856c99eb7694083a5a6afe",
+      "anon_execute": false,
+      "service_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin}",
+      "name": "campaign_import_contact_rows",
+      "owner": "supabase_admin",
+      "config": [
+        "search_path=\"\""
+      ],
+      "result": "TABLE(contact_id uuid, verification text, verification_state text, suppressed boolean, can_verify boolean)",
+      "schema": "public",
+      "definer": true,
+      "arguments": "batch uuid",
+      "signature": "public.campaign_import_contact_rows(uuid)",
+      "source_hash": "7536e85f57bb1ebd09dddead0974afaf",
+      "anon_execute": false,
+      "service_execute": false,
+      "authenticated_execute": false
+    },
+    {
+      "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin,authenticated=X/supabase_admin}",
+      "name": "campaign_import_leads_page",
+      "owner": "supabase_admin",
+      "config": [
+        "search_path=\"\""
+      ],
+      "result": "jsonb",
+      "schema": "public",
+      "definer": true,
+      "arguments": "batch uuid, template uuid, account uuid, search_text text DEFAULT ''::text, page_number integer DEFAULT 0",
+      "signature": "public.campaign_import_leads_page(uuid, uuid, uuid, text, integer)",
+      "source_hash": "f139068b066ec8208550176a7958313c",
+      "anon_execute": false,
+      "service_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin,authenticated=X/supabase_admin}",
+      "name": "campaign_import_status",
+      "owner": "supabase_admin",
+      "config": [
+        "search_path=\"\""
+      ],
+      "result": "jsonb",
+      "schema": "public",
+      "definer": true,
+      "arguments": "batch uuid",
+      "signature": "public.campaign_import_status(uuid)",
+      "source_hash": "db488fdde79a5b7675ccb3ac177ee002",
+      "anon_execute": false,
+      "service_execute": false,
+      "authenticated_execute": true
+    },
+    {
+      "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin,authenticated=X/supabase_admin}",
+      "name": "campaign_verify_import",
+      "owner": "supabase_admin",
+      "config": [
+        "search_path=\"\""
+      ],
+      "result": "jsonb",
+      "schema": "public",
+      "definer": true,
+      "arguments": "batch uuid, expected_count integer, request_key uuid",
+      "signature": "public.campaign_verify_import(uuid, integer, uuid)",
+      "source_hash": "77d06f18f0c6aec886c020fbb82402c1",
+      "anon_execute": false,
+      "service_execute": false,
+      "authenticated_execute": true
+    }
+  ],
+  "existingFunctionsChanged": 0,
+  "relationsUnchanged": 9,
+  "campaignTriggersUnchanged": 2,
+  "existingBusinessRowsRead": 0,
+  "businessMutationsPerformed": 0,
+  "verificationOrSendingQueued": false
+}

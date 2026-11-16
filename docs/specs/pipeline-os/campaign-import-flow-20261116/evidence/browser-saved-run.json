@@ -1,0 +1,12 @@
+{
+  "statusReads": 1,
+  "verifyRequests": 0,
+  "createRequests": 1,
+  "uploadRequests": 0,
+  "registeredBatches": 0,
+  "previews": 0,
+  "actions": [],
+  "realProviderRequests": 0,
+  "uniqueUploadKeys": 0,
+  "uniqueCreationKeys": 1
+}

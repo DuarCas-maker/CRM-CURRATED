@@ -1,0 +1,34 @@
+{
+  "integratedCampaignEntry": true,
+  "inlineWorkflowWithoutNestedComposerModal": true,
+  "classificationConfirmationAndCancel": true,
+  "manualReviewBeforeActivation": true,
+  "realXlsxPreviewRows": 6,
+  "uploadResponseFailureRetriedWithOneRegisteredBatch": true,
+  "refreshFailureKeptRegisteredSuccess": true,
+  "nonAdminCreationHidden": true,
+  "tabNavigation": true,
+  "enterReview": true,
+  "savedDraftLeavesWithoutDiscardDialog": true,
+  "responsive": [
+    {
+      "width": 360,
+      "scroll": 360
+    },
+    {
+      "width": 768,
+      "scroll": 768
+    },
+    {
+      "width": 1280,
+      "scroll": 1280
+    }
+  ],
+  "integratedMobile": {
+    "width": 360,
+    "scroll": 360,
+    "flow": 332
+  },
+  "realProviderRequests": 0,
+  "backend": "local fake HTTP plus separately tested SQL in PGlite"
+}

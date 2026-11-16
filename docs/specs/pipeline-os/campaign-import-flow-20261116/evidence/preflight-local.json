@@ -1,0 +1,9 @@
+{
+  "engine": "PGlite",
+  "runtime": "public migrations001–047 + local installed brand contracts",
+  "requiredFunctionsPresent": 5,
+  "relations": 9,
+  "campaignTriggers": 2,
+  "readOnlyArtifactParsed": true,
+  "remoteExecuted": false
+}
