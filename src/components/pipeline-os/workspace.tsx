@@ -44,6 +44,7 @@ import { Modal, t } from "../ui";
 import { useLeaveConfirmation } from "../unsaved-changes";
 import { OpportunityDetail } from "../opportunity-detail";
 import { PipelineMailReview } from "./mail-review";
+import { PipelineCaseProgress } from "./case-progress";
 import { ConversationsWorkspace } from "../conversations-workspace";
 import { CampaignCenterWorkspace } from "../campaign-center";
 import { CampaignComposer } from "../campaign-composer";
@@ -130,6 +131,7 @@ export function PipelineOSWorkspace({
     [caseData, setCaseData] = useState<Workspace | null>(null),
     [caseLoading, setCaseLoading] = useState(false);
   const [caseSection, setCaseSection] = useState<CaseSection>("activity");
+  const caseContent = useRef<HTMLDivElement>(null);
   const [mailCase, setMailCase] = useState<string | undefined>(),
     [mailThread, setMailThread] = useState<string | undefined>();
   const [importing, setImporting] = useState(false),
@@ -1441,6 +1443,25 @@ export function PipelineOSWorkspace({
                 </p>
               ) : caseData?.opportunities.find((o) => o.id === caseId) ? (
                 <>
+                  <PipelineCaseProgress
+                    key={caseId}
+                    data={caseData}
+                    caseId={caseId}
+                    processes={processes}
+                    locale={locale}
+                    open={(section) =>
+                      requestLeave(() => {
+                        setCaseSection(section);
+                        requestAnimationFrame(() => {
+                          caseContent.current?.focus({ preventScroll: true });
+                          caseContent.current?.scrollIntoView({
+                            block: "start",
+                            behavior: "instant",
+                          });
+                        });
+                      })
+                    }
+                  />
                   <div className="pos-row pos-file-tools">
                     <button
                       className="pos-btn"
@@ -1486,20 +1507,31 @@ export function PipelineOSWorkspace({
                       leave={requestLeave}
                     />
                   )}
-                  <OpportunityDetail
-                    key={`${caseId}:${caseSection}`}
-                    data={caseData}
-                    opportunity={caseData.opportunities.find(
-                      (o) => o.id === caseId,
-                    )!}
-                    profile={caseData.profile}
-                    locale={locale}
-                    act={act}
-                    busy={busy}
-                    back={() => requestLeave(closeCase)}
-                    refresh={refresh}
-                    initialTab={caseSection}
-                  />
+                  <div
+                    ref={caseContent}
+                    className="pos-case-content"
+                    tabIndex={-1}
+                    aria-label={t(
+                      locale,
+                      "Acciones del expediente",
+                      "Case actions",
+                    )}
+                  >
+                    <OpportunityDetail
+                      key={`${caseId}:${caseSection}`}
+                      data={caseData}
+                      opportunity={caseData.opportunities.find(
+                        (o) => o.id === caseId,
+                      )!}
+                      profile={caseData.profile}
+                      locale={locale}
+                      act={act}
+                      busy={busy}
+                      back={() => requestLeave(closeCase)}
+                      refresh={refresh}
+                      initialTab={caseSection}
+                    />
+                  </div>
                 </>
               ) : (
                 <div className="pos-empty">

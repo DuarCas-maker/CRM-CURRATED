@@ -1,0 +1,293 @@
+.pos-case-progress {
+  border: 1px solid var(--pos-line2);
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 20px;
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+}
+.pos-progress-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.pos-progress-heading h2,
+.pos-progress-loading h2 {
+  margin: 3px 0 5px;
+  font-size: 23px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+.pos-progress-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--pos-accent);
+  font-size: 12px;
+  font-weight: 650;
+}
+.pos-progress-description {
+  color: var(--pos-muted);
+  margin: 0;
+  font-size: 13px;
+}
+.pos-progress-total {
+  flex-shrink: 0;
+  color: var(--pos-accent);
+  font-size: 25px;
+  line-height: 1.2;
+  text-align: right;
+  font-weight: 650;
+}
+.pos-progress-total small {
+  display: block;
+  color: var(--pos-muted);
+  font-size: 11px;
+  font-weight: 400;
+  margin-top: 5px;
+}
+.pos-progress-context {
+  display: flex;
+  gap: 8px 20px;
+  flex-wrap: wrap;
+  color: var(--pos-muted);
+  font-size: 11px;
+  margin: 16px 0;
+}
+.pos-progress-notice,
+.pos-progress-outcome {
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  background: var(--pos-warn);
+  color: var(--pos-warn-ink);
+}
+.pos-progress-outcome.funded {
+  background: var(--pos-soft);
+  color: var(--pos-soft-ink);
+}
+.pos-progress-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  gap: 6px;
+}
+.pos-progress-steps li {
+  min-width: 0;
+}
+.pos-progress-steps button {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  padding: 12px 9px;
+  border: 1px solid var(--pos-line);
+  border-radius: 10px;
+  background: var(--pos-panel2);
+  color: var(--pos-ink);
+  cursor: pointer;
+  font: inherit;
+}
+.pos-progress-steps button:hover {
+  border-color: var(--pos-accent);
+}
+.pos-progress-steps button.is-selected {
+  border-color: var(--pos-accent);
+  box-shadow: inset 0 0 0 1px var(--pos-accent);
+  background: var(--pos-soft);
+}
+.pos-progress-steps strong {
+  display: block;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.pos-progress-steps small {
+  display: block;
+  font-size: 10px;
+  color: var(--pos-muted);
+  margin-top: 6px;
+}
+.pos-progress-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: var(--pos-line);
+  color: var(--pos-ink);
+  font-size: 11px;
+  font-weight: 650;
+}
+.pos-progress-steps li[data-state="complete"] .pos-progress-number {
+  background: var(--pos-accent);
+  color: var(--pos-on-accent);
+}
+.pos-progress-detail {
+  border-top: 1px solid var(--pos-line);
+  margin-top: 18px;
+  padding-top: 16px;
+}
+.pos-progress-detail-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pos-progress-detail-heading h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.pos-progress-detail-heading > span {
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.pos-progress-items {
+  list-style: none;
+  margin: 12px 0;
+  padding: 0;
+}
+.pos-progress-items li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  column-gap: 10px;
+  row-gap: 5px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--pos-line);
+}
+.pos-progress-items li:last-child {
+  border-bottom: 0;
+}
+.pos-progress-item-icon {
+  padding-top: 1px;
+  color: var(--pos-muted);
+}
+.pos-progress-items li[data-state="complete"] .pos-progress-item-icon {
+  color: var(--pos-accent);
+}
+.pos-progress-items strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pos-progress-items p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--pos-muted);
+  margin: 3px 0 0;
+}
+.pos-progress-item-state {
+  align-self: start;
+  font-size: 10px;
+  border-radius: 20px;
+  padding: 3px 7px;
+  background: var(--pos-panel2);
+  color: var(--pos-muted);
+  white-space: nowrap;
+}
+.pos-progress-items li[data-state="complete"] .pos-progress-item-state {
+  color: var(--pos-soft-ink);
+  background: var(--pos-soft);
+}
+.pos-progress-link {
+  grid-column: 2 / -1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-self: start;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  background: none;
+  border: 0;
+  padding: 3px 0;
+  color: var(--pos-accent);
+  cursor: pointer;
+  text-align: left;
+}
+.pos-progress-link:hover {
+  text-decoration: underline;
+}
+.pos-progress-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+.pos-progress-footer p {
+  font-size: 10px;
+  color: var(--pos-muted);
+  max-width: 330px;
+  margin: 0;
+}
+.pos-progress-footer .pos-btn {
+  flex-shrink: 0;
+}
+.pos-case-progress button:focus-visible,
+.pos-case-content:focus-visible {
+  outline: 3px solid var(--pos-accent);
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .pos-case-progress {
+    padding: 16px;
+  }
+  .pos-progress-steps {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  .pos-progress-steps button {
+    align-items: center;
+    padding: 9px 11px;
+  }
+  .pos-progress-steps button > span:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex: 1;
+  }
+  .pos-progress-steps small {
+    margin: 0;
+    text-align: right;
+  }
+  .pos-progress-heading h2 {
+    font-size: 20px;
+  }
+  .pos-progress-total {
+    font-size: 22px;
+  }
+  .pos-progress-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .pos-progress-footer .pos-btn {
+    justify-content: center;
+    white-space: normal;
+  }
+}
+@media (max-width: 420px) {
+  .pos-progress-heading {
+    gap: 12px;
+  }
+  .pos-progress-total {
+    font-size: 20px;
+  }
+  .pos-progress-total small {
+    max-width: 60px;
+  }
+  .pos-progress-items li {
+    grid-template-columns: 18px minmax(0, 1fr);
+  }
+  .pos-progress-item-state {
+    grid-column: 2;
+    justify-self: start;
+  }
+}

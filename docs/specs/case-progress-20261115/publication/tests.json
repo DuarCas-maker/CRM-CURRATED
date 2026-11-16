@@ -1,0 +1,58 @@
+[
+  {
+    "test": "pipeline-os-case-progress.test.ts",
+    "exit": 0,
+    "pass": 12,
+    "fail": 0,
+    "skip": 0
+  },
+  {
+    "test": "pipeline-os-case-progress-http.test.ts",
+    "exit": 0,
+    "pass": 5,
+    "fail": 0,
+    "skip": 0
+  },
+  {
+    "test": "pipeline-os-case-progress-ui.test.tsx",
+    "exit": 0,
+    "pass": 4,
+    "fail": 0,
+    "skip": 0
+  },
+  {
+    "test": "pipeline-os-module.test.ts",
+    "exit": 0,
+    "pass": 10,
+    "fail": 0,
+    "skip": 0
+  },
+  {
+    "test": "pipeline-os-module-http.test.ts",
+    "exit": 0,
+    "pass": 1,
+    "fail": 0,
+    "skip": 0
+  },
+  {
+    "test": "pipeline-os-module-ui.test.ts",
+    "exit": 0,
+    "pass": 3,
+    "fail": 0,
+    "skip": 0
+  },
+  {
+    "test": "pipeline-os-mail-review.test.ts",
+    "exit": 0,
+    "pass": 15,
+    "fail": 0,
+    "skip": 0
+  },
+  {
+    "test": "pipeline-os-s02-connect-recovery.test.ts",
+    "exit": 0,
+    "pass": 5,
+    "fail": 0,
+    "skip": 0
+  }
+]

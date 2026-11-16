@@ -1,0 +1,259 @@
+{
+  "fictionalOnly": true,
+  "localUrl": "http://127.0.0.1:3251",
+  "checks": [
+    {
+      "check": "real_drawer_order",
+      "first": "pos-case-progress",
+      "mailReviewOpen": false
+    },
+    {
+      "check": "lenders_keyboard_navigation",
+      "activeTab": "Lenders y ofertas",
+      "focus": "Acciones del expediente"
+    },
+    {
+      "check": "closing_navigation",
+      "activeTab": "Correo e histórico",
+      "managementAvailable": true
+    },
+    {
+      "check": "responsive",
+      "width": 1280,
+      "documentScrollWidth": 1266
+    },
+    {
+      "check": "responsive",
+      "width": 768,
+      "documentScrollWidth": 755,
+      "panelWidth": 668,
+      "panelScrollWidth": 666
+    },
+    {
+      "check": "responsive",
+      "width": 360,
+      "documentScrollWidth": 346,
+      "panelWidth": 290,
+      "panelScrollWidth": 288
+    },
+    {
+      "scenario": "documents",
+      "detail": "Documentos",
+      "items": [
+        {
+          "state": "pending",
+          "title": "Aplicación completa y firmada"
+        },
+        {
+          "state": "complete",
+          "title": "Archivo de aplicación aprobado"
+        },
+        {
+          "state": "pending",
+          "title": "Cuatro extractos bancarios aprobados"
+        },
+        {
+          "state": "pending",
+          "title": "Todos los archivos requeridos aprobados"
+        }
+      ],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "scenario": "risk",
+      "detail": "Análisis de riesgo",
+      "items": [
+        {
+          "state": "complete",
+          "title": "Fuentes listas para análisis"
+        },
+        {
+          "state": "pending",
+          "title": "Análisis revisado y vigente"
+        },
+        {
+          "state": "pending",
+          "title": "Expediente entregado al closer"
+        }
+      ],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "scenario": "lenders",
+      "detail": "Lenders",
+      "items": [
+        {
+          "state": "complete",
+          "title": "Proceso activo asociado"
+        },
+        {
+          "state": "pending",
+          "title": "Evaluaciones de lenders registradas"
+        },
+        {
+          "state": "pending",
+          "title": "Envío a lenders registrado"
+        }
+      ],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "scenario": "closing",
+      "detail": "Cierre y desembolso",
+      "items": [
+        {
+          "state": "complete",
+          "title": "Contrato del lender enviado"
+        },
+        {
+          "state": "pending",
+          "title": "Contrato del lender firmado"
+        },
+        {
+          "state": "pending",
+          "title": "Aprobación final registrada"
+        },
+        {
+          "state": "pending",
+          "title": "Desembolso confirmado"
+        }
+      ],
+      "total": "4 / 5pasos verificados"
+    },
+    {
+      "scenario": "funded",
+      "detail": "Cierre y desembolso",
+      "items": [
+        {
+          "state": "complete",
+          "title": "Contrato del lender enviado"
+        },
+        {
+          "state": "complete",
+          "title": "Contrato del lender firmado"
+        },
+        {
+          "state": "complete",
+          "title": "Aprobación final registrada"
+        },
+        {
+          "state": "complete",
+          "title": "Desembolso confirmado"
+        }
+      ],
+      "outcome": "Desembolso registrado en este proceso.",
+      "total": "5 / 5pasos verificados"
+    },
+    {
+      "scenario": "unknown",
+      "detail": "Lenders",
+      "heading": "Seguimiento del expediente",
+      "loading": null,
+      "states": [
+        "complete",
+        "complete",
+        "unknown",
+        "unknown",
+        "unknown"
+      ]
+    },
+    {
+      "scenario": "restricted",
+      "detail": "Cierre y desembolso",
+      "heading": "Seguimiento del expediente",
+      "loading": null,
+      "states": [
+        "complete",
+        "complete",
+        "restricted",
+        "restricted",
+        "restricted"
+      ]
+    },
+    {
+      "scenario": "lost",
+      "detail": "Oferta y negociación",
+      "heading": "Seguimiento del expediente",
+      "loading": null,
+      "outcome": "Cerrado sin financiación: rechazo o retiro registrado. Los puntos sin evidencia se conservan para revisión.",
+      "states": [
+        "complete",
+        "complete",
+        "complete",
+        "pending",
+        "pending"
+      ]
+    },
+    {
+      "scenario": "empty",
+      "detail": "Documentos",
+      "heading": "Seguimiento del expediente",
+      "loading": null,
+      "states": [
+        "pending",
+        "pending",
+        "unknown",
+        "unknown",
+        "unknown"
+      ]
+    },
+    {
+      "scenario": "loading",
+      "heading": "Seguimiento del expediente",
+      "loading": "true",
+      "states": []
+    },
+    {
+      "scenario": "error",
+      "alert": "No se pudo verificar el seguimiento. Actualiza para consultar la evidencia; las acciones del expediente siguen disponibles debajo.",
+      "heading": "Seguimiento del expediente",
+      "loading": "false",
+      "states": []
+    },
+    {
+      "scenario": "retry",
+      "alert": "No se pudo verificar el seguimiento. Actualiza para consultar la evidencia; las acciones del expediente siguen disponibles debajo.",
+      "heading": "Seguimiento del expediente",
+      "loading": "false",
+      "states": []
+    },
+    {
+      "check": "retry_recovery",
+      "detail": "Oferta y negociación",
+      "error": false,
+      "loaded": true
+    },
+    {
+      "check": "documents_action",
+      "activeTab": "Documentos3"
+    },
+    {
+      "check": "keyboard_steps",
+      "enterDocuments": true,
+      "tabToRisk": true,
+      "spaceOpensRisk": true,
+      "shiftTabToDocuments": true
+    },
+    {
+      "check": "final_responsive",
+      "description": "Por completar: Oferta y negociación. Abre sus pendientes para continuar.",
+      "height": 900,
+      "panelScroll": 666,
+      "panelWidth": 668.0397338867188,
+      "scrollWidth": 755,
+      "width": 768
+    },
+    {
+      "check": "final_responsive",
+      "description": "Por completar: Oferta y negociación. Abre sus pendientes para continuar.",
+      "height": 900,
+      "panelScroll": 288,
+      "panelWidth": 289.8579406738281,
+      "scrollWidth": 346,
+      "width": 360
+    }
+  ]
+}

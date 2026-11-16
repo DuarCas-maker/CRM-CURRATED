@@ -1,0 +1,64 @@
+{
+  "base": "5f38ec650b16642c5d97c3a488d8f39ee1b1a764",
+  "branch": "codex/case-progress-20261115",
+  "productFiles": 9,
+  "fixtureAndTestFiles": 4,
+  "testsPassed": 50,
+  "typecheck": 0,
+  "build": 0,
+  "published": false,
+  "files": [
+    {
+      "path": "src/lib/pipeline-os/case-progress.ts",
+      "sha256": "e6c717dfb37dce733afab2bb15db264c645a90a98f0f108c73c0a657f66cf184"
+    },
+    {
+      "path": "src/lib/server/case-progress.ts",
+      "sha256": "dcb2a4f731c0c08959a1b0b157e88f400be8b2b8af69dd0439b0d513776773ec"
+    },
+    {
+      "path": "src/app/api/pipeline-os/case-progress/route.ts",
+      "sha256": "e963ff92165f9eda94ad4f69549ee4789367cc72074739a2514c3308bc12ae22"
+    },
+    {
+      "path": "src/components/pipeline-os/case-progress.tsx",
+      "sha256": "a57343a1e2dd05b2fefe14b374c0848bfda4b79025fb0357010467177cd34bb5"
+    },
+    {
+      "path": "src/components/pipeline-os/case-progress.css",
+      "sha256": "d4f052c5246297b9ba99f860c24db13083ee6b94c63ff944b0b1af7da8a0adc0"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "36f1ac54f0dbc1378dd5e2607e375a116c9f0b4fb7b11a466858292414a6d7a4"
+    },
+    {
+      "path": "src/components/pipeline-os/board.tsx",
+      "sha256": "30df6e7e4b285fc592ddb2e20f61018decd220860a38d617ba39ab4ab2e07c79"
+    },
+    {
+      "path": "src/components/pipeline-os/mail-review.tsx",
+      "sha256": "1b4b2e90e2707a0dd36e25e92c497fc32cd57b01b884cca8ed1d76d61fed520e"
+    },
+    {
+      "path": "src/components/opportunity-detail.tsx",
+      "sha256": "8bb400b9666b5c7c3e276ca279e201d5529523e03aeab4da6b80d0f51fb4c269"
+    },
+    {
+      "path": "tests/fixtures/case-progress.ts",
+      "sha256": "43746e167e2c3da23d97dbc06d9db15c06dad151af295898248dcc36006cf729"
+    },
+    {
+      "path": "tests/pipeline-os-case-progress.test.ts",
+      "sha256": "0ed1aa7d2a1a20f9792d8bad1ae42ab9564a938ffb78467d54433c9c35bc9a38"
+    },
+    {
+      "path": "tests/pipeline-os-case-progress-http.test.ts",
+      "sha256": "22edd8ae571d1ef7d06daa83ebeada465c0301eeff96d50689883ab1005cf7fa"
+    },
+    {
+      "path": "tests/pipeline-os-case-progress-ui.test.tsx",
+      "sha256": "5812da91aec4886cbb3d362931ad35e484c405d47dd0d3af2c3dfdacc9ad8271"
+    }
+  ]
+}

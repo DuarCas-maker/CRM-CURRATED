@@ -288,7 +288,7 @@ export function PipelineMailReview({
     !review ||
     (review.process_id === processId && review.submission_id === submissionId);
   return (
-    <details className="pos-card pos-mail-review" open>
+    <details className="pos-card pos-mail-review">
       <summary>
         <strong>{l("Revisar correo con IA", "Review email with AI")}</strong>
       </summary>

@@ -20,7 +20,8 @@ import {
 } from "@/lib/pipeline-os/module";
 import { t } from "../ui";
 
-export type CaseSection = "activity" | "documents" | "analysis" | "lenders";
+export type CaseSection =
+  "activity" | "documents" | "analysis" | "lenders" | "mail_history";
 export type OpenPipelineCase = (id: string, section?: CaseSection) => void;
 
 export function PipelineTable({

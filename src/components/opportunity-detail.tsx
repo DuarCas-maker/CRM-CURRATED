@@ -65,7 +65,8 @@ export function OpportunityDetail({
   busy: boolean;
   back: () => void;
   refresh: () => Promise<void>;
-  initialTab?: "activity" | "documents" | "analysis" | "lenders";
+  initialTab?:
+    "activity" | "documents" | "analysis" | "lenders" | "mail_history";
   embedded?: boolean;
 }) {
   const { requestLeave, confirmation } = useLeaveConfirmation(locale);
@@ -93,7 +94,8 @@ export function OpportunityDetail({
   const editable = sellerAccess || closerAccess;
   const docs = data.documents.filter((d) => d.opportunity_id === o.id);
   const documentStatus = documentProgress(docs);
-  const signals = data.opportunity_signals?.[o.id] ?? summarizeOpportunities([o], data)[o.id];
+  const signals =
+    data.opportunity_signals?.[o.id] ?? summarizeOpportunities([o], data)[o.id];
   const visibleDocs = docs.filter(hasDocumentFile);
   const documentGroupKey = (d: (typeof docs)[number]) =>
     d.kind === "bank_statement"

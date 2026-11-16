@@ -1,0 +1,506 @@
+import type {
+  Analysis,
+  Document,
+  Offer,
+  Opportunity,
+  Profile,
+  Submission,
+} from "../domain";
+import { canSeeArea, canSeeOpportunity } from "../domain";
+import { documentProgress } from "../document-labels";
+import { underwritingReadiness } from "../underwriting-status";
+import type { PipelineProcess } from "./module";
+
+export type ProgressText = [string, string];
+export type CaseProgressAction =
+  "documents" | "analysis" | "lenders" | "mail_history";
+export type ProgressState = "complete" | "pending" | "unknown" | "restricted";
+export interface ProgressItem {
+  id: string;
+  title: ProgressText;
+  detail: ProgressText;
+  state: ProgressState;
+  action: CaseProgressAction | null;
+}
+export interface ProgressPhase {
+  id: "documents" | "risk" | "lenders" | "offers" | "closing";
+  title: ProgressText;
+  state: ProgressState;
+  items: ProgressItem[];
+}
+export type ProgressProcess = PipelineProcess & {
+  actual_funded_amount?: number | null;
+  funded_lender_id?: string | null;
+};
+export interface ProgressEvent {
+  id: string;
+  opportunity_id: string;
+  process_id: string | null;
+  kind: string;
+  occurred_at: string;
+  archive_message_id: string | null;
+  document_id: string | null;
+}
+export interface CaseProgressSource {
+  profile: Profile;
+  opportunity: Opportunity;
+  documents: Document[];
+  analyses: Analysis[];
+  processes: ProgressProcess[];
+  submissions: Submission[];
+  offers: Offer[];
+  events: ProgressEvent[];
+  demo?: boolean;
+}
+export interface CaseProgress {
+  caseId: string;
+  processNumber: number | null;
+  multipleActive: boolean;
+  closerVisible: boolean;
+  outcome: "open" | "funded" | "without_funding";
+  phases: ProgressPhase[];
+}
+
+/** Read-only evidence projection. A missing record never advances a persisted stage. */
+export function buildCaseProgress(
+  source: CaseProgressSource,
+  now = Date.now(),
+): CaseProgress {
+  const { opportunity: o, profile } = source;
+  if (!canSeeOpportunity(profile, o)) throw new Error("Case access denied");
+  const closer = canSeeArea(profile, o, "closer");
+  const docs = source.documents.filter(
+    (d) => d.opportunity_id === o.id && d.kind !== "analysis_report",
+  );
+  const doc = documentProgress(docs);
+  const ready = underwritingReadiness(docs, !!source.demo);
+  const reviewed = source.analyses.some(
+    (a) =>
+      a.opportunity_id === o.id &&
+      a.is_current !== false &&
+      !!a.reviewer_id &&
+      Number.isFinite(Date.parse(a.reviewed_at)) &&
+      Date.parse(a.reviewed_at) <= now &&
+      !!a.summary.trim() &&
+      !!a.conclusion.trim() &&
+      !!a.recommendations.trim(),
+  );
+  const obsolete = source.analyses.some(
+    (a) => a.opportunity_id === o.id && a.is_current === false,
+  );
+  const active = closer
+    ? source.processes
+        .filter(
+          (p) =>
+            p.opportunity_id === o.id &&
+            p.classification === "active" &&
+            !p.is_unclassified_archive,
+        )
+        .sort(
+          (a, b) =>
+            b.sequence_number - a.sequence_number || a.id.localeCompare(b.id),
+        )
+    : [];
+  const process = active[0];
+  const submissions = process
+    ? source.submissions.filter(
+        (s) => s.opportunity_id === o.id && s.process_id === process.id,
+      )
+    : [];
+  const submissionIds = new Set(submissions.map((s) => s.id));
+  const offers = source.offers.filter(
+    (f) => f.opportunity_id === o.id && submissionIds.has(f.submission_id),
+  );
+  const events = process
+    ? source.events.filter(
+        (e) =>
+          e.opportunity_id === o.id &&
+          e.process_id === process.id &&
+          (e.archive_message_id || e.document_id) &&
+          Number.isFinite(Date.parse(e.occurred_at)) &&
+          Date.parse(e.occurred_at) <= now,
+      )
+    : [];
+  const has = (...states: string[]) =>
+    !!process &&
+    (states.includes(process.state) ||
+      events.some((e) => states.includes(e.kind)));
+  const contractSent = has(
+    "contract_out",
+    "contract_sent",
+    "contract_signed",
+    "final_approval",
+    "disbursed",
+  );
+  const contractSigned = has("contract_signed", "final_approval", "disbursed");
+  const finalApproval = has("final_approval", "disbursed");
+  const funded =
+    process?.state === "disbursed" &&
+    Number.isFinite(process.actual_funded_amount) &&
+    Number(process?.actual_funded_amount) > 0 &&
+    !!process?.funded_lender_id;
+  const terminal = ["client_withdrew", "funding_declined"].includes(
+    process?.state || "",
+  );
+  const validOffer = (f: Offer) =>
+    Number.isFinite(f.amount) &&
+    f.amount > 0 &&
+    [
+      "received",
+      "approved",
+      "accepted",
+      "selected",
+      "offered",
+      "active",
+    ].includes(f.status.toLowerCase());
+  const selected = offers.filter(
+    (f) =>
+      validOffer(f) &&
+      ["accepted", "selected"].includes(f.status.toLowerCase()) &&
+      (contractSent || !f.expires_at || Date.parse(f.expires_at) > now),
+  );
+  const available = offers.filter(
+    (f) => validOffer(f) && (!f.expires_at || Date.parse(f.expires_at) > now),
+  );
+  const selection =
+    selected.length === 1 ||
+    (selected.length === 0 &&
+      has(
+        "lender_selected",
+        "contract_sent",
+        "contract_signed",
+        "final_approval",
+        "disbursed",
+      ));
+  const chosenSubmissions = new Set(selected.map((f) => f.submission_id));
+  const requirements = submissions.filter(
+    (s) =>
+      s.status === "requirements" &&
+      (!chosenSubmissions.size || chosenSubmissions.has(s.id)),
+  ).length;
+  const requirementsOpen =
+    process?.state === "requirements" || requirements > 0;
+  const sent = submissions.filter(
+    (s) =>
+      !!s.lender_id &&
+      Number.isFinite(Date.parse(s.submitted_at)) &&
+      Date.parse(s.submitted_at) <= now &&
+      ["submitted", "reviewing", "requirements", "offer", "rejected"].includes(
+        s.status.toLowerCase(),
+      ),
+  ).length;
+
+  const item = (
+    id: string,
+    title: ProgressText,
+    done: boolean,
+    detail: ProgressText,
+    action: CaseProgressAction,
+  ): ProgressItem => ({
+    id,
+    title,
+    detail,
+    state: done ? "complete" : "pending",
+    action,
+  });
+  const phase = (
+    id: ProgressPhase["id"],
+    title: ProgressText,
+    items: ProgressItem[],
+  ): ProgressPhase => ({
+    id,
+    title,
+    items,
+    state: items.every((i) => i.state === "complete") ? "complete" : "pending",
+  });
+  const lenderAction: CaseProgressAction = o.handed_off_at
+    ? "lenders"
+    : "mail_history";
+  const processItems = (items: ProgressItem[]) =>
+    items.map((i) =>
+      !closer
+        ? {
+            ...i,
+            state: "restricted" as const,
+            detail: [
+              "Visible para el equipo de closers.",
+              "Visible to the closer team.",
+            ] as ProgressText,
+            action: null,
+          }
+        : !process
+          ? {
+              ...i,
+              state: "unknown" as const,
+              detail: [
+                "Asocia o crea un proceso activo en Correo e histórico.",
+                "Link or create an active process in Email and history.",
+              ] as ProgressText,
+              action: "mail_history" as const,
+            }
+          : i,
+    );
+  const phases = [
+    phase(
+      "documents",
+      ["Documentos", "Documents"],
+      [
+        item(
+          "application",
+          ["Aplicación completa y firmada", "Complete, signed application"],
+          o.application_complete && o.application_signed,
+          [
+            o.application_complete && o.application_signed
+              ? "Datos y firma de la solicitud confirmados."
+              : "Confirma los datos y la firma de la solicitud.",
+            o.application_complete && o.application_signed
+              ? "Application details and signature confirmed."
+              : "Confirm the application details and signature.",
+          ],
+          "mail_history",
+        ),
+        item(
+          "application-file",
+          ["Archivo de aplicación aprobado", "Approved application file"],
+          doc.applicationApproved,
+          [
+            doc.applicationApproved
+              ? "Archivo aprobado en Documentos."
+              : doc.applicationReceived
+                ? "Aplicación recibida; revisa su aprobación."
+                : "Falta incorporar el archivo de aplicación.",
+            doc.applicationApproved
+              ? "File approved in Documents."
+              : doc.applicationReceived
+                ? "Application received; check its approval."
+                : "The application file has not been incorporated.",
+          ],
+          "documents",
+        ),
+        item(
+          "statements",
+          [
+            "Cuatro extractos bancarios aprobados",
+            "Four approved bank statements",
+          ],
+          doc.statements >= 4,
+          [
+            `${Math.min(4, doc.statements)} de 4 extractos distintos aprobados.`,
+            `${Math.min(4, doc.statements)} of 4 distinct statements approved.`,
+          ],
+          "documents",
+        ),
+        item(
+          "additional-documents",
+          [
+            "Todos los archivos requeridos aprobados",
+            "All required files approved",
+          ],
+          doc.approved === doc.total,
+          [
+            `${doc.approved} de ${doc.total} archivos requeridos aprobados en total.`,
+            `${doc.approved} of ${doc.total} required files approved overall.`,
+          ],
+          "documents",
+        ),
+      ],
+    ),
+    phase(
+      "risk",
+      ["Análisis de riesgo", "Risk analysis"],
+      [
+        item(
+          "sources",
+          ["Fuentes listas para análisis", "Sources ready for analysis"],
+          ready.ready,
+          [
+            "Aplicación, cuatro extractos distintos y demás fuentes requeridas; hasta 24 archivos utilizables.",
+            "Application, four distinct statements and other required sources; up to 24 usable files.",
+          ],
+          "documents",
+        ),
+        item(
+          "review",
+          ["Análisis revisado y vigente", "Current, reviewed analysis"],
+          reviewed,
+          [
+            reviewed
+              ? "Revisión humana vigente registrada."
+              : obsolete
+                ? "El análisis anterior está desactualizado; revisa las fuentes."
+                : "Requiere revisión humana, conclusión y recomendaciones. Un borrador no completa este punto.",
+            reviewed
+              ? "Current human review recorded."
+              : obsolete
+                ? "The previous analysis is outdated; review its sources."
+                : "Requires human review, conclusion and recommendations. A draft does not complete this item.",
+          ],
+          "analysis",
+        ),
+        item(
+          "handoff",
+          ["Expediente entregado al closer", "Case handed to the closer"],
+          !!o.handed_off_at,
+          [
+            o.handed_off_at
+              ? "Entrega al closer registrada."
+              : "La entrega se confirma desde Gestión del caso.",
+            o.handed_off_at
+              ? "Handoff to the closer recorded."
+              : "Confirm the handoff from Case management.",
+          ],
+          "mail_history",
+        ),
+      ],
+    ),
+    phase(
+      "lenders",
+      ["Lenders", "Lenders"],
+      processItems([
+        item(
+          "process",
+          ["Proceso activo asociado", "Linked active process"],
+          !!process,
+          [
+            `Proceso ${process?.sequence_number || "—"}; se conserva el histórico por separado.`,
+            `Process ${process?.sequence_number || "—"}; history is kept separately.`,
+          ],
+          "mail_history",
+        ),
+        item(
+          "evaluations",
+          [
+            "Evaluaciones de lenders registradas",
+            "Recorded lender evaluations",
+          ],
+          submissions.length > 0,
+          [
+            `${submissions.length} evaluaciones de este proceso.`,
+            `${submissions.length} evaluations for this process.`,
+          ],
+          lenderAction,
+        ),
+        item(
+          "submissions",
+          ["Envío a lenders registrado", "Recorded lender submission"],
+          sent > 0,
+          [
+            `${sent} envíos registrados. Borradores, en cola o inciertos no cuentan.`,
+            `${sent} recorded submissions. Draft, queued or uncertain sends do not count.`,
+          ],
+          lenderAction,
+        ),
+      ]),
+    ),
+    phase(
+      "offers",
+      ["Oferta y negociación", "Offer and negotiation"],
+      processItems([
+        item(
+          "offer",
+          ["Oferta disponible para negociar", "Offer available to negotiate"],
+          available.length > 0 || (contractSent && selected.length === 1),
+          [
+            contractSent && selected.length === 1
+              ? "Oferta seleccionada respaldada por el contrato del proceso."
+              : `${available.length} ofertas vigentes de este proceso.`,
+            contractSent && selected.length === 1
+              ? "Selected offer supported by this process's contract."
+              : `${available.length} current offers for this process.`,
+          ],
+          lenderAction,
+        ),
+        item(
+          "selection",
+          ["Oferta o lender seleccionado", "Selected offer or lender"],
+          selection,
+          [
+            selection
+              ? "Selección explícita registrada en este proceso."
+              : selected.length > 1
+                ? "Hay varias ofertas seleccionadas; revisa el conflicto."
+                : "Requiere una selección explícita. El mayor monto no se elige automáticamente.",
+            selection
+              ? "Explicit selection recorded in this process."
+              : selected.length > 1
+                ? "Several offers are selected; review the conflict."
+                : "Requires an explicit selection. The largest amount is not selected automatically.",
+          ],
+          lenderAction,
+        ),
+        item(
+          "requirements",
+          ["Requisitos del lender resueltos", "Lender requirements resolved"],
+          !requirementsOpen,
+          [
+            requirementsOpen
+              ? "Hay requisitos adicionales pendientes en este proceso."
+              : "Sin requisitos adicionales pendientes registrados.",
+            requirementsOpen
+              ? "This process has additional pending requirements."
+              : "No additional pending requirements recorded.",
+          ],
+          lenderAction,
+        ),
+      ]),
+    ),
+    phase(
+      "closing",
+      ["Cierre y desembolso", "Closing and funding"],
+      processItems([
+        item(
+          "contract-sent",
+          ["Contrato del lender enviado", "Lender contract sent"],
+          contractSent,
+          [
+            "Estado o evento explícito del contrato de este proceso.",
+            "Explicit contract state or event for this process.",
+          ],
+          "mail_history",
+        ),
+        item(
+          "contract-signed",
+          ["Contrato del lender firmado", "Lender contract signed"],
+          contractSigned,
+          [
+            "La firma de la aplicación no equivale a la firma del contrato.",
+            "An application signature is not a lender contract signature.",
+          ],
+          "mail_history",
+        ),
+        item(
+          "final-approval",
+          ["Aprobación final registrada", "Recorded final approval"],
+          finalApproval,
+          [
+            "La oferta aprobada no equivale a la aprobación final del desembolso.",
+            "An approved offer is not final funding approval.",
+          ],
+          "mail_history",
+        ),
+        item(
+          "funding",
+          ["Desembolso confirmado", "Confirmed funding"],
+          funded,
+          [
+            "Registro de desembolso, monto positivo y lender del mismo proceso.",
+            "Funding record, positive amount and lender for the same process.",
+          ],
+          "mail_history",
+        ),
+      ]),
+    ),
+  ];
+  for (const p of phases) {
+    if (p.items.every((i) => i.state === "restricted")) p.state = "restricted";
+    else if (p.items.every((i) => i.state === "unknown")) p.state = "unknown";
+  }
+  return {
+    caseId: o.id,
+    processNumber: process?.sequence_number ?? null,
+    multipleActive: active.length > 1,
+    closerVisible: closer,
+    outcome: terminal ? "without_funding" : funded ? "funded" : "open",
+    phases,
+  };
+}
