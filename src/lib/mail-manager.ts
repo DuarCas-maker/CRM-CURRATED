@@ -20,6 +20,11 @@ export const outgoingMailSchema = z
       .max(2000)
       .refine((s) => s.trim().length > 0 && !/[\r\n]/.test(s)),
     body: z.string().trim().min(1).max(10000),
+    body_format: z.enum(["plain", "markdown"]).default("plain"),
+    lender_review_digest: z
+      .string()
+      .regex(/^[a-f0-9]{64}$/)
+      .optional(),
     process_id: z.uuid().nullable().optional(),
     conversation_id: z.uuid().optional(),
     reply_message_id: z.uuid().optional(),
@@ -37,13 +42,31 @@ export const outgoingMailSchema = z
           submission_id: z.uuid().optional(),
         }),
       )
-      .max(20)
       .default([]),
     draft_id: z.uuid().optional(),
     forward_message_id: z.uuid().optional(),
     forward_file_ids: z.array(z.uuid()).max(20).default([]),
   })
   .superRefine((input, context) => {
+    if (
+      input.mode === "compose" &&
+      /{{|}}/.test(input.subject + input.body)
+    )
+      context.addIssue({
+        code: "custom",
+        message:
+          "Completa o edita las variables antes de enviar. / Resolve merge fields before sending.",
+      });
+    if (
+      new Set(input.targets.map((t) => t.lender_id)).size !==
+      input.targets.length
+    )
+      context.addIssue({ code: "custom", message: "Duplicate lenders" });
+    if (new TextEncoder().encode(JSON.stringify(input)).length > 280000)
+      context.addIssue({
+        code: "custom",
+        message: "El mensaje y los destinatarios superan 280 KB.",
+      });
     if (input.mode !== "reply" && input.subject.length > 200)
       context.addIssue({
         code: "custom",

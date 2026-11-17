@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import { mergeFields, type CampaignFormat } from "@/lib/campaign-content";
 import type { Locale } from "@/lib/domain";
 import { t } from "./ui";
@@ -11,6 +11,10 @@ export function CampaignEditor({
   onFormat,
   locale,
   label = "Mensaje",
+  fields = mergeFields,
+  maxLength = 20000,
+  required = false,
+  disabled = false,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -18,8 +22,13 @@ export function CampaignEditor({
   onFormat?: (v: CampaignFormat) => void;
   locale: Locale;
   label?: string;
+  fields?: readonly string[];
+  maxLength?: number;
+  required?: boolean;
+  disabled?: boolean;
 }) {
   const input = useRef<HTMLTextAreaElement>(null);
+  const inputId = useId();
   function insert(before: string, after = "") {
     const field = input.current;
     const start = field?.selectionStart ?? value.length,
@@ -37,8 +46,12 @@ export function CampaignEditor({
     });
   }
   return (
-    <div className="field">
-      <span>{label}</span>
+    <fieldset
+      className="field"
+      disabled={disabled}
+      style={{ border: 0, padding: 0, marginInline: 0 }}
+    >
+      <label htmlFor={inputId}>{label}</label>
       <div className="card-actions">
         {onFormat && (
           <label>
@@ -116,16 +129,19 @@ export function CampaignEditor({
           <option value="">
             {t(locale, "Insertar variable…", "Insert field…")}
           </option>
-          {mergeFields.map((key) => (
+          {fields.map((key) => (
             <option key={key} value={key}>{`{{${key}}}`}</option>
           ))}
         </select>
       </div>
       <textarea
+        id={inputId}
+        required={required}
+        disabled={disabled}
         ref={input}
         rows={7}
         value={value}
-        maxLength={20000}
+        maxLength={maxLength}
         onChange={(e) => onChange(e.target.value)}
       />
       {format === "markdown" && (
@@ -137,6 +153,6 @@ export function CampaignEditor({
           )}
         </small>
       )}
-    </div>
+    </fieldset>
   );
 }

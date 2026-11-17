@@ -79,6 +79,7 @@ export function Modal({
   dirty,
   busy = false,
   trackChanges = false,
+  className = "",
 }: {
   title: string;
   children: React.ReactNode;
@@ -88,6 +89,7 @@ export function Modal({
   dirty?: boolean;
   busy?: boolean;
   trackChanges?: boolean;
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -108,7 +110,7 @@ export function Modal({
     <dialog
       ref={ref}
       aria-labelledby={titleId}
-      className={`modal ${wide ? "wide" : ""}`}
+      className={`modal ${wide ? "wide" : ""} ${className}`}
       onCancel={(e) => {
         e.preventDefault();
         e.stopPropagation();

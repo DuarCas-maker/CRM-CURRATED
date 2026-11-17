@@ -1,0 +1,195 @@
+{
+  "base": "a881100",
+  "branch": "codex/lender-composer-20261116",
+  "recorded_at": "2026-11-17T04:52:52.837Z",
+  "checks": [
+    {
+      "name": "lender-composer.test.ts",
+      "exit": 0,
+      "pass": 4,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "lender-composer-server.test.ts",
+      "exit": 0,
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "lender-composer-db.test.ts",
+      "exit": 0,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-recipient-selections.test.ts",
+      "exit": 0,
+      "pass": 5,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-editor-compatibility.test.ts",
+      "exit": 0,
+      "pass": 6,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-compose-database.test.ts",
+      "exit": 0,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-manager.test.ts",
+      "exit": 0,
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-channels.test.ts",
+      "exit": 0,
+      "pass": 5,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "pipeline-os-case-flow-db.test.ts",
+      "exit": 0,
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "campaign-studio.test.ts",
+      "exit": 0,
+      "pass": 7,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "campaign-templates.test.ts",
+      "exit": 0,
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "pipeline-os-module-ui.test.ts",
+      "exit": 0,
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "pipeline-os-module.test.ts",
+      "exit": 0,
+      "pass": 10,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "workspace-mail.test.ts",
+      "exit": 0,
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "campaign-import-flow.test.ts",
+      "exit": 0,
+      "pass": 7,
+      "fail": 0,
+      "skip": 0
+    }
+  ],
+  "native": [
+    {
+      "name": "lender-composer-pg15.test.ts",
+      "exit": 0,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    }
+  ],
+  "forwardRegression": [
+    {
+      "name": "lender-composer.test.ts",
+      "exit": 0,
+      "pass": 4,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-editor-compatibility.test.ts",
+      "exit": 0,
+      "pass": 6,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-manager.test.ts",
+      "exit": 0,
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    }
+  ],
+  "uniqueTestCount": 62,
+  "allPassed": true,
+  "build": {
+    "exitCode": 0,
+    "node": "v22.23.5",
+    "realEnv": false,
+    "externalFetchBlocked": true
+  },
+  "ui": {
+    "data": "fictional-only",
+    "actualComponents": true,
+    "http": "mocked",
+    "viewports": [
+      {
+        "width": 360,
+        "documentScrollWidth": 360,
+        "dialogClientWidth": 329,
+        "dialogScrollWidth": 329
+      },
+      {
+        "width": 768,
+        "documentScrollWidth": 768,
+        "dialogClientWidth": 705,
+        "dialogScrollWidth": 705
+      },
+      {
+        "width": 1280,
+        "documentScrollWidth": 1280
+      }
+    ],
+    "selection": 73,
+    "invalidRemoved": 1,
+    "simulatedEmails": 72,
+    "actualEmails": 0,
+    "templateCreated": true,
+    "pickerRefreshed": true,
+    "missingFieldBlocked": true,
+    "ccIsolated": true,
+    "escapeGuard": true,
+    "states": [
+      "loading",
+      "empty",
+      "error/retry"
+    ]
+  },
+  "production": {
+    "migrated": false,
+    "published": false,
+    "realImports": false,
+    "realEmails": false
+  }
+}

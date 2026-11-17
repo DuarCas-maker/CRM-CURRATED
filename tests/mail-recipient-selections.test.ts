@@ -57,7 +57,7 @@ test("search and sort use active companies and their contacts", () => {
   assert.deepEqual(lenderContacts(directory, inactive), []);
   assert.equal(lenderContacts(directory, a).length, 2);
 });
-test("saved selections reject malformed, duplicate or excessive recipients and omit message templates", () => {
+test("saved selections reject malformed/duplicate recipients, allow the catalog and omit message templates", () => {
   const target = {
     lender_id: a,
     email: " A@alpha.test ",
@@ -86,9 +86,9 @@ test("saved selections reject malformed, duplicate or excessive recipients and o
     }).success,
   );
   assert(
-    !recipientSelectionSchema.safeParse({
+    recipientSelectionSchema.safeParse({
       name: "x",
-      targets: Array.from({ length: 21 }, () => ({
+      targets: Array.from({ length: 73 }, () => ({
         ...target,
         lender_id: randomUUID(),
       })),
@@ -238,8 +238,8 @@ test("shared composer renders only selected lender cards, separate CC and explic
       }),
     );
     assert.equal((html.match(/class="mail-recipient-card"/g) || []).length, 1);
-    assert(html.includes("<legend>Alpha</legend>"));
-    assert(!html.includes("<legend>Beta</legend>"));
+    assert.match(html, /<legend[^>]*>Alpha<\/legend>/);
+    assert.doesNotMatch(html, /<legend[^>]*>Beta<\/legend>/);
     assert(
       html.includes('value="copy@alpha.test"') ||
         html.includes("copy@alpha.test"),
@@ -256,7 +256,7 @@ test("shared composer renders only selected lender cards, separate CC and explic
     );
     assert.match(
       html,
-      /<details open=""><summary>(Documentos del expediente|Case documents)/,
+      /<details><summary>(Documentos del expediente|Case documents)/,
     );
     assert.match(
       html,

@@ -11,7 +11,11 @@ export const recipientTargetsSchema = z
     }),
   )
   .min(1)
-  .max(20)
+  .refine(
+    (targets) =>
+      new TextEncoder().encode(JSON.stringify(targets)).length <= 100000,
+    "La selección supera 100 KB.",
+  )
   .refine(
     (targets) =>
       new Set(targets.map((target) => target.lender_id)).size ===
@@ -68,7 +72,8 @@ export function recipientIssues(
         const contact = directory.contacts.find(
           (c) => c.email.toLowerCase() === email.trim().toLowerCase(),
         );
-        return contact &&
+        return z.email().max(254).safeParse(email.trim()).success &&
+          contact &&
           active(contact) &&
           contact.lender_id === target.lender_id
           ? []
@@ -102,7 +107,6 @@ export function filterRecipientLenders(
     .filter(
       (l) =>
         active(l) &&
-        contacts.has(l.id) &&
         [
           l.name,
           l.email,

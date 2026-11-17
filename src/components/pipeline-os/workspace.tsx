@@ -61,6 +61,7 @@ import {
 } from "./board";
 import { PipelineLeads } from "./leads";
 import { MasterPipeline } from "./master-pipeline";
+import { LenderTemplateLibrary } from "../lender-templates";
 import "./workspace.css";
 
 type Page =
@@ -81,6 +82,7 @@ type Page =
   | "updates"
   | "recap"
   | "lenders"
+  | "templates"
   | "settings";
 const pageNames: Record<Page, [string, string]> = {
   master: ["Master Pipeline", "Master Pipeline"],
@@ -100,6 +102,7 @@ const pageNames: Record<Page, [string, string]> = {
   updates: ["Updates", "Updates"],
   recap: ["Resumen del día", "Daily recap"],
   lenders: ["Directorio de lenders", "Lender directory"],
+  templates: ["Plantillas", "Templates"],
   settings: ["Parámetros", "Settings"],
 };
 const isGroup = (value: string): value is PipelineGroup =>
@@ -797,6 +800,12 @@ export function PipelineOSWorkspace({
           <PipelineStats board={board} locale={locale} owner={changeOwner} />
         </>
       );
+    if (p === "templates")
+      return (
+        <div className="pos-card">
+          <LenderTemplateLibrary data={data} locale={locale} />
+        </div>
+      );
     if (p === "campaigns")
       return (
         <>
@@ -988,6 +997,7 @@ export function PipelineOSWorkspace({
     { id: "tasks" as Page, icon: ListChecks },
     { id: "campaigns" as Page, icon: Megaphone },
     { id: "conversations" as Page, icon: Mail },
+    { id: "templates" as Page, icon: FileText },
     { id: "stats" as Page, icon: BarChart3 },
     { id: "files" as Page, icon: Folder },
     { id: "clients" as Page, icon: HeartHandshake },
@@ -1295,6 +1305,23 @@ export function PipelineOSWorkspace({
                   : currency(board.summary.fundedAmount, locale),
                 t(locale, "fondeo registrado", "recorded funding"),
                 "stats",
+                0,
+              )}
+              {tile(
+                FileText,
+                l("templates"),
+                t(
+                  locale,
+                  "Mensajes para lenders con datos del expediente",
+                  "Lender messages using case details",
+                ),
+                "Aa",
+                t(
+                  locale,
+                  "asunto, mensaje y variables",
+                  "subject, message and merge fields",
+                ),
+                "templates",
                 0,
               )}
               {tile(

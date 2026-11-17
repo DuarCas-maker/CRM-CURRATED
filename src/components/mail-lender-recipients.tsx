@@ -102,7 +102,6 @@ export function MailLenderRecipients({
   const invalid =
     issues.length > 0 ||
     !recipientTargets.length ||
-    recipientTargets.length > 20 ||
     recipientTargets.some((r) => r.cc_emails.length > 20);
   useEffect(() => {
     onValidity(invalid || working);
@@ -126,16 +125,6 @@ export function MailLenderRecipients({
         contacts[0]?.email ||
         "";
     });
-    if (Object.keys(next).length > 20) {
-      setError(
-        t(
-          locale,
-          "Máximo 20 lenders por envío. Reduce el resultado o la selección.",
-          "Maximum 20 lenders per send. Narrow the results or selection.",
-        ),
-      );
-      return;
-    }
     setError("");
     onTargets(next);
   }
@@ -374,8 +363,8 @@ export function MailLenderRecipients({
           <p>
             {t(
               locale,
-              "No hay lenders con contactos habilitados para esta búsqueda.",
-              "No lenders with available contacts match this search.",
+              "No hay lenders activos para esta búsqueda.",
+              "No active lenders match this search.",
             )}
           </p>
         )}
@@ -421,197 +410,240 @@ export function MailLenderRecipients({
       </fieldset>
       <p aria-live="polite">
         {t(locale, "Lenders seleccionados", "Selected lenders")}:{" "}
-        {recipientTargets.length} / 20
+        <strong>{recipientTargets.length}</strong> ·{" "}
+        {t(locale, "un correo por lender", "one email per lender")}
       </p>
-      {recipientTargets.map((target) => {
-        const contacts = lenderContacts(directory, target.lender_id);
-        const targetIssues = issues.filter(
-          (i) => i.lender_id === target.lender_id,
-        );
-        const listId = `${id}-${target.lender_id}`;
-        return (
-          <fieldset
-            className={"mail-recipient-card"}
-            style={{ ...groupStyle, overflowWrap: "anywhere" }}
-            key={target.lender_id}
-            disabled={disabled}
-          >
-            <legend>{target.lender_name}</legend>
-            <button
-              type="button"
-              className="text-button"
-              onClick={() => remove([target.lender_id])}
+      {!!issues.length && (
+        <p className="error-banner" role="alert">
+          {new Set(issues.map((i) => i.lender_id)).size}{" "}
+          {t(
+            locale,
+            "lenders necesitan revisión. Corrige o quita sus destinatarios antes de continuar.",
+            "lenders need review. Correct or remove their recipients before continuing.",
+          )}
+        </p>
+      )}
+      <div className="mail-recipient-selected-list">
+        {recipientTargets.map((target) => {
+          const contacts = lenderContacts(directory, target.lender_id);
+          const targetIssues = issues.filter(
+            (i) => i.lender_id === target.lender_id,
+          );
+          const listId = `${id}-${target.lender_id}`;
+          return (
+            <details
+              className="mail-recipient-selected"
+              key={target.lender_id}
+              open={targetIssues.length > 0}
             >
-              {t(locale, "Quitar lender", "Remove lender")}
-            </button>
-            {!!targetIssues.length && (
-              <p className="error-banner" role="alert">
-                {t(
-                  locale,
-                  "Revisa esta empresa o sus contactos: fueron eliminados, están inactivos o ya no pertenecen al lender. Corrige o quita los destinatarios indicados antes de enviar.",
-                  "Review this company or its contacts: they were deleted, are inactive or no longer belong to the lender. Correct or remove the listed recipients before sending.",
-                )}{" "}
-                {targetIssues
-                  .map((i) => i.email || target.lender_name)
-                  .join(", ")}
-              </p>
-            )}
-            <label className="field">
-              {t(
-                locale,
-                "Para · selecciona o escribe un correo registrado",
-                "To · select or type a registered email",
-              )}
-              <input
-                type="email"
-                required
-                maxLength={254}
-                list={listId}
-                value={target.email}
-                onChange={(e) =>
-                  onTargets({
-                    ...targets,
-                    [target.lender_id]: e.target.value.trim().toLowerCase(),
-                  })
-                }
-              />
-              <datalist id={listId}>
-                {contacts.map((c) => (
-                  <option key={c.email} value={c.email}>
-                    {c.name || c.email}
-                  </option>
-                ))}
-              </datalist>
-            </label>
-            {!!target.email &&
-              !contacts.some(
-                (c) => c.email.toLowerCase() === target.email.toLowerCase(),
-              ) &&
-              !targetIssues.some((i) => i.reason === "lender") && (
+              <summary>
+                <span>
+                  <strong>{target.lender_name}</strong>
+                  <small>
+                    {target.email || t(locale, "Sin correo", "No email")}
+                  </small>
+                </span>
+                <span
+                  className={
+                    targetIssues.length
+                      ? "mail-recipient-problem"
+                      : "mail-recipient-ready"
+                  }
+                >
+                  {targetIssues.length
+                    ? t(locale, "Revisar", "Review")
+                    : t(locale, "Listo", "Ready")}
+                </span>
+              </summary>
+              <fieldset
+                className={"mail-recipient-card"}
+                style={{ ...groupStyle, overflowWrap: "anywhere" }}
+                key={target.lender_id}
+                disabled={disabled}
+              >
+                <legend className="sr-only">{target.lender_name}</legend>
                 <button
                   type="button"
-                  className="button"
-                  disabled={data.demo}
-                  onClick={async () => {
-                    setWorking(true);
-                    setError("");
-                    try {
-                      const r = await fetch("/api/mail", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          action: "contact",
-                          request_id: crypto.randomUUID(),
-                          payload: {
-                            opportunity_id: caseId,
-                            lender_id: target.lender_id,
-                            email: target.email.trim(),
-                            name: target.email.trim(),
-                          },
-                        }),
-                      });
-                      const p = await r.json();
-                      if (!r.ok) throw Error(p.error);
-                      setDirectory((old) => ({
-                        ...old,
-                        contacts: [
-                          ...old.contacts.filter(
-                            (c) => c.email !== target.email,
-                          ),
-                          { lender_id: target.lender_id, email: target.email },
-                        ],
-                      }));
-                      setNotice(
-                        t(
-                          locale,
-                          "Contacto registrado en el lender.",
-                          "Contact registered with the lender.",
-                        ),
-                      );
-                    } catch (e) {
-                      setError((e as Error).message);
-                    } finally {
-                      setWorking(false);
-                    }
-                  }}
+                  className="text-button"
+                  onClick={() => remove([target.lender_id])}
                 >
-                  {t(
-                    locale,
-                    "Registrar este correo en el lender",
-                    "Register this email with the lender",
-                  )}
+                  {t(locale, "Quitar lender", "Remove lender")}
                 </button>
-              )}
-            <fieldset>
-              <legend>
-                {t(
-                  locale,
-                  "Copias (CC) de este lender",
-                  "Copies (CC) for this lender",
+                {!!targetIssues.length && (
+                  <p className="error-banner" role="alert">
+                    {t(
+                      locale,
+                      "Revisa esta empresa o sus contactos: fueron eliminados, están inactivos o ya no pertenecen al lender. Corrige o quita los destinatarios indicados antes de enviar.",
+                      "Review this company or its contacts: they were deleted, are inactive or no longer belong to the lender. Correct or remove the listed recipients before sending.",
+                    )}{" "}
+                    {targetIssues
+                      .map((i) => i.email || target.lender_name)
+                      .join(", ")}
+                  </p>
                 )}
-              </legend>
-              {[
-                ...new Set([
-                  ...contacts.map((c) => c.email),
-                  ...target.cc_emails,
-                ]),
-              ]
-                .filter((email) => email !== target.email)
-                .map((email) => (
-                  <label className="document-review-confirm" key={email}>
-                    <input
-                      type="checkbox"
-                      checked={(copies[target.lender_id] || []).includes(email)}
-                      onChange={(e) =>
-                        onCopies({
-                          ...copies,
-                          [target.lender_id]: e.target.checked
-                            ? [...(copies[target.lender_id] || []), email]
-                            : (copies[target.lender_id] || []).filter(
-                                (c) => c !== email,
-                              ),
-                        })
-                      }
-                    />
-                    {contacts.find((c) => c.email === email)?.name || ""}{" "}
-                    {email}
-                  </label>
-                ))}
-            </fieldset>
-            <label className="field">
-              {t(locale, "Evaluación del lender", "Lender evaluation")}
-              <select
-                value={targetEvaluations[target.lender_id] || ""}
-                onChange={(e) =>
-                  onEvaluations({
-                    ...targetEvaluations,
-                    [target.lender_id]: e.target.value,
-                  })
-                }
-              >
-                <option value="">
+                <label className="field">
                   {t(
                     locale,
-                    "Usar evaluación única o crear borrador",
-                    "Use single evaluation or create draft",
+                    "Para · selecciona o escribe un correo registrado",
+                    "To · select or type a registered email",
                   )}
-                </option>
-                {evaluations
-                  .filter(
-                    (s) =>
-                      s.lender_id === target.lender_id &&
-                      s.process_id === process,
-                  )
-                  .map((s) => (
-                    <option value={s.id} key={s.id}>
-                      {s.id.slice(0, 8)}
+                  <input
+                    type="email"
+                    required
+                    maxLength={254}
+                    list={listId}
+                    value={target.email}
+                    onChange={(e) =>
+                      onTargets({
+                        ...targets,
+                        [target.lender_id]: e.target.value.trim().toLowerCase(),
+                      })
+                    }
+                  />
+                  <datalist id={listId}>
+                    {contacts.map((c) => (
+                      <option key={c.email} value={c.email}>
+                        {c.name || c.email}
+                      </option>
+                    ))}
+                  </datalist>
+                </label>
+                {!!target.email &&
+                  !contacts.some(
+                    (c) => c.email.toLowerCase() === target.email.toLowerCase(),
+                  ) &&
+                  !targetIssues.some((i) => i.reason === "lender") && (
+                    <button
+                      type="button"
+                      className="button"
+                      disabled={data.demo}
+                      onClick={async () => {
+                        setWorking(true);
+                        setError("");
+                        try {
+                          const r = await fetch("/api/mail", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              action: "contact",
+                              request_id: crypto.randomUUID(),
+                              payload: {
+                                opportunity_id: caseId,
+                                lender_id: target.lender_id,
+                                email: target.email.trim(),
+                                name: target.email.trim(),
+                              },
+                            }),
+                          });
+                          const p = await r.json();
+                          if (!r.ok) throw Error(p.error);
+                          setDirectory((old) => ({
+                            ...old,
+                            contacts: [
+                              ...old.contacts.filter(
+                                (c) => c.email !== target.email,
+                              ),
+                              {
+                                lender_id: target.lender_id,
+                                email: target.email,
+                              },
+                            ],
+                          }));
+                          setNotice(
+                            t(
+                              locale,
+                              "Contacto registrado en el lender.",
+                              "Contact registered with the lender.",
+                            ),
+                          );
+                        } catch (e) {
+                          setError((e as Error).message);
+                        } finally {
+                          setWorking(false);
+                        }
+                      }}
+                    >
+                      {t(
+                        locale,
+                        "Registrar este correo en el lender",
+                        "Register this email with the lender",
+                      )}
+                    </button>
+                  )}
+                <fieldset>
+                  <legend>
+                    {t(
+                      locale,
+                      "Copias (CC) de este lender",
+                      "Copies (CC) for this lender",
+                    )}
+                  </legend>
+                  {[
+                    ...new Set([
+                      ...contacts.map((c) => c.email),
+                      ...target.cc_emails,
+                    ]),
+                  ]
+                    .filter((email) => email !== target.email)
+                    .map((email) => (
+                      <label className="document-review-confirm" key={email}>
+                        <input
+                          type="checkbox"
+                          checked={(copies[target.lender_id] || []).includes(
+                            email,
+                          )}
+                          onChange={(e) =>
+                            onCopies({
+                              ...copies,
+                              [target.lender_id]: e.target.checked
+                                ? [...(copies[target.lender_id] || []), email]
+                                : (copies[target.lender_id] || []).filter(
+                                    (c) => c !== email,
+                                  ),
+                            })
+                          }
+                        />
+                        {contacts.find((c) => c.email === email)?.name || ""}{" "}
+                        {email}
+                      </label>
+                    ))}
+                </fieldset>
+                <label className="field">
+                  {t(locale, "Evaluación del lender", "Lender evaluation")}
+                  <select
+                    value={targetEvaluations[target.lender_id] || ""}
+                    onChange={(e) =>
+                      onEvaluations({
+                        ...targetEvaluations,
+                        [target.lender_id]: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="">
+                      {t(
+                        locale,
+                        "Usar evaluación única o crear borrador",
+                        "Use single evaluation or create draft",
+                      )}
                     </option>
-                  ))}
-              </select>
-            </label>
-          </fieldset>
-        );
-      })}
+                    {evaluations
+                      .filter(
+                        (s) =>
+                          s.lender_id === target.lender_id &&
+                          s.process_id === process,
+                      )
+                      .map((s) => (
+                        <option value={s.id} key={s.id}>
+                          {s.id.slice(0, 8)}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+              </fieldset>
+            </details>
+          );
+        })}
+      </div>
     </section>
   );
 }

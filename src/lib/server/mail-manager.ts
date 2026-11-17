@@ -5,6 +5,7 @@ import { checkDb, HttpError } from "./supabase";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { outgoingMailSchema } from "../mail-manager";
 import type { Profile } from "../domain";
+import { prepareLenderReview } from "./lender-preview";
 export async function senderSignature(
   db: SupabaseClient,
   accountId: string,
@@ -188,6 +189,15 @@ export async function sendManagedMail(
     input.brand_preparation,
     input.opportunity_id,
   );
+  const review =
+    input.mode === "lenders"
+      ? await prepareLenderReview(db, input, signature)
+      : null;
+  if (review && input.lender_review_digest !== review.digest)
+    throw new HttpError(
+      409,
+      "El contenido, los destinatarios o la firma cambiaron. Vuelve a revisar el envío. / Review the changed submission again.",
+    );
   const common = {
     case_id: input.opportunity_id,
     account: input.account_id,
@@ -223,7 +233,20 @@ export async function sendManagedMail(
         ? await queueBrandMail(
             db,
             "queue_mail_lenders",
-            { ...common, targets: input.targets },
+            {
+              ...common,
+              targets: input.targets.map((target) => {
+                const rendered = review!.messages.find(
+                  (m) => m.lender_id === target.lender_id,
+                )!;
+                return {
+                  ...target,
+                  subject_text: rendered.subject,
+                  body_text: rendered.body,
+                  body_html: rendered.html,
+                };
+              }),
+            },
             input.brand_preparation,
           )
         : input.mode === "reply" && input.lender_id
