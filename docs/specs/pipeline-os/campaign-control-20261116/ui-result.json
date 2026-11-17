@@ -1,0 +1,9 @@
+{
+  "reads": 19,
+  "mutations": {
+    "create": 1,
+    "schedule": 1,
+    "pause": 1
+  },
+  "realProviderRequests": 0
+}

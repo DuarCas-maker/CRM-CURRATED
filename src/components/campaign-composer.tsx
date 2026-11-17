@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { importCampaignHref } from "@/lib/campaign-import";
+import { campaignControlAction } from "@/lib/campaign-control-client";
 import { markFormSaved, useNativeChanges } from "./unsaved-changes";
 import { renderTemplate, type Workspace, type Locale } from "@/lib/domain";
 import type { EmailTemplate } from "@/lib/campaign-templates";
@@ -63,6 +64,26 @@ export function CampaignComposer({
     initialTemplate?.id || templates[0]?.id || "",
   );
   const [account, setAccount] = useState(accounts[0]?.id || "");
+  const [extraSenders, setExtraSenders] = useState<string[]>([]);
+  const [senderLimits, setSenderLimits] = useState<Record<string, number>>({});
+  const senderIds = [
+    account,
+    ...extraSenders.filter(
+      (id) =>
+        id !== account &&
+        accounts.some(
+          (a) =>
+            a.id === id &&
+            a.brand_context?.brand_id ===
+              accounts.find((a) => a.id === account)?.brand_context?.brand_id,
+        ),
+    ),
+  ].filter(Boolean);
+  const senderSettings = senderIds.map((id) => ({
+    account_id: id,
+    daily_limit: senderLimits[id] ?? 100,
+    brand_preparation: accountPreparation(accounts.find((a) => a.id === id)),
+  }));
   const [brandPreparation, setBrandPreparation] =
     useState<BrandPreparation | null>(null);
   const expectedBrand = accountPreparation(
@@ -80,6 +101,7 @@ export function CampaignComposer({
     [scheduled, setScheduled] = useState("");
   const [review, setReview] = useState(false),
     [saved, setSaved] = useState<string | null>(null);
+  const [reviewLimit, setReviewLimit] = useState(100);
   const formRef = useRef<HTMLFormElement>(null);
   const leaving = useRef(false);
   const importKeys = useRef(new Map<string, string>());
@@ -165,7 +187,17 @@ export function CampaignComposer({
           ...(manual ? { selected_contact_ids: ids } : {}),
         };
         let result: { id: string };
-        if (sourceBatchId) {
+        if (sourceBatchId && studio) {
+          result = await campaignControlAction(
+            "create",
+            {
+              ...payload,
+              import_batch_id: sourceBatchId,
+              senders: senderSettings,
+            },
+            importKeys.current,
+          );
+        } else if (sourceBatchId) {
           const scoped = { ...payload, import_batch_id: sourceBatchId };
           const fingerprint = JSON.stringify(scoped);
           let request_key = importKeys.current.get(fingerprint);
@@ -190,13 +222,29 @@ export function CampaignComposer({
         id = result.id;
         setSaved(id);
       }
-      if (intent === "schedule")
+      if (
+        studio &&
+        sourceBatchId &&
+        (intent === "schedule" || intent === "activate")
+      )
+        await campaignControlAction(
+          intent,
+          {
+            id,
+            senders: senderSettings,
+            ...(intent === "schedule"
+              ? { scheduled_at: new Date(scheduled).toISOString() }
+              : {}),
+          },
+          importKeys.current,
+        );
+      else if (intent === "schedule")
         await act("schedule_campaign", {
           id,
           scheduled_at: new Date(scheduled).toISOString(),
           brand_preparation: brandPreparation,
         });
-      if (intent === "activate")
+      if (!(studio && sourceBatchId) && intent === "activate")
         await act("activate_campaign", {
           id,
           brand_preparation: brandPreparation,
@@ -232,7 +280,13 @@ export function CampaignComposer({
       </Field>
       <Field
         name="daily_limit"
-        label={t(locale, "Límite de envío por 24 h", "Sending limit per 24h")}
+        label={t(
+          locale,
+          studio
+            ? "Máximo total de campaña por 24 h"
+            : "Límite de envío por 24 h",
+          studio ? "Total campaign limit per 24h" : "Sending limit per 24h",
+        )}
         type="number"
         value={100}
         min={1}
@@ -278,6 +332,7 @@ export function CampaignComposer({
           (e.nativeEvent as SubmitEvent).submitter?.getAttribute("value") ||
           "draft";
         if (intent === "review") {
+          setReviewLimit(Number(new FormData(e.currentTarget).get('daily_limit')));
           setReview(true);
           return;
         }
@@ -398,6 +453,7 @@ export function CampaignComposer({
                 value={account}
                 onChange={(e) => {
                   setAccount(e.target.value);
+                  setExtraSenders([]);
                   setBrandPreparation(null);
                   setIds([]);
                   setPage(0);
@@ -417,6 +473,93 @@ export function CampaignComposer({
             {!studio && ownerFields}
           </div>
           {studio && brandField}
+          {studio && sourceBatchId && (
+            <section
+              className="cs-senders"
+              aria-label={t(
+                locale,
+                "Remitentes de la campaña",
+                "Campaign senders",
+              )}
+            >
+              <strong>
+                {t(
+                  locale,
+                  "Repartir contactos entre remitentes",
+                  "Distribute contacts across senders",
+                )}
+              </strong>
+              <p>
+                {t(
+                  locale,
+                  "Una asignación por contacto, dentro de la misma marca. Si una cuenta no tiene cupo, sus contactos esperan.",
+                  "One sender per contact within the same brand. Contacts wait if their sender has no capacity.",
+                )}
+              </p>
+              {accounts
+                .filter(
+                  (a) =>
+                    a.id === account ||
+                    a.brand_context?.brand_id === expectedBrand?.brand_id,
+                )
+                .map((a) => (
+                  <div className="cs-sender-row" key={a.id}>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={senderIds.includes(a.id)}
+                        disabled={a.id === account}
+                        onChange={(e) =>
+                          setExtraSenders((ids) =>
+                            e.target.checked
+                              ? [...ids, a.id]
+                              : ids.filter((id) => id !== a.id),
+                          )
+                        }
+                      />
+                      <span>
+                        {a.email}
+                        {a.id === account && (
+                          <small>
+                            {t(locale, "Cuenta principal", "Primary account")}
+                          </small>
+                        )}
+                      </span>
+                    </label>
+                    {senderIds.includes(a.id) && (
+                      <label className="cs-sender-limit">
+                        {t(locale, "Máximo /24h", "Limit /24h")}
+                        <input
+                          type="number"
+                          min={1}
+                          max={2000}
+                          required
+                          aria-label={t(
+                            locale,
+                            `Límite de ${a.email}`,
+                            `Limit for ${a.email}`,
+                          )}
+                          value={senderLimits[a.id] ?? 100}
+                          onChange={(e) =>
+                            setSenderLimits((x) => ({
+                              ...x,
+                              [a.id]: Number(e.target.value),
+                            }))
+                          }
+                        />
+                      </label>
+                    )}
+                  </div>
+                ))}
+              <small>
+                {t(
+                  locale,
+                  `${senderIds.length} remitentes · reparto aproximado de ${Math.floor(selected / Math.max(1, senderIds.length))}–${Math.ceil(selected / Math.max(1, senderIds.length))} contactos por cuenta. El cupo real de Gmail y el máximo total también se respetan.`,
+                  `${senderIds.length} senders · approximately ${Math.floor(selected / Math.max(1, senderIds.length))}–${Math.ceil(selected / Math.max(1, senderIds.length))} contacts per account. Actual Gmail capacity and the total campaign limit still apply.`,
+                )}
+              </small>
+            </section>
+          )}
         </section>
         <section
           className={studio ? "cs-audience cs-surface" : "campaign-note"}
@@ -756,9 +899,11 @@ export function CampaignComposer({
           {t(
             locale,
             studio
-              ? `Revisa: ${selected} destinatarios, remitente ${accounts.find((a) => a.id === account)?.email || "—"} y plantilla v${template?.version}. Al confirmar ${scheduled ? "programarás" : "activarás"} el envío real del correo inicial, sujeto a validación, horario y cuotas.`
+              ? `Revisa: ${selected} destinatarios, ${sourceBatchId ? `${senderIds.length} remitentes seleccionados` : accounts.find((a) => a.id === account)?.email || "—"}, máximo total ${reviewLimit}/24 h y plantilla v${template?.version}. Al confirmar ${scheduled ? "programarás" : "activarás"} el envío real del correo inicial, sujeto a validación, horario y límites de cada cuenta.`
               : "Al activar autorizas el envío real a los leads seleccionados, sujeto a revalidación, horario y cuotas de Gmail. Solo se enviará el correo inicial.",
-            "Activation authorizes real sending to selected leads, subject to revalidation, schedule and Gmail quotas. Only the initial email will be sent.",
+            studio
+              ? `Review: ${selected} recipients, ${sourceBatchId ? senderIds.length : 1} selected senders, total limit ${reviewLimit}/24h and template v${template?.version}. Confirming authorizes the initial email, subject to validation, hours and each account's limits.`
+              : "Activation authorizes real sending to selected leads, subject to revalidation, schedule and Gmail quotas. Only the initial email will be sent.",
           )}
         </p>
       )}

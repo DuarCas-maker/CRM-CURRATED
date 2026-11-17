@@ -1,0 +1,102 @@
+{
+  "at": "2026-11-17T18:01:24.727Z",
+  "sqlSha256": "acaf855115c1f1f0ed8086cc47a5e13d7d70d5fd67114d7d55727cdbbae66c09",
+  "appliedSha256": "94eb3a1c747247b37d6eefb6b6837b2f135272f4660e00f8ee68df77774ff67e",
+  "backup": "/var/lib/postgresql/data/campaign-control-20261117T175839Z/pre-control.dump",
+  "approvedManifestSha256": "c5582dd013017ff8eb167c7cde575d9a4844428ff81a516e9287cbc9485aab83",
+  "finished": "2026-11-17T18:01:26.430Z",
+  "addedFunctions": [
+    {
+      "schema": "campaign_control_v1",
+      "name": "track_classic",
+      "source_md5": "3274d58756ddecd4badd4e0e33f90d0f"
+    },
+    {
+      "schema": "campaign_control_v1",
+      "name": "access",
+      "source_md5": "8a79a21051873e4f8f52874f24465a50"
+    },
+    {
+      "schema": "campaign_control_v1",
+      "name": "contacts",
+      "source_md5": "9f546203a53dd2f5f6cc2a927f4cfe8e"
+    },
+    {
+      "schema": "campaign_control_v1",
+      "name": "facts",
+      "source_md5": "09beaa35a297060d71acc67e6f014766"
+    },
+    {
+      "schema": "campaign_control_v1",
+      "name": "sender_current",
+      "source_md5": "2e48c2155de766b5402fcbac121a942b"
+    },
+    {
+      "schema": "campaign_control_v1",
+      "name": "summary",
+      "source_md5": "7a949cb46f8cc81c5966f7dcd7a1b495"
+    },
+    {
+      "schema": "public",
+      "name": "campaign_control_read",
+      "source_md5": "a44a2e3471700029555244fdd71a528f"
+    },
+    {
+      "schema": "public",
+      "name": "campaign_control_command",
+      "source_md5": "c3d49442e06e1a4944387882397227eb"
+    },
+    {
+      "schema": "public",
+      "name": "claim_outbox",
+      "source_md5": "fdde695971cb3e0fbe7ae13e7f2b76dd"
+    }
+  ],
+  "existingFunctionsUnchanged": 331,
+  "originalClaimPreserved": true,
+  "state": {
+    "rls": true,
+    "groups": 1,
+    "members": 1,
+    "rpc_acl": [
+      {
+        "anon": false,
+        "signature": "public.campaign_control_read(text,uuid,uuid,text,text,integer)",
+        "service_role": false,
+        "authenticated": true
+      },
+      {
+        "anon": false,
+        "signature": "public.campaign_control_command(text,jsonb,uuid)",
+        "service_role": false,
+        "authenticated": true
+      }
+    ],
+    "policies": 2,
+    "triggers": 2,
+    "claim_acl": {
+      "anon": false,
+      "service_role": true,
+      "authenticated": false
+    },
+    "private_usage": {
+      "anon": false,
+      "service_role": false,
+      "authenticated": false
+    }
+  },
+  "countsBefore": {
+    "outbox": 22,
+    "campaigns": 1,
+    "enrollments": 11
+  },
+  "countsAfter": {
+    "outbox": 22,
+    "campaigns": 1,
+    "enrollments": 11
+  },
+  "realProviderRequests": 0,
+  "verificationRequests": 0,
+  "campaignCommands": 0,
+  "messagesSentByMigration": 0
+}

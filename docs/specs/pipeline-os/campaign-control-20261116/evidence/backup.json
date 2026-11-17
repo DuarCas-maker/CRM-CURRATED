@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-17T17:58:39Z",
+  "container": "supabase-db-tzpxxufvp3zf6u7eyjdmxa4p",
+  "path": "/var/lib/postgresql/data/campaign-control-20261117T175839Z/pre-control.dump",
+  "bytes": 58250144,
+  "sha256": "609eff2e09787ced9daa1b370b50708ecfd3d294e1eb7e9932aa96b308864064",
+  "serverOnly": true,
+  "archiveListVerified": true,
+  "decodeVerified": true,
+  "fullDisasterRestoreTested": false,
+  "method": "pg_dump -Fc; pg_restore --list; pg_restore --file=/dev/null; stat; sha256sum; umask077"
+}

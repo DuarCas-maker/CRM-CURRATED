@@ -46,7 +46,7 @@ import { OpportunityDetail } from "../opportunity-detail";
 import { PipelineMailReview } from "./mail-review";
 import { PipelineCaseProgress } from "./case-progress";
 import { ConversationsWorkspace } from "../conversations-workspace";
-import { CampaignCenterWorkspace } from "../campaign-center";
+import { CampaignControlPanel } from "./campaign-control-panel";
 import { CampaignImportFlow } from "./campaign-import-flow";
 import { CampaignReview } from "../campaign-review";
 import { ImportWizard } from "../import-wizard";
@@ -799,49 +799,14 @@ export function PipelineOSWorkspace({
       );
     if (p === "campaigns")
       return (
-        <>
-          <div className="pos-card">
-            <h2>
-              {t(
-                locale,
-                "Crear campañas desde tu Excel",
-                "Create campaigns from your spreadsheet",
-              )}
-            </h2>
-            <p className="pos-muted">
-              {t(
-                locale,
-                "Carga tu base, revisa la clasificación de Bouncer y activa el correo cuando estés listo. Después sigue los envíos y las respuestas aquí.",
-                "Upload your list, review Bouncer classification and activate when ready. Then track sends and replies here.",
-              )}
-            </p>
-          </div>
-          <div className="pos-row pos-module-actions">
-            {isSellerRole(data.profile.role) && (
-              <button className="pos-btn" onClick={() => push("scrub", level)}>
-                <Filter size={15} />
-                {l("scrub")}
-              </button>
-            )}
-            {manageCampaigns && (
-              <button className="pos-btn pos-primary" onClick={() => create()}>
-                <Megaphone size={15} />
-                {l("build")}
-              </button>
-            )}
-          </div>
-          <div className="pos-existing">
-            <CampaignCenterWorkspace
-              data={data}
-              locale={locale}
-              act={act}
-              changed={refresh}
-              create={create}
-              review={setReview}
-              openConversation={mail}
-            />
-          </div>
-        </>
+        <CampaignControlPanel
+          data={data}
+          locale={locale}
+          act={act}
+          changed={refresh}
+          create={create}
+          openConversation={mail}
+        />
       );
     if (p === "scrub")
       return (

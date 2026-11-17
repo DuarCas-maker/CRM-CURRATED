@@ -1,0 +1,21 @@
+# Diseño y ADR-01: campaña unificada sobre intenciones existentes
+
+Conservar campañas físicas de un remitente y sus snapshots/brand_b2, scheduler, outbox y admisiones. Introducir grupo lógico con miembros físicos; un grupo visible contiene N campañas físicas con audiencias disjuntas y la misma marca, nombre, contenido, responsable y horario. La primera campaña es el ID público del grupo. Migrar metadatos de campañas existentes a grupos de un miembro, sin tocar destinatarios/outbox. Evita debilitar el requisito vigente outbox.account_id=campaign.account_id.
+
+Nuevo endpoint `/api/campaigns/control`: GET overview/leads/details, POST create/activate/schedule/pause/reassign/verify. Cliente Supabase por solicitud, checkOrigin, requireUser/MFA y JSON acotado; ACL SQL admin/seller según visibilidad. Crear cada miembro reutiliza campaign_create_from_import y valida contexto de marca para cada remitente. Reparto por IDs ordenados, fijo y explícito; transacción completa. El grupo limita el total y cada hijo su propio máximo; cuotas reales y reservas se conservan.
+
+Decorar claim_outbox conservando su implementación instalada en schema privado. Delegar todas las comprobaciones originales; antes de devolver un claim del grupo, bloquear el grupo y contar reservas sent/sending/uncertain de24h. Si supera el máximo, devolver la reserva todavía no admitida a queued y aplazar filas queued desbloqueadas mediante SKIP LOCKED hasta la liberación del cupo. No devolver mensaje al proveedor, no incrementar intentos reales, no revertir admisiones inciertas. Orden de bloqueos y concurrencia se ensayan; manual/notifications permanecen intactos.
+
+Reasignar: bloquear grupo/contactos/enrollments/outbox, rechazar admitted/sending/uncertain/sent. Cancelar outbox queued antiguo, finalizar enrollment anterior y crear uno nuevo en el miembro destino; actualizar selección mediante contexto trusted existente, conservar snapshots e historial. El request_key del nuevo enrollment es distinto; la unicidad de secuencia activa y la transacción evitan dobles envíos. Nunca reasignar automáticamente por cuota.
+
+Lecturas: grupos visibles por rol/propietario; métricas por contacto, envío solo aceptado Gmail; razones separadas de estado de configuración. Funnel de contactos accesibles único con prioridad clasificación final→revisión pendiente→pendiente y overlays de cola/baja/elegibilidad. Bouncer reutiliza crm_command verify_contacts con selección autorizada y recibo canónico; inciertos excluidos.
+
+La autorización operativa se evalúa para el creador congelado de la campaña, no para el lector del panel. El propietario seller puede leer sus resultados; si no tiene permiso sobre una cuenta, recibe motivos agregados sin dirección ni números de uso de ese buzón. El snapshot se compara en lectura sin tomar los bloqueos de preparación de brand_b2; el despacho conserva su comprobación autoritativa original.
+
+UI nueva solo para Pipeline Campañas; composer `presentation=pipeline` amplía remitentes y usa control endpoint, preview seguro intacto. CRM clásico conserva endpoint/presentación. Sin nuevas dependencias.
+
+Riesgos: referencias SQL instaladas fuera de migraciones ordinales; conciliar fuentes/dependencias antes de promoción. La captura productiva queda agregada sin identidades de clientes. Cambios nuevos de SQL usan ACL explícitas revocando el default service_role salvo claim de worker. La reversa restaura el claim anterior y conserva grupos/historial si ya tuvieron operación; no borrar intenciones activas para volver la UI.
+
+Compatibilidad de reasignación: la unicidad instalada (campaign_id,contact_id) y los request_key congelados impiden volver a una cuenta que ya conserva un enrollment del mismo contacto. Ese destino se rechaza explícitamente (CC_TARGET_HISTORY), conservando la asignación actual en toda la transacción. Se admite destino sin intento previo; no se reciclan intenciones canceladas ni se cambian claves del worker.
+
+Compatibilidad posterior al backfill: dos triggers aditivos mantienen grupos de un miembro para nuevas campañas del CRM clásico y sincronizan su lote/nombre/responsable/límite. La creación unificada marca su contexto transaccional para evitar grupos duplicados; el máximo total de un grupo controlado no se sustituye por el máximo de su primer remitente.

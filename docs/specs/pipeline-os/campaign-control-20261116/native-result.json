@@ -1,0 +1,16 @@
+{
+  "sqlSha256": "acaf855115c1f1f0ed8086cc47a5e13d7d70d5fd67114d7d55727cdbbae66c09",
+  "postgres": "PostgreSQL 15.19, compiled by Visual C++ build 1944, 64-bit",
+  "parallelClaims": 2,
+  "claimsReturned": [
+    1,
+    0
+  ],
+  "totalSending": 1,
+  "blockedRemainQueued": 3,
+  "realProviderRequests": 0,
+  "remoteMutations": 0,
+  "fullBrandFixture": true,
+  "concurrencyBase": "account-specific inert claim adapter; original restored after assay",
+  "passed": true
+}

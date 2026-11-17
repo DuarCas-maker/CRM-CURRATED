@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-17T17:57:07.398248+00:00",
+  "read_only": "on",
+  "functionsMatched": 12,
+  "claimSourceVerified": true,
+  "claimDependents": [],
+  "newObjectsAbsent": true,
+  "ddlReadOnly": "on",
+  "ddlEvents": 8,
+  "triggerCollisions": 0,
+  "backfill": {
+    "campaigns": 1,
+    "missing_actor": 0,
+    "invalid_limits": 0,
+    "missing_account": 0
+  },
+  "remoteMutations": 0,
+  "realProviderRequests": 0
+}
