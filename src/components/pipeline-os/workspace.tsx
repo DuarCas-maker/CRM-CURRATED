@@ -1422,11 +1422,17 @@ export function PipelineOSWorkspace({
                         "Criterios y contactos del directorio vigente.",
                         "Criteria and contacts from the current directory.",
                       )
-                    : t(
-                        locale,
-                        "Abre un expediente para continuar sin perder esta vista.",
-                        "Open a file to continue without losing this view.",
-                      )}
+                    : p === "build"
+                      ? t(
+                          locale,
+                          "Del archivo a una audiencia revisada. Tú decides cuándo enviar.",
+                          "From your file to a reviewed audience. You decide when to send.",
+                        )
+                      : t(
+                          locale,
+                          "Abre un expediente para continuar sin perder esta vista.",
+                          "Open a file to continue without losing this view.",
+                        )}
               </p>
               {pageBody(p, i + 1)}
             </section>

@@ -19,9 +19,11 @@ import {
 import type { Action } from "../crm";
 import { ImportWizard } from "../import-wizard";
 import { CampaignComposer } from "../campaign-composer";
-import { useProtection } from "../unsaved-changes";
+import { CampaignImportReview } from "./campaign-import-review";
+import { useLeaveConfirmation, useProtection } from "../unsaved-changes";
 import { t } from "../ui";
 import "./campaign-import-flow.css";
+import "./campaign-studio.css";
 
 export function CampaignImportFlow({
   data,
@@ -49,6 +51,8 @@ export function CampaignImportFlow({
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
   const [revision, setRevision] = useState(0);
+  const [reviewing, setReviewing] = useState(false);
+  const { requestLeave, confirmation } = useLeaveConfirmation(locale);
   const verifyKeys = useRef(new Map<string, string>());
   const rootRef = useRef<HTMLElement>(null);
   useProtection({
@@ -168,7 +172,7 @@ export function CampaignImportFlow({
       )}
       aria-busy={busy}
     >
-      <header className="ci-heading">
+      <header className="ci-heading" hidden={composing}>
         <div>
           <span className="ci-eyebrow">
             {t(
@@ -212,7 +216,7 @@ export function CampaignImportFlow({
           )}
         </p>
       )}
-      <div className="ci-source pos-card">
+      <div className="ci-source pos-card" hidden={composing}>
         <div>
           <h3>
             {t(
@@ -283,7 +287,7 @@ export function CampaignImportFlow({
           {t(locale, "Consultando el lote…", "Loading import…")}
         </p>
       )}
-      {batch && !data.demo && (
+      {batch && !data.demo && !composing && (
         <button
           className="pos-btn ci-refresh"
           disabled={busy || loading}
@@ -295,7 +299,28 @@ export function CampaignImportFlow({
       )}
       {status && (
         <>
-          <section className="pos-card ci-review">
+          {composing && (
+            <div className="cs-context">
+              <FileSpreadsheet size={18} />
+              <div>
+                <strong>{status.batch.name}</strong>
+                <span>
+                  {status.counts.unique_contacts}{" "}
+                  {t(locale, "contactos únicos", "unique contacts")} ·{" "}
+                  {status.counts.valid} {t(locale, "válidos", "valid")}
+                </span>
+              </div>
+              <button
+                className="pos-btn"
+                onClick={() =>
+                  requestLeave(() => setComposing(false), rootRef.current)
+                }
+              >
+                {t(locale, "Volver a revisión", "Back to review")}
+              </button>
+            </div>
+          )}
+          <section className="pos-card ci-review" hidden={composing}>
             <div className="ci-section-title">
               <div>
                 <h3>
@@ -337,7 +362,7 @@ export function CampaignImportFlow({
               ))}
             </div>
           </section>
-          <section className="pos-card ci-verification">
+          <section className="pos-card ci-verification" hidden={composing}>
             <div className="ci-section-title">
               <div>
                 <h3>
@@ -381,8 +406,8 @@ export function CampaignImportFlow({
               <p className="pos-info">
                 {t(
                   locale,
-                  "Los errores técnicos o resultados inciertos requieren revisión en Preparación de leads. No se repetirán automáticamente ni entrarán en el envío.",
-                  "Technical errors or uncertain requests require review in Lead preparation. They will not be retried automatically or included in sending.",
+                  "Puedes consultar los contactos y sus motivos aquí. Los errores y resultados inciertos no entrarán en el envío ni se repetirán automáticamente.",
+                  "Review contacts and their reasons here. Errors and unknown outcomes are excluded from sending and will not be retried automatically.",
                 )}
               </p>
             )}
@@ -435,23 +460,38 @@ export function CampaignImportFlow({
               </div>
             ) : (
               <div className="pos-row">
-                <button
-                  className="pos-btn"
-                  disabled={
-                    busy ||
-                    !next ||
-                    status.batch.status !== "completed" ||
-                    data.demo
-                  }
-                  onClick={() => setConfirm(true)}
-                >
-                  <ShieldCheck size={15} />
-                  {t(
-                    locale,
-                    `Verificar ${next} pendientes`,
-                    `Verify ${next} pending`,
-                  )}
-                </button>
+                {!!status.counts.attention && (
+                  <button
+                    className="pos-btn"
+                    onClick={() => setReviewing(true)}
+                  >
+                    {t(
+                      locale,
+                      `Gestionar revisión (${status.counts.attention})`,
+                      `Manage review (${status.counts.attention})`,
+                    )}{" "}
+                    →
+                  </button>
+                )}
+                {next > 0 && (
+                  <button
+                    className="pos-btn"
+                    disabled={
+                      busy ||
+                      !next ||
+                      status.batch.status !== "completed" ||
+                      data.demo
+                    }
+                    onClick={() => setConfirm(true)}
+                  >
+                    <ShieldCheck size={15} />
+                    {t(
+                      locale,
+                      `Verificar ${next} pendientes`,
+                      `Verify ${next} pending`,
+                    )}
+                  </button>
+                )}
                 <button
                   className="pos-btn pos-primary"
                   disabled={busy || !status.ready || data.demo}
@@ -467,29 +507,22 @@ export function CampaignImportFlow({
               </div>
             )}
           </section>
-          {composing && status.ready && (
-            <section className="pos-card ci-compose">
-              <h3>
-                {t(
-                  locale,
-                  "4. Plantilla, destinatarios y activación manual",
-                  "4. Template, recipients and manual activation",
-                )}
-              </h3>
-              <div className="pos-existing">
-                <CampaignComposer
-                  key={batch}
-                  data={data}
-                  locale={locale}
-                  act={act}
-                  sourceBatchId={batch}
-                  initialTemplate={initialTemplate}
-                  close={() => {
-                    void refresh();
-                    close();
-                  }}
-                />
-              </div>
+          {composing && (
+            <section className="ci-compose">
+              <CampaignComposer
+                key={batch}
+                data={data}
+                locale={locale}
+                act={act}
+                sourceBatchId={batch}
+                presentation="pipeline"
+                onReviewImport={() => setReviewing(true)}
+                initialTemplate={initialTemplate}
+                close={() => {
+                  void refresh();
+                  close();
+                }}
+              />
             </section>
           )}
         </>
@@ -506,6 +539,18 @@ export function CampaignImportFlow({
             )}
           </p>
         </div>
+      )}
+      {confirmation}
+      {reviewing && batch && (
+        <CampaignImportReview
+          batch={batch}
+          locale={locale}
+          close={() => {
+            setReviewing(false);
+            setRevision((x) => x + 1);
+          }}
+          changed={() => setRevision((x) => x + 1)}
+        />
       )}
       {importing && (
         <ImportWizard

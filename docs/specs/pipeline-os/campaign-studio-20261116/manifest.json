@@ -1,0 +1,178 @@
+{
+  "base": "69b2cfa7c092b577c49db2445cb6fb22f193694c",
+  "reviewedMain": "5e644e5bf2303fab8e722ec414d3937715873e9e",
+  "remoteMutations": 0,
+  "realProviderRequests": 0,
+  "checks": {
+    "tests": 58,
+    "passed": 58,
+    "typecheck": 0,
+    "build": 0,
+    "sqlRollback": "passed",
+    "patchAgainstReviewedMain": "passed"
+  },
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/acceptance.md",
+      "bytes": 936,
+      "sha256": "e1ea51febad121275a903394c518ce6195aa35821c38e8b74e0ce88f9d77fe86",
+      "gitBlob": "f1379c798d3e8bc7bf725c21d6faab649d742617"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/design.md",
+      "bytes": 1568,
+      "sha256": "4a0212a4755b80ba293ea818fd1ed77207c23500f45bef86bddecd8bbaff7ae2",
+      "gitBlob": "1dbd673ccc866a1adf2c2955daf85486488b8c29"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/evidence/browser-stats.json",
+      "bytes": 144,
+      "sha256": "e0176bd9dd172d86629b885746257d0d170b6a3889a731af5d628dea1bc17137",
+      "gitBlob": "fbe43f042ecde90bd3955a653acaad3ec868cac3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/evidence/catalog-readonly.json",
+      "bytes": 4310,
+      "sha256": "6cbaf239a999eb6640dd6700d5ac8ddb292dc10cbc635d95e5f052fd9ba57000",
+      "gitBlob": "557a4b70e0c8ff6e3324aa0e0204f06922306bbc"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/evidence/checks.json",
+      "bytes": 1053,
+      "sha256": "fdb6a7e4b151b4233330b3e00fc32cb603c1f353fb00e24d8572579fffb1c5c7",
+      "gitBlob": "dd5480c3f14ce8ef0d09310aa2d6b5b9bc869f15"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/evidence/composer-1280.jpg",
+      "bytes": 103223,
+      "sha256": "260883eb6f71b3c030122a854e754e6aa37948b5f79eb70d3ebd9c95bff76cda",
+      "gitBlob": "29447a4223c73fdade7e91f9bfb99d6ee799df05"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/evidence/composer-360.jpg",
+      "bytes": 12097,
+      "sha256": "857e34acbc93a6c04fdd8871141f0a8bd0c04291485258cabf1ef61912e21717",
+      "gitBlob": "86c14889e68741a4039fc3e72a1f572f1d05c9b6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/evidence/composer-768.jpg",
+      "bytes": 29202,
+      "sha256": "d47748f42aea8c78b34d233abc07bc95bb1bc7e9e3ecdf5ed233636d1cac9d69",
+      "gitBlob": "0cbef7b1824a6578be1c369237d11ec212f23377"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/evidence/composer-dark.jpg",
+      "bytes": 103291,
+      "sha256": "d701135f64e8d2b1b721228321f270db4a3e83829fd3d3675292c0c90970584f",
+      "gitBlob": "c39467bfceb5054ec1161f244890bac3c11bd253"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/evidence/review-1280.jpg",
+      "bytes": 87330,
+      "sha256": "0c004ff20b1ba43ab7329a30a59a345da3b3c85f95f26bfbfcdce38bc0d72b31",
+      "gitBlob": "5d7c57e8ebb77fd7f3f507aa681d9adbf56b104a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/evidence/review-360.jpg",
+      "bytes": 43033,
+      "sha256": "d34992cd533ba9d824cdc62b126d7b9dc3f823d356380627a5ca9126ba7bcf31",
+      "gitBlob": "e546d1102020fa6fc99b2e568496d805ed4f8149"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/migrations/down.sql",
+      "bytes": 181,
+      "sha256": "96b77214f51b688cd81cadf0cf5e07f38d31f38c04ed722dfac89ad6585056e5",
+      "gitBlob": "fc6ea0ef7ad3ec216b3230a9d8dc982f977d5e45"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/migrations/preflight.sql",
+      "bytes": 979,
+      "sha256": "8b6d5dafb94302612f625aa08c0b1fd5275dba314c831ed5a746f94c5577ea39",
+      "gitBlob": "31e9fa31649ea954d7f411173a44f5a602f3c2ff"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/migrations/up.sql",
+      "bytes": 5354,
+      "sha256": "a759c103a458f8e1cbf2537053c6c8712edf7495a1a7136ae2de91f1d96fb2de",
+      "gitBlob": "d84bc1269030470333671efea1115f788441e320"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/rollout.md",
+      "bytes": 771,
+      "sha256": "f1b476021e7a330bff4d5fe5dd4bce73b8a02447aa5a2860333bf0224a7a9168",
+      "gitBlob": "1bb30e981a1b80629a6fa6f91fa3309346f47cf5"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/spec.md",
+      "bytes": 2121,
+      "sha256": "2d63d65987c6986178044b9bf70043b83d07fedb22c918d7d6fdf64bd34d6fab",
+      "gitBlob": "a6d688d4e7be5707f892d69eae4a03414af4415a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/tasks.md",
+      "bytes": 872,
+      "sha256": "9f0d29886383d774a89d461b60564d996845439f14c3affd07786688f1308457",
+      "gitBlob": "09198641dff296e1ed34f97b55394c30ef7e285f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-studio-20261116/verification.md",
+      "bytes": 3558,
+      "sha256": "d487922078bb0af2ec44d4f44c85ccaebbb6ff80d1f6649710b7448d75ea64e4",
+      "gitBlob": "0953a779deb415bcbf55842ab920f6090e946ed0"
+    },
+    {
+      "path": "src/components/campaign-composer.tsx",
+      "bytes": 28736,
+      "sha256": "dd3f5f47df19326ac25381461442e0901f1b6e774c657a3a92af12469b2ac151",
+      "gitBlob": "4d9173a59f228866f29f9ac4014fa2616ec2bdce"
+    },
+    {
+      "path": "src/components/pipeline-os/campaign-import-flow.tsx",
+      "bytes": 19222,
+      "sha256": "b9240c2085d4fcf9b10a8b1b0e3934dd1496d9626ce9f8398d802dc13740dfe1",
+      "gitBlob": "a1f883e7f9bd6294895c561fbca0c0155bfc8dc8"
+    },
+    {
+      "path": "src/components/pipeline-os/campaign-import-review.tsx",
+      "bytes": 18039,
+      "sha256": "b313bb1f2e386e21ca57899238290da3c3871c07296241fbff106feed97c30ed",
+      "gitBlob": "90148cef2beb75f4d27d5392b6454d1d2bcf2665"
+    },
+    {
+      "path": "src/components/pipeline-os/campaign-studio.css",
+      "bytes": 11495,
+      "sha256": "4eb4a044220d4310b8ec1b29c9db5dd90b17d5d9418bd503dc33b6d0101956ed",
+      "gitBlob": "4ea49121f9ee3f30b1767ad157623485b4043d15"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "bytes": 54376,
+      "sha256": "9ae13a975842aa610ccdd9b8039f67174f8c12c746ec80fa100c8f2d3fdc7df6",
+      "gitBlob": "5e4e973690e741c01e2e48d2e53025ebc65b7f5c"
+    },
+    {
+      "path": "src/lib/campaign-import-review.ts",
+      "bytes": 3566,
+      "sha256": "2839b77c6e0dcfc5bbc16056e3b94ac475e46596dae50e6d005fe97de741a1c3",
+      "gitBlob": "80991cdeee247227ed0ae8474176d3aab33c76fa"
+    },
+    {
+      "path": "src/lib/campaign-import.ts",
+      "bytes": 3195,
+      "sha256": "b680372e5fbf024d7e8528dde87c036b5ac9fb094f723b2c7c082117f8c311d1",
+      "gitBlob": "d5c12db391de65255489c094f8c94ca70830905a"
+    },
+    {
+      "path": "src/lib/server/campaign-import.ts",
+      "bytes": 5508,
+      "sha256": "615e5815ea3b44d84eb655adeca64d5183748766a0815e21c86a9cae50ab3b87",
+      "gitBlob": "b8b2a8d3f098acc36d5697509356270790ac2358"
+    },
+    {
+      "path": "tests/campaign-studio.test.ts",
+      "bytes": 13674,
+      "sha256": "d5c7ae38896e0ea0da71b7d7651b35f4b6609c8f54de1a000c72f0de5bfe2cfd",
+      "gitBlob": "a4920de92a0e466e417735669b4f60c852facd4c"
+    }
+  ]
+}

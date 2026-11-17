@@ -1,0 +1,177 @@
+{
+  "columns": [
+    {
+      "type": "uuid",
+      "table": "command_receipts",
+      "column": "user_id"
+    },
+    {
+      "type": "uuid",
+      "table": "command_receipts",
+      "column": "request_key"
+    },
+    {
+      "type": "text",
+      "table": "command_receipts",
+      "column": "kind"
+    },
+    {
+      "type": "jsonb",
+      "table": "command_receipts",
+      "column": "result"
+    },
+    {
+      "type": "timestamptz",
+      "table": "command_receipts",
+      "column": "created_at"
+    },
+    {
+      "type": "text",
+      "table": "command_receipts",
+      "column": "fingerprint"
+    },
+    {
+      "type": "text",
+      "table": "contacts",
+      "column": "email"
+    },
+    {
+      "type": "text",
+      "table": "contacts",
+      "column": "name"
+    },
+    {
+      "type": "text",
+      "table": "contacts",
+      "column": "verification"
+    },
+    {
+      "type": "timestamptz",
+      "table": "contacts",
+      "column": "created_at"
+    },
+    {
+      "type": "text",
+      "table": "verifications",
+      "column": "request_key"
+    },
+    {
+      "type": "text",
+      "table": "verifications",
+      "column": "result"
+    },
+    {
+      "type": "text",
+      "table": "verifications",
+      "column": "reason"
+    },
+    {
+      "type": "text",
+      "table": "verifications",
+      "column": "state"
+    },
+    {
+      "type": "timestamptz",
+      "table": "verifications",
+      "column": "created_at"
+    }
+  ],
+  "version": "PostgreSQL 15.8 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.0, 64-bit",
+  "functions": [
+    {
+      "acl": [
+        "supabase_admin=X/supabase_admin",
+        "postgres=X/supabase_admin"
+      ],
+      "owner": "supabase_admin",
+      "settings": [
+        "search_path=\"\""
+      ],
+      "signature": "campaign_import_contact_rows(uuid)",
+      "source_md5": "7536e85f57bb1ebd09dddead0974afaf",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        "supabase_admin=X/supabase_admin",
+        "postgres=X/supabase_admin",
+        "authenticated=X/supabase_admin"
+      ],
+      "owner": "supabase_admin",
+      "settings": [
+        "search_path=\"\""
+      ],
+      "signature": "campaign_import_status(uuid)",
+      "source_md5": "db488fdde79a5b7675ccb3ac177ee002",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        "supabase_admin=X/supabase_admin",
+        "postgres=X/supabase_admin",
+        "service_role=X/supabase_admin",
+        "authenticated=X/supabase_admin"
+      ],
+      "owner": "supabase_admin",
+      "settings": [
+        "search_path=\"\""
+      ],
+      "signature": "can_lead(uuid)",
+      "source_md5": "2080ef29ec615060e4549bc73045b59b",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        "supabase_admin=X/supabase_admin",
+        "postgres=X/supabase_admin",
+        "authenticated=X/supabase_admin",
+        "service_role=X/supabase_admin"
+      ],
+      "owner": "supabase_admin",
+      "settings": [
+        "search_path=\"\""
+      ],
+      "signature": "crm_command(text,jsonb,uuid)",
+      "source_md5": "019e048ca3c09c1aecee80ebe1ca1d23",
+      "security_definer": true
+    },
+    {
+      "acl": [
+        "supabase_admin=X/supabase_admin",
+        "postgres=X/supabase_admin",
+        "service_role=X/supabase_admin",
+        "authenticated=X/supabase_admin"
+      ],
+      "owner": "supabase_admin",
+      "settings": [
+        "search_path=\"\""
+      ],
+      "signature": "current_app_role()",
+      "source_md5": "f81c041915e2a0d97e6eaeb529c1d347",
+      "security_definer": true
+    }
+  ],
+  "read_only": "on",
+  "constraints": [
+    {
+      "name": "verifications_contact_id_fkey",
+      "definition": "FOREIGN KEY (contact_id) REFERENCES contacts(id)"
+    },
+    {
+      "name": "verifications_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "verifications_request_key_key",
+      "definition": "UNIQUE (request_key)"
+    },
+    {
+      "name": "verifications_result_check",
+      "definition": "CHECK ((result = ANY (ARRAY['pending'::text, 'valid'::text, 'invalid'::text, 'uncertain'::text])))"
+    },
+    {
+      "name": "verifications_state_check",
+      "definition": "CHECK ((state = ANY (ARRAY['queued'::text, 'submitted'::text, 'completed'::text, 'technical_error'::text, 'uncertain_request'::text])))"
+    }
+  ]
+}

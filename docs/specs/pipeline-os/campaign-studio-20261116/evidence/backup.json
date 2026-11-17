@@ -1,0 +1,11 @@
+{
+  "at": "2026-11-17T00:27:26Z",
+  "container": "supabase-db-tzpxxufvp3zf6u7eyjdmxa4p",
+  "path": "/var/lib/postgresql/data/campaign-studio-20261117T002726Z/pre-studio.dump",
+  "bytes": 58016702,
+  "sha256": "8202e8faeacf2cefe40468aad4af19a2a8ff5b2e6d6345500121c9b0a6f59ac7",
+  "serverOnly": true,
+  "archiveListVerified": true,
+  "decodeVerified": true,
+  "fullDisasterRestoreTested": false
+}

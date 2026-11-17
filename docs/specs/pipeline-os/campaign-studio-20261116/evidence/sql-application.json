@@ -1,0 +1,53 @@
+{
+  "started": "2026-11-17T00:29:49.285Z",
+  "finished": "2026-11-17T00:29:50.297Z",
+  "sqlSha256": "a759c103a458f8e1cbf2537053c6c8712edf7495a1a7136ae2de91f1d96fb2de",
+  "appliedSha256": "dd90327dc4621520172cd96d3e2dde0ced1ba306ddd581baf6199be0d7459105",
+  "backup": "/var/lib/postgresql/data/campaign-studio-20261117T002726Z/pre-studio.dump",
+  "created": [
+    {
+      "acl": [
+        "supabase_admin=X/supabase_admin",
+        "postgres=X/supabase_admin",
+        "authenticated=X/supabase_admin"
+      ],
+      "definer": true,
+      "settings": [
+        "search_path=\"\""
+      ],
+      "signature": "campaign_import_review_page(uuid,text,text,integer)",
+      "source_md5": "e1a53249bcf76725834b4d07eab6d4ab"
+    },
+    {
+      "acl": [
+        "supabase_admin=X/supabase_admin",
+        "postgres=X/supabase_admin",
+        "authenticated=X/supabase_admin"
+      ],
+      "definer": true,
+      "settings": [
+        "search_path=\"\""
+      ],
+      "signature": "campaign_retry_import(uuid,uuid[],integer,uuid)",
+      "source_md5": "793537ad06f9d8b5ef2bdbf5f360b696"
+    }
+  ],
+  "existingFunctionsUnchanged": 313,
+  "permissions": [
+    {
+      "anon": false,
+      "signature": "public.campaign_import_review_page(uuid,text,text,integer)",
+      "service_role": false,
+      "authenticated": true
+    },
+    {
+      "anon": false,
+      "signature": "public.campaign_retry_import(uuid,uuid[],integer,uuid)",
+      "service_role": false,
+      "authenticated": true
+    }
+  ],
+  "realProviderRequests": 0,
+  "verificationRequests": 0,
+  "campaignMutations": 0
+}

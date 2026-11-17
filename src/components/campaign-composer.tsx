@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { importCampaignHref } from "@/lib/campaign-import";
 import { markFormSaved, useNativeChanges } from "./unsaved-changes";
-import type { Workspace, Locale } from "@/lib/domain";
+import { renderTemplate, type Workspace, type Locale } from "@/lib/domain";
 import type { EmailTemplate } from "@/lib/campaign-templates";
 import { campaignPreviewValues } from "@/lib/campaign-templates";
 import {
@@ -32,6 +32,8 @@ export function CampaignComposer({
   act,
   close,
   sourceBatchId,
+  presentation = "classic",
+  onReviewImport,
 }: {
   data: Workspace;
   locale: Locale;
@@ -39,7 +41,12 @@ export function CampaignComposer({
   act: Action;
   close: () => void;
   sourceBatchId?: string;
+  presentation?: "classic" | "pipeline";
+  onReviewImport?: () => void;
 }) {
+  const studio = presentation === "pipeline";
+  const Advanced = studio ? "details" : "div";
+  const Preview = studio ? "section" : "details";
   const templates = [
     ...(initialTemplate ? [initialTemplate] : []),
     ...(data.email_templates || []).filter((t) => t.id !== initialTemplate?.id),
@@ -116,21 +123,28 @@ export function CampaignComposer({
     };
   }, [data.demo, templateId, account, query, page, sourceBatchId]);
   let preview = "";
+  let previewSubject = "";
+  let previewError = false;
   try {
-    if (template)
+    if (template) {
+      previewSubject = renderTemplate(template.subject, campaignPreviewValues);
       preview = renderCampaignContent(
         template.body,
         campaignPreviewValues,
         template.body_format,
       ).html;
-  } catch {}
+    }
+  } catch {
+    previewError = true;
+  }
   const selected = manual
     ? ids.length
     : sourceBatchId
       ? leads?.eligible || 0
       : Math.min(leads?.eligible || 0, 5000);
   async function submit(form: HTMLFormElement, intent: string) {
-    if (!template || !brandCurrent || data.demo) return;
+    if (!template || !brandCurrent || data.demo || (studio && previewError))
+      return;
     leaving.current = false;
     setBusy(true);
     setError("");
@@ -196,11 +210,68 @@ export function CampaignComposer({
       setBusy(false);
     }
   }
+  const ownerFields = (
+    <>
+      <Field
+        name="seller_id"
+        label={t(locale, "Responsable", "Owner")}
+        required
+        value={data.profile.id}
+      >
+        {data.profiles
+          .filter(
+            (p) =>
+              p.active !== false &&
+              ["superadmin", "seller_admin", "seller"].includes(p.role),
+          )
+          .map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
+      </Field>
+      <Field
+        name="daily_limit"
+        label={t(locale, "Límite de envío por 24 h", "Sending limit per 24h")}
+        type="number"
+        value={100}
+        min={1}
+        max={2000}
+        required
+      />
+    </>
+  );
+  const brandField = (
+    <label className="field">
+      {t(locale, "Marca de la campaña", "Campaign brand")}
+      <select
+        required
+        value={brandCurrent ? brandPreparation?.brand_id || "" : ""}
+        onChange={(e) =>
+          setBrandPreparation(e.target.value ? expectedBrand : null)
+        }
+      >
+        <option value="">
+          {t(
+            locale,
+            "Revisa y selecciona la marca",
+            "Review and select the brand",
+          )}
+        </option>
+        {expectedBrand && (
+          <option value={expectedBrand.brand_id}>
+            {accounts.find((a) => a.id === account)?.brand_context?.brand_name}
+          </option>
+        )}
+      </select>
+    </label>
+  );
   return (
     <form
       ref={formRef}
       aria-busy={busy}
-      className="campaign-composer"
+      className={studio ? "campaign-composer cs-studio" : "campaign-composer"}
+      onChange={studio ? () => setReview(false) : undefined}
       onSubmit={(e) => {
         e.preventDefault();
         const intent =
@@ -213,7 +284,7 @@ export function CampaignComposer({
         void submit(e.currentTarget, intent);
       }}
     >
-      <p className="muted">
+      <p className={studio ? "cs-intro" : "muted"}>
         {t(
           locale,
           "Solo el primer correo, a leads validados de Preparación de leads.",
@@ -250,32 +321,8 @@ export function CampaignComposer({
           )}
         </p>
       )}
-      <label className="field">
-        {t(locale, "Marca de la campaña", "Campaign brand")}
-        <select
-          required
-          value={brandCurrent ? brandPreparation?.brand_id || "" : ""}
-          onChange={(e) =>
-            setBrandPreparation(e.target.value ? expectedBrand : null)
-          }
-        >
-          <option value="">
-            {t(
-              locale,
-              "Revisa y selecciona la marca",
-              "Review and select the brand",
-            )}
-          </option>
-          {expectedBrand && (
-            <option value={expectedBrand.brand_id}>
-              {
-                accounts.find((a) => a.id === account)?.brand_context
-                  ?.brand_name
-              }
-            </option>
-          )}
-        </select>
-      </label>
+
+      {!studio && brandField}
       {!accounts.length && (
         <p className="campaign-note">
           {t(
@@ -285,95 +332,96 @@ export function CampaignComposer({
           )}
         </p>
       )}
-      <fieldset disabled={busy || !!saved} style={{ border: 0, padding: 0 }}>
-        <Field
-          name="name"
-          label={t(locale, "Nombre de campaña", "Campaign name")}
-          required
-        />
-        <div className="form-grid">
-          <label className="field">
-            {t(locale, "Plantilla del primer correo", "Initial email template")}
-            <select
-              required
-              value={templateId}
-              onChange={(e) => {
-                setTemplateId(e.target.value);
-                setIds([]);
-                setPage(0);
-                setReview(false);
-              }}
-            >
-              <option value="">
-                {t(locale, "Selecciona una plantilla", "Choose a template")}
-              </option>
-              {templates.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name} · v{t.version}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            {t(
-              locale,
-              "Cuenta remitente autorizada",
-              "Authorized sender account",
-            )}
-            <select
-              required
-              value={account}
-              onChange={(e) => {
-                setAccount(e.target.value);
-                setBrandPreparation(null);
-                setIds([]);
-                setPage(0);
-                setReview(false);
-              }}
-            >
-              <option value="">
-                {t(locale, "Selecciona una cuenta", "Choose an account")}
-              </option>
-              {accounts.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.email}
-                </option>
-              ))}
-            </select>
-          </label>
+      <fieldset
+        disabled={busy || !!saved}
+        className={studio ? "cs-fields" : undefined}
+        style={{ border: 0, padding: 0 }}
+      >
+        <section className={studio ? "cs-config cs-surface" : undefined}>
+          {studio && (
+            <div className="cs-section-heading">
+              <span className="cs-kicker">
+                {t(locale, "CONFIGURACIÓN", "SETUP")}
+              </span>
+              <h3>
+                {t(locale, "Prepara tu campaña", "Prepare your campaign")}
+              </h3>
+              <p>
+                {t(
+                  locale,
+                  "Elige qué enviar y desde qué cuenta.",
+                  "Choose what to send and which account to use.",
+                )}
+              </p>
+            </div>
+          )}
           <Field
-            name="seller_id"
-            label={t(locale, "Responsable", "Owner")}
-            required
-            value={data.profile.id}
-          >
-            {data.profiles
-              .filter(
-                (p) =>
-                  p.active !== false &&
-                  ["superadmin", "seller_admin", "seller"].includes(p.role),
-              )
-              .map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-          </Field>
-          <Field
-            name="daily_limit"
-            label={t(
-              locale,
-              "Límite de envío por 24 h",
-              "Sending limit per 24h",
-            )}
-            type="number"
-            value={100}
-            min={1}
-            max={2000}
+            name="name"
+            label={t(locale, "Nombre de campaña", "Campaign name")}
             required
           />
-        </div>
-        <section className="campaign-note" aria-live="polite">
+          <div className="form-grid">
+            <label className="field">
+              {t(
+                locale,
+                "Plantilla del primer correo",
+                "Initial email template",
+              )}
+              <select
+                required
+                value={templateId}
+                onChange={(e) => {
+                  setTemplateId(e.target.value);
+                  setIds([]);
+                  setPage(0);
+                  setReview(false);
+                }}
+              >
+                <option value="">
+                  {t(locale, "Selecciona una plantilla", "Choose a template")}
+                </option>
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name} · v{t.version}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              {t(
+                locale,
+                "Cuenta remitente autorizada",
+                "Authorized sender account",
+              )}
+              <select
+                required
+                value={account}
+                onChange={(e) => {
+                  setAccount(e.target.value);
+                  setBrandPreparation(null);
+                  setIds([]);
+                  setPage(0);
+                  setReview(false);
+                }}
+              >
+                <option value="">
+                  {t(locale, "Selecciona una cuenta", "Choose an account")}
+                </option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.email}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {!studio && ownerFields}
+          </div>
+          {studio && brandField}
+        </section>
+        <section
+          className={studio ? "cs-audience cs-surface" : "campaign-note"}
+          aria-live="polite"
+        >
           <strong>
             {sourceBatchId
               ? t(
@@ -383,7 +431,7 @@ export function CampaignComposer({
                 )
               : t(locale, "Leads de Preparación", "Leads from Preparation")}
           </strong>
-          {sourceBatchId && (
+          {sourceBatchId && !studio && (
             <p>
               {t(
                 locale,
@@ -397,198 +445,295 @@ export function CampaignComposer({
               ? t(locale, "Consultando elegibilidad…", "Checking eligibility…")
               : `${leads?.eligible ?? "—"} ${t(locale, "elegibles", "eligible")} · ${leads?.excluded ?? "—"} ${t(locale, "excluidos", "excluded")}`}
           </p>
-          {leads && (
-            <div className="campaign-reasons">
-              {Object.entries(leads.reasons)
-                .filter(([k]) => k !== "eligible")
-                .map(([k, n]) => (
-                  <span key={k}>
-                    {(audienceReasons[k] || [k, k])[locale === "es" ? 0 : 1]}:{" "}
-                    {n}
-                  </span>
-                ))}
-            </div>
+          {studio && (
+            <p className="cs-audience-explainer">
+              {t(
+                locale,
+                "Solo se enviará a contactos válidos y elegibles de este archivo. Los demás permanecen excluidos.",
+                "Only valid, eligible contacts from this file will receive the email. All others remain excluded.",
+              )}
+            </p>
           )}
-          <div className="card-actions">
-            <label>
-              <input
-                type="radio"
-                name="selectionMode"
-                checked={!manual}
-                onChange={() => {
-                  setManual(false);
-                  setReview(false);
-                }}
-              />{" "}
-              {t(locale, "Selección automática", "Automatic selection")}
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="selectionMode"
-                checked={manual}
-                onChange={() => {
-                  setManual(true);
-                  setReview(false);
-                }}
-              />{" "}
-              {t(locale, "Elegir algunos leads", "Choose some leads")}
-            </label>
-          </div>
-          <small>
-            {t(
-              locale,
-              "Máximo 5.000 leads por campaña. La selección se guarda al crear el borrador y se revalida al activar y enviar.",
-              "Up to 5,000 leads per campaign. Selection is saved with the draft and rechecked at activation and delivery.",
-            )}
-          </small>
-          {manual && (
-            <>
-              <input
-                aria-label={t(locale, "Buscar lead", "Search leads")}
-                placeholder={t(
-                  locale,
-                  "Buscar empresa, contacto o correo",
-                  "Search company, contact or email",
-                )}
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setPage(0);
-                }}
-              />
-              <div className="campaign-lead-picker">
-                {leads?.rows.map((l) => (
-                  <label key={l.contact_id}>
-                    <input
-                      type="checkbox"
-                      disabled={
-                        l.reason !== "eligible" ||
-                        (!ids.includes(l.contact_id) && ids.length >= 5000)
-                      }
-                      checked={ids.includes(l.contact_id)}
-                      onChange={(e) => {
-                        setIds((x) =>
-                          e.target.checked
-                            ? [...x, l.contact_id]
-                            : x.filter((id) => id !== l.contact_id),
-                        );
-                        setReview(false);
-                      }}
-                    />
-                    <span>
-                      <strong>{l.company}</strong> · {l.name}
-                      <small>
-                        {l.email} ·{" "}
-                        {
-                          (audienceReasons[l.reason] || [l.reason, l.reason])[
-                            locale === "es" ? 0 : 1
-                          ]
-                        }
-                      </small>
+          {studio && onReviewImport && (
+            <button
+              type="button"
+              className="pos-btn cs-link"
+              onClick={onReviewImport}
+            >
+              {t(
+                locale,
+                "Ver contactos y motivos de exclusión",
+                "View contacts and exclusion reasons",
+              )}{" "}
+              →
+            </button>
+          )}
+          <details
+            className={studio ? "cs-selection" : undefined}
+            open={studio ? undefined : true}
+          >
+            <summary hidden={!studio}>
+              {t(
+                locale,
+                "Ajustar selección de destinatarios",
+                "Adjust recipient selection",
+              )}
+            </summary>
+            {leads && (
+              <div className="campaign-reasons">
+                {Object.entries(leads.reasons)
+                  .filter(([k]) => k !== "eligible")
+                  .map(([k, n]) => (
+                    <span key={k}>
+                      {(audienceReasons[k] || [k, k])[locale === "es" ? 0 : 1]}:{" "}
+                      {n}
                     </span>
-                  </label>
-                ))}
+                  ))}
               </div>
-              <div className="card-actions">
-                <button
-                  type="button"
-                  className="button"
-                  disabled={page === 0}
-                  onClick={() => setPage((p) => p - 1)}
-                >
-                  ←
-                </button>
-                <span>
-                  {page + 1} /{" "}
-                  {Math.max(1, Math.ceil((leads?.total || 0) / 50))}
-                </span>
-                <button
-                  type="button"
-                  className="button"
-                  disabled={(page + 1) * 50 >= (leads?.total || 0)}
-                  onClick={() => setPage((p) => p + 1)}
-                >
-                  →
-                </button>
-              </div>
-            </>
-          )}
-          <p>
+            )}
+            <div className="card-actions">
+              <label>
+                <input
+                  type="radio"
+                  name="selectionMode"
+                  checked={!manual}
+                  onChange={() => {
+                    setManual(false);
+                    setReview(false);
+                  }}
+                />{" "}
+                {t(locale, "Selección automática", "Automatic selection")}
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="selectionMode"
+                  checked={manual}
+                  onChange={() => {
+                    setManual(true);
+                    setReview(false);
+                  }}
+                />{" "}
+                {t(locale, "Elegir algunos leads", "Choose some leads")}
+              </label>
+            </div>
+            <small>
+              {t(
+                locale,
+                "Máximo 5.000 leads por campaña. La selección se guarda al crear el borrador y se revalida al activar y enviar.",
+                "Up to 5,000 leads per campaign. Selection is saved with the draft and rechecked at activation and delivery.",
+              )}
+            </small>
+            {manual && (
+              <>
+                <input
+                  aria-label={t(locale, "Buscar lead", "Search leads")}
+                  placeholder={t(
+                    locale,
+                    "Buscar empresa, contacto o correo",
+                    "Search company, contact or email",
+                  )}
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setPage(0);
+                  }}
+                />
+                <div className="campaign-lead-picker">
+                  {leads?.rows.map((l) => (
+                    <label key={l.contact_id}>
+                      <input
+                        type="checkbox"
+                        disabled={
+                          l.reason !== "eligible" ||
+                          (!ids.includes(l.contact_id) && ids.length >= 5000)
+                        }
+                        checked={ids.includes(l.contact_id)}
+                        onChange={(e) => {
+                          setIds((x) =>
+                            e.target.checked
+                              ? [...x, l.contact_id]
+                              : x.filter((id) => id !== l.contact_id),
+                          );
+                          setReview(false);
+                        }}
+                      />
+                      <span>
+                        <strong>{l.company}</strong> · {l.name}
+                        <small>
+                          {l.email} ·{" "}
+                          {
+                            (audienceReasons[l.reason] || [l.reason, l.reason])[
+                              locale === "es" ? 0 : 1
+                            ]
+                          }
+                        </small>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <div className="card-actions">
+                  <button
+                    type="button"
+                    className="button"
+                    disabled={page === 0}
+                    onClick={() => setPage((p) => p - 1)}
+                  >
+                    ←
+                  </button>
+                  <span>
+                    {page + 1} /{" "}
+                    {Math.max(1, Math.ceil((leads?.total || 0) / 50))}
+                  </span>
+                  <button
+                    type="button"
+                    className="button"
+                    disabled={(page + 1) * 50 >= (leads?.total || 0)}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    →
+                  </button>
+                </div>
+              </>
+            )}
+          </details>
+          <p className={studio ? "cs-selected" : undefined}>
             <strong>{selected}</strong>{" "}
             {t(locale, "leads seleccionados", "selected leads")}
           </p>
         </section>
-        <div className="form-grid">
-          <label className="field">
-            {t(
-              locale,
-              "Programar fecha y hora (opcional, hora local)",
-              "Schedule date and time (optional, local time)",
-            )}
-            <input
-              type="datetime-local"
-              value={scheduled}
-              onChange={(e) => setScheduled(e.target.value)}
-            />
-            <small>{Intl.DateTimeFormat().resolvedOptions().timeZone}</small>
-          </label>
-          <Field
-            name="timezone"
-            label={t(locale, "Zona horaria del envío", "Sending timezone")}
-            value="America/Bogota"
-          >
-            {[
-              "America/Bogota",
-              "America/New_York",
-              "America/Chicago",
-              "America/Denver",
-              "America/Los_Angeles",
-              "UTC",
-            ].map((z) => (
-              <option key={z}>{z}</option>
-            ))}
-          </Field>
-        </div>
-        <details>
-          <summary>
-            {t(locale, "Horario permitido de envío", "Permitted sending hours")}
-          </summary>
+        <Advanced className={studio ? "cs-advanced cs-surface" : undefined}>
+          {studio && (
+            <summary>
+              <strong>
+                {t(locale, "Opciones de envío", "Sending options")}
+              </strong>
+              <span>
+                {t(
+                  locale,
+                  "Responsable, límite diario y programación",
+                  "Owner, daily limit and scheduling",
+                )}
+              </span>
+            </summary>
+          )}
+          {studio && <div className="form-grid">{ownerFields}</div>}
           <div className="form-grid">
+            <label className="field">
+              {t(
+                locale,
+                "Programar fecha y hora (opcional, hora local)",
+                "Schedule date and time (optional, local time)",
+              )}
+              <input
+                type="datetime-local"
+                value={scheduled}
+                onChange={(e) => setScheduled(e.target.value)}
+              />
+              <small>{Intl.DateTimeFormat().resolvedOptions().timeZone}</small>
+            </label>
             <Field
-              name="start_hour"
-              label={t(locale, "Hora inicial", "Start hour")}
-              type="number"
-              value={9}
-              min={0}
-              max={23}
-              required
-            />
-            <Field
-              name="end_hour"
-              label={t(locale, "Hora final", "End hour")}
-              type="number"
-              value={17}
-              min={1}
-              max={24}
-              required
-            />
+              name="timezone"
+              label={t(locale, "Zona horaria del envío", "Sending timezone")}
+              value="America/Bogota"
+            >
+              {[
+                "America/Bogota",
+                "America/New_York",
+                "America/Chicago",
+                "America/Denver",
+                "America/Los_Angeles",
+                "UTC",
+              ].map((z) => (
+                <option key={z}>{z}</option>
+              ))}
+            </Field>
           </div>
-        </details>
+          <details>
+            <summary>
+              {t(
+                locale,
+                "Horario permitido de envío",
+                "Permitted sending hours",
+              )}
+            </summary>
+            <div className="form-grid">
+              <Field
+                name="start_hour"
+                label={t(locale, "Hora inicial", "Start hour")}
+                type="number"
+                value={9}
+                min={0}
+                max={23}
+                required
+              />
+              <Field
+                name="end_hour"
+                label={t(locale, "Hora final", "End hour")}
+                type="number"
+                value={17}
+                min={1}
+                max={24}
+                required
+              />
+            </div>
+          </details>
+        </Advanced>
       </fieldset>
       {template && (
-        <details open={review}>
-          <summary>
-            {t(
-              locale,
-              "Vista previa del correo inicial",
-              "Initial email preview",
-            )}{" "}
-            · v{template.version}
-          </summary>
-          <div className="analysis-card">
-            <h3>{template.subject}</h3>
-            <div dangerouslySetInnerHTML={{ __html: preview }} />
+        <Preview
+          {...(!studio ? { open: review } : {})}
+          className={studio ? "cs-preview cs-surface" : undefined}
+        >
+          {studio && (
+            <div className="cs-preview-label">
+              <span>{t(locale, "VISTA PREVIA", "EMAIL PREVIEW")}</span>
+              <span className="cs-badge">
+                {t(locale, "Datos de ejemplo", "Sample data")}
+              </span>
+            </div>
+          )}
+          {studio ? (
+            <div className="cs-mail-meta">
+              <span>
+                {t(locale, "De", "From")}:{" "}
+                {accounts.find((a) => a.id === account)?.email || "—"}
+              </span>
+              <span>{t(locale, "Para", "To")}: Alex · Example Business</span>
+              <strong>{previewSubject}</strong>
+            </div>
+          ) : (
+            <summary>
+              {t(
+                locale,
+                "Vista previa del correo inicial",
+                "Initial email preview",
+              )}{" "}
+              · v{template.version}
+            </summary>
+          )}
+          <div className={studio ? "cs-mail-body" : "analysis-card"}>
+            {studio && previewError && (
+              <p role="alert">
+                {t(
+                  locale,
+                  "No se pudo representar esta plantilla. Revisa sus variables en Plantillas o elige otra antes de continuar.",
+                  "This template could not be rendered. Check its variables in Templates or choose another before continuing.",
+                )}
+              </p>
+            )}
+            {!studio && <h3>{template.subject}</h3>}
+            <div
+              onClick={
+                studio
+                  ? (e) => {
+                      if ((e.target as HTMLElement).closest("a"))
+                        e.preventDefault();
+                    }
+                  : undefined
+              }
+              dangerouslySetInnerHTML={{ __html: preview }}
+            />
             <small>
               {t(
                 locale,
@@ -597,13 +742,22 @@ export function CampaignComposer({
               )}
             </small>
           </div>
-        </details>
+          {studio && (
+            <div className="cs-preview-version">
+              {template.name} · v{template.version}
+              {template.asset_ids.length > 0 &&
+                ` · ${template.asset_ids.length} ${t(locale, "adjuntos", "attachments")}`}
+            </div>
+          )}
+        </Preview>
       )}
       {review && (
         <p className="campaign-note">
           {t(
             locale,
-            "Al activar autorizas el envío real a los leads seleccionados, sujeto a revalidación, horario y cuotas de Gmail. Solo se enviará el correo inicial.",
+            studio
+              ? `Revisa: ${selected} destinatarios, remitente ${accounts.find((a) => a.id === account)?.email || "—"} y plantilla v${template?.version}. Al confirmar ${scheduled ? "programarás" : "activarás"} el envío real del correo inicial, sujeto a validación, horario y cuotas.`
+              : "Al activar autorizas el envío real a los leads seleccionados, sujeto a revalidación, horario y cuotas de Gmail. Solo se enviará el correo inicial.",
             "Activation authorizes real sending to selected leads, subject to revalidation, schedule and Gmail quotas. Only the initial email will be sent.",
           )}
         </p>
@@ -617,12 +771,25 @@ export function CampaignComposer({
           )}
         </p>
       )}
-      <div className="card-actions" style={{ marginTop: 18 }}>
+      <div
+        className={studio ? "cs-actions" : "card-actions"}
+        style={studio ? undefined : { marginTop: 18 }}
+      >
+        {studio && (
+          <span>
+            {t(
+              locale,
+              `${selected} destinatarios · activación manual`,
+              `${selected} recipients · manual activation`,
+            )}
+          </span>
+        )}
         <button
           className="button"
           value="draft"
           disabled={
             busy ||
+            (studio && previewError) ||
             !template ||
             !account ||
             !brandCurrent ||
@@ -632,26 +799,31 @@ export function CampaignComposer({
         >
           {t(locale, "Guardar borrador", "Save draft")}
         </button>
-        <button
-          className="button"
-          value="schedule"
-          disabled={
-            busy ||
-            !scheduled ||
-            !selected ||
-            loading ||
-            !leads ||
-            data.demo ||
-            (Boolean(sourceBatchId) && selected > 5000)
-          }
-        >
-          {t(locale, "Programar campaña", "Schedule campaign")}
-        </button>
+        {!studio && (
+          <button
+            className="button"
+            value="schedule"
+            disabled={
+              busy ||
+              !scheduled ||
+              !selected ||
+              loading ||
+              !leads ||
+              data.demo ||
+              (Boolean(sourceBatchId) && selected > 5000)
+            }
+          >
+            {t(locale, "Programar campaña", "Schedule campaign")}
+          </button>
+        )}
         <button
           className="button primary"
-          value={review ? "activate" : "review"}
+          value={
+            review ? (studio && scheduled ? "schedule" : "activate") : "review"
+          }
           disabled={
             busy ||
+            (studio && previewError) ||
             !selected ||
             loading ||
             !leads ||
@@ -660,11 +832,13 @@ export function CampaignComposer({
           }
         >
           {review
-            ? t(locale, "Confirmar y activar", "Confirm and activate")
+            ? studio && scheduled
+              ? t(locale, "Confirmar y programar", "Confirm and schedule")
+              : t(locale, "Confirmar y activar", "Confirm and activate")
             : t(
                 locale,
-                "Revisar y activar campaña",
-                "Review and activate campaign",
+                studio ? "Revisar campaña" : "Revisar y activar campaña",
+                studio ? "Review campaign" : "Review and activate campaign",
               )}
         </button>
       </div>

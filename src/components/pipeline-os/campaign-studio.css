@@ -1,0 +1,592 @@
+.ci-flow [hidden] {
+  display: none !important;
+}
+.cs-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--pos-line);
+  border-radius: 10px;
+  background: var(--pos-panel);
+}
+.cs-context > svg {
+  color: var(--pos-accent);
+  flex-shrink: 0;
+}
+.cs-context > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.cs-context strong {
+  overflow-wrap: anywhere;
+}
+.cs-context span {
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.cs-context button {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.cs-studio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  color: var(--pos-ink);
+  font: inherit;
+}
+.cs-studio .cs-fields {
+  display: contents;
+  min-width: 0;
+}
+.cs-studio > :not(.cs-fields):not(.cs-preview) {
+  grid-column: 1 / -1;
+}
+.cs-studio .cs-intro {
+  margin: 0;
+  color: var(--pos-muted);
+  font-size: 13px;
+}
+.cs-surface {
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line);
+  border-radius: 14px;
+  min-width: 0;
+  padding: 24px;
+}
+.cs-config {
+  grid-column: 1;
+  grid-row: 2;
+}
+.cs-audience {
+  grid-column: 1;
+  grid-row: 3;
+}
+.cs-advanced {
+  grid-column: 1;
+  grid-row: 4;
+}
+.cs-studio .cs-preview {
+  grid-column: 2;
+  grid-row: 2 / 5;
+  padding: 0;
+  overflow: hidden;
+}
+.cs-section-heading {
+  margin-bottom: 20px;
+}
+.cs-section-heading h3 {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  margin: 5px 0;
+  line-height: 1.2;
+}
+.cs-section-heading p {
+  color: var(--pos-muted);
+  margin: 0;
+  font-size: 13px;
+}
+.cs-kicker,
+.cs-preview-label > span:first-child {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  color: var(--pos-accent);
+}
+.cs-studio .field {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: var(--pos-muted);
+  font-family: inherit;
+}
+.pipeline-os .cs-studio .field > span {
+  color: var(--pos-muted);
+}
+.cs-studio .form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0 14px;
+}
+.cs-studio input:not([type="radio"]):not([type="checkbox"]),
+.cs-studio select,
+.cs-review-body input:not([type="checkbox"]),
+.cs-review-body select {
+  width: 100%;
+  min-width: 0;
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+  border: 1px solid var(--pos-line2);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  padding: 11px 12px;
+  box-sizing: border-box;
+}
+.cs-studio input[type="radio"],
+.cs-studio input[type="checkbox"],
+.cs-review-body input[type="checkbox"] {
+  accent-color: var(--pos-accent);
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex-shrink: 0;
+}
+.cs-studio :focus-visible,
+.cs-review-host :focus-visible {
+  outline: 2px solid var(--pos-accent);
+  outline-offset: 3px;
+}
+.cs-studio .button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  padding: 9px 15px;
+  border: 1px solid var(--pos-line2);
+  border-radius: 8px;
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.cs-studio .button.primary {
+  background: var(--pos-accent);
+  border-color: var(--pos-accent);
+  color: var(--pos-on-accent);
+}
+.cs-studio button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.cs-studio .campaign-note,
+.cs-studio .error {
+  grid-column: 1 / -1;
+  padding: 14px 16px;
+  margin: 0;
+  border-radius: 10px;
+  border: 1px solid var(--pos-line);
+  background: var(--pos-panel2);
+  font-size: 13px;
+}
+.cs-studio .error {
+  background: var(--pos-bad);
+  color: var(--pos-bad-ink);
+}
+.cs-audience > strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.cs-audience > p:first-of-type {
+  font-size: 19px;
+  letter-spacing: -0.3px;
+  margin: 8px 0;
+}
+.cs-studio .cs-audience-explainer {
+  color: var(--pos-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.cs-studio .cs-link {
+  border: 0;
+  padding: 0;
+  color: var(--pos-accent);
+  margin: 8px 0 16px;
+  text-align: left;
+  background: transparent;
+}
+.cs-selection {
+  border-top: 1px solid var(--pos-line);
+  padding-top: 12px;
+  font-size: 12px;
+}
+.cs-selection summary,
+.cs-advanced summary {
+  cursor: pointer;
+  color: var(--pos-ink);
+}
+.cs-studio .campaign-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.cs-studio .campaign-reasons span {
+  font-size: 11px;
+  padding: 3px 8px;
+  border: 1px solid var(--pos-line);
+  border-radius: 5px;
+  color: var(--pos-muted);
+}
+.cs-studio .card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 12px 0;
+}
+.cs-studio .card-actions label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.cs-studio small {
+  color: var(--pos-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.cs-studio .cs-selected {
+  margin-bottom: 0;
+  color: var(--pos-accent);
+  font-size: 12px;
+}
+.cs-advanced > summary {
+  font-size: 13px;
+}
+.cs-advanced > summary > span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--pos-muted);
+  margin: 4px 0 0 16px;
+}
+.cs-advanced[open] > summary {
+  margin-bottom: 20px;
+}
+.cs-preview-label {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px 22px;
+  align-items: center;
+  border-bottom: 1px solid var(--pos-line);
+  background: var(--pos-panel2);
+}
+.cs-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: var(--pos-soft);
+  color: var(--pos-soft-ink);
+  font-size: 11px;
+  font-weight: 500;
+}
+.cs-badge.warning {
+  background: var(--pos-warn);
+  color: var(--pos-warn-ink);
+}
+.cs-mail-meta {
+  display: grid;
+  gap: 5px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--pos-line);
+  overflow-wrap: anywhere;
+}
+.cs-mail-meta > span {
+  font-size: 11px;
+  color: var(--pos-muted);
+}
+.cs-mail-meta > strong {
+  margin-top: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.cs-mail-body {
+  padding: 24px;
+  font-size: 14px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.cs-mail-body > div {
+  overflow-x: auto;
+}
+.cs-mail-body > div > :first-child {
+  margin-top: 0;
+}
+.pipeline-os .cs-mail-body a {
+  /* The email renderer includes a blue inline color for email clients. */
+  color: var(--pos-accent) !important;
+}
+.cs-mail-body small {
+  display: block;
+  border-top: 1px dashed var(--pos-line);
+  padding-top: 18px;
+  margin-top: 28px;
+}
+.cs-preview-version {
+  background: var(--pos-panel2);
+  border-top: 1px solid var(--pos-line);
+  padding: 12px 22px;
+  font-size: 11px;
+  color: var(--pos-muted);
+  overflow-wrap: anywhere;
+}
+.cs-studio .cs-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 0 6px;
+  border-top: 1px solid var(--pos-line);
+}
+.cs-actions > span {
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--pos-muted);
+}
+.cs-studio .campaign-lead-picker {
+  max-height: 300px;
+  overflow: auto;
+  margin-top: 10px;
+}
+.cs-studio .campaign-lead-picker > label {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--pos-line);
+}
+.cs-studio .campaign-lead-picker small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.pipeline-os .cs-review-host dialog.modal.wide {
+  width: min(1000px, calc(100vw - 36px));
+  min-width: 0;
+  max-width: 1000px;
+  max-height: calc(100dvh - 36px);
+  padding: 24px;
+  box-sizing: border-box;
+  border: 1px solid var(--pos-line2);
+  border-radius: 16px;
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+  font-family: inherit;
+}
+.cs-review-host .modal-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.cs-review-host .modal-heading h2 {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  margin: 0;
+}
+.cs-review-host .icon-button {
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+  border: 1px solid var(--pos-line);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+}
+.cs-review-body {
+  font-size: 13px;
+}
+.cs-callout {
+  background: var(--pos-warn);
+  color: var(--pos-warn-ink);
+  border: 1px solid var(--pos-line);
+  border-radius: 10px;
+  padding: 16px;
+  margin: 16px 0;
+}
+.cs-callout p {
+  margin: 6px 0 12px;
+}
+.cs-callout a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+.cs-review-tools {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+}
+.cs-review-tools > label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.cs-review-tools > select {
+  width: 200px;
+}
+.cs-review-tools button {
+  flex-shrink: 0;
+}
+.cs-review-list {
+  border: 1px solid var(--pos-line);
+  border-radius: 10px;
+  overflow: auto;
+  max-height: 380px;
+}
+.cs-review-list > p {
+  padding: 20px;
+}
+.cs-review-list-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--pos-panel2);
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.cs-review-list-head label,
+.cs-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cs-check {
+  margin: 12px 0 18px;
+}
+.cs-contact {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 14px;
+  padding: 16px;
+  border-top: 1px solid var(--pos-line);
+  align-items: start;
+}
+.cs-contact > input {
+  margin-top: 3px !important;
+}
+.cs-contact-person,
+.cs-contact-reason {
+  display: grid;
+  gap: 3px;
+  overflow-wrap: anywhere;
+}
+.cs-contact-person > span,
+.cs-contact-person > small {
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.cs-contact-reason {
+  font-size: 12px;
+  color: var(--pos-muted);
+  gap: 7px;
+}
+.cs-contact-reason .cs-badge {
+  justify-self: start;
+}
+.cs-review-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 14px 0;
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.cs-review-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--pos-line);
+}
+.cs-review-footer > span {
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+@media (max-width: 900px) {
+  .cs-studio {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cs-studio .cs-config {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .cs-studio .cs-preview {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .cs-studio .cs-audience,
+  .cs-studio .cs-advanced {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .cs-config {
+    order: 1;
+  }
+  .cs-studio .cs-preview {
+    order: 2;
+  }
+  .cs-audience {
+    order: 3;
+  }
+  .cs-advanced {
+    order: 4;
+  }
+  .cs-studio > .campaign-note,
+  .cs-studio > .error {
+    order: 5;
+  }
+  .cs-studio > .cs-actions {
+    order: 6;
+  }
+}
+@media (max-width: 600px) {
+  .cs-surface {
+    padding: 18px;
+  }
+  .cs-mail-body,
+  .cs-mail-meta {
+    padding: 18px;
+  }
+  .cs-context {
+    flex-wrap: wrap;
+  }
+  .cs-context button {
+    margin-left: 30px;
+  }
+  .cs-studio .cs-actions > span {
+    flex-basis: 100%;
+  }
+  .cs-studio .cs-actions button {
+    flex: 1;
+  }
+  .pipeline-os .cs-review-host dialog.modal.wide {
+    width: calc(100vw - 20px);
+    max-height: calc(100dvh - 20px);
+    padding: 16px;
+  }
+  .cs-review-tools {
+    flex-wrap: wrap;
+  }
+  .cs-review-tools > label {
+    flex-basis: 100%;
+  }
+  .cs-review-tools > select {
+    flex: 1;
+    width: 0;
+  }
+  .cs-contact {
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 8px 12px;
+  }
+  .cs-contact-reason {
+    grid-column: 2;
+  }
+  .cs-review-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

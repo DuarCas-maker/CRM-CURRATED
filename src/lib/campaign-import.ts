@@ -35,6 +35,14 @@ export const campaignImportSteps = [
   ["Respuestas", "Replies"],
 ] as const;
 export const campaignImportErrors: Record<string, [string, string]> = {
+  CI_RETRY_STALE: [
+    "La selección cambió o contiene contactos no reintentables. Actualiza la revisión y vuelve a seleccionar.",
+    "The selection changed or contains contacts that cannot be retried. Refresh and select again.",
+  ],
+  CI_INVALID_INPUT: [
+    "Revisa la selección y los datos de la solicitud.",
+    "Check the selection and request fields.",
+  ],
   CI_FORBIDDEN: [
     "Se requiere un administrador con MFA.",
     "An administrator with MFA is required.",

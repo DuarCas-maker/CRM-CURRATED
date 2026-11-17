@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { campaignTemplateSchema } from "../campaign-templates";
 import { campaignImportErrors } from "../campaign-import";
+import { importRetrySchema, reviewFilters } from "../campaign-import-review";
 import { brandPreparationSchema } from "../brand-delivery";
 import {
   deliveryContext,
@@ -55,7 +56,26 @@ export async function readImportCampaign(url: URL, ctx: ImportCampaignContext) {
   administrator(ctx);
   const p = url.searchParams;
   const batch = z.uuid().parse(p.get("batch"));
-  const mode = z.enum(["status", "leads"]).parse(p.get("mode") || "status");
+  const mode = z
+    .enum(["status", "leads", "review"])
+    .parse(p.get("mode") || "status");
+  if (mode === "review")
+    return rpc(ctx, "campaign_import_review_page", {
+      batch,
+      search_text: z
+        .string()
+        .max(200)
+        .parse(p.get("search") || ""),
+      review_filter: z
+        .enum(reviewFilters)
+        .parse(p.get("filter") || "attention"),
+      page_number: z.coerce
+        .number()
+        .int()
+        .min(0)
+        .max(1000000)
+        .parse(p.get("page") || 0),
+    });
   return mode === "status"
     ? rpc(ctx, "campaign_import_status", { batch })
     : rpc(ctx, "campaign_import_leads_page", {
@@ -79,6 +99,25 @@ export async function writeImportCampaign(
   ctx: ImportCampaignContext,
 ) {
   administrator(ctx);
+  if (
+    body &&
+    typeof body === "object" &&
+    "kind" in body &&
+    body.kind === "retry"
+  ) {
+    const p = importRetrySchema.parse(body);
+    if (!process.env.BOUNCER_API_KEY)
+      throw new HttpError(
+        503,
+        "Bouncer no está configurado. / Bouncer is not configured.",
+      );
+    return rpc(ctx, "campaign_retry_import", {
+      batch: p.batch,
+      contact_ids: p.contact_ids,
+      expected_count: p.expected_count,
+      request_key: p.request_key,
+    });
+  }
   const envelope = z
     .discriminatedUnion("kind", [
       z
