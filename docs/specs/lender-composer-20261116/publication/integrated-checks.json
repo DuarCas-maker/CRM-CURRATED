@@ -1,0 +1,143 @@
+{
+  "at": "2026-11-17T18:15:31.767Z",
+  "integratedRevision": "63e0c5395ba57b2c3092031e13534fcaf7650ed4",
+  "concurrentMain": "2c077cc",
+  "tests": [
+    {
+      "name": "lender-composer.test.ts",
+      "exit": 0,
+      "pass": 4,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "lender-composer-server.test.ts",
+      "exit": 0,
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "lender-composer-db.test.ts",
+      "exit": 0,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-recipient-selections.test.ts",
+      "exit": 0,
+      "pass": 5,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-editor-compatibility.test.ts",
+      "exit": 0,
+      "pass": 6,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-compose-database.test.ts",
+      "exit": 0,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-manager.test.ts",
+      "exit": 0,
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "mail-channels.test.ts",
+      "exit": 0,
+      "pass": 5,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "pipeline-os-case-flow-db.test.ts",
+      "exit": 0,
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "campaign-studio.test.ts",
+      "exit": 0,
+      "pass": 7,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "campaign-templates.test.ts",
+      "exit": 0,
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "pipeline-os-module-ui.test.ts",
+      "exit": 0,
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "pipeline-os-module.test.ts",
+      "exit": 0,
+      "pass": 10,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "workspace-mail.test.ts",
+      "exit": 0,
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "campaign-import-flow.test.ts",
+      "exit": 0,
+      "pass": 7,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "campaign-control.test.ts",
+      "exit": 0,
+      "pass": 12,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "name": "campaign-control-http.test.ts",
+      "exit": 0,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    }
+  ],
+  "native": [
+    {
+      "name": "lender-composer-pg15.test.ts",
+      "exit": 0,
+      "pass": 1,
+      "fail": 0,
+      "skip": 0
+    }
+  ],
+  "uniqueTests": 75,
+  "passed": true,
+  "build": {
+    "exitCode": 0,
+    "node": "v22.23.5",
+    "realEnv": false,
+    "externalFetchBlocked": true
+  }
+}
