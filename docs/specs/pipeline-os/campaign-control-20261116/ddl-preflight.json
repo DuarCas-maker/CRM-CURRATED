@@ -1,0 +1,244 @@
+{
+  "at": "2026-11-17T04:55:36.409204+00:00",
+  "read_only": "on",
+  "ddl_events": [
+    {
+      "name": "issue_pg_graphql_access",
+      "tags": [
+        "CREATE FUNCTION"
+      ],
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function": "grant_pg_graphql_access()"
+    },
+    {
+      "name": "issue_graphql_placeholder",
+      "tags": [
+        "DROP EXTENSION"
+      ],
+      "event": "sql_drop",
+      "enabled": "O",
+      "function": "set_graphql_placeholder()"
+    },
+    {
+      "name": "pgrst_ddl_watch",
+      "tags": null,
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function": "pgrst_ddl_watch()"
+    },
+    {
+      "name": "pgrst_drop_watch",
+      "tags": null,
+      "event": "sql_drop",
+      "enabled": "O",
+      "function": "pgrst_drop_watch()"
+    },
+    {
+      "name": "graphql_watch_ddl",
+      "tags": null,
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function": "graphql.increment_schema_version()"
+    },
+    {
+      "name": "graphql_watch_drop",
+      "tags": null,
+      "event": "sql_drop",
+      "enabled": "O",
+      "function": "graphql.increment_schema_version()"
+    },
+    {
+      "name": "issue_pg_cron_access",
+      "tags": [
+        "CREATE EXTENSION"
+      ],
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function": "grant_pg_cron_access()"
+    },
+    {
+      "name": "issue_pg_net_access",
+      "tags": [
+        "CREATE EXTENSION"
+      ],
+      "event": "ddl_command_end",
+      "enabled": "O",
+      "function": "grant_pg_net_access()"
+    }
+  ],
+  "default_acl": [
+    {
+      "acl": "{postgres=arwdDxt/postgres,anon=arwdDxt/postgres,authenticated=arwdDxt/postgres,service_role=arwdDxt/postgres}",
+      "type": "r",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "type": "f",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+      "type": "S",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "type": "S",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=arwdDxt/supabase_admin,anon=arwdDxt/supabase_admin,authenticated=arwdDxt/supabase_admin,service_role=arwdDxt/supabase_admin}",
+      "type": "r",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "type": "f",
+      "schema": "public"
+    },
+    {
+      "acl": "{postgres=arwdDxt/postgres,anon=arwdDxt/postgres,authenticated=arwdDxt/postgres,service_role=arwdDxt/postgres}",
+      "type": "r",
+      "schema": "storage"
+    },
+    {
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "type": "f",
+      "schema": "storage"
+    },
+    {
+      "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+      "type": "S",
+      "schema": "storage"
+    },
+    {
+      "acl": "{postgres=arwdDxt/postgres,anon=arwdDxt/postgres,authenticated=arwdDxt/postgres,service_role=arwdDxt/postgres}",
+      "type": "r",
+      "schema": "supabase_functions"
+    },
+    {
+      "acl": "{postgres=X/postgres,anon=X/postgres,authenticated=X/postgres,service_role=X/postgres}",
+      "type": "f",
+      "schema": "supabase_functions"
+    },
+    {
+      "acl": "{postgres=rwU/postgres,anon=rwU/postgres,authenticated=rwU/postgres,service_role=rwU/postgres}",
+      "type": "S",
+      "schema": "supabase_functions"
+    },
+    {
+      "acl": "{postgres=arwdDxt/supabase_auth_admin,dashboard_user=arwdDxt/supabase_auth_admin}",
+      "type": "r",
+      "schema": "auth"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_auth_admin,dashboard_user=rwU/supabase_auth_admin}",
+      "type": "S",
+      "schema": "auth"
+    },
+    {
+      "acl": "{postgres=X/supabase_auth_admin,dashboard_user=X/supabase_auth_admin}",
+      "type": "f",
+      "schema": "auth"
+    },
+    {
+      "acl": "{postgres=arwdDxt/supabase_admin,dashboard_user=arwdDxt/supabase_admin}",
+      "type": "r",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,dashboard_user=rwU/supabase_admin}",
+      "type": "S",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,dashboard_user=X/supabase_admin}",
+      "type": "f",
+      "schema": "realtime"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "type": "S",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{postgres=arwdDxt/supabase_admin,anon=arwdDxt/supabase_admin,authenticated=arwdDxt/supabase_admin,service_role=arwdDxt/supabase_admin}",
+      "type": "r",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "type": "f",
+      "schema": "graphql_public"
+    },
+    {
+      "acl": "{postgres=a*r*w*d*D*x*t*/supabase_admin}",
+      "type": "r",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{postgres=X*/supabase_admin}",
+      "type": "f",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{postgres=r*w*U*/supabase_admin}",
+      "type": "S",
+      "schema": "extensions"
+    },
+    {
+      "acl": "{postgres=arwdDxt/supabase_admin,anon=arwdDxt/supabase_admin,authenticated=arwdDxt/supabase_admin,service_role=arwdDxt/supabase_admin}",
+      "type": "r",
+      "schema": "graphql"
+    },
+    {
+      "acl": "{postgres=X/supabase_admin,anon=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+      "type": "f",
+      "schema": "graphql"
+    },
+    {
+      "acl": "{postgres=rwU/supabase_admin,anon=rwU/supabase_admin,authenticated=rwU/supabase_admin,service_role=rwU/supabase_admin}",
+      "type": "S",
+      "schema": "graphql"
+    }
+  ],
+  "session_role": "supabase_admin",
+  "effective_role": "supabase_admin",
+  "group_backfill": {
+    "campaigns": 1,
+    "missing_actor": 0,
+    "invalid_limits": 0,
+    "missing_account": 0
+  },
+  "enrollment_constraints": [
+    {
+      "name": "campaign_enrollments_campaign_id_contact_id_key",
+      "definition": "UNIQUE (campaign_id, contact_id)"
+    },
+    {
+      "name": "campaign_enrollments_campaign_id_fkey",
+      "definition": "FOREIGN KEY (campaign_id) REFERENCES campaigns(id)"
+    },
+    {
+      "name": "campaign_enrollments_contact_id_fkey",
+      "definition": "FOREIGN KEY (contact_id) REFERENCES contacts(id)"
+    },
+    {
+      "name": "campaign_enrollments_opportunity_id_fkey",
+      "definition": "FOREIGN KEY (opportunity_id) REFERENCES opportunities(id)"
+    },
+    {
+      "name": "campaign_enrollments_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "name": "campaign_enrollments_status_check",
+      "definition": "CHECK ((status = ANY (ARRAY['active'::text, 'replied'::text, 'bounced'::text, 'suppressed'::text, 'goal_met'::text, 'completed'::text, 'paused'::text])))"
+    }
+  ],
+  "planned_trigger_collisions": 0,
+  "remoteMutations": 0,
+  "realProviderRequests": 0
+}

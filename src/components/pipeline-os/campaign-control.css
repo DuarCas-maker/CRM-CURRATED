@@ -1,0 +1,615 @@
+.cc-workspace {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+  --panel: var(--pos-panel);
+  --surface: var(--pos-panel2);
+  --ink: var(--pos-ink);
+  --muted: var(--pos-muted);
+  --line: var(--pos-line);
+  --bronze: var(--pos-accent);
+  color: var(--pos-ink);
+  font: inherit;
+}
+.cc-toolbar,
+.cc-section-head,
+.cc-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.cc-toolbar p {
+  margin: 6px 0 0;
+  color: var(--pos-muted);
+  font-size: 13px;
+}
+.cc-kicker {
+  color: var(--pos-accent);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+}
+.cc-surface {
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line);
+  border-radius: 14px;
+  padding: 24px;
+  min-width: 0;
+}
+.cc-workspace h2,
+.cc-workspace h3 {
+  margin: 0;
+  color: var(--pos-ink);
+}
+.cc-workspace h2 {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 29px;
+  font-weight: 400;
+}
+.cc-workspace h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+.cc-section-head p {
+  margin: 5px 0 0;
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.cc-overview-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.cc-overview-metrics > div {
+  display: grid;
+  gap: 5px;
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line);
+  border-radius: 12px;
+  padding: 18px;
+}
+.cc-overview-metrics span {
+  font-size: 12px;
+  color: var(--pos-muted);
+}
+.cc-overview-metrics strong {
+  font-size: 30px;
+  font-weight: 550;
+  letter-spacing: -1px;
+}
+.cc-overview-metrics small {
+  font-size: 11px;
+  color: var(--pos-muted);
+  line-height: 1.6;
+}
+.cc-workspace input:not([type="checkbox"]),
+.cc-workspace select,
+.cc-modal-host input:not([type="checkbox"]),
+.cc-modal-host select {
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  min-width: 0;
+  color: var(--pos-ink);
+  font: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+.cc-workspace input[type="checkbox"],
+.cc-modal-host input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--pos-accent);
+  margin: 0;
+}
+.cc-workspace :focus-visible,
+.cc-modal-host :focus-visible {
+  outline: 2px solid var(--pos-accent);
+  outline-offset: 3px;
+}
+.cc-batch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--pos-muted);
+  max-width: 350px;
+}
+.cc-batch select {
+  width: 100%;
+}
+.cc-funnel-stages {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0 18px;
+}
+.cc-funnel-stages > button {
+  background: var(--pos-panel2);
+  color: var(--pos-ink);
+  border: 1px solid var(--pos-line);
+  border-radius: 9px;
+  padding: 14px;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  font: inherit;
+  transition: border-color 0.15s;
+}
+.cc-funnel-stages > button:hover,
+.cc-funnel-stages > button.selected {
+  border-color: var(--pos-accent);
+  background: var(--pos-soft);
+}
+.cc-funnel-stages span {
+  font-size: 11px;
+  color: var(--pos-muted);
+}
+.cc-funnel-stages strong {
+  font-size: 25px;
+  font-weight: 550;
+  letter-spacing: -0.6px;
+}
+.cc-funnel-stages small {
+  font-size: 10px;
+  color: var(--pos-muted);
+}
+.cc-funnel-stages .valid strong {
+  color: var(--pos-good-ink);
+}
+.cc-funnel-stages .review strong {
+  color: var(--pos-warn-ink);
+}
+.cc-funnel-stages .invalid strong {
+  color: var(--pos-bad-ink);
+}
+.cc-funnel-footer {
+  border-top: 1px solid var(--pos-line);
+  padding-top: 14px;
+  display: grid;
+  gap: 5px;
+}
+.cc-funnel-footer > span {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--pos-accent);
+  font-size: 12px;
+}
+.cc-funnel-footer small,
+.cc-note {
+  color: var(--pos-muted);
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 0;
+}
+.cc-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--pos-line);
+  gap: 24px;
+}
+.cc-tabs button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 0 0 12px;
+  color: var(--pos-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.cc-tabs .selected {
+  border-color: var(--pos-accent);
+  color: var(--pos-accent);
+  font-weight: 600;
+}
+.cc-tools {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+.cc-tools input {
+  width: 230px;
+}
+.cc-tools select {
+  max-width: 230px;
+}
+.cc-campaign-list,
+.cc-details {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.cc-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 9px;
+  border-radius: 5px;
+  background: var(--pos-panel2);
+  color: var(--pos-muted);
+  border: 1px solid var(--pos-line);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.cc-badge.active,
+.cc-badge.good {
+  background: var(--pos-soft);
+  color: var(--pos-soft-ink);
+  border-color: transparent;
+}
+.cc-badge.waiting,
+.cc-badge.paused,
+.cc-badge.scheduled {
+  background: var(--pos-warn);
+  color: var(--pos-warn-ink);
+  border-color: transparent;
+}
+.cc-card-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 22px 0;
+}
+.cc-card-metrics > span {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.cc-card-metrics strong {
+  color: var(--pos-ink);
+  font-size: 23px;
+  font-weight: 550;
+}
+.cc-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+}
+.cc-reasons > span {
+  color: var(--pos-warn-ink);
+  background: var(--pos-warn);
+  padding: 5px 9px;
+  border-radius: 5px;
+  font-size: 11px;
+}
+.cc-actions {
+  padding-top: 16px;
+  border-top: 1px solid var(--pos-line);
+  flex-wrap: wrap;
+}
+.cc-actions > span {
+  color: var(--pos-muted);
+  font-size: 12px;
+  margin-right: auto;
+}
+.cc-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  color: var(--pos-muted);
+  font-size: 12px;
+  margin-top: 16px;
+}
+.cc-empty {
+  text-align: center;
+  padding: 36px 20px;
+  color: var(--pos-muted);
+}
+.cc-empty > svg {
+  color: var(--pos-accent);
+  margin-bottom: 12px;
+}
+.cc-empty h3 {
+  margin-bottom: 8px;
+}
+.cc-empty p {
+  max-width: 500px;
+  margin: 0 auto;
+  font-size: 13px;
+}
+.cc-detail-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.cc-detail-metrics > div {
+  display: grid;
+  gap: 5px;
+}
+.cc-detail-metrics strong {
+  font-size: 30px;
+  font-weight: 550;
+}
+.cc-detail-metrics span {
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.cc-senders-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.cc-sender-card {
+  border: 1px solid var(--pos-line);
+  border-radius: 12px;
+  background: var(--pos-panel);
+  padding: 20px;
+  min-width: 0;
+}
+.cc-sender-card > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.cc-sender-card strong {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.cc-sender-card p {
+  font-size: 12px;
+  color: var(--pos-muted);
+  margin: 12px 0;
+}
+.cc-sender-card small {
+  color: var(--pos-muted);
+  font-size: 11px;
+}
+.cc-contact-list {
+  border-top: 1px solid var(--pos-line);
+  margin-top: 16px;
+}
+.cc-contact-row,
+.cc-recipient-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border-bottom: 1px solid var(--pos-line);
+  padding: 16px 0;
+  font-size: 12px;
+}
+.cc-contact-row > span:first-of-type,
+.cc-recipient-row > span:first-of-type {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.cc-contact-row > input,
+.cc-recipient-row > input {
+  margin-top: 3px !important;
+}
+.cc-contact-row strong,
+.cc-recipient-row strong {
+  font-size: 13px;
+}
+.cc-contact-row > span > span,
+.cc-recipient-row small {
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.cc-contact-note {
+  flex: 1;
+  color: var(--pos-muted);
+  max-width: 48%;
+  line-height: 1.6;
+}
+.cc-recipient-row > span:last-of-type {
+  display: grid;
+  gap: 6px;
+  min-width: 140px;
+}
+.cc-recipient-row .cc-badge {
+  justify-self: start;
+}
+.cc-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  margin: 18px 0;
+  line-height: 1.5;
+}
+.cc-field {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  margin: 14px 0;
+}
+.cc-field small {
+  color: var(--pos-muted);
+  font-size: 11px;
+}
+.cc-callout {
+  background: var(--pos-warn);
+  color: var(--pos-warn-ink);
+  border-radius: 9px;
+  padding: 14px 16px;
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 18px 0;
+}
+.cc-callout a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+.pipeline-os .cc-modal-host dialog.modal {
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+  font: inherit;
+  width: min(560px, calc(100vw - 28px));
+  min-width: 0;
+  border: 1px solid var(--pos-line2);
+  border-radius: 14px;
+}
+.cc-modal-host .modal-heading h2 {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 27px;
+  font-weight: 400;
+}
+.cc-modal-host .icon-button {
+  color: var(--pos-ink);
+  background: var(--pos-panel);
+}
+.cc-modal-host p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.cc-templates {
+  font-family: inherit;
+}
+.cc-templates .button {
+  font: inherit;
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line2);
+  color: var(--pos-ink);
+  border-radius: 8px;
+  padding: 9px 13px;
+  font-size: 12px;
+}
+.cc-templates .button.primary {
+  background: var(--pos-accent);
+  color: var(--pos-on-accent);
+  border-color: var(--pos-accent);
+}
+.cs-senders {
+  border-top: 1px solid var(--pos-line);
+  padding-top: 18px;
+  margin-top: 18px;
+  font-size: 12px;
+}
+.cs-senders > p {
+  color: var(--pos-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.cs-sender-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  align-items: center;
+  border-top: 1px solid var(--pos-line);
+}
+.cs-sender-row > label:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.cs-sender-row > label:first-child span {
+  display: grid;
+  gap: 3px;
+}
+.cs-sender-row .cs-sender-limit {
+  display: grid;
+  gap: 4px;
+  flex-shrink: 0;
+  width: 90px;
+  font-size: 10px;
+  color: var(--pos-muted);
+}
+.cs-sender-limit input {
+  width: 90px !important;
+  padding: 7px !important;
+}
+@media (max-width: 1000px) {
+  .cc-funnel-stages {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .cc-card-metrics > span {
+    display: grid;
+    gap: 3px;
+  }
+}
+@media (max-width: 700px) {
+  .cc-overview-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cc-surface {
+    padding: 18px;
+  }
+  .cc-toolbar,
+  .cc-section-head {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .cc-tools {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .cc-tools input {
+    flex: 1;
+    width: 100%;
+  }
+  .cc-tools select {
+    flex: 1;
+    max-width: 100%;
+  }
+  .cc-batch {
+    width: 100%;
+    max-width: none;
+  }
+  .cc-senders-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cc-funnel-stages > button {
+    padding: 10px;
+  }
+  .cc-funnel-stages strong {
+    font-size: 22px;
+  }
+  .cc-funnel-stages small {
+    font-size: 9px;
+  }
+  .cc-tabs {
+    gap: 18px;
+  }
+  .cc-tabs button {
+    font-size: 12px;
+  }
+  .cc-contact-row {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .cc-contact-note {
+    grid-column: 2;
+    max-width: none;
+  }
+  .cc-recipient-row {
+    flex-wrap: wrap;
+  }
+  .cc-recipient-row > span:last-of-type {
+    flex-basis: calc(100% - 30px);
+    margin-left: 30px;
+  }
+  .cc-detail-metrics strong {
+    font-size: 25px;
+  }
+  .cc-actions button {
+    justify-content: center;
+  }
+  .cc-toolbar > .pos-row {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cc-funnel-stages > button {
+    transition: none;
+  }
+}

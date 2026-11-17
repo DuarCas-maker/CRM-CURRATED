@@ -1,0 +1,268 @@
+{
+  "package": "campaign-control-20261116-offline-v1",
+  "base": "a881100518f10f1fce1594010b3721f4bc9b4b24",
+  "origin_main": "a881100518f10f1fce1594010b3721f4bc9b4b24",
+  "branch": "codex/campaign-control-20261116",
+  "productionApproval": false,
+  "remoteMutations": 0,
+  "realProviderRequests": 0,
+  "productFiles": 10,
+  "testAndHarnessFiles": 6,
+  "sqlFiles": 2,
+  "scope": "Pipeline campaign control, fixed multi-sender allocation, manual review, RLS metadata groups and aggregate dispatch cap; no worker/env/dependency changes",
+  "verification": {
+    "tests": 71,
+    "failed": 0,
+    "types": 0,
+    "build": 0,
+    "nativePassed": true,
+    "sqlSha256": "acaf855115c1f1f0ed8086cc47a5e13d7d70d5fd67114d7d55727cdbbae66c09"
+  },
+  "files": [
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/acceptance.md",
+      "bytes": 1647,
+      "sha256": "1578c6b3df59c9f31ef0919c5bb285c37ec0503b6ea0d20f36262ff902597c4c",
+      "lf_sha256": "1cb8f4f310eed0c3011bd91f21ffecdaf080000637c99c6c3ebf472fdfaa1095"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/catalog-preflight.json",
+      "bytes": 6779,
+      "sha256": "b142e30996c2212af414f7f7a390385730aacf42b8d468d235f95c5c6cccc6d4",
+      "lf_sha256": "b142e30996c2212af414f7f7a390385730aacf42b8d468d235f95c5c6cccc6d4"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/checks-result.json",
+      "bytes": 1053,
+      "sha256": "a89da5d516a1f365a457aa91a937e69c058db421cff05099b1038e8a4dee98d2",
+      "lf_sha256": "a89da5d516a1f365a457aa91a937e69c058db421cff05099b1038e8a4dee98d2"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/ddl-preflight.json",
+      "bytes": 7353,
+      "sha256": "98d8c90f3eedf3f813833eb4223c673a1996ffa913a1058b34f72f910d41a7c4",
+      "lf_sha256": "98d8c90f3eedf3f813833eb4223c673a1996ffa913a1058b34f72f910d41a7c4"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/design.md",
+      "bytes": 4366,
+      "sha256": "bbd2cfeca6d38d41a89a260471bbd2d4db03daec3fb15ef2dd4099fe6f78e72e",
+      "lf_sha256": "506ed8a7c3217ab02d7f3e241e05e2e45a0d420f0cb99949aa46c3b427c4be07"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/bouncer-confirmation.jpg",
+      "bytes": 42656,
+      "sha256": "512b9bbf7636e02fb18fd8645722b739fcc44471b3c8d2580f9bdc61daabcb85"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/composer-desktop.jpg",
+      "bytes": 97525,
+      "sha256": "878457c29a8404b05e0afc854c7dd2eb7bd021b1482752c92007d066917f7537"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/composer-mobile.jpg",
+      "bytes": 33871,
+      "sha256": "33ea11eb18ba74ed521c2bc59fe00742b92893b1425939d411469e9564fd2e2b"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/confirm-mobile.jpg",
+      "bytes": 19898,
+      "sha256": "db0b6ed84454763b13e775626f5b74f4c86f4a53f4b7260eb7c89555b5cb0805"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/empty-results.jpg",
+      "bytes": 79767,
+      "sha256": "7c4038712c08400b58ef7b3dbb0f043011feb7b91dc6ef870c14789e437e9aa8"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/overview-desktop.jpg",
+      "bytes": 76809,
+      "sha256": "c41442df639ecc52a7d99c9cc69963ef1eeeb15e143bceafef7d87123a057594"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/overview-final.jpg",
+      "bytes": 78899,
+      "sha256": "59cc70c46db7cbee3a2abec755961e0dfe69fb291fa6e0baf15a69fa3946dc5e"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/overview-mobile-dark.jpg",
+      "bytes": 30769,
+      "sha256": "3fdf5d725fe30b441dc9ce0d8c558e1e3434a2d2f2078d3f2de6b0a6c7f95557"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/overview-mobile.jpg",
+      "bytes": 10541,
+      "sha256": "db0af91276f7aadf70169b9a39d9c928a9330732f636f3b551c37ea53d6d3da6"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/overview-tablet.jpg",
+      "bytes": 61572,
+      "sha256": "74e26b72d20ec95412c2191d5215dd79b793f275b8bc1986f45358f75e5516b2"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/read-error.jpg",
+      "bytes": 63895,
+      "sha256": "9ffdba4acee538af89bd4c1d189cfb295e45e6d22ad3afd6bf39897382ca9c5c"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/results-desktop.jpg",
+      "bytes": 85986,
+      "sha256": "5cd5f3a4224a24c1c31013b93d16b37dfe00d84f48ab897be687c1fc85a0b946"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/evidence/results-mobile-dark.jpg",
+      "bytes": 34335,
+      "sha256": "09664c9639fb03332bfab2893ff6152a7df7883413442a37ff97b244f796cd4d"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/migrations/down.sql",
+      "bytes": 1068,
+      "sha256": "f6e87ac71763a2d45a4d933fa23868e96584590b233517bdcef6f10e5cc0bb91",
+      "lf_sha256": "f6e87ac71763a2d45a4d933fa23868e96584590b233517bdcef6f10e5cc0bb91"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/migrations/up.sql",
+      "bytes": 32621,
+      "sha256": "acaf855115c1f1f0ed8086cc47a5e13d7d70d5fd67114d7d55727cdbbae66c09",
+      "lf_sha256": "acaf855115c1f1f0ed8086cc47a5e13d7d70d5fd67114d7d55727cdbbae66c09"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/native-result.json",
+      "bytes": 466,
+      "sha256": "c487995bd8f57931a99b075110ee3a8e941afc5562fdcff93ec79c4a982289b4",
+      "lf_sha256": "c487995bd8f57931a99b075110ee3a8e941afc5562fdcff93ec79c4a982289b4"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/review.md",
+      "bytes": 3210,
+      "sha256": "fd56edf3c6b1f6d0bd2c1e2d6edb4e6eef03e9ff53489b4ff892ca73e133f6fa",
+      "lf_sha256": "fd56edf3c6b1f6d0bd2c1e2d6edb4e6eef03e9ff53489b4ff892ca73e133f6fa"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/rollout.md",
+      "bytes": 6116,
+      "sha256": "10364d3816f625ccc2c77f85e1f302f0d79670990fb5bc012d22b56b474c523f",
+      "lf_sha256": "10364d3816f625ccc2c77f85e1f302f0d79670990fb5bc012d22b56b474c523f"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/spec.md",
+      "bytes": 3760,
+      "sha256": "9836587b1317ce6d4cf719b7646086354a570594c6b951e78e96b9871d7122c3",
+      "lf_sha256": "d78a94ababc0369c8516d5eba6222025f2059de75a1451a250a99d6c280f57bc"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/tasks.md",
+      "bytes": 872,
+      "sha256": "67f84496f5d21614b02079c664049f70d85ceb3c6d12ebda754dd8ce6cbfc45f",
+      "lf_sha256": "ca4f17db7ca919954bf4cced433799ddc5d51220330e9d80c4e66fe8f06e4704"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/ui-result.json",
+      "bytes": 129,
+      "sha256": "f4657966dc12d6f39c4837fdde72738cf942c832e390aa30d3fd0a39da629e03",
+      "lf_sha256": "ef670c0ceb4aa9d3fbb26f771fe84ded8aac89f254bfe89466c56808521a35f1"
+    },
+    {
+      "file": "docs/specs/pipeline-os/campaign-control-20261116/verification.md",
+      "bytes": 5797,
+      "sha256": "3601b63eb8c6919626713e3bb09449efa98ac685cf296bd070e31778017015c1",
+      "lf_sha256": "3601b63eb8c6919626713e3bb09449efa98ac685cf296bd070e31778017015c1"
+    },
+    {
+      "file": "src/app/api/campaigns/control/route.ts",
+      "bytes": 1012,
+      "sha256": "0702fcf19e8a0bf108cada1166278f4a3213a9b4f563298cc9c5a44775f4fd49",
+      "lf_sha256": "0702fcf19e8a0bf108cada1166278f4a3213a9b4f563298cc9c5a44775f4fd49"
+    },
+    {
+      "file": "src/components/campaign-composer.tsx",
+      "bytes": 34672,
+      "sha256": "05a2182474c412dba58eca2708678fdf2fe3ca6088ca7fc2cc1c105f6a9eb806",
+      "lf_sha256": "05a2182474c412dba58eca2708678fdf2fe3ca6088ca7fc2cc1c105f6a9eb806"
+    },
+    {
+      "file": "src/components/pipeline-os/campaign-control-details.tsx",
+      "bytes": 25805,
+      "sha256": "3b266b0892922e740bb71628cd35b126faf67bd7ab45b85bc6f093abeed92d43",
+      "lf_sha256": "3b266b0892922e740bb71628cd35b126faf67bd7ab45b85bc6f093abeed92d43"
+    },
+    {
+      "file": "src/components/pipeline-os/campaign-control-leads.tsx",
+      "bytes": 12778,
+      "sha256": "035a1e8621f056dd42ecbb9fd7423e2fe21bd808ad3f94531c273c28af73f6a7",
+      "lf_sha256": "035a1e8621f056dd42ecbb9fd7423e2fe21bd808ad3f94531c273c28af73f6a7"
+    },
+    {
+      "file": "src/components/pipeline-os/campaign-control-panel.tsx",
+      "bytes": 19116,
+      "sha256": "e26ee837b2c190bac917b58fa1d281f9f762c36ae3416f46019104a65cc30bf2",
+      "lf_sha256": "e26ee837b2c190bac917b58fa1d281f9f762c36ae3416f46019104a65cc30bf2"
+    },
+    {
+      "file": "src/components/pipeline-os/campaign-control.css",
+      "bytes": 11788,
+      "sha256": "8f1f74d894430fa739585a06bf64d5c887e945dd8de1ead3e6e1614823e8d3db",
+      "lf_sha256": "8f1f74d894430fa739585a06bf64d5c887e945dd8de1ead3e6e1614823e8d3db"
+    },
+    {
+      "file": "src/components/pipeline-os/workspace.tsx",
+      "bytes": 53043,
+      "sha256": "ca2420441d7032cd07c9c548f1f50165927beca6f81a1a88d8dcc1a6270630fb",
+      "lf_sha256": "ca2420441d7032cd07c9c548f1f50165927beca6f81a1a88d8dcc1a6270630fb"
+    },
+    {
+      "file": "src/lib/campaign-control-client.ts",
+      "bytes": 1163,
+      "sha256": "0dfd26f822b0f4c3a278582d9ca044b5b765ccf650302f90f8185184ba6e3eee",
+      "lf_sha256": "0dfd26f822b0f4c3a278582d9ca044b5b765ccf650302f90f8185184ba6e3eee"
+    },
+    {
+      "file": "src/lib/campaign-control.ts",
+      "bytes": 4330,
+      "sha256": "015e124ebe0e7c9c835f3c0dea34e3171cceac9006d4d23f1488dfa3c5f0a456",
+      "lf_sha256": "015e124ebe0e7c9c835f3c0dea34e3171cceac9006d4d23f1488dfa3c5f0a456"
+    },
+    {
+      "file": "src/lib/server/campaign-control.ts",
+      "bytes": 6585,
+      "sha256": "2334b1e18e37ed0b408fd0a6fcce46a9b0a30da4833cd7944913426c7cdb5bcf",
+      "lf_sha256": "2334b1e18e37ed0b408fd0a6fcce46a9b0a30da4833cd7944913426c7cdb5bcf"
+    },
+    {
+      "file": "tests/campaign-control-browser.mts",
+      "bytes": 8606,
+      "sha256": "fe06d8bdf5c6d2e6ad431568534ae05ee07743ee1a47ee8e98556056848d6244",
+      "lf_sha256": "19cf3309ee0179a76e34012c442e706b6cfd99efc5013b675e89604a2ccb8148"
+    },
+    {
+      "file": "tests/campaign-control-http.test.ts",
+      "bytes": 2872,
+      "sha256": "008c5593d17d9bfdb40d199344fcf79e0d6679428680e62b00e7e8f9abe08d43",
+      "lf_sha256": "008c5593d17d9bfdb40d199344fcf79e0d6679428680e62b00e7e8f9abe08d43"
+    },
+    {
+      "file": "tests/campaign-control-native.mts",
+      "bytes": 6912,
+      "sha256": "04700a267f5223c877890cf4b52b10d3dedb4b2d799aa505e21e8b369b80b18a",
+      "lf_sha256": "04700a267f5223c877890cf4b52b10d3dedb4b2d799aa505e21e8b369b80b18a"
+    },
+    {
+      "file": "tests/campaign-control.test.ts",
+      "bytes": 14962,
+      "sha256": "20c18a7bbb938da9031a8567b381a0e3d58a22ea97f5649600e9280b1288561c",
+      "lf_sha256": "20c18a7bbb938da9031a8567b381a0e3d58a22ea97f5649600e9280b1288561c"
+    },
+    {
+      "file": "tests/fixtures/campaign-control-browser.tsx",
+      "bytes": 2134,
+      "sha256": "6a4968989cf8d5d92258be0a2de4026818bd8c12e5227a92021f66bcd6339139",
+      "lf_sha256": "6a4968989cf8d5d92258be0a2de4026818bd8c12e5227a92021f66bcd6339139"
+    },
+    {
+      "file": "tests/fixtures/campaign-control.ts",
+      "bytes": 4827,
+      "sha256": "50cdeccf6f301f0f7d75a40751e9e0c97ab42b946eac795b2fb6b04b9b6b8ae5",
+      "lf_sha256": "50cdeccf6f301f0f7d75a40751e9e0c97ab42b946eac795b2fb6b04b9b6b8ae5"
+    }
+  ]
+}

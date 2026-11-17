@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-17T17:57:01.331Z",
+  "approval": "Sí, autorizo integrar y publicar el paquete en crm.finlabinc.com y aplicar su SQL de agrupación, compatibilidad y límite global, después de comprobar un respaldo reciente.",
+  "approvedManifestSha256": "c5582dd013017ff8eb167c7cde575d9a4844428ff81a516e9287cbc9485aab83",
+  "package": "campaign-control-20261116-offline-v1",
+  "base": "a881100518f10f1fce1594010b3721f4bc9b4b24",
+  "target": "https://crm.finlabinc.com",
+  "filesVerified": 43,
+  "realProviderRequests": 0
+}
