@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-17T18:04:55.728Z",
+  "readOnly": true,
+  "result": {
+    "superuser": true,
+    "validated": true,
+    "search_path": "\"\\$user\", public, auth, extensions"
+  }
+}

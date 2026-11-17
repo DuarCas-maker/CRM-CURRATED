@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-17T18:10:30.376Z",
+  "checks": {
+    "idempotency": true,
+    "mail_queued": false,
+    "aal1_blocked": true,
+    "selection_73": true,
+    "template_crud": true,
+    "provider_calls": false,
+    "archive_versions": true,
+    "direct_write_blocked": true,
+    "inactive_read_blocked": true,
+    "stale_version_blocked": true
+  },
+  "rolledBack": true,
+  "noPersistentBusinessWrites": true,
+  "sqlSessionContextOnly": true,
+  "realJwtSession": false
+}

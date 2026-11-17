@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-17T18:01:48.069Z",
+  "path": "/var/lib/postgresql/data/lender-composer-056-20261117T180142Z",
+  "dump": "/var/lib/postgresql/data/lender-composer-056-20261117T180142Z/pre056.dump",
+  "status": "verified",
+  "retries": 0,
+  "bytes": 58310215,
+  "sha256": "51ab72dd43be3b2506b67f41bb5d426a4933a1e615a88e1573291b2f353f5fbc",
+  "verified": true,
+  "serverOnly": true,
+  "restorationCheck": "list and complete decode; no full disaster restore"
+}

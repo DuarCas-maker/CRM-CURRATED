@@ -6,6 +6,7 @@ import { mkdirSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createServer } from "node:net";
+import { guardLenderMigration } from "../scripts/lender-composer-release-plan.mjs";
 
 const lit = (v: unknown) => `'${String(v).replaceAll("'", "''")}'`;
 test(
@@ -160,9 +161,37 @@ test(
       const before = value(
         "select to_jsonb(pg_get_functiondef('public.queue_mail_lenders(jsonb)'::regprocedure));",
       );
+      const preflightFunctions = value(
+        "set search_path=pg_catalog,public,pg_temp;select jsonb_agg(jsonb_build_object('name',p.proname,'hash',md5(pg_get_functiondef(p.oid)))) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname in ('queue_mail_lenders','queue_lender_emails');",
+      );
+      sql(
+        "alter default privileges for role supabase_admin in schema public grant all on tables to anon,authenticated,service_role;",
+      );
+      const guarded = guardLenderMigration(
+        readFileSync("supabase/migrations/056_lender_composer.sql", "utf8"),
+        { functions: preflightFunctions },
+      );
+      assert.match(guarded, /do \$\$begin/);
+      sql("set role supabase_admin;" + guarded);
+      assert.equal(
+        value(
+          "select has_table_privilege('authenticated','public.lender_email_templates','update')",
+        ),
+        true,
+        "Exercise the actual Supabase default grant behavior",
+      );
       sql(
         "set role supabase_admin;" +
-          readFileSync("supabase/migrations/056_lender_composer.sql", "utf8"),
+          readFileSync(
+            "supabase/migrations/057_lender_template_grants.sql",
+            "utf8",
+          ),
+      );
+      assert.equal(
+        value(
+          "select has_table_privilege('anon','public.lender_email_templates','select')",
+        ),
+        false,
       );
       const after = value(
         "select to_jsonb(pg_get_functiondef('public.queue_mail_lenders(jsonb)'::regprocedure));",
@@ -219,6 +248,17 @@ test(
         value(`select version from lender_email_templates where id=${lit(id)}`),
         2,
       );
+      const releaseSmoke = value(
+        readFileSync(
+          "docs/specs/lender-composer-20261116/publication/fixture-smoke.sql",
+          "utf8",
+        ),
+      );
+      assert.equal(releaseSmoke.template_crud, true);
+      assert.equal(releaseSmoke.selection_73, true);
+      assert.equal(releaseSmoke.inactive_read_blocked, true);
+      assert.equal(releaseSmoke.aal1_blocked, true);
+      assert.equal(releaseSmoke.mail_queued, false);
       sql(
         "set role supabase_admin;" +
           readFileSync(

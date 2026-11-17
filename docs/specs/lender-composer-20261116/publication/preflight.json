@@ -1,0 +1,50 @@
+{
+  "at": "2026-11-17T18:07:16.572Z",
+  "readOnly": true,
+  "result": {
+    "tables": null,
+    "new_rpc": false,
+    "version": "150008",
+    "database": "postgres",
+    "sql_role": "supabase_admin",
+    "versions": false,
+    "functions": [
+      {
+        "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "anon": false,
+        "hash": "dc7d786755cdcba31ec08540d1bcaa46",
+        "name": "queue_lender_emails",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "authenticated": true
+      },
+      {
+        "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "anon": false,
+        "hash": "6ca81ae79e79e23db7c0163018cc8c32",
+        "name": "queue_mail_lenders",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "authenticated": true
+      }
+    ],
+    "templates": false,
+    "area_guard": true,
+    "source_guard": true,
+    "can_send_hash": "ab56404fac1fb2da4a14b4938e19dc6d",
+    "foundation_055": true,
+    "private_schema": false,
+    "untouched_hash": "e1ca9d6e1712ba48b992953a37290d23",
+    "queue_recognized": true,
+    "personalized_html": false,
+    "selection_constraint": "CHECK (((jsonb_typeof(targets) = 'array'::text) AND ((jsonb_array_length(targets) >= 1) AND (jsonb_array_length(targets) <= 20)) AND (octet_length((targets)::text) <= 100000)))"
+  }
+}

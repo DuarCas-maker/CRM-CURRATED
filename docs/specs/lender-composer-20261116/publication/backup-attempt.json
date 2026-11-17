@@ -1,0 +1,6 @@
+{
+  "path": "/var/lib/postgresql/data/lender-composer-056-20261117T180142Z",
+  "dump": "/var/lib/postgresql/data/lender-composer-056-20261117T180142Z/pre056.dump",
+  "status": "reserved",
+  "retries": 0
+}

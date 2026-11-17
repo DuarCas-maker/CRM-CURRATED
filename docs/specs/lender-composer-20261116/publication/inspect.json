@@ -1,0 +1,78 @@
+{
+  "at": "2026-11-17T18:08:51.385Z",
+  "readOnly": true,
+  "result": {
+    "tables": [
+      {
+        "rls": true,
+        "name": "lender_email_template_versions",
+        "anon_select": true,
+        "auth_select": true,
+        "auth_update": true
+      },
+      {
+        "rls": true,
+        "name": "lender_email_templates",
+        "anon_select": true,
+        "auth_select": true,
+        "auth_update": true
+      }
+    ],
+    "new_rpc": true,
+    "version": "150008",
+    "database": "postgres",
+    "sql_role": "supabase_admin",
+    "versions": true,
+    "functions": [
+      {
+        "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "anon": false,
+        "hash": "6c6e53717f95545c919eb8faf4fdba53",
+        "name": "queue_lender_emails",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "authenticated": true
+      },
+      {
+        "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "anon": false,
+        "hash": "975e2fdaa66f8b2ac20416c51f899ad2",
+        "name": "queue_mail_lenders",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "authenticated": true
+      },
+      {
+        "acl": "{supabase_admin=X/supabase_admin,postgres=X/supabase_admin,authenticated=X/supabase_admin,service_role=X/supabase_admin}",
+        "anon": false,
+        "hash": "99470478037596ded3a6a98379980d28",
+        "name": "save_lender_email_template",
+        "owner": "supabase_admin",
+        "schema": "public",
+        "definer": true,
+        "search_path": [
+          "search_path=\"\""
+        ],
+        "authenticated": true
+      }
+    ],
+    "templates": true,
+    "area_guard": true,
+    "source_guard": true,
+    "can_send_hash": "ab56404fac1fb2da4a14b4938e19dc6d",
+    "foundation_055": true,
+    "private_schema": true,
+    "untouched_hash": "e1ca9d6e1712ba48b992953a37290d23",
+    "queue_recognized": false,
+    "personalized_html": true,
+    "selection_constraint": "CHECK (((jsonb_typeof(targets) = 'array'::text) AND (jsonb_array_length(targets) >= 1) AND (octet_length((targets)::text) <= 100000)))"
+  }
+}
