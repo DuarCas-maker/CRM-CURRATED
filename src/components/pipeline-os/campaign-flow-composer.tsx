@@ -192,8 +192,8 @@ export function FlowComposer({
           <p className="cc-note">
             {t(
               locale,
-              "Hora de tu dispositivo. Los domingos pasan al lunes. El envío respeta el cupo disponible de la cuenta.",
-              "Your device's local time. Sundays move to Monday. Sending respects the account's available capacity.",
+            "Hora de tu dispositivo. Los domingos pasan al lunes. El envío respeta el cupo de la cuenta. Los expedientes se asignarán a ti.",
+            "Your device's local time. Sundays move to Monday. Sending respects account capacity. Cases will be assigned to you.",
             )}
           </p>
           <details className="cf-reminder-editor">

@@ -20,4 +20,6 @@ Respaldo nuevo de58.402.595 bytes, dentro del volumen PostgreSQL, verificado por
 
 SQL congelado5239f1bc… aplicado: cinco funciones públicas decoradas, catorce funciones añadidas, cero cambios inesperados en las funciones previas. RLS habilitado, authenticated puede ejecutar el lanzamiento sujeto a MFA/rol, anon/service_role no; el schema privado y las escrituras de tabla siguen cerrados. [Aplicación](sql-application.json).
 
-Pendiente G6: integración/push y comprobación de web/worker y sesión real de solo lectura. No se han activado campañas ni consumido Bouncer en producción durante este incremento.
+Publicación inicial: commit a1532d7 subido a main. La nueva ruta pasó de404 a401/no-store para acceso anónimo. Con sesión real, el pool con búsqueda ficticia respondió rows[]/total0 y la lectura completa de Pipeline respondió source=crm sin errores (una campaña, cero activas/programadas). No se crearon campañas ni verificaciones durante smoke. El estado de la imagen del worker sigue sin comprobación directa: Coolify no termina de renderizar y SSH local no tiene acceso.
+
+CR-01 posterior: el usuario cambió la asignación al creador y confirmó conservar cuatro recordatorios. Ver revisions/owner-creator/ para implementación, verificación y promoción de ese delta. No se aplica retroactivamente.

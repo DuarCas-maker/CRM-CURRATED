@@ -5,7 +5,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
-import { flowFixture } from "./fixtures/campaign-flow";
+import { flowOwnerFixture as flowFixture } from "./fixtures/campaign-flow-owner";
 import {
   readControl,
   writeControl,

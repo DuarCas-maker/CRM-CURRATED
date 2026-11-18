@@ -1,0 +1,8 @@
+{
+  "tests": 25,
+  "passed": 25,
+  "failed": 0,
+  "build": "next build --webpack; exit 0; TypeScript included",
+  "native": "PostgreSQL15.19; owner revision; passed",
+  "realProviderRequests": 0
+}

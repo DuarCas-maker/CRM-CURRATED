@@ -13,6 +13,10 @@ if (!fs.existsSync(path.join(bin, "postgres.exe")))
   throw Error("NATIVE_PG15_UNAVAILABLE");
 const runtime = path.resolve(".local/campaign-flow-native-" + randomUUID()),
   data = path.join(runtime, "data");
+const ownerRevision = process.env.CAMPAIGN_TEST_OWNER_REVISION === "1";
+const revisionRoot = ownerRevision
+  ? "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/"
+  : flowRoot;
 fs.mkdirSync(runtime, { recursive: true });
 const socket = net.createServer();
 await new Promise<void>((r) => socket.listen(0, "127.0.0.1", r));
@@ -192,9 +196,10 @@ try {
     return { db, users, asUser, command } as any;
   };
   const f = await flowFixture(factory as any);
+  if (ownerRevision) sql(fs.readFileSync(revisionRoot + "up.sql", "utf8"));
   // Reversal before history restores exactly the protected boundaries.
-  sql(fs.readFileSync(flowRoot + "down.sql", "utf8"));
-  sql(fs.readFileSync(flowRoot + "up.sql", "utf8"));
+  sql(fs.readFileSync(revisionRoot + "down.sql", "utf8"));
+  sql(fs.readFileSync(revisionRoot + "up.sql", "utf8"));
   const auth = `set local request.jwt.claims=${lit(JSON.stringify({ sub: f.users.admin, aal: "aal2" }))};set local role authenticated;`;
   const race = await Promise.allSettled(
     f.accounts.map((account) =>
@@ -215,7 +220,7 @@ try {
   assert.equal(
     Number(
       sql(
-        `select count(*) from opportunities where seller_id<>${lit(f.users.seller)}`,
+      `select count(*) from opportunities where seller_id<>${lit(ownerRevision ? f.users.admin : f.users.seller)}`,
       ),
     ),
     0,
@@ -232,13 +237,14 @@ try {
   const result = {
     postgres: sql("select version()"),
     sqlSha256: createHash("sha256")
-      .update(fs.readFileSync(flowRoot + "up.sql"))
+      .update(fs.readFileSync(revisionRoot + "up.sql"))
       .digest("hex"),
     parallelLaunches: 2,
     successfulLaunches: 1,
     rejectedOverlaps: 1,
     exactRecipients: 4,
-    advisorPreserved: true,
+    advisorPreserved: !ownerRevision,
+    creatorOwnsCases: ownerRevision,
     reversalPassed: true,
     productionOrder055to057: true,
     realProviderRequests: 0,
@@ -246,7 +252,7 @@ try {
     passed: true,
   };
   fs.writeFileSync(
-    "docs/specs/pipeline-os/campaign-flow-20261117/native-result.json",
+    revisionRoot.replace(/migrations\/$/, "") + "native-result.json",
     JSON.stringify(result, null, 2) + "\n",
   );
   console.log(JSON.stringify(result));

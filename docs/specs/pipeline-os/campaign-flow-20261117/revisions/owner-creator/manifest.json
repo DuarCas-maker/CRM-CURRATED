@@ -1,0 +1,77 @@
+{
+  "base": "a1532d739f83303c0a27d84e514051fac6f240df",
+  "files": [
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/backup-command.sql",
+      "sha256": "c0ad09aeb555cf135a3e6ad56c30757032e0660954086e5c0039f0202aeb5859"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/backup.json",
+      "sha256": "2536f02c5fc39437e75e6ae4415e7ab23fc33c7d3415c8b568067c952990b414"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/change-request.md",
+      "sha256": "75e515e5c5736e601981c308c3b097c1fb7fae6e0d58ff07ee14ffff724cde31"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/checks-result.json",
+      "sha256": "4f389f860376bab292e2f4ca90c704a06662473e7530d93710f70b232c36f6fa"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/down.sql",
+      "sha256": "fea707b869f2cdde29e8ee968439f78afde1090c70c7c622a6d48ba52ad0d5ae"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/native-result.json",
+      "sha256": "f3a0772ce17bff0bd3618d737769ba880cd1fa20f24c7ceee027288c750750e2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/rollout.md",
+      "sha256": "3adadc280f2499cab18aeaa1382456760f9e361e5bd2e1b634844a58adf2dc50"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/source-pins.json",
+      "sha256": "a685370260ee78b665b89bb1a69c6efe4300b9f6dd712b9b477b05fe50724e25"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/sql-application.json",
+      "sha256": "db51a842410b89b493a3b970e2c01964c18ced92468eb46b47d754215d6e4fc2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/up.sql",
+      "sha256": "657f822c1505a2126ce79aaeecc12f12faef0f59bc162d0fd289ef8ca7425132"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/verification.md",
+      "sha256": "ef9a0c274feea75e72769f89c171c7520c14a38ba277793f3b9d6967ca865bf4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/spec.md",
+      "sha256": "6e694b0cf8e8e54c6e474833ca28541483988397bc8a1f2ae3c75dd0e5197d0c"
+    },
+    {
+      "path": "docs/specs/pipeline-os/campaign-flow-20261117/verification.md",
+      "sha256": "5af82dbd8c15e673260f040e1ef47c4aaa533c8bfbb746dca716ff803d927430"
+    },
+    {
+      "path": "src/components/pipeline-os/campaign-flow-composer.tsx",
+      "sha256": "ad315a196bc9e596a09d4365afa6de1b90168af1fe714d82cbfcaf03d94fe147"
+    },
+    {
+      "path": "tests/campaign-flow-browser.mts",
+      "sha256": "3475e43774e23bf4ae3b39b0f6394c001a931b086c005558a985b86fdccb363a"
+    },
+    {
+      "path": "tests/campaign-flow-native.mts",
+      "sha256": "e892f19a9ab8e12a62bf11a5214eae5f1d0ee590c10cc092e73b9bfca062441b"
+    },
+    {
+      "path": "tests/campaign-flow-owner.test.ts",
+      "sha256": "a89f874ea021b3d9175df886cf14e5553d583e0083b7adbf0b1b8ea0c94633e3"
+    },
+    {
+      "path": "tests/fixtures/campaign-flow-owner.ts",
+      "sha256": "3821d55d4893daa283d54f44ba8ff2dd21abb048d7d42f03228defe83b7b805a"
+    }
+  ]
+}

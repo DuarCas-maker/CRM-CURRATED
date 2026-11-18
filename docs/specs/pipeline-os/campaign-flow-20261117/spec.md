@@ -1,5 +1,7 @@
 # Flujo de leads y campañas — STRICT
 
+Actualización CR-01: la respuesta 4B asigna los expedientes de nuevas campañas al creador, sustituyendo la conservación del asesor descrita en la versión inicial de FR-03/AC-07. El usuario confirmó conservar los cuatro intervalos; ver revisions/owner-creator/change-request.md. No reasignar historia.
+
 Implementación y publicación coordinada en crm.finlabinc.com autorizadas por el usuario el 17/11/2026. No solicitar aprobaciones por archivo. Las pruebas y el smoke no verifican correos reales ni envían campañas. Se requiere respaldo reciente antes del SQL remoto.
 
 ## Requisitos confirmados
