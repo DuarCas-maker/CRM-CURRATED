@@ -54,6 +54,7 @@ export type PipelineOffer = Offer & {
   requirements: string;
 };
 export type PipelineRow = {
+  campaignEngagement?: Opportunity["campaign_engagement"];
   id: string;
   company: string;
   contact: string;
@@ -340,6 +341,7 @@ export function buildPipelineBoard(
       return {
         id: o.id,
         company: o.company,
+        campaignEngagement: o.campaign_engagement,
         contact: o.contact,
         email: o.email,
         phone: o.phone,

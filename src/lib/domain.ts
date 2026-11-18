@@ -30,6 +30,7 @@ export interface Profile {
   active?: boolean;
 }
 export interface Opportunity {
+  campaign_engagement?: "unanswered" | "in_progress" | "bounced";
   primary_account_id?: string | null;
   historical_approved_at?: string | null;
   id: string;

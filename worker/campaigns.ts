@@ -174,6 +174,12 @@ export async function scheduleCampaigns() {
         campaign.body_format,
       );
       const body = content.text;
+      // Follow-ups remain on the first message's conversation so Gmail replies
+      // retain the same RFC relationship and account-scoped reply attribution.
+      const initial = enrollment.step > 0 && message.flow_version === 1
+        ? checked(await client.from("outbox").select("conversation_id,gmail_thread_id")
+          .eq("request_key", `campaign:${enrollment.id}:0`).eq("status", "sent").maybeSingle())
+        : null;
       checked(
         await client.from("outbox").upsert(
           {
@@ -188,6 +194,7 @@ export async function scheduleCampaigns() {
             message_id_header: `<${enrollment.id}.${enrollment.step}@crm.curated.local>`,
             requested_by: campaign.created_by,
             request_key: key,
+            ...(initial?.conversation_id ? { conversation_id: initial.conversation_id, gmail_thread_id: initial.gmail_thread_id } : {}),
             ...(campaign.asset_snapshot !== undefined
               ? { campaign_asset_snapshot: campaign.asset_snapshot || [] }
               : {}),

@@ -12,6 +12,11 @@ test("the new catalog queries the real schema under two users' RLS and never wid
   const { db, users, asUser } = fixture;
   // Test adapter translates the unchanged REST projections to the actual local PostgreSQL schema.
   const client = {
+    async rpc(name: string) {
+      assert.equal(name,"campaign_flow_cases");
+      // This historical schema fixture has no typed campaign flows.
+      return {data:[],error:null};
+    },
     from(table: string) {
       const safe = (s: string) => {
         assert(/^[a-z_]+$/.test(s));

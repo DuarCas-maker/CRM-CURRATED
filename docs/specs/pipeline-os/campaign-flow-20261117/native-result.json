@@ -1,0 +1,14 @@
+{
+  "postgres": "PostgreSQL 15.19, compiled by Visual C++ build 1944, 64-bit",
+  "sqlSha256": "5239f1bcfa88f1e57e54dc94dd339df78622e661511e1e29cd5af5ee89083c19",
+  "parallelLaunches": 2,
+  "successfulLaunches": 1,
+  "rejectedOverlaps": 1,
+  "exactRecipients": 4,
+  "advisorPreserved": true,
+  "reversalPassed": true,
+  "productionOrder055to057": true,
+  "realProviderRequests": 0,
+  "remoteMutations": 0,
+  "passed": true
+}

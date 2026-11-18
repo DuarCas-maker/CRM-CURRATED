@@ -1,0 +1,13 @@
+{
+  "base": "9d28d5a257ef26c618d1884f4dc90eb7c0701530",
+  "tests": 121,
+  "passed": 121,
+  "failed": 0,
+  "offline": true,
+  "typecheck": "tsc --noEmit --incremental false",
+  "build": "next build --webpack; exit 0",
+  "nativePostgres": "PostgreSQL 15.19, compiled by Visual C++ build 1944, 64-bit",
+  "sqlSha256": "5239f1bcfa88f1e57e54dc94dd339df78622e661511e1e29cd5af5ee89083c19",
+  "newDependencies": 0,
+  "realProviderRequests": 0
+}

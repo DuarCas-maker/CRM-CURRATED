@@ -16,6 +16,7 @@ import {
 } from "../pipeline-os/master-pipeline";
 import { readPipelinePages } from "./pipeline-os-module";
 import { checkDb, requireUser } from "./supabase";
+import { campaignFlowCases } from "./campaign-flow-cases";
 
 async function readRows<T>(
   db: SupabaseClient,
@@ -57,13 +58,13 @@ export async function readMasterPipeline(
   query: MasterQuery,
   now = Date.now(),
 ) {
-  const opportunities = (
+  const opportunities = await campaignFlowCases(db, (
     await readRows<Opportunity>(
       db,
       "opportunity_workspace",
       "id,company,contact,email,phone,industry,amount,stage,seller_id,closer_id,next_action,next_action_at,created_at,updated_at,application_complete,application_signed,funded_at,funded_amount,funded_lender_id,handed_off_at",
     )
-  ).filter((o) => canSeeOpportunity(profile, o));
+  ).filter((o) => canSeeOpportunity(profile, o)));
   const ids = opportunities.map((o) => o.id),
     closerIds = opportunities
       .filter((o) => canSeeArea(profile, o, "closer"))

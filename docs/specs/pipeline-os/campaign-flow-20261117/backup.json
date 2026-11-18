@@ -1,0 +1,10 @@
+{
+  "at": "2026-11-18T00:00:08.493284+00:00",
+  "path": "/var/lib/postgresql/data/campaign-flow-20261118T000000Z/pre-flow.dump",
+  "bytes": 58402595,
+  "sha256": "369484022398c8bb6c9715c9cbea3a9ff204b531f020730c6e2a754f5e18154c",
+  "serverOnly": true,
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}

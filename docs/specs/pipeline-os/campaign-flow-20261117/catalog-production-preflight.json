@@ -1,0 +1,24 @@
+{
+  "database": "postgres",
+  "postgres": "15.8",
+  "campaigns": 1,
+  "functions": {
+    "public.claim_outbox()": "fdde695971cb3e0fbe7ae13e7f2b76dd",
+    "brand_b2.outbox_guard()": "f9a3ebc6717e957b124c3039b6e6d40e",
+    "brand_b2.campaign_guard()": "caa5673f64b8be725ade43fd361e6a13",
+    "public.campaign_reply_rows(uuid)": "2e4ed1a889b9632b85d52d408ba2a6a6",
+    "public.promote_verified_lead(uuid)": "4fa84415dde00d037e53ffc9c0eb20db",
+    "public.start_scheduled_campaigns()": "23e3b13617f20b97849f16de1b5ce283",
+    "public.campaign_contact_facts(uuid)": "9d74cd7780d2a2dfea98a3088d12ee03",
+    "public.crm_command(text,jsonb,uuid)": "f519770bcd945aa7bc51c2a2bb722788",
+    "public.campaign_prepared_leads(text,text,uuid)": "ceb166b84b06a251a670e8b71f978e33",
+    "public.campaign_control_command(text,jsonb,uuid)": "c3d49442e06e1a4944387882397227eb",
+    "public.brand_prepare_context(uuid,jsonb,text,uuid)": "362bf10b8b8f39290850a3a63e9a6a18",
+    "public.recheck_outbox_delivery_before_brand_b2(uuid)": "e81ecd5e083959302a607c8199c3798d"
+  },
+  "new_schema": false,
+  "pending_outbox": 0,
+  "observed_at": "2026-11-18T00:09:41.012Z",
+  "differences": [],
+  "remoteMutations": 0
+}

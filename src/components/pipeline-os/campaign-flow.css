@@ -1,0 +1,336 @@
+.cf-workspace {
+  gap: 24px;
+}
+.cf-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.cf-heading h2 {
+  margin: 8px 0 0;
+}
+.cf-channel {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--pos-line);
+  border-radius: 24px;
+  padding: 8px 13px;
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.cf-funnel {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border: 1px solid var(--pos-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--pos-panel);
+}
+.cf-funnel button {
+  background: transparent;
+  color: var(--pos-muted);
+  border: 0;
+  border-right: 1px solid var(--pos-line);
+  padding: 20px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.cf-funnel button:last-child {
+  border: 0;
+}
+.cf-funnel button.selected {
+  background: var(--pos-panel2);
+  box-shadow: inset 0 -3px var(--pos-green);
+}
+.cf-funnel span {
+  display: block;
+  font-size: 12px;
+}
+.cf-funnel strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 26px;
+  font-weight: 550;
+  color: var(--pos-ink);
+}
+.cf-pool-tools {
+  display: flex;
+  gap: 14px;
+  align-items: end;
+  margin: 22px 0 16px;
+}
+.cf-pool-tools > input {
+  flex: 1;
+  min-width: 0;
+}
+.cf-pool-tools label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.cf-pool input:not([type="checkbox"]),
+.cf-pool select,
+.cf-composer input,
+.cf-composer select,
+.cf-composer textarea {
+  background: var(--pos-panel);
+  border: 1px solid var(--pos-line);
+  color: var(--pos-ink);
+  border-radius: 8px;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 13px;
+}
+.cf-select-all {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  padding: 12px 0;
+}
+.cf-contact-list {
+  border-top: 1px solid var(--pos-line);
+}
+.cf-contact-list > label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--pos-line);
+  cursor: pointer;
+}
+.cf-contact-list > label > span:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+.cf-contact-list strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+}
+.cf-contact-list small {
+  display: block;
+  color: var(--pos-muted);
+  font-size: 12px;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+.cf-valid {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--pos-green);
+}
+.cf-pool-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 20px;
+  font-size: 12px;
+}
+.cf-compose-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 32px;
+  margin-top: 26px;
+}
+.cf-compose-grid form {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+}
+.cf-compose-grid .cc-field {
+  gap: 8px;
+}
+.cf-compose-grid .cc-field > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cf-preview {
+  background: var(--pos-panel2);
+  border: 1px solid var(--pos-line);
+  border-radius: 12px;
+  padding: 22px;
+  align-self: start;
+  position: sticky;
+  top: 20px;
+  min-width: 0;
+}
+.cf-preview-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--pos-muted);
+  margin-bottom: 16px;
+}
+.cf-preview nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 18px;
+}
+.cf-preview nav button {
+  font: inherit;
+  font-size: 11px;
+  background: transparent;
+  color: var(--pos-muted);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 7px;
+  cursor: pointer;
+}
+.cf-preview nav button.selected {
+  border-color: var(--pos-line);
+  background: var(--pos-panel);
+  color: var(--pos-ink);
+}
+.cf-envelope {
+  border-radius: 10px;
+  background: var(--pos-panel);
+  padding: 25px;
+  min-height: 300px;
+  overflow-wrap: anywhere;
+}
+.cf-envelope > small {
+  color: var(--pos-muted);
+  font-size: 11px;
+}
+.cf-envelope h3 {
+  margin: 20px 0;
+}
+.cf-email-body {
+  font:
+    14px/1.75 Arial,
+    sans-serif;
+}
+.cf-email-body a {
+  overflow-wrap: anywhere;
+}
+.cf-reminder-editor {
+  font-size: 12px;
+}
+.cf-reminder-editor summary {
+  cursor: pointer;
+  padding: 10px 0;
+}
+.cf-reminder-editor p {
+  color: var(--pos-muted);
+  line-height: 1.6;
+}
+.cf-reminder-editor fieldset {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--pos-line);
+  border-radius: 8px;
+  margin: 15px 0;
+  padding: 16px;
+}
+.cf-imports {
+  font-size: 12px;
+  color: var(--pos-muted);
+}
+.cf-imports summary {
+  cursor: pointer;
+  padding: 12px 0;
+}
+.cf-imports > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--pos-line);
+}
+.cf-sequence {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+.cf-sequence article {
+  padding: 16px;
+  border: 1px solid var(--pos-line);
+  border-radius: 10px;
+}
+.cf-sequence small,
+.cf-sequence span {
+  display: block;
+  color: var(--pos-muted);
+  font-size: 11px;
+  margin: 8px 0;
+}
+.cf-sequence strong {
+  font-size: 22px;
+  font-weight: 500;
+}
+.cf-workspace input[type="checkbox"] {
+  accent-color: var(--pos-green);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.cf-workspace :focus-visible {
+  outline: 2px solid var(--pos-green);
+  outline-offset: 3px;
+}
+@media (max-width: 1000px) {
+  .cf-funnel {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .cf-funnel button {
+    border-bottom: 1px solid var(--pos-line);
+  }
+  .cf-compose-grid {
+    grid-template-columns: 1fr;
+  }
+  .cf-preview {
+    position: static;
+  }
+  .cf-sequence {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .cf-heading h2 {
+    font-size: 25px;
+  }
+  .cf-heading {
+    align-items: start;
+  }
+  .cf-funnel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cf-funnel button {
+    padding: 15px;
+  }
+  .cf-pool-tools,
+  .cf-pool-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .cf-pool-tools label {
+    justify-content: space-between;
+  }
+  .cf-valid {
+    display: none;
+  }
+  .cf-preview {
+    padding: 14px;
+  }
+  .cf-envelope {
+    padding: 18px;
+  }
+  .cf-sequence {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cf-channel {
+    display: none;
+  }
+  .cf-imports > div {
+    flex-direction: column;
+  }
+}

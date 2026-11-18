@@ -109,6 +109,7 @@ export type MasterOffer = {
   answered: boolean | null;
 };
 export type MasterRow = {
+  campaignEngagement?: Opportunity["campaign_engagement"];
   id: string;
   caseId: string | null;
   conversationId?: string;
@@ -427,6 +428,7 @@ export function buildMasterPipeline(
         funded,
       ),
       sourceStage: process?.state || o.stage,
+      campaignEngagement: o.campaign_engagement,
       priority: priorityByCase.get(o.id) || 3,
       offers: finance ? offers : undefined,
       best: finance ? best : undefined,

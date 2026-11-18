@@ -14,6 +14,7 @@ export function ImportWizard({
   refresh,
   onRegistered,
   returnLabel,
+  verifyOnImport = false,
 }: {
   locale: Locale;
   close: () => void;
@@ -22,6 +23,7 @@ export function ImportWizard({
   refresh: () => Promise<void>;
   onRegistered?: (id: string) => void;
   returnLabel?: string;
+  verifyOnImport?: boolean;
 }) {
   const [file, setFile] = useState<File | null>(null);
   const [sheets, setSheets] = useState<string[]>([]);
@@ -73,12 +75,13 @@ export function ImportWizard({
         body.set("file", file!);
         body.set("sheet", sheet);
         body.set("mapping", JSON.stringify(mapping));
+        if (verifyOnImport) body.set("verify_max", String(total));
         let keys = requestKeys.current.get(file!);
         if (!keys) {
           keys = new Map();
           requestKeys.current.set(file!, keys);
         }
-        const fingerprint = JSON.stringify([sheet, mapping]);
+        const fingerprint = JSON.stringify([sheet, mapping, verifyOnImport]);
         let requestKey = keys.get(fingerprint);
         if (!requestKey) {
           requestKey = crypto.randomUUID();
@@ -276,10 +279,13 @@ export function ImportWizard({
                 )}
               </div>
               <div className="modal-footer">
+                {verifyOnImport && <p className="muted">{t(locale,
+                  `Hasta ${total.toLocaleString("es-CO")} verificaciones. Se reutilizan válidos y duplicados; solo los correos nuevos pendientes consumen créditos de Bouncer.`,
+                  `Up to ${total.toLocaleString("en-US")} verifications. Valid and duplicate contacts are reused; only new pending emails use Bouncer credits.`)}</p>}
                 <SaveButton
                   busy={busy}
                   locale={locale}
-                  label={t(locale, "Confirmar importación", "Confirm import")}
+                  label={verifyOnImport ? t(locale, "Importar y verificar", "Import and verify") : t(locale, "Confirmar importación", "Confirm import")}
                 />
               </div>
             </>

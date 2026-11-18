@@ -1,0 +1,43 @@
+{
+  "at": "2026-11-18T00:14:08.258Z",
+  "target": "https://supabase.finlabinc.com",
+  "state": "applied",
+  "sqlSha256": "5239f1bcfa88f1e57e54dc94dd339df78622e661511e1e29cd5af5ee89083c19",
+  "previousFunctions": 342,
+  "changed": [
+    "public.campaign_reply_rows(uuid)",
+    "public.start_scheduled_campaigns()",
+    "public.campaign_contact_facts(uuid)",
+    "public.crm_command(text, jsonb, uuid)",
+    "public.recheck_outbox_delivery_before_brand_b2(uuid)"
+  ],
+  "newFunctions": [
+    "campaign_flow_v1.advance()",
+    "campaign_flow_v1.auto_verify()",
+    "public.campaign_flow_cases(uuid[])",
+    "public.campaign_flow_visible(uuid)",
+    "public.campaign_flow_progress(uuid)",
+    "public.campaign_flow_launch(jsonb, uuid)",
+    "campaign_flow_v1.campaign_reply_rows(uuid)",
+    "public.campaign_flow_register_import(jsonb)",
+    "campaign_flow_v1.start_scheduled_campaigns()",
+    "campaign_flow_v1.campaign_contact_facts(uuid)",
+    "campaign_flow_v1.crm_command(text, jsonb, uuid)",
+    "public.campaign_flow_pool(text, integer, integer)",
+    "campaign_flow_v1.recheck_outbox_delivery_before_brand_b2(uuid)",
+    "campaign_flow_v1.next_date(timestamp with time zone, integer, text)"
+  ],
+  "unexpectedChanges": [],
+  "acl": {
+    "rls": true,
+    "anonFlow": false,
+    "anonPool": false,
+    "authFlow": true,
+    "authPrivate": false,
+    "serviceFlow": false,
+    "authTableWrite": false,
+    "servicePrivate": false
+  },
+  "backup": "/var/lib/postgresql/data/campaign-flow-20261118T000000Z/pre-flow.dump",
+  "realProviderRequests": 0
+}

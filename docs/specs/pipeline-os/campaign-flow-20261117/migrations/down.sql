@@ -1,0 +1,27 @@
+begin;
+do $$begin
+ if exists(select 1 from public.campaign_flows) or exists(select 1 from campaign_flow_v1.import_consents) then raise exception 'CF_ROLLBACK_HAS_HISTORY: retain schema and roll back binaries; never discard consent or dispatch history';end if;
+end$$;
+drop function public.campaign_flow_cases(uuid[]),public.campaign_flow_progress(uuid),public.campaign_flow_pool(text,int,int),public.campaign_flow_launch(jsonb,uuid),public.campaign_flow_register_import(jsonb);
+drop function public.campaign_contact_facts(uuid),public.campaign_reply_rows(uuid);
+alter function campaign_flow_v1.campaign_contact_facts(uuid) set schema public;
+alter function campaign_flow_v1.campaign_reply_rows(uuid) set schema public;
+grant execute on function public.campaign_contact_facts(uuid),public.campaign_reply_rows(uuid) to authenticated;
+drop function public.crm_command(text,jsonb,uuid);
+alter function campaign_flow_v1.crm_command(text,jsonb,uuid) set schema public;
+grant execute on function public.crm_command(text,jsonb,uuid) to authenticated,service_role;
+drop function public.start_scheduled_campaigns();
+alter function campaign_flow_v1.start_scheduled_campaigns() set schema public;
+grant execute on function public.start_scheduled_campaigns() to service_role;
+drop function public.recheck_outbox_delivery_before_brand_b2(uuid);
+alter function campaign_flow_v1.recheck_outbox_delivery_before_brand_b2(uuid) set schema public;
+revoke all on function public.recheck_outbox_delivery_before_brand_b2(uuid) from public,anon,authenticated,service_role;
+drop trigger flow_enrollment_advance on public.campaign_enrollments;
+drop trigger flow_import_verify on public.import_rows;
+drop table public.campaign_flows;
+drop function public.campaign_flow_visible(uuid);
+drop table campaign_flow_v1.import_consents;
+drop function campaign_flow_v1.advance(),campaign_flow_v1.auto_verify(),campaign_flow_v1.next_date(timestamptz,int,text);
+drop schema campaign_flow_v1;
+notify pgrst,'reload schema';
+commit;

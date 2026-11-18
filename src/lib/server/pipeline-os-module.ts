@@ -9,6 +9,7 @@ import {
   type PipelineMailUpdate,
 } from "../pipeline-os/module";
 import { checkDb, HttpError, requireUser } from "./supabase";
+import { campaignFlowCases } from "./campaign-flow-cases";
 import {
   approvedReportIds,
   confirmedLenderSends,
@@ -125,7 +126,7 @@ export async function readPipelineBoard(
     "opportunity_workspace",
     "id,company,contact,email,phone,industry,amount,stage,seller_id,closer_id,next_action,next_action_at,created_at,updated_at,application_complete,application_signed,funded_at,funded_amount,handed_off_at",
   );
-  const opportunities = raw.filter((o) => canSeeOpportunity(profile, o));
+  const opportunities = await campaignFlowCases(db, raw.filter((o) => canSeeOpportunity(profile, o)));
   const ids = opportunities.map((o) => o.id);
   const closerIds = opportunities
     .filter((o) => canSeeArea(profile, o, "closer"))

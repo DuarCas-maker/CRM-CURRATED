@@ -15,6 +15,7 @@ import {
   campaignControlAction,
 } from "@/lib/campaign-control-client";
 import { Modal, t } from "../ui";
+import { CampaignSequence } from "./campaign-sequence";
 export function SenderStatus({
   sender,
   locale,
@@ -278,6 +279,7 @@ export function CampaignControlDetails({
         </p>
       ) : (
         <>
+          <CampaignSequence id={id} locale={locale} revision={revision}/>
           <section className="cc-surface">
             <div className="cc-section-head">
               <div>

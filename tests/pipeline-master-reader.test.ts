@@ -63,6 +63,7 @@ function database(
   }
   return {
     client: {
+      rpc: async (name: string) => { assert.equal(name,"campaign_flow_cases"); return {data:[],error:null}; },
       from: (table: string) => new Query(table),
     } as unknown as SupabaseClient,
     calls,
@@ -179,6 +180,9 @@ test("Master reader follows a smaller REST cap and aggregates all73 cases before
 test("Master seller reads exclude financial IDs and bodies outside the visible page", async () => {
   const f = fixture();
   f.data.profile = { ...f.data.profile, role: "seller" };
+  // 055 grants flow management to the assigned case owner. This scenario
+  // explicitly belongs to another closer, so financial projections stay hidden.
+  f.opportunities.forEach(o => { o.closer_id = "other-closer"; });
   f.tables.opportunity_workspace.push({
     ...f.opportunities[0],
     id: "foreign",

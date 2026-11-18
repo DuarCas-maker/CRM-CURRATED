@@ -651,6 +651,7 @@ function Stage({ row, locale }: { row: MasterRow; locale: Locale }) {
   return (
     <span className={`mp-stage mp-stage-${row.stage}`} title={row.sourceStage}>
       {t(locale, ...masterStageLabels[row.stage])}
+      {row.campaignEngagement && <small>{row.campaignEngagement === "bounced" ? t(locale,"Incidencia: rebote","Issue: bounced") : row.campaignEngagement === "in_progress" ? t(locale,"En proceso · respondió","In progress · replied") : t(locale,"Sin respuesta","No reply")}</small>}
       {row.stage === "unclassified" && row.sourceStage && (
         <small>
           CRM:{" "}

@@ -90,6 +90,7 @@ export function PipelineTable({
                     <div className="pos-small pos-muted">
                       {r.ownerName} · {r.contact}
                     </div>
+                    {r.campaignEngagement && <span className="pos-pill">{r.campaignEngagement === "bounced" ? t(locale,"Incidencia: rebote","Issue: bounced") : r.campaignEngagement === "in_progress" ? t(locale,"En proceso · respondió","In progress · replied") : t(locale,"Sin respuesta","No reply")}</span>}
                     {group === "tasks" && (
                       <span className={`pos-pill pos-p${r.priority}`}>
                         P{r.priority}

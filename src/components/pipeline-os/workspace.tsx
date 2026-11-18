@@ -46,8 +46,7 @@ import { OpportunityDetail } from "../opportunity-detail";
 import { PipelineMailReview } from "./mail-review";
 import { PipelineCaseProgress } from "./case-progress";
 import { ConversationsWorkspace } from "../conversations-workspace";
-import { CampaignControlPanel } from "./campaign-control-panel";
-import { CampaignImportFlow } from "./campaign-import-flow";
+import { CampaignFlowPanel } from "./campaign-flow-panel";
 import { CampaignReview } from "../campaign-review";
 import { ImportWizard } from "../import-wizard";
 import { LenderDirectory } from "../lender-directory";
@@ -808,12 +807,11 @@ export function PipelineOSWorkspace({
       );
     if (p === "campaigns")
       return (
-        <CampaignControlPanel
+        <CampaignFlowPanel
           data={data}
           locale={locale}
           act={act}
           changed={refresh}
-          create={create}
           openConversation={mail}
         />
       );
@@ -830,16 +828,14 @@ export function PipelineOSWorkspace({
       );
     if (p === "build")
       return (
-        <CampaignImportFlow
+        <CampaignFlowPanel
           data={data}
           locale={locale}
           act={act}
-          refresh={refresh}
-          initialTemplate={composer?.template || null}
-          close={() => {
-            setComposer(null);
-            go(["campaigns"]);
-          }}
+          changed={refresh}
+          initialView="leads"
+          initialTemplate={composer?.template?.id}
+          openConversation={mail}
         />
       );
     if (p === "conversations")

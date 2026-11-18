@@ -25,6 +25,7 @@ export function CampaignControlPanel({
   changed,
   create,
   openConversation,
+  campaignsOnly = false,
 }: {
   data: Workspace;
   locale: Locale;
@@ -32,6 +33,7 @@ export function CampaignControlPanel({
   changed: () => Promise<void>;
   create: (template?: EmailTemplate) => void;
   openConversation: (opportunity: string, conversation: string) => void;
+  campaignsOnly?: boolean;
 }) {
   const [overview, setOverview] = useState<ControlOverview | null>(null),
     [loading, setLoading] = useState(true),
@@ -212,7 +214,7 @@ export function CampaignControlPanel({
           </div>
         ))}
       </div>
-      <section className="cc-surface cc-funnel">
+      {!campaignsOnly && <section className="cc-surface cc-funnel">
         <div className="cc-section-head">
           <div>
             <span className="cc-kicker">
@@ -286,7 +288,7 @@ export function CampaignControlPanel({
             )}
           </small>
         </div>
-      </section>
+      </section>}
       <nav
         className="cc-tabs"
         aria-label={t(locale, "Vistas de campañas", "Campaign views")}
@@ -295,7 +297,7 @@ export function CampaignControlPanel({
           ["campaigns", "Campañas", "Campaigns"],
           ["leads", "Contactos y Bouncer", "Contacts and Bouncer"],
           ["templates", "Plantillas", "Templates"],
-        ].map(([id, es, en]) => (
+        ].filter(([id]) => !campaignsOnly || id !== "leads").map(([id, es, en]) => (
           <button
             key={id}
             className={view === id ? "selected" : ""}
