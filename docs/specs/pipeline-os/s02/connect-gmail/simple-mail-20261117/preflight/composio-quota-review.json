@@ -1,0 +1,50 @@
+{
+  "capturedAt": "2026-11-18T04:18:49.462Z",
+  "scope": "Read-only authenticated dashboard; sanitized DOM projection; no execution log details opened",
+  "workspace": "santino_workspace",
+  "project": "pr_y-80FotblnGt",
+  "plan": "Hobby",
+  "planUsdMonthly": 0,
+  "publicProxyAllowanceMonthly": 1000,
+  "publicHardCapNoCharge": true,
+  "pricingSource": "https://composio.dev/pricing/platform",
+  "billingShowsInstantCreditsUsd": 2,
+  "creditsUsed": false,
+  "logs": {
+    "range": "Nov 1, 00:00 – Nov 17, 23:59",
+    "rows": [
+      {
+        "at": "Nov 17, 13:05:58",
+        "status": "Success",
+        "tool": "GMAIL_PROXY_EXECUTE",
+        "toolkit": "Gmail"
+      },
+      {
+        "at": "Nov 17, 13:01:23",
+        "status": "Success",
+        "tool": "GMAIL_PROXY_EXECUTE",
+        "toolkit": "Gmail"
+      },
+      {
+        "at": "Nov 16, 12:16:33",
+        "status": "Success",
+        "tool": "GMAIL_PROXY_EXECUTE",
+        "toolkit": "Gmail"
+      }
+    ]
+  },
+  "metricsAvailable": [
+    "Tool calls",
+    "Errors",
+    "Sessions",
+    "Active users"
+  ],
+  "exactGlobalProxyRemainingExposed": false,
+  "applicableBillingPeriodVerified": false,
+  "remainingProxy": null,
+  "budgetSeeded": false,
+  "providerRequestsExecuted": 0,
+  "configurationChanges": 0,
+  "purchases": 0,
+  "conclusion": "Three project Gmail proxy executions observed in the selected November range. This does not independently establish the organization-wide applicable proxy balance or reset date. Keep included budget unprovisioned."
+}

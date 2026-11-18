@@ -1,0 +1,71 @@
+{
+  "recordedAt": "2026-11-18T04:01:46.091Z",
+  "method": "Visible Coolify terminal; selected allowlisted metadata from running processes; no complete env dumps",
+  "sourceCommit": "b86148613648076e47fbcc51db60895de331623f",
+  "web": {
+    "resource": "rv8rpfxhf0mbxprge6h6ki9c",
+    "container": "rv8rpfxhf0mbxprge6h6ki9c-20261118T032456",
+    "node": "22.23.5",
+    "origin": "https://crm.finlabinc.com",
+    "flags": {
+      "SIMPLE_MAIL_ENABLED": null,
+      "SIMPLE_MAIL_ORGANIZATION": null,
+      "GMAIL_HISTORY_ENABLED": "true",
+      "GMAIL_SYNC_MODE": "polling",
+      "MAIL_TRANSPORT_ROUTING_ENABLED": "false",
+      "MAIL_QUOTA_POLICY_ENABLED": "false",
+      "COMPOSIO_CONNECT_ENABLED": "true",
+      "COMPOSIO_BINDING_V2_ENABLED": "true",
+      "COMPOSIO_BINDING_CHECKS_ENABLED": "false",
+      "COMPOSIO_VERIFIER_SETUP_ENABLED": "true"
+    },
+    "composio": {
+      "apiKeyPresent": true,
+      "contextPresent": true,
+      "contextVersion": 2,
+      "connectKeyringPresent": true,
+      "project": "pr_y-80FotblnGt",
+      "authConfig": "ac_0c4QEKnwPtOd",
+      "generation": 1
+    },
+    "encryptionKeyPresent": true
+  },
+  "worker": {
+    "resource": "vc4aybj4ucje7zstpsp3zboh",
+    "container": "vc4aybj4ucje7zstpsp3zboh-20261118T032340",
+    "origin": "https://crm.finlabinc.com",
+    "flags": {
+      "SIMPLE_MAIL_ENABLED": null,
+      "SIMPLE_MAIL_ORGANIZATION": null,
+      "GMAIL_HISTORY_ENABLED": "true",
+      "GMAIL_SYNC_MODE": "polling",
+      "WORKER_EXECUTION_MODE": "normal",
+      "MAIL_TRANSPORT_ROUTING_ENABLED": null,
+      "MAIL_QUOTA_POLICY_ENABLED": null,
+      "COMPOSIO_CONNECT_ENABLED": null,
+      "COMPOSIO_BINDING_V2_ENABLED": null,
+      "COMPOSIO_BINDING_CHECKS_ENABLED": null,
+      "COMPOSIO_VERIFIER_SETUP_ENABLED": null
+    },
+    "composio": {
+      "apiKeyPresent": false,
+      "contextPresent": false,
+      "connectKeyringPresent": false
+    },
+    "google": {
+      "organization": "curated",
+      "domain": "curatedfinancial.com",
+      "clientIdSha256": "3d080f6c798dc0651fad2cfa51fcaa981ec4b3250e131ae50a1caa2396cd4e60",
+      "secretPresent": true
+    },
+    "encryptionKeyPresent": true
+  },
+  "limitations": [
+    "Coolify showed a pre-existing unsaved-changes notice; no Save or Reset used",
+    "Initial long terminal probes failed parsing before requests; successful probes were short allowlisted reads",
+    "Inspection shell exited; no application process was stopped"
+  ],
+  "secretValuesCaptured": false,
+  "environmentFilesCopied": false,
+  "configurationChanged": false
+}

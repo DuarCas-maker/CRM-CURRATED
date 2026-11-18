@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { simpleMailEnabled } from "@/lib/mail-connections";
 import { gmailPushEnabled } from "@/lib/gmail-sync";
 import { requireUser, serviceClient, HttpError } from "@/lib/server/supabase";
 import { oauthClient, organization } from "@/lib/server/google";
@@ -10,6 +11,12 @@ import {
 } from "@/lib/server/brand-actions";
 export async function GET(request: Request) {
   try {
+    if (simpleMailEnabled()) {
+      const response = await (
+        await import("@/lib/server/mail-accounts/onboarding/production")
+      ).simpleDirectCallback(request);
+      if (response) return response;
+    }
     const pushEnabled = gmailPushEnabled();
     const { profile } = await requireUser();
     if (profile.role !== "superadmin")

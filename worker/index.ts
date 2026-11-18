@@ -22,7 +22,9 @@ import {
 } from "./gmail-archive";
 import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
 import { gmailSyncMode } from "../src/lib/gmail-sync";
-import { scheduleMailboxJobs } from "./gmail-schedule";
+import { scheduleMailboxJobs, simpleMailboxSchedule } from "./gmail-schedule";
+import { simpleMailEnabled } from "../src/lib/mail-connections";
+import { serviceMailRuntime } from "../src/lib/server/mail-transport/runtime-service";
 import {
   mailRoutingActive,
   mailRuntimeDependencies,
@@ -138,7 +140,7 @@ async function schedule() {
         { onConflict: "dedupe_key", ignoreDuplicates: true },
       ),
     );
-  const credentials =
+  let credentials =
     routed ??
     (checked(
       await client
@@ -150,6 +152,11 @@ async function schedule() {
         ),
     ) ||
       []);
+  if (!routed && simpleMailEnabled())
+    credentials = await simpleMailboxSchedule(
+      credentials,
+      serviceMailRuntime(),
+    );
   await scheduleMailboxJobs(credentials, async (job) => {
     if (job.kind === "gmail_sync") {
       const pending =

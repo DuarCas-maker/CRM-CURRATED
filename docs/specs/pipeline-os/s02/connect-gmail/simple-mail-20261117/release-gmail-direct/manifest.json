@@ -1,0 +1,569 @@
+{
+  "at": "2026-11-18T04:51:04.787Z",
+  "scope": "Gmail direct first; Composio explicitly disabled",
+  "baseCommit": "17cbbd65d76e0c341f545b8a82a4fcdbe6e71084",
+  "branch": "codex/gmail-direct-release-20261118",
+  "backup": {
+    "created": false,
+    "explicitlyWaivedByUser": true
+  },
+  "authorization": "Publish Gmail direct, SQL and coordinated web/worker deployment; no new backup. No consent, test email, campaign resume, credit purchase or plan change.",
+  "checks": {
+    "regressionPass": 541,
+    "regressionFail": 0,
+    "skipped": 6,
+    "files": 85,
+    "flagTestsPass": 18,
+    "compile": [
+      {
+        "check": "types",
+        "exit": 0
+      },
+      {
+        "check": "typecheck",
+        "exit": 0
+      },
+      {
+        "check": "build-webpack",
+        "exit": 0
+      }
+    ]
+  },
+  "sql": {
+    "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/release-gmail-direct/058_simple_mail_connections.sql",
+    "sha256": "8fc57667383daad1459c68293e6854a4298bd67b3f05efeede58b01a4c985d18",
+    "applied": true,
+    "postflightVerified": true,
+    "sourceBodyUnchangedFromNativeTest": true,
+    "ordinal": 58,
+    "location": "Dedicated canonical release directory; historical 048–054 are also coordinated outside supabase/migrations"
+  },
+  "flags": {
+    "initial": {
+      "SIMPLE_MAIL_ENABLED": "false",
+      "SIMPLE_MAIL_COMPOSIO_ENABLED": "false",
+      "SIMPLE_MAIL_ORGANIZATION": "curated"
+    },
+    "final": {
+      "SIMPLE_MAIL_ENABLED": "true",
+      "SIMPLE_MAIL_COMPOSIO_ENABLED": "false",
+      "SIMPLE_MAIL_ORGANIZATION": "curated",
+      "MAIL_QUOTA_POLICY_ENABLED": "true",
+      "MAIL_TRANSPORT_ROUTING_ENABLED": "false"
+    },
+    "composioWeb": {
+      "COMPOSIO_CONNECT_ENABLED": "false",
+      "COMPOSIO_BINDING_V2_ENABLED": "false",
+      "COMPOSIO_BINDING_CHECKS_ENABLED": "false",
+      "COMPOSIO_VERIFIER_SETUP_ENABLED": "false"
+    }
+  },
+  "files": [
+    {
+      "path": ".env.example",
+      "bytes": 4552,
+      "sha256": "bb20cc0491a96bced022b2c4e9db4e10865f14c348110eabdd52867e264f9039"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/acceptance.md",
+      "bytes": 4313,
+      "sha256": "91242c8ff4844c2776739dc64fb548c6c9ba7ac6bc7c55af0b7b10792191c295"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/adr-001.md",
+      "bytes": 1952,
+      "sha256": "d7112efd49e68e840dfda5133e8a23014803ca3cfcb50dee4ccfcb7d9e63794b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/baseline-attachments.txt",
+      "bytes": 1632,
+      "sha256": "8ad32a142b307cd36e3f9c4f0a3306e84e9ea677a04280e4ae0f102f731c2a1f"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/build-webpack.txt",
+      "bytes": 3683,
+      "sha256": "c1ea650202ae5fa00f30b4e2ca7cbdf172fcbd54989a653465ce83a7210f6857"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/composio-tablet.jpg",
+      "bytes": 66683,
+      "sha256": "e6156c954cfeff381042e3c0dfe604d08eb36e8db99de6afeed0d430068275c0"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/core-tests.txt",
+      "bytes": 10173,
+      "sha256": "33ca42163e64bbd7f162158296838d8331fc12c9c745c07169130a3f3719d6a7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/design.md",
+      "bytes": 14181,
+      "sha256": "1d5c25ca9746c950d676668201686c6db5486e27d02258ef1825bb83648b1049"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/discovery.json",
+      "bytes": 4428,
+      "sha256": "d18239bed1cd870567450d819138a1d8923afcbb220f1b925b21105a9188fb16"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/document-check.json",
+      "bytes": 6007,
+      "sha256": "8b851304e81b364eaac9462b76d0fc426c3f538a2003c53ce13a23e99d39ad8b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/gmail-desktop.jpg",
+      "bytes": 61561,
+      "sha256": "5d3020846bf2daff8e8f8a0af47cbda4d854d0a82549d6c01bbf14cd83734c04"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/gmail-mobile.jpg",
+      "bytes": 43576,
+      "sha256": "7a246530161a1d2f0f9dfec8941a445a5c8b11be0862d280ed24492547ba6c6e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/implementation-manifest.json",
+      "bytes": 9468,
+      "sha256": "d362bbf5d18c3f382209c092e4d521467ef9265f33060979d4b40d03b9ba94f8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/implementation-verification.md",
+      "bytes": 4601,
+      "sha256": "5235af6eacdf3b731ce58cb219f01d674828c32723fecc6ecb379917c015cd56"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/local-checks.json",
+      "bytes": 391,
+      "sha256": "813afe4123a684574102fdf8060ce2577d3f5c84d43477bcba7dd9d9f08e94fb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/native-tests.txt",
+      "bytes": 3765,
+      "sha256": "5530cc94d4e20880ec6a168ed03cd9208f13850b6b5df1e6cda07c81d440a3cd"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/058_simple_mail_connections.rollback.sql",
+      "bytes": 1006,
+      "sha256": "8a1673a8ceef8389d29710ae87ff55b455e54da529985b24877c3fcb5f0cf145"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/058_simple_mail_connections.sql",
+      "bytes": 43774,
+      "sha256": "c3dcd9bd32b9ee9bc75ce201bb54a4c076c76d35c0c3b6be85e1b5530cbbf681"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/attachments-after.txt",
+      "bytes": 1886,
+      "sha256": "cae800e88411e522c9459c6ae32c27923ebb580cb009e1781a8cd02ff5c2e3be"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/attachments-before.txt",
+      "bytes": 1632,
+      "sha256": "fb1513b3f2a5e9067b0eefea2807853b151163126960fba30732d0cbf01bd807"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/attachments-diagnosis.txt",
+      "bytes": 1634,
+      "sha256": "bf37bd78767a8d765f09a35a4c7fc590a2baaf97a4cb663980399eb4a91edc99"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/bugfix-and-quota.md",
+      "bytes": 5483,
+      "sha256": "db3d82cc3ce25a33f4da9a1a1fc8e96b92e357aaa58630ca99776018625a99c3"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/catalog.sql",
+      "bytes": 5788,
+      "sha256": "5bfe6a0334f75e582611b34297980b84ee0c17d15729c5fe216a19a7aa1d8d4e"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/closure.md",
+      "bytes": 6430,
+      "sha256": "04b297cc7cd1b19797171e83f2544200dbc1ad25be190016e4760cfeff6de0bb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/compare-contract.mjs",
+      "bytes": 2943,
+      "sha256": "b2fa07d5ae5ca7e8864cfa4ab5f0b75ec2077246e38124c8c581c8fd1790a8a7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/composio-quota-review.json",
+      "bytes": 1528,
+      "sha256": "c09060b9284f0f620c8c54f4425c22ab4540fac1ddf0e3c22f06be9469c9f548"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/composio-support-request.md",
+      "bytes": 1459,
+      "sha256": "f71d05bb02d8bf8ad000dd3ffd0b73f178941e73e301f85f1653506e0c8d4074"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/composio-usage-observation.json",
+      "bytes": 1987,
+      "sha256": "e7aa9be1a3db0175256b6008968adf3ea2a2188c25d38e3e18db7a66f89fd08d"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/contract-comparison.json",
+      "bytes": 4802,
+      "sha256": "dbe28a93afcdb4f9ce341d47dadcddae05c1785bd98414b957cc95ff2a7bd7d8"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/finalize-candidate.mjs",
+      "bytes": 8130,
+      "sha256": "2c0400dd10b64ec1f754b20406d01be53c1e8e4a53d3891e7f5f9901d925de10"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/oauth-observation.json",
+      "bytes": 1986,
+      "sha256": "12b84efe7c4d02aabc53689c1ce1ce5150335cda451b7b8828a561894de5e8ec"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/package-promotion.mjs",
+      "bytes": 12113,
+      "sha256": "0d040c2400e5c5a4bc8e230fa2e93c14e0b322090a951bf5c0bd26d00acf7aa7"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/prepare-promotion.mjs",
+      "bytes": 2529,
+      "sha256": "c0379cd1c56b9dabdc09c1461be7923c64dce91750b4efd9b788d39d4d456c36"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/promotion-base.json",
+      "bytes": 8378,
+      "sha256": "8990c61310202cbb8bdf40728fa906c64d9cd4940a4eb9ab29baf0acebd0bbd4"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/promotion-manifest.json",
+      "bytes": 18408,
+      "sha256": "f922ff99c08b5c4e7ae6011f0fc7a9b75f8c653a086801307f91465afff0e169"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/read-catalog.mjs",
+      "bytes": 2570,
+      "sha256": "d491befeb3fe1e7cf178e8bb2aac1d9a9e3f0226d2d0d52645698514cb33310a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/read-selected.mjs",
+      "bytes": 1684,
+      "sha256": "e1d609dd6679f288c992a2c6d3226c8a32399051086f176a49ab69e0e7963f48"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/refresh-promotion-base.mjs",
+      "bytes": 2746,
+      "sha256": "5367a5ced678a786955ae52bf859553f0750d80d4bdd1a3f5c531802be2e3d27"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/release-plan.md",
+      "bytes": 14575,
+      "sha256": "d6a34d0880c9dd39f45b81615d15332d304ea8f449a5c1e7eebb03c82852c574"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/runtime-observation.json",
+      "bytes": 2545,
+      "sha256": "1c43effab43cc05c815189c9685f459225792d66dd5de19ee9f708d9b0b4d812"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/runtime-probe.mjs",
+      "bytes": 2537,
+      "sha256": "569d54e3e827a79509b76731b60c301fb45e17f25490b316a0717bf29d105d89"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/selected-metadata-prior.json",
+      "bytes": 1792,
+      "sha256": "b6fae2e0d6f60a6dc3fee4fd40b608560c5d637c2f9e64f89b40dd670bbd5a4b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/selected-metadata.json",
+      "bytes": 1792,
+      "sha256": "2c955aa482adc0f4cec6bf3d7c9317674d96ea6fd1494d39a85fc5774a31a72a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/selected-metadata.sql",
+      "bytes": 2108,
+      "sha256": "299cb1e951404f2c7d83bf32a8268886c6691d586503f3cea8f74c9463c241eb"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/regression.txt",
+      "bytes": 127570,
+      "sha256": "434869ede8cac954ecbe520c2b7e2cf4f6d5279842063e875a60e19d8acc4883"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/release-gmail-direct/058_simple_mail_connections.rollback.sql",
+      "bytes": 1006,
+      "sha256": "8a1673a8ceef8389d29710ae87ff55b455e54da529985b24877c3fcb5f0cf145"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/release-gmail-direct/058_simple_mail_connections.sql",
+      "bytes": 43797,
+      "sha256": "8fc57667383daad1459c68293e6854a4298bd67b3f05efeede58b01a4c985d18"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/release-gmail-direct/apply-production.mjs",
+      "bytes": 4577,
+      "sha256": "e8dfbc4acaa6a8ca1291fa32b08ebc352d00e99cf0810e34bbe42cbd4ff236f2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/release-gmail-direct/flag-tests.txt",
+      "bytes": 4267,
+      "sha256": "38cf2840b2e23af2d1ac562c49f85a61d76e2ece03596d1d115837668fbc03d9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/release-gmail-direct/package-release.mjs",
+      "bytes": 4765,
+      "sha256": "46394aebb003d66c470a266209c43da5ae468617b776f36f5345c79a7236def1"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/release-gmail-direct/runbook.md",
+      "bytes": 3999,
+      "sha256": "16d8b33eebb6cf03678333e0d7b83897250265a2d6a54bf3a2436511e1a14fb9"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/release-gmail-direct/sql-application.json",
+      "bytes": 724,
+      "sha256": "1546f87a66fc4dee87d854f5f803fb202e8cf2a83d30f626274d33b9384b47c6"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/rollout.md",
+      "bytes": 5377,
+      "sha256": "d0ba25079b1ffdd5a373160a78f610d37c927bc3bb8596cd071820cc1da105b2"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/simple-mail.local.sql",
+      "bytes": 43774,
+      "sha256": "c3dcd9bd32b9ee9bc75ce201bb54a4c076c76d35c0c3b6be85e1b5530cbbf681"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/simple-mail.rollback.sql",
+      "bytes": 1006,
+      "sha256": "8a1673a8ceef8389d29710ae87ff55b455e54da529985b24877c3fcb5f0cf145"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/spec.md",
+      "bytes": 7389,
+      "sha256": "a2e401555122794280bf33bda48490d7b9c4e7bb11a9408d5ae4da6fe4931429"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/tasks.md",
+      "bytes": 5235,
+      "sha256": "46d9b9867d7320f533856cceb4cb49630c27af827c877ba2b8323d0c66af9580"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/typecheck.txt",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/types.txt",
+      "bytes": 59,
+      "sha256": "adba4af9194e10e47dda75ff0fd0f8c2b756474896d0eba5612799c527ff372a"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/verification.md",
+      "bytes": 4668,
+      "sha256": "a9f5c780382c280f590fb0072c73e367843cb9bca097fb0892941c4ed524d155"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/verify-plan.mjs",
+      "bytes": 3976,
+      "sha256": "0f48371dc41aa120dc3dcd249989cefe9c9f734d39c9bf97f2ce690f37042eff"
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/visual-checks.json",
+      "bytes": 439,
+      "sha256": "70f7888582d3caac9c58dc6e6b909a1a498115a2af6702a1202d7f888db5cddc"
+    },
+    {
+      "path": "scripts/package-simple-mail.mjs",
+      "bytes": 2790,
+      "sha256": "5cbb095566c5ad06c614740809fba0297c9171ccc9f1ffd60b867ba9890b2b07"
+    },
+    {
+      "path": "scripts/preview-simple-mail.mjs",
+      "bytes": 2381,
+      "sha256": "94cc5c79f1b1488868caad48fd01830d5cd3359a21a62af391879ca928cf1994"
+    },
+    {
+      "path": "scripts/run-simple-mail-native.mjs",
+      "bytes": 9486,
+      "sha256": "4084ef66a09b2c03cca0c664e4b8e3349ca2afe4056ae1e788d1048b7887d3ba"
+    },
+    {
+      "path": "scripts/verify-simple-mail.mjs",
+      "bytes": 3035,
+      "sha256": "f3fb980072e46f70ada4dd38e0972e0d4fd6e59c56424e999edf3d2e2cbc1ed0"
+    },
+    {
+      "path": "src/app/api/gmail/callback/route.ts",
+      "bytes": 2994,
+      "sha256": "e82089e6f98b3568f9dfd6db3f649e5f7a83b54895bdb704fea26e7d6113b457"
+    },
+    {
+      "path": "src/app/api/mail/connections/[id]/continue/route.ts",
+      "bytes": 247,
+      "sha256": "0a9101abbd50b99703f84a502c41a4feaafd148c54704347c609cb51ae323fc5"
+    },
+    {
+      "path": "src/app/api/mail/connections/[id]/disconnect/route.ts",
+      "bytes": 249,
+      "sha256": "55d6bc6f9ec68cdef150d275c2902a95f47fa6780354907602ea15611dfcbc21"
+    },
+    {
+      "path": "src/app/api/mail/connections/[id]/route.ts",
+      "bytes": 234,
+      "sha256": "ceada6deb6e6c06396c4f7e4d0fa848b68d9b5b613f441bae01c5a9eca66165c"
+    },
+    {
+      "path": "src/app/api/mail/connections/route.ts",
+      "bytes": 210,
+      "sha256": "db66e7d4d8177b6bd33a8eb26ea33a54f4fb62e6a5dd90e4dd1651aae877f997"
+    },
+    {
+      "path": "src/components/connections-workspace.css",
+      "bytes": 8094,
+      "sha256": "18e7469f155edfe631488f0cd10be3f150033da836fc208127d1ebb10dea9193"
+    },
+    {
+      "path": "src/components/connections-workspace.tsx",
+      "bytes": 28684,
+      "sha256": "dc95f6ad7b2dfb3ccc179c04d3cc89aeb1502f003ecb85c0ed793b248d8eaebd"
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "bytes": 127170,
+      "sha256": "9cf32c1ecd7c5bdcd9984684b2200ee2165545a6cf42e7c5ad61fafec9a52987"
+    },
+    {
+      "path": "src/components/mail-connection-panel.css",
+      "bytes": 1099,
+      "sha256": "28cd51dfe9b7f9c63176d70d43188885cee8903b530648712da43bab96b51e94"
+    },
+    {
+      "path": "src/components/mail-connection-panel.tsx",
+      "bytes": 16449,
+      "sha256": "26e7a035212cae2d89e594ac7a062fdfff01140077fbe0815b9e36048c42ec31"
+    },
+    {
+      "path": "src/lib/connections.ts",
+      "bytes": 3242,
+      "sha256": "f5871ffeaf76d8be2f6f0b1b3bda53fd6c1d138023996c6362d219797587af91"
+    },
+    {
+      "path": "src/lib/mail-connections.ts",
+      "bytes": 2208,
+      "sha256": "e74aa28c4e6d34dc2cc4c5c8cf82bf861a5cdb7f09c69fb06b8973c92064bbcf"
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "bytes": 8717,
+      "sha256": "00df0fb92ddd6c1ad2166130d1e61685973f38f079d9a03b0acb9ab1470e2f13"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding-v2.ts",
+      "bytes": 9005,
+      "sha256": "6da19ac15896d8639135588eba5f6f9dc0e74cdf6869535e1359537a8ce3664c"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "bytes": 33378,
+      "sha256": "d490046e3f964b2c222837f147143af4958c49fe32e368c201a851cce4ba45e6"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/onboarding/http.ts",
+      "bytes": 4182,
+      "sha256": "cca432e3b837f25c7d843761a0233c7acead40f4612850e9805ecac81d155c45"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/onboarding/included.ts",
+      "bytes": 1373,
+      "sha256": "19c5d828c0b843eb9513b4836fbd5113935a6c908ddaae3623f030f78b6b300e"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/onboarding/production.ts",
+      "bytes": 17721,
+      "sha256": "b35a44693652fd30a99b9aeecf7e79ab53533a09f72b689e905a150b79198830"
+    },
+    {
+      "path": "src/lib/server/mail-accounts/onboarding/service.ts",
+      "bytes": 8299,
+      "sha256": "997ad3ee5693583cd088cf666f2e09fa1e91bdeab2efaae0b32775785330513c"
+    },
+    {
+      "path": "src/lib/server/mail-transport/errors.ts",
+      "bytes": 1029,
+      "sha256": "f7293e5ddf171cdc76e01dbb2388fba85eabdd151ec220539b3d1d5270056c28"
+    },
+    {
+      "path": "src/lib/server/mail-transport/fallback.ts",
+      "bytes": 3343,
+      "sha256": "fe949299f135639e8570583ec69f51f1383742cc7a9edf09a8fa13085004c972"
+    },
+    {
+      "path": "src/lib/server/mail-transport/mailbox-sync.ts",
+      "bytes": 9183,
+      "sha256": "03ce5b4ef9fc8e109b58aff4b358ce680190bcfba2bdc748e3da77e7235e96c2"
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-context.ts",
+      "bytes": 19837,
+      "sha256": "9e2eb3ab4b314741fe56571dea9bbc71a9570ac8b9ab45f331173bf49788ebff"
+    },
+    {
+      "path": "src/lib/server/mail-transport/selection.ts",
+      "bytes": 5583,
+      "sha256": "4227466834255f090161f48f8db16bcb229d7d305308b3fe4b96f38ee6942afc"
+    },
+    {
+      "path": "tests/connections-ui.test.tsx",
+      "bytes": 3848,
+      "sha256": "bd5c2ecc151691631ce7af9ce0a1be521d15713f5ff1daf993f72f18a6e67e16"
+    },
+    {
+      "path": "tests/fixtures/simple-mail-browser.tsx",
+      "bytes": 3151,
+      "sha256": "4c6309e455ab2164d5223e867b5d36c184b56158188bcbdfb89ae399e744f5a2"
+    },
+    {
+      "path": "tests/gmail-attachments.test.ts",
+      "bytes": 16139,
+      "sha256": "585d025fab2ff602e2fdc1ebfe41d4eb3bf4724cf00c4da807c15420be4d855b"
+    },
+    {
+      "path": "tests/mail-connections-db.test.ts",
+      "bytes": 40250,
+      "sha256": "f32ba9a63d6dd29d2ad0ffd4530ecd5bf8b4028fb5fa6de973476af6f826990f"
+    },
+    {
+      "path": "tests/mail-connections-http.test.ts",
+      "bytes": 15597,
+      "sha256": "a044006aa1e2a10875da9487a0959180ec43096403b86b9a289068add4c1bd0e"
+    },
+    {
+      "path": "tests/mail-connections-sync.test.ts",
+      "bytes": 8129,
+      "sha256": "e7431acaa8225ffbd2f4d3abdb040bc42e826376c2dd3a36157b700e65e71c9d"
+    },
+    {
+      "path": "tests/mail-fallback.test.ts",
+      "bytes": 9389,
+      "sha256": "01f633248bcb311f21896e67cbdf19c9ca92e6876fe4b9ec269bdcd379e291ee"
+    },
+    {
+      "path": "tests/simple-mail-register.mjs",
+      "bytes": 372,
+      "sha256": "dfcf53c25592d072ca278191b70b54de13d2e4628a760b1ee212727b166bfecb"
+    },
+    {
+      "path": "worker/gmail-schedule.ts",
+      "bytes": 2156,
+      "sha256": "2b7954870a414d4cabb2acb4c4fefa3a9c3bb90f1716940bea66c18c447e7092"
+    },
+    {
+      "path": "worker/gmail.ts",
+      "bytes": 37486,
+      "sha256": "7192eb61bd8215b1385d442a30803637fbca0f1ecb1c8712c3ffabe994fc5f21"
+    },
+    {
+      "path": "worker/index.ts",
+      "bytes": 12656,
+      "sha256": "5589587d7226b071f40568c953baa455128adb9b32a949e56cb6e7218a7df791"
+    }
+  ],
+  "rollback": "Close SIMPLE_MAIL_ENABLED in both resources, deploy prior compatible commit; preserve used schema and receipts. SQL reverse only without use."
+}

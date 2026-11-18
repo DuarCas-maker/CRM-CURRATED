@@ -10,7 +10,7 @@ import type { ResolvedComposioBinding } from "./contract";
 import { resolvedBindingSchema } from "./resolved-binding";
 
 const binding = resolvedBindingSchema;
-const ticketSchema = z
+export const ticketSchema = z
   .strictObject({
     id: z.uuid(),
     account_id: z.uuid(),
@@ -52,6 +52,11 @@ export type SelectionPorts = {
   // Server-only lifecycle hooks. Default I01 semantics remain unchanged.
   deferCompletion?: (ticket: TransportTicket) => boolean;
   safeError?: (error: unknown) => Error | null;
+  fallbackBeforeWire?: <T>(
+    ticket: TransportTicket,
+    capability: string,
+    error: unknown,
+  ) => Promise<{ handled: false } | { handled: true; value: T }>;
   now(): number;
 };
 export class TransportSelectionError extends Error {
@@ -114,6 +119,7 @@ export async function executeSelectedTransport<T>(
       await ports.finish(ticket, capability, "finished");
     return result;
   } catch (error) {
+    let cancelled = false;
     if (ticket) {
       try {
         await ports.finish(
@@ -121,9 +127,18 @@ export async function executeSelectedTransport<T>(
           capability,
           admitted ? "uncertain" : "cancelled_before_wire",
         );
+        cancelled = !admitted;
       } catch {
         /* Durable unresolved reservation must block transition; never retry. */
       }
+    }
+    if (ticket && cancelled && ports.fallbackBeforeWire) {
+      const fallback = await ports.fallbackBeforeWire<T>(
+        ticket,
+        capability,
+        error,
+      );
+      if (fallback.handled) return fallback.value;
     }
     const safe = ports.safeError?.(error);
     if (safe) throw safe;

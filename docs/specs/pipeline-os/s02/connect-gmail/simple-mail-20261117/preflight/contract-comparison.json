@@ -1,0 +1,146 @@
+{
+  "at": "2026-11-18T04:46:46.252Z",
+  "productionCapture": "2026-11-18T04:42:53.234Z",
+  "localFixture": "canonical synthetic post052; no remote execution",
+  "newSchemaAbsent": true,
+  "candidateGuard": {
+    "present": true,
+    "source_md5": "c2c3178219832b68d64bb85d22e39276",
+    "new_qualifier": false,
+    "old_qualifier": true,
+    "expected_match": true
+  },
+  "checked": 16,
+  "failures": [],
+  "checks": [
+    {
+      "signature": "brand_b1.admin_actor()",
+      "localHash": "23484c995ab23f97372a0111acc4adf7",
+      "productionHash": "23484c995ab23f97372a0111acc4adf7",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "brand_b1.command(text,jsonb,uuid)",
+      "localHash": "191b14c92d3278d89564d6353a2cfca1",
+      "productionHash": "191b14c92d3278d89564d6353a2cfca1",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "brand_oauth_claim(text,uuid)",
+      "localHash": "4061ba739b2017aa38cd36ffbc3b94dd",
+      "productionHash": "4061ba739b2017aa38cd36ffbc3b94dd",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "brand_oauth_finish(text,uuid,text,text,boolean)",
+      "localHash": "f20290226e7eb43cd06d544f5f642cc9",
+      "productionHash": "f20290226e7eb43cd06d544f5f642cc9",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "brand_b2.delivery_allowed(outbox)",
+      "localHash": "bd3cf9f876591793d4dd3e1f1047e2ab",
+      "productionHash": "bd3cf9f876591793d4dd3e1f1047e2ab",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "composio_c1.context_locked(uuid,uuid)",
+      "localHash": "73d2b803767f4d3f2a3ea461c37e8f4a",
+      "productionHash": "73d2b803767f4d3f2a3ea461c37e8f4a",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "mail_runtime.route_current(mail_runtime.routes,jsonb)",
+      "localHash": "f7e7766cb9424034c9d78edd83994a35",
+      "productionHash": "f7e7766cb9424034c9d78edd83994a35",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "composio_c1.approval_current(mail_provider_bindings,jsonb)",
+      "localHash": "e516fa78759d723965c2ea5184a7909c",
+      "productionHash": "e516fa78759d723965c2ea5184a7909c",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "mail_runtime.lock_cycle(uuid,text)",
+      "localHash": "dc6a209534b32bacdd6f50dba07ce75d",
+      "productionHash": "dc6a209534b32bacdd6f50dba07ce75d",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "brand_oauth_begin(text,text,jsonb)",
+      "localHash": "4b1e72b482b01ee1d745a85f559c6344",
+      "productionHash": "4b1e72b482b01ee1d745a85f559c6344",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "mail_sync_validate(uuid,text)",
+      "localHash": "2962ae5b4d6311b706304fc8b7a30e0a",
+      "productionHash": "2962ae5b4d6311b706304fc8b7a30e0a",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "mail_sync_complete(uuid,text,text)",
+      "localHash": "6dd72bf1cd98fbcef0cf3d447230521e",
+      "productionHash": "6dd72bf1cd98fbcef0cf3d447230521e",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "mail_quota.binding_config(uuid)",
+      "localHash": "ba4a84c64b4b37fe855bd9ed247b275b",
+      "productionHash": "ba4a84c64b4b37fe855bd9ed247b275b",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "mail_runtime.lock_attempt(uuid,text)",
+      "localHash": "e26686e5151b022de07df5f98187369f",
+      "productionHash": "e26686e5151b022de07df5f98187369f",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "mail_runtime.context(uuid)",
+      "localHash": "61e3136983a6bc20a391c891a8e1d23e",
+      "productionHash": "61e3136983a6bc20a391c891a8e1d23e",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    },
+    {
+      "signature": "mail_runtime.command_v1(uuid,text,jsonb,uuid)",
+      "localHash": "c2c3178219832b68d64bb85d22e39276",
+      "productionHash": "c2c3178219832b68d64bb85d22e39276",
+      "sourceMatch": true,
+      "definerMatch": true,
+      "searchPathMatch": true
+    }
+  ],
+  "remoteChanges": 0
+}

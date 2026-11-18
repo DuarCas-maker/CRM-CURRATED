@@ -24,3 +24,11 @@ export class MailTransportError extends Error {
     this.name = "MailTransportError";
   }
 }
+
+// Only OAuth preparation before a mail request can create this error.
+export class DirectCredentialUnavailable extends Error {
+  constructor() {
+    super("DIRECT_CREDENTIAL_UNAVAILABLE");
+    this.name = "DirectCredentialUnavailable";
+  }
+}

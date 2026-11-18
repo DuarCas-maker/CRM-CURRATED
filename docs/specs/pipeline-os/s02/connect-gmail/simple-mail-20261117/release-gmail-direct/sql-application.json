@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-18T04:47:16.295Z",
+  "origin": "https://supabase.finlabinc.com",
+  "sqlSha256": "8fc57667383daad1459c68293e6854a4298bd67b3f05efeede58b01a4c985d18",
+  "backup": {
+    "created": false,
+    "explicitlyWaivedByUser": true
+  },
+  "preflight": {
+    "db": "postgres",
+    "role": "supabase_admin",
+    "installed": false,
+    "guard": "c2c3178219832b68d64bb85d22e39276"
+  },
+  "applied": true,
+  "postflightVerified": true,
+  "postflight": {
+    "usage": 0,
+    "health": 0,
+    "schema": true,
+    "included": 0,
+    "onboardings": 0,
+    "human_options": true,
+    "new_qualifier": true,
+    "private_denied": true,
+    "anon_executable": 0,
+    "public_functions": 26,
+    "saved_function_sources": 1
+  }
+}

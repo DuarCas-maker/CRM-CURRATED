@@ -1,0 +1,78 @@
+{
+  "at": "2026-11-18T04:20:33.222Z",
+  "apiOrigin": "https://supabase.finlabinc.com",
+  "sqlSha256": "299cb1e951404f2c7d83bf32a8268886c6691d586503f3cea8f74c9463c241eb",
+  "requests": 1,
+  "remoteChanges": 0,
+  "role": "supabase_admin",
+  "roles": [
+    {
+      "role": "superadmin",
+      "count": 2,
+      "active": true
+    }
+  ],
+  "brands": [
+    {
+      "id": "a7563a6a-fc36-4888-a0af-76a12fea33c9",
+      "code": "CURATED_FINANCIAL",
+      "name": "Curated Financial",
+      "active": true,
+      "revision": 1
+    }
+  ],
+  "database": "postgres",
+  "read_only": "on",
+  "quota_head": [
+    {
+      "mode": "crm_shared_conservative",
+      "closed": false,
+      "limits": {
+        "window_seconds": 86460,
+        "group_units_per_minute": 4500,
+        "group_units_per_window": 75000000,
+        "account_units_per_minute": 4500
+      },
+      "policy_id": "7c6cb347-b1d3-4641-874d-4d3eab209a42",
+      "generation": 1,
+      "policy_state": "enabled",
+      "google_project": {
+        "project_id": null,
+        "provenance": "unknown"
+      }
+    }
+  ],
+  "binding_heads": [
+    {
+      "count": 1,
+      "status": "candidate",
+      "auth_config_id": "ac_0c4QEKnwPtOd",
+      "composio_project_id": "pr_y-80FotblnGt",
+      "quota_contract_version": 2
+    }
+  ],
+  "organizations": [
+    {
+      "count": 1,
+      "status": "connected",
+      "organization": "curated"
+    },
+    {
+      "count": 2,
+      "status": "disconnected",
+      "organization": "curated"
+    }
+  ],
+  "binding_contexts": null,
+  "connect_configuration": [
+    {
+      "generation": 1,
+      "project_id": "pr_y-80FotblnGt",
+      "auth_config_id": "ac_0c4QEKnwPtOd",
+      "max_age_seconds": 0,
+      "policy_reviewed": true,
+      "quota_project_id": null,
+      "inactivity_seconds": 0
+    }
+  ]
+}

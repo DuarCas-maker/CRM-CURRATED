@@ -1,0 +1,96 @@
+TAP version 13
+# Subtest: Connect v2 native PG15: pre-account quota, candidate, concurrency and recovery
+    # Subtest: USE-N01: native additive installation and unused reversal restore functions and nullability
+    ok 1 - USE-N01: native additive installation and unused reversal restore functions and nullability
+      ---
+      duration_ms: 413.7988
+      type: 'test'
+      ...
+    # Subtest: USE-N02: native new mailbox profile has one reservation/admission, v2 candidate and no transport
+    ok 2 - USE-N02: native new mailbox profile has one reservation/admission, v2 candidate and no transport
+      ---
+      duration_ms: 7558.9461
+      type: 'test'
+      ...
+    # Subtest: USE-N03: native API roles cannot read private ledger or call service-only RPCs
+    ok 3 - USE-N03: native API roles cannot read private ledger or call service-only RPCs
+      ---
+      duration_ms: 318.3836
+      type: 'test'
+      ...
+    # Subtest: USE-N04: native concurrent reservations debit once and concurrent admissions permit exactly one
+    ok 4 - USE-N04: native concurrent reservations debit once and concurrent admissions permit exactly one
+      ---
+      duration_ms: 4840.8347
+      type: 'test'
+      ...
+    # Subtest: USE-N05: native foreign authority and policy closure cannot consume or emit profile
+    ok 5 - USE-N05: native foreign authority and policy closure cannot consume or emit profile
+      ---
+      duration_ms: 3780.5435
+      type: 'test'
+      ...
+    # Subtest: USE-N06: native actor deactivation before profile prevents emission
+    ok 6 - USE-N06: native actor deactivation before profile prevents emission
+      ---
+      duration_ms: 3237.7657
+      type: 'test'
+      ...
+    # Subtest: USE-N07: used v2 reversal stops before dropping evidence and legacy account remains unchanged
+    ok 7 - USE-N07: used v2 reversal stops before dropping evidence and legacy account remains unchanged
+      ---
+      duration_ms: 207.9726
+      type: 'test'
+      ...
+    # Subtest: SIMPLE-PG01: additive install, unused reversal and reapply on native PG15
+    ok 8 - SIMPLE-PG01: additive install, unused reversal and reapply on native PG15
+      ---
+      duration_ms: 613.0773
+      type: 'test'
+      ...
+    # Subtest: SIMPLE-PG02: human MFA, service-only identity and automated brand/advisor setup
+    ok 9 - SIMPLE-PG02: human MFA, service-only identity and automated brand/advisor setup
+      ---
+      duration_ms: 967.8668
+      type: 'test'
+      ...
+    # Subtest: SIMPLE-PG03: simultaneous requests share the last free proxy unit
+    ok 10 - SIMPLE-PG03: simultaneous requests share the last free proxy unit
+      ---
+      duration_ms: 155.849
+      type: 'test'
+      ...
+    # Subtest: SIMPLE-PG04: ACLs and used-reversal protection preserve all receipts
+    ok 11 - SIMPLE-PG04: ACLs and used-reversal protection preserve all receipts
+      ---
+      duration_ms: 549.1935
+      type: 'test'
+      ...
+    # Subtest: SIMPLE-PG05: concurrent callbacks admit a single token exchange
+    ok 12 - SIMPLE-PG05: concurrent callbacks admit a single token exchange
+      ---
+      duration_ms: 173.7594
+      type: 'test'
+      ...
+    # Subtest: SIMPLE-PG06: initial-page CAS across two connections and atomic successful sync checkpoint
+    ok 13 - SIMPLE-PG06: initial-page CAS across two connections and atomic successful sync checkpoint
+      ---
+      duration_ms: 1076.194
+      type: 'test'
+      ...
+    1..13
+ok 1 - Connect v2 native PG15: pre-account quota, candidate, concurrency and recovery
+  ---
+  duration_ms: 38516.3814
+  type: 'test'
+  ...
+# Own disposable cluster 4509ec7282e9; 13 native checks, real provider requests0
+1..1
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 38966.3087

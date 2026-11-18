@@ -44,7 +44,7 @@ export const connectionsSchema = z.strictObject({
 });
 export type ConnectionAccount = z.infer<typeof connectionAccountSchema>;
 export type ConnectionsSnapshot = z.infer<typeof connectionsSchema>;
-export type ConnectionTab = "composio" | "instantly" | "texttorrent";
+export type ConnectionTab = "gmail" | "composio" | "instantly" | "texttorrent";
 export function connectionsAllowed(
   profile: Pick<Profile, "role" | "active">,
   demo = false,

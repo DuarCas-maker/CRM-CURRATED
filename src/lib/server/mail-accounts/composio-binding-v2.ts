@@ -16,6 +16,7 @@ import {
 import { ComposioBindingError } from "./composio-binding";
 import { serviceClient } from "../supabase";
 import { mailQuotaEnabled } from "../mail-quota";
+import { includedComposioFetch } from "./onboarding/included";
 import {
   existingVerificationContext,
   existingVerificationHash,
@@ -67,7 +68,7 @@ export function bindingV2Ports(human: SupabaseClient): BindingV2Ports {
       }
     },
     apiKey: () => process.env.COMPOSIO_API_KEY ?? "",
-    fetchImpl: (input, init) => fetch(input, init),
+    fetchImpl: (input, init) => includedComposioFetch(input, init),
     now: Date.now,
   };
 }

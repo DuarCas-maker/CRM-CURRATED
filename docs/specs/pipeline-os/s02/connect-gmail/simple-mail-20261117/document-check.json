@@ -1,0 +1,273 @@
+{
+  "at": "2026-11-18T03:14:07.735Z",
+  "kind": "documentary checks only",
+  "passed": 66,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "all artifacts populated",
+      "passed": true
+    },
+    {
+      "name": "source commit pinned",
+      "passed": true
+    },
+    {
+      "name": "local implementation does not imply publication",
+      "passed": true
+    },
+    {
+      "name": "migration ordinal not reserved",
+      "passed": true
+    },
+    {
+      "name": "FR-001 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-002 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-003 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-004 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-005 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-006 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-007 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-008 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-009 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-010 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "FR-011 acceptance and design coverage",
+      "passed": true
+    },
+    {
+      "name": "decision 1 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 2 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 3 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 4 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 5 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 6 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 7 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 8 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 9 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 10 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 11 recorded",
+      "passed": true
+    },
+    {
+      "name": "decision 12 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 1 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 2 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 3 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 4 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 5 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 6 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 7 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 8 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 9 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 10 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 11 recorded",
+      "passed": true
+    },
+    {
+      "name": "task 12 recorded",
+      "passed": true
+    },
+    {
+      "name": "free usage required",
+      "passed": true
+    },
+    {
+      "name": "no delivery retry from uncertainty",
+      "passed": true
+    },
+    {
+      "name": "historical planning and current evidence separated",
+      "passed": true
+    },
+    {
+      "name": "base source exists: .env.example",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/app/api/gmail/callback/route.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/components/connections-workspace.css",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/components/connections-workspace.tsx",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/components/crm.tsx",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/connections.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/google.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-accounts/composio-binding-v2.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-accounts/composio-connect/http.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-transport/errors.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-transport/mailbox-sync.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-transport/runtime-context.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-transport/selection.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: tests/connections-ui.test.tsx",
+      "passed": true
+    },
+    {
+      "name": "base source exists: worker/gmail-schedule.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: worker/gmail.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: worker/index.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-transport/gmail-direct.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-transport/composio-proxy.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-accounts/composio-connect/recovery.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/lib/server/mail-accounts/composio-connect/orchestrator.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: src/app/api/mail/composio/connect/recovery/candidate/route.ts",
+      "passed": true
+    },
+    {
+      "name": "base source exists: supabase/migrations/039_campaign_delivery_controls.sql",
+      "passed": true
+    },
+    {
+      "name": "base source exists: package.json",
+      "passed": true
+    }
+  ],
+  "productTestsExecuted": false
+}

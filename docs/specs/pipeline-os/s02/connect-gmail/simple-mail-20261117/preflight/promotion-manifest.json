@@ -1,0 +1,490 @@
+{
+  "recordedAt": "2026-11-18T04:25:42.172Z",
+  "feature": "simple-mail-20261117",
+  "level": "STRICT",
+  "mode": "authorized-local-fix-and-read-only-production-preflight",
+  "branch": "codex/simple-mail-ready-20261118",
+  "baseCommit": "544b8352634d9b07bcb0918df5866f37420515fa",
+  "priorPromotionBase": "b86148613648076e47fbcc51db60895de331623f",
+  "originalImplementationBase": "9d28d5a257ef26c618d1884f4dc90eb7c0701530",
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "2ef724186ced096f2c61475f275c867ab89e9bd8793967febb09df1d3c1db3d2",
+      "bytes": 4444
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/simple-mail.local.sql",
+      "sha256": "c3dcd9bd32b9ee9bc75ce201bb54a4c076c76d35c0c3b6be85e1b5530cbbf681",
+      "bytes": 43774
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/simple-mail.rollback.sql",
+      "sha256": "8a1673a8ceef8389d29710ae87ff55b455e54da529985b24877c3fcb5f0cf145",
+      "bytes": 1006
+    },
+    {
+      "path": "scripts/package-simple-mail.mjs",
+      "sha256": "5cbb095566c5ad06c614740809fba0297c9171ccc9f1ffd60b867ba9890b2b07",
+      "bytes": 2790
+    },
+    {
+      "path": "scripts/preview-simple-mail.mjs",
+      "sha256": "94cc5c79f1b1488868caad48fd01830d5cd3359a21a62af391879ca928cf1994",
+      "bytes": 2381
+    },
+    {
+      "path": "scripts/run-simple-mail-native.mjs",
+      "sha256": "4084ef66a09b2c03cca0c664e4b8e3349ca2afe4056ae1e788d1048b7887d3ba",
+      "bytes": 9486
+    },
+    {
+      "path": "scripts/verify-simple-mail.mjs",
+      "sha256": "f3fb980072e46f70ada4dd38e0972e0d4fd6e59c56424e999edf3d2e2cbc1ed0",
+      "bytes": 3035
+    },
+    {
+      "path": "src/app/api/gmail/callback/route.ts",
+      "sha256": "e82089e6f98b3568f9dfd6db3f649e5f7a83b54895bdb704fea26e7d6113b457",
+      "bytes": 2994
+    },
+    {
+      "path": "src/app/api/mail/connections/[id]/continue/route.ts",
+      "sha256": "0a9101abbd50b99703f84a502c41a4feaafd148c54704347c609cb51ae323fc5",
+      "bytes": 247
+    },
+    {
+      "path": "src/app/api/mail/connections/[id]/disconnect/route.ts",
+      "sha256": "55d6bc6f9ec68cdef150d275c2902a95f47fa6780354907602ea15611dfcbc21",
+      "bytes": 249
+    },
+    {
+      "path": "src/app/api/mail/connections/[id]/route.ts",
+      "sha256": "ceada6deb6e6c06396c4f7e4d0fa848b68d9b5b613f441bae01c5a9eca66165c",
+      "bytes": 234
+    },
+    {
+      "path": "src/app/api/mail/connections/route.ts",
+      "sha256": "db66e7d4d8177b6bd33a8eb26ea33a54f4fb62e6a5dd90e4dd1651aae877f997",
+      "bytes": 210
+    },
+    {
+      "path": "src/components/connections-workspace.css",
+      "sha256": "18e7469f155edfe631488f0cd10be3f150033da836fc208127d1ebb10dea9193",
+      "bytes": 8094
+    },
+    {
+      "path": "src/components/connections-workspace.tsx",
+      "sha256": "dc95f6ad7b2dfb3ccc179c04d3cc89aeb1502f003ecb85c0ed793b248d8eaebd",
+      "bytes": 28684
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "sha256": "9cf32c1ecd7c5bdcd9984684b2200ee2165545a6cf42e7c5ad61fafec9a52987",
+      "bytes": 127170
+    },
+    {
+      "path": "src/components/mail-connection-panel.css",
+      "sha256": "28cd51dfe9b7f9c63176d70d43188885cee8903b530648712da43bab96b51e94",
+      "bytes": 1099
+    },
+    {
+      "path": "src/components/mail-connection-panel.tsx",
+      "sha256": "fb98f56fe5a540469277fd34fae01b825ac802a757d9776785480826170778a0",
+      "bytes": 15506
+    },
+    {
+      "path": "src/lib/connections.ts",
+      "sha256": "f5871ffeaf76d8be2f6f0b1b3bda53fd6c1d138023996c6362d219797587af91",
+      "bytes": 3242
+    },
+    {
+      "path": "src/lib/mail-connections.ts",
+      "sha256": "c1358490c3584e9a965ffbbd7ba085f97c7613619975e7185bcbc48fab012f30",
+      "bytes": 2017
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "sha256": "00df0fb92ddd6c1ad2166130d1e61685973f38f079d9a03b0acb9ab1470e2f13",
+      "bytes": 8717
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding-v2.ts",
+      "sha256": "6da19ac15896d8639135588eba5f6f9dc0e74cdf6869535e1359537a8ce3664c",
+      "bytes": 9005
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "sha256": "d490046e3f964b2c222837f147143af4958c49fe32e368c201a851cce4ba45e6",
+      "bytes": 33378
+    },
+    {
+      "path": "src/lib/server/mail-accounts/onboarding/http.ts",
+      "sha256": "43a2e41c8ec4ea8cd0900d5d9fc2306d6e462a716f1b5d5983262ffb3f993cb0",
+      "bytes": 3401
+    },
+    {
+      "path": "src/lib/server/mail-accounts/onboarding/included.ts",
+      "sha256": "19c5d828c0b843eb9513b4836fbd5113935a6c908ddaae3623f030f78b6b300e",
+      "bytes": 1373
+    },
+    {
+      "path": "src/lib/server/mail-accounts/onboarding/production.ts",
+      "sha256": "b35a44693652fd30a99b9aeecf7e79ab53533a09f72b689e905a150b79198830",
+      "bytes": 17721
+    },
+    {
+      "path": "src/lib/server/mail-accounts/onboarding/service.ts",
+      "sha256": "337acaa1eabdb5d938bad5b6e39070e21109f57766b2c2b3f00279c9bd87daac",
+      "bytes": 8199
+    },
+    {
+      "path": "src/lib/server/mail-transport/errors.ts",
+      "sha256": "f7293e5ddf171cdc76e01dbb2388fba85eabdd151ec220539b3d1d5270056c28",
+      "bytes": 1029
+    },
+    {
+      "path": "src/lib/server/mail-transport/fallback.ts",
+      "sha256": "fe949299f135639e8570583ec69f51f1383742cc7a9edf09a8fa13085004c972",
+      "bytes": 3343
+    },
+    {
+      "path": "src/lib/server/mail-transport/mailbox-sync.ts",
+      "sha256": "03ce5b4ef9fc8e109b58aff4b358ce680190bcfba2bdc748e3da77e7235e96c2",
+      "bytes": 9183
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-context.ts",
+      "sha256": "639bb0ef1fff6abc827d23bb4a4caa3439b0ac60709f5f4206841e961ababe68",
+      "bytes": 19797
+    },
+    {
+      "path": "src/lib/server/mail-transport/selection.ts",
+      "sha256": "4227466834255f090161f48f8db16bcb229d7d305308b3fe4b96f38ee6942afc",
+      "bytes": 5583
+    },
+    {
+      "path": "tests/connections-ui.test.tsx",
+      "sha256": "bd5c2ecc151691631ce7af9ce0a1be521d15713f5ff1daf993f72f18a6e67e16",
+      "bytes": 3848
+    },
+    {
+      "path": "tests/fixtures/simple-mail-browser.tsx",
+      "sha256": "4c6309e455ab2164d5223e867b5d36c184b56158188bcbdfb89ae399e744f5a2",
+      "bytes": 3151
+    },
+    {
+      "path": "tests/gmail-attachments.test.ts",
+      "sha256": "585d025fab2ff602e2fdc1ebfe41d4eb3bf4724cf00c4da807c15420be4d855b",
+      "bytes": 16139
+    },
+    {
+      "path": "tests/mail-connections-db.test.ts",
+      "sha256": "f32ba9a63d6dd29d2ad0ffd4530ecd5bf8b4028fb5fa6de973476af6f826990f",
+      "bytes": 40250
+    },
+    {
+      "path": "tests/mail-connections-http.test.ts",
+      "sha256": "f952b56349de658bb9177d9359385ccb3729226232f2654efe37247434ff77fe",
+      "bytes": 13197
+    },
+    {
+      "path": "tests/mail-connections-sync.test.ts",
+      "sha256": "e7431acaa8225ffbd2f4d3abdb040bc42e826376c2dd3a36157b700e65e71c9d",
+      "bytes": 8129
+    },
+    {
+      "path": "tests/mail-fallback.test.ts",
+      "sha256": "01f633248bcb311f21896e67cbdf19c9ca92e6876fe4b9ec269bdcd379e291ee",
+      "bytes": 9389
+    },
+    {
+      "path": "tests/simple-mail-register.mjs",
+      "sha256": "dfcf53c25592d072ca278191b70b54de13d2e4628a760b1ee212727b166bfecb",
+      "bytes": 372
+    },
+    {
+      "path": "worker/gmail-schedule.ts",
+      "sha256": "2b7954870a414d4cabb2acb4c4fefa3a9c3bb90f1716940bea66c18c447e7092",
+      "bytes": 2156
+    },
+    {
+      "path": "worker/gmail.ts",
+      "sha256": "7192eb61bd8215b1385d442a30803637fbca0f1ecb1c8712c3ffabe994fc5f21",
+      "bytes": 37486
+    },
+    {
+      "path": "worker/index.ts",
+      "sha256": "5589587d7226b071f40568c953baa455128adb9b32a949e56cb6e7218a7df791",
+      "bytes": 12656
+    }
+  ],
+  "evidence": [
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/closure.md",
+      "sha256": "04b297cc7cd1b19797171e83f2544200dbc1ad25be190016e4760cfeff6de0bb",
+      "bytes": 6430
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/bugfix-and-quota.md",
+      "sha256": "db3d82cc3ce25a33f4da9a1a1fc8e96b92e357aaa58630ca99776018625a99c3",
+      "bytes": 5483
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/composio-support-request.md",
+      "sha256": "f71d05bb02d8bf8ad000dd3ffd0b73f178941e73e301f85f1653506e0c8d4074",
+      "bytes": 1459
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/promotion-base.json",
+      "sha256": "8990c61310202cbb8bdf40728fa906c64d9cd4940a4eb9ab29baf0acebd0bbd4",
+      "bytes": 8378
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/catalog.json",
+      "sha256": "d15ee2c5daa782d1ddef610c36bc225144363b23aafc1d6bfac8538bee643d10",
+      "bytes": 785126
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/selected-metadata.json",
+      "sha256": "2c955aa482adc0f4cec6bf3d7c9317674d96ea6fd1494d39a85fc5774a31a72a",
+      "bytes": 1792
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/contract-comparison.json",
+      "sha256": "60a527e1e19f5a7a6a04bc5f6aff49e02b5990d379128d81633a93af764efb7f",
+      "bytes": 4802
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/composio-quota-review.json",
+      "sha256": "c09060b9284f0f620c8c54f4425c22ab4540fac1ddf0e3c22f06be9469c9f548",
+      "bytes": 1528
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/composio-usage-observation.json",
+      "sha256": "e7aa9be1a3db0175256b6008968adf3ea2a2188c25d38e3e18db7a66f89fd08d",
+      "bytes": 1987
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/runtime-observation.json",
+      "sha256": "1c43effab43cc05c815189c9685f459225792d66dd5de19ee9f708d9b0b4d812",
+      "bytes": 2545
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/oauth-observation.json",
+      "sha256": "12b84efe7c4d02aabc53689c1ce1ce5150335cda451b7b8828a561894de5e8ec",
+      "bytes": 1986
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/attachments-before.txt",
+      "sha256": "124bf9eef754c001b81b807a83a08e9e6d1a16fedbc0ded299e492fb3f9672ab",
+      "bytes": 1684
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/attachments-diagnosis.txt",
+      "sha256": "bbc0c04d1ad9b0831be79d331d265ff0a45351bbf3c1cd061d8c4cc0abba4898",
+      "bytes": 1686
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/attachments-after.txt",
+      "sha256": "28149b683ac3961d0a3631f582c81cd7e2d9a3f1d19514f9373f20627a8c9100",
+      "bytes": 1932
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/finalize-candidate.mjs",
+      "sha256": "2c0400dd10b64ec1f754b20406d01be53c1e8e4a53d3891e7f5f9901d925de10",
+      "bytes": 8130
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/compare-contract.mjs",
+      "sha256": "b2fa07d5ae5ca7e8864cfa4ab5f0b75ec2077246e38124c8c581c8fd1790a8a7",
+      "bytes": 2943
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/core-tests.txt",
+      "sha256": "29e0746c0222b8336808c15914cce47f1eabb1412aca33bc6aa288997fd1550d",
+      "bytes": 10437
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/native-tests.txt",
+      "sha256": "5530cc94d4e20880ec6a168ed03cd9208f13850b6b5df1e6cda07c81d440a3cd",
+      "bytes": 3765
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/regression.txt",
+      "sha256": "45c3129b1e21ee3d175d70e5da9f6571b7e07ff48890974fd7da23ca7b3ae1d4",
+      "bytes": 127059
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/local-checks.json",
+      "sha256": "60e9503678dacf72253a5cbca27b3da95a87eb60217c73d2c4d60d87f51c2e87",
+      "bytes": 391
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/types.txt",
+      "sha256": "adba4af9194e10e47dda75ff0fd0f8c2b756474896d0eba5612799c527ff372a",
+      "bytes": 59
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/typecheck.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/build-webpack.txt",
+      "sha256": "09be1432a01c7a722ead00029e9248ff16ab6d31a2cee39df250455371b6b018",
+      "bytes": 3688
+    }
+  ],
+  "codeChangesThisTurn": [
+    "tests/gmail-attachments.test.ts"
+  ],
+  "applicationPermissionsChanged": false,
+  "dependenciesAdded": false,
+  "compatibility": {
+    "sharedOverlap": [],
+    "upstreamChangesReviewed": [
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/backup.json",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/design.md",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/down.sql",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/native-result.json",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/runbook.md",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/source-before.json",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/spec.md",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/sql-application.json",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/tasks.md",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/up.sql",
+      "docs/specs/pipeline-os/campaign-flow-20261117/revisions/lead-funnel/verification.md",
+      "src/components/pipeline-os/campaign-control-leads.tsx",
+      "src/components/pipeline-os/campaign-flow-panel.tsx",
+      "src/components/pipeline-os/campaign-flow.css",
+      "src/lib/campaign-lead-funnel.ts",
+      "src/lib/server/campaign-flow.ts",
+      "tests/campaign-flow-browser.mts",
+      "tests/campaign-flow-native.mts",
+      "tests/campaign-lead-funnel.test.ts",
+      "tests/fixtures/campaign-lead-funnel.ts"
+    ],
+    "catalogAt": "2026-11-18T04:20:33.913Z",
+    "contractsCompared": 16,
+    "contractFailures": [],
+    "functions": 458,
+    "relations": 144,
+    "columns": 1450,
+    "guardMd5": "c2c3178219832b68d64bb85d22e39276"
+  },
+  "checks": {
+    "regression": {
+      "tests": 545,
+      "pass": 539,
+      "fail": 0,
+      "skipped": 6,
+      "cancelled": 0,
+      "files": 85,
+      "at": "2026-11-18T04:24:46.825Z"
+    },
+    "attachmentsAndCaseFlow": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    "compile": [
+      {
+        "check": "types",
+        "exit": 0
+      },
+      {
+        "check": "typecheck",
+        "exit": 0
+      },
+      {
+        "check": "build-webpack",
+        "exit": 0
+      }
+    ],
+    "core": {
+      "tests": 42,
+      "pass": 42,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "reusedFrom": "b861486; unchanged feature tests also covered by current full regression"
+    },
+    "native": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "postgres": "15.19",
+      "reusedFrom": "b861486; SQL/native fixture/harness unchanged across upstream delta",
+      "clusterStopped": true
+    }
+  },
+  "oauth": {
+    "configurationVerified": true,
+    "effectiveMailboxScopesNotExercised": true,
+    "evidence": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/oauth-observation.json"
+  },
+  "runtime": {
+    "observedSourceCommit": "b86148613648076e47fbcc51db60895de331623f",
+    "observationReused": true,
+    "workerSecretProvisioningPending": true,
+    "recheckAtRelease": true
+  },
+  "quota": {
+    "plan": "Hobby",
+    "publishedProxyMonthly": 1000,
+    "publicHardCapNoCharge": true,
+    "observedProjectProxyRows": 3,
+    "observedRange": "Nov 1, 00:00 – Nov 17, 23:59",
+    "remainingCalls": null,
+    "remainingProxy": null,
+    "globalProxyBalanceVerified": false,
+    "billingPeriodVerified": false,
+    "managedCallsRoundedFromPriorCapture": "33.18K",
+    "budgetSeeded": false,
+    "source": "https://composio.dev/pricing/platform"
+  },
+  "migration": {
+    "proposedOrdinal": "058",
+    "ordinalReserved": false,
+    "sql": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/058_simple_mail_connections.sql",
+    "sha256": "c3dcd9bd32b9ee9bc75ce201bb54a4c076c76d35c0c3b6be85e1b5530cbbf681",
+    "rollback": "docs/specs/pipeline-os/s02/connect-gmail/simple-mail-20261117/preflight/058_simple_mail_connections.rollback.sql",
+    "rollbackSha256": "8a1673a8ceef8389d29710ae87ff55b455e54da529985b24877c3fcb5f0cf145",
+    "remoteApplied": false
+  },
+  "gates": {
+    "attachmentFailureResolved": true,
+    "localRegressionGreen": true,
+    "selectedCatalogContracts": true,
+    "sourceMainReconciled": true,
+    "composioFreeBudgetVerified": false,
+    "freshReleaseBackup": false,
+    "productionPublicationAuthorizedThisTurn": false
+  },
+  "localCandidateReady": true,
+  "readyToPublishCompleteScope": false,
+  "outstanding": [
+    "Provider evidence of applicable organization-wide proxy meter/remaining allowance and reset period; request drafted, not sent",
+    "At publication: recheck moving main/runtime/catalog/ordinal, verify immediate backup, provision existing worker secrets securely and obtain concrete production authorization"
+  ],
+  "externalOperations": {
+    "sqlMetadataRequestsThisTurn": 2,
+    "sqlWrites": 0,
+    "composioApiRequestsThisTurn": 0,
+    "composioToolOrProxyExecutions": 0,
+    "mailboxReads": 0,
+    "emailSends": 0,
+    "consents": 0,
+    "purchases": 0,
+    "configurationChanges": 0,
+    "commits": 0,
+    "pushes": 0,
+    "deployments": 0
+  },
+  "rollback": "No application/SQL permission change in this fix. Feature rollback closes flags and retains used additive schema/receipts; SQL reverse allowed only before use."
+}

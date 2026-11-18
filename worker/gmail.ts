@@ -11,6 +11,8 @@ import {
   withMailDispatch,
   mailRoutingActive,
   mailRuntimeDependencies,
+  simpleAccountRuntime,
+  withMailRuntime,
 } from "../src/lib/server/mail-transport/runtime-context";
 import { syncSelectedMailbox } from "../src/lib/server/mail-transport/mailbox-sync";
 import { withSelectedDirectJob } from "../src/lib/server/mail-transport/mailbox-schedule";
@@ -47,9 +49,21 @@ export async function syncMessage(accountId: string, messageId: string) {
   );
   await ingestMessage(account, msg);
 }
-export async function renewWatch(accountId: string, routeRevision?: unknown) {
+export async function renewWatch(
+  accountId: string,
+  routeRevision?: unknown,
+): Promise<void> {
   // Old queued watch jobs are completed without calling Gmail after switching modes.
   if (!gmailPushEnabled()) return;
+  const simple = await simpleAccountRuntime(accountId);
+  if (simple) {
+    const snapshot = (await simple.rpc("mail_transport_snapshot", {
+      account: accountId,
+    })) as { revision?: unknown };
+    return withMailRuntime(simple, () =>
+      renewWatch(accountId, routeRevision ?? snapshot.revision),
+    );
+  }
   if (mailRoutingActive())
     return withSelectedDirectJob(
       await mailRuntimeDependencies(),
@@ -88,7 +102,19 @@ async function renewDirectWatch(accountId: string) {
       .eq("account_id", accountId),
   );
 }
-export async function syncMailbox(accountId: string, routeRevision?: unknown) {
+export async function syncMailbox(
+  accountId: string,
+  routeRevision?: unknown,
+): Promise<void> {
+  const simple = await simpleAccountRuntime(accountId);
+  if (simple) {
+    const snapshot = (await simple.rpc("mail_transport_snapshot", {
+      account: accountId,
+    })) as { revision?: unknown };
+    return withMailRuntime(simple, () =>
+      syncMailbox(accountId, routeRevision ?? snapshot.revision),
+    );
+  }
   if (mailRoutingActive())
     return syncSelectedMailbox<GmailMessage>(
       accountId,
@@ -142,10 +168,14 @@ export async function syncMailbox(accountId: string, routeRevision?: unknown) {
       Math.floor(
         new Date(
           credentials.last_reconciled_at ||
+            account.simple_mail_sync_from ||
             account.live_started_at ||
             account.created_at,
         ).getTime() / 1000,
-      ) - 86400;
+      ) -
+      (account.simple_mail_sync_from && !credentials.last_reconciled_at
+        ? 0
+        : 86400);
     do {
       const response: { messages?: { id: string }[]; nextPageToken?: string } =
         await gmail<{ messages?: { id: string }[]; nextPageToken?: string }>(

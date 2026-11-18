@@ -1,0 +1,50 @@
+{
+  "recordedAt": "2026-11-18T04:01:46.093Z",
+  "project": {
+    "name": "Curated CRM Gmail",
+    "id": "curated-crm-gmail",
+    "number": "12677035404",
+    "organization": "curatedfinancial.com",
+    "audience": "Internal",
+    "gmailApiEnabled": true
+  },
+  "direct": {
+    "name": "Curated CRM Production",
+    "clientId": "12677035404-590sclhh4graph847arkqsn15mmui1tg.apps.googleusercontent.com",
+    "redirect": "https://crm.finlabinc.com/api/gmail/callback",
+    "matchesWebRuntime": true,
+    "matchesWorkerRuntimeHash": true
+  },
+  "composio": {
+    "name": "Curated CRM Composio",
+    "clientId": "12677035404-od8d1btd1r7eij9c4apv0r0pv40hqap6.apps.googleusercontent.com",
+    "redirect": "https://backend.composio.dev/api/v1/auth-apps/add",
+    "project": "pr_y-80FotblnGt",
+    "authConfig": "ac_0c4QEKnwPtOd",
+    "scheme": "OAUTH2",
+    "toolkit": "gmail",
+    "customAuthConfigEnabled": true,
+    "matchesAuthConfigClient": true,
+    "declaredScopes": [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/gmail.modify",
+      "https://www.googleapis.com/auth/gmail.send"
+    ]
+  },
+  "dataAccessScopeRows": 0,
+  "dataAccessInterpretation": "Internal Workspace app; empty consent-screen scope listing alone is not a blocker. Effective grants must still be verified for each mailbox.",
+  "effectiveMailboxScopesVerified": false,
+  "consentsPerformed": 0,
+  "tokenExchangesPerformed": 0,
+  "sources": [
+    "https://console.cloud.google.com/apis/dashboard?project=curated-crm-gmail",
+    "https://console.cloud.google.com/auth/audience?project=curated-crm-gmail",
+    "https://developers.google.com/workspace/guides/configure-oauth-consent",
+    "https://developers.google.com/workspace/gmail/api/auth/scopes"
+  ],
+  "secretValuesCaptured": false,
+  "environmentFilesCopied": false,
+  "configurationChanged": false
+}

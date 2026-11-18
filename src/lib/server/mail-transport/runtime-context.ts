@@ -21,7 +21,13 @@ import {
   verificationContextV2Hash,
 } from "./verification-context-v2";
 import { GmailError } from "../../gmail-errors";
-import { MailTransportError } from "./errors";
+import { MailTransportError, DirectCredentialUnavailable } from "./errors";
+import {
+  simpleMailEnabled,
+  simpleMailComposioEnabled,
+} from "../../mail-connections";
+import { executeFallback } from "./fallback";
+import { randomUUID } from "node:crypto";
 import {
   authorizeWorkerRequest,
   inWorkerPilot,
@@ -36,7 +42,7 @@ import {
   type MailQuotaLease,
 } from "../mail-quota";
 
-export const composioProductOperationEnabled = false;
+export const composioProductOperationEnabled = simpleMailComposioEnabled();
 export function productRoutingEnabled() {
   const value = process.env.MAIL_TRANSPORT_ROUTING_ENABLED ?? "false";
   if (value !== "true" && value !== "false")
@@ -75,12 +81,29 @@ export async function mailRuntimeDependencies() {
   const { serviceMailRuntime } = await import("./runtime-service");
   return serviceMailRuntime();
 }
-export function withMailDispatch<T>(
+// New per-account routing does not opt unrelated legacy accounts into the new path.
+export async function simpleAccountRuntime(
+  account: string,
+): Promise<RuntimeDependencies | null> {
+  if (!simpleMailEnabled() || mailRoutingActive()) return null;
+  const { serviceMailRuntime } = await import("./runtime-service");
+  const deps = serviceMailRuntime();
+  const managed = await deps.rpc("simple_mail_managed", { account });
+  if (typeof managed !== "boolean")
+    throw new TransportSelectionError("R06_UNAVAILABLE");
+  return managed ? deps : null;
+}
+export async function withMailDispatch<T>(
   account: string,
   outbox: string,
   action: () => Promise<T>,
 ): Promise<T> {
-  if (!mailRoutingActive()) return action();
+  if (!mailRoutingActive()) {
+    const simple = await simpleAccountRuntime(account);
+    if (simple)
+      return withMailRuntime(simple, () => dispatch(account, outbox, action));
+    return action();
+  }
   return dispatch(account, outbox, action);
 }
 async function dispatch<T>(
@@ -229,6 +252,7 @@ function requestScope(
 }
 function safeError(error: unknown): Error | null {
   return error instanceof GmailError ||
+    error instanceof DirectCredentialUnavailable ||
     error instanceof MailTransportError ||
     error instanceof WorkerPilotError ||
     error instanceof MailQuotaError
@@ -385,6 +409,16 @@ export async function executeRuntimeMail<T>(
         if (current.apiKey !== configuration!.apiKey)
           throw new TransportSelectionError("R06_DENIED");
         recheckMailQuotaEmission();
+        if (
+          simpleMailEnabled() &&
+          (await deps.rpc("simple_mail_included_reserve", {
+            request_key: randomUUID(),
+            account: ticket.account_id,
+            calls: 1,
+            proxy: 1,
+          })) !== true
+        )
+          throw new TransportSelectionError("R06_DENIED");
         return deps.fetchImpl(input, init);
       };
       prepared = {
@@ -463,6 +497,95 @@ export async function executeRuntimeMail<T>(
         .then(() => undefined),
     deferCompletion: (ticket) => ticket.operation === "send",
     safeError,
+    fallbackBeforeWire: async <R>(
+      parent: TransportTicket,
+      capability: string,
+      error: unknown,
+    ) => {
+      if (
+        !simpleMailEnabled() ||
+        !deps.composioEnabled ||
+        request.operation !== "send" ||
+        !(error instanceof DirectCredentialUnavailable)
+      )
+        return { handled: false as const };
+      const value = await executeFallback<R>(
+        parent,
+        capability,
+        input.path,
+        input.init,
+        {
+          begin: (id, proof, capability_hash) =>
+            deps.rpc("simple_mail_fallback_begin", {
+              parent: id,
+              capability: proof,
+              capability_hash,
+            }),
+          validate: (attempt, proof, admit) =>
+            deps
+              .rpc("simple_mail_fallback_validate", {
+                attempt,
+                capability: proof,
+                admit,
+              })
+              .then((r) => r === true),
+          prepare: async (s, validate) => {
+            const current = () => {
+              const c = configurationSchema.parse(deps.configuration());
+              if (
+                !("contract_version" in c.context) ||
+                verificationContextV2Hash(c.context) !== s.context_hash ||
+                c.context.composio_project_id !== s.project_id ||
+                s.ticket.binding?.quotaContractVersion !== 2 ||
+                c.context.policy.policy_id !== s.ticket.binding.quotaPolicyId ||
+                c.context.policy.generation !==
+                  s.ticket.binding.quotaPolicyGeneration
+              )
+                throw new TransportSelectionError("R06_DENIED");
+              return c;
+            };
+            const c = current();
+            return createMailTransport({
+              provider: "composio",
+              apiKey: c.apiKey,
+              binding: s.ticket.binding!,
+              fetchImpl: async (u, i) => {
+                await validate();
+                if (current().apiKey !== c.apiKey)
+                  throw new TransportSelectionError("R06_DENIED");
+                recheckMailQuotaEmission();
+                if (
+                  (await deps.rpc("simple_mail_included_reserve", {
+                    request_key: randomUUID(),
+                    account: input.account,
+                    calls: 1,
+                    proxy: 1,
+                  })) !== true
+                )
+                  throw new TransportSelectionError("R06_DENIED");
+                return deps.fetchImpl(u, i);
+              },
+            });
+          },
+          quota: (t) => callbacks.quota(undefined, t),
+          beforeRequest: async () => {
+            await input.beforeRequest?.();
+            await validateMailboxScope();
+          },
+          record: (id, proof) => frame!.records.set(id, proof),
+          finish: (attempt, proof, outcome) =>
+            deps
+              .rpc("mail_transport_finish", {
+                attempt,
+                capability: proof,
+                outcome,
+              })
+              .then(() => undefined),
+          now: deps.now,
+        },
+      );
+      return { handled: true as const, value };
+    },
     now: deps.now,
   };
   return executeSelectedTransport<T>(

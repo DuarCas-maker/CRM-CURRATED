@@ -1,0 +1,22 @@
+{
+  "fixture": true,
+  "realProviders": false,
+  "checkedCssWidths": [
+    360,
+    768,
+    1280
+  ],
+  "desktopMeasure": {
+    "client": 1280,
+    "innerWidth": 1280,
+    "scroll": 1280
+  },
+  "keyboardTabs": true,
+  "keyboardAdvisor": true,
+  "uniqueEmailAdvisor": true,
+  "nonMatchingAdvisorSelector": true,
+  "preparedStateVisible": true,
+  "includedUnavailableVisible": true,
+  "externalRequests": 0,
+  "tableScrollContained": true
+}

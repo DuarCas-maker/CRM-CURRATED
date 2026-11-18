@@ -2297,6 +2297,13 @@ export default function CRM({ initial }: { initial: Workspace }) {
                   act={act}
                   busy={busy}
                   connectLegacy={() => setModal("google")}
+                  onAccountsChanged={() => {
+                    void refresh().catch(() =>
+                      setError(
+                        "La conexión cambió. Actualiza la página para cargar los remitentes.",
+                      ),
+                    );
+                  }}
                   openCase={(id) => {
                     setSelected(id);
                     setView("pipeline");

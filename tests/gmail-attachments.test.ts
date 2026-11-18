@@ -232,15 +232,73 @@ test("attachment selection is empty by default, filtered, persistent, permission
       "update gmail_saved_attachments set storage_path='private/selected',status='received' where part_id='0.1'",
     );
     await asUser(seller);
-    assert.equal((await list([], true, null, caseId)).total, 3);
+    assert.deepEqual(
+      (
+        await db.query<{ manages: boolean; reads_closer: boolean }>(
+          "select can_manage_case_flow($1) manages,can_area($1,'closer') reads_closer",
+          [caseId],
+        )
+      ).rows,
+      [{ manages: true, reads_closer: true }],
+    );
+    // 055 makes the seller the current owner until a closer is assigned.
+    const ownedFiles = await list([], true, null, caseId);
+    assert.equal(ownedFiles.total, 4);
+    assert.deepEqual(ownedFiles.files.map((file) => file.part_id).sort(), [
+      "0.1",
+      "0.2",
+      "0.3",
+      "0.4",
+    ]);
+    // Preserve the area boundary once another user owns the closer workflow.
+    await db.exec("reset role");
+    await db.query(
+      "update opportunities set closer_id=$2,handed_off_at=now() where id=$1",
+      [caseId, closer],
+    );
+    await asUser(seller);
+    assert.deepEqual(
+      (
+        await db.query<{ manages: boolean; reads_closer: boolean }>(
+          "select can_manage_case_flow($1) manages,can_area($1,'closer') reads_closer",
+          [caseId],
+        )
+      ).rows,
+      [{ manages: false, reads_closer: false }],
+    );
+    const sellerFiles = await list([], true, null, caseId);
+    assert.equal(sellerFiles.total, 3);
+    assert.deepEqual(sellerFiles.files.map((file) => file.part_id).sort(), [
+      "0.1",
+      "0.2",
+      "0.3",
+    ]);
     await assert.rejects(
       select(
         [{ archive_message_id: message, part_id: "0.4", included: true }],
         false,
         caseId,
       ),
-      /Attachment access/,
+      /Case editing required/,
     );
+    await assert.rejects(select([pdf], false, caseId), /Case editing required/);
+    await asUser(closer);
+    assert.deepEqual(
+      (await list([], true, null, caseId)).files
+        .map((file) => file.part_id)
+        .sort(),
+      ["0.1", "0.2", "0.3", "0.4"],
+    );
+    await asUser(stranger);
+    await assert.rejects(list([], true, null, caseId), /Case access/);
+    await assert.rejects(select([pdf], false, caseId), /Case editing required/);
+    // Return this disposable fixture to seller ownership for copy/retry checks.
+    await db.exec("reset role");
+    await db.query(
+      "update opportunities set closer_id=null,handed_off_at=null where id=$1",
+      [caseId],
+    );
+    await asUser(seller);
     await select(
       [{ archive_message_id: message, part_id: "0.2", included: true }],
       false,

@@ -1,0 +1,131 @@
+{
+  "at": "2026-11-18T03:14:07.735Z",
+  "readOnlySourceInspection": true,
+  "baseCommit": "9d28d5a257ef26c618d1884f4dc90eb7c0701530",
+  "source": "public git objects in shared repository",
+  "sources": [
+    {
+      "path": ".env.example",
+      "sha256": "d3c977b4b5346c2e24fac12599ac0e18e8f5785676244e564ff60432e4de771c",
+      "bytes": 4054
+    },
+    {
+      "path": "src/app/api/gmail/callback/route.ts",
+      "sha256": "6d03a561c66c15ea720fe21045fb363427610823a19de5f660dfbdf44b267a8e",
+      "bytes": 2717
+    },
+    {
+      "path": "src/components/connections-workspace.css",
+      "sha256": "bd23ce26550336b7f2e8b526d4e57cee2915300016ef4530f526b5e62dd8ce37",
+      "bytes": 8094
+    },
+    {
+      "path": "src/components/connections-workspace.tsx",
+      "sha256": "400397e02d4c117f24f840bb346f043711da924d170bf5c53ebdf4ce4645cd7b",
+      "bytes": 25084
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "sha256": "b422ee20f416b8b3b6f18097bb01a5225d38fd1cd23c23a5935902bce40f103f",
+      "bytes": 126879
+    },
+    {
+      "path": "src/lib/connections.ts",
+      "sha256": "638ab96683382bd2654876290eea1dd795cb01b80002989ba96fb59a50a3d352",
+      "bytes": 3232
+    },
+    {
+      "path": "src/lib/server/google.ts",
+      "sha256": "ce7daa5a4cc208e9f506b6c458ec43093605a2f6afde987a1453c784cc3c3532",
+      "bytes": 7753
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-binding-v2.ts",
+      "sha256": "63620fc02138cc0b3e1de6156756734ba2b4e76e0824a18c87f221ef676c7d0c",
+      "bytes": 8926
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/http.ts",
+      "sha256": "a6af61058ac94fb3ec2f92f26999db7b56429fc22cfd24155dac15c01273c297",
+      "bytes": 32092
+    },
+    {
+      "path": "src/lib/server/mail-transport/errors.ts",
+      "sha256": "9f03a63a8e650d93e1bcf7c009a93afa2afe0e81e37f74e938d533962bf13aae",
+      "bytes": 785
+    },
+    {
+      "path": "src/lib/server/mail-transport/mailbox-sync.ts",
+      "sha256": "9fb408d38f528cf225f13d45a51c8d821ea7fec1dfa07de37fbf7fdd49b85bf4",
+      "bytes": 6354
+    },
+    {
+      "path": "src/lib/server/mail-transport/runtime-context.ts",
+      "sha256": "8e8a6057e84eaea288e33cf3618d3676a209184ed66ca2511eda2416731a6414",
+      "bytes": 15350
+    },
+    {
+      "path": "src/lib/server/mail-transport/selection.ts",
+      "sha256": "ee9304caf27fad7b9fa0e8273c4ea99ba2979176ed378773bd895c0bd2e708d6",
+      "bytes": 5117
+    },
+    {
+      "path": "tests/connections-ui.test.tsx",
+      "sha256": "b26db6b7d5e0bab3fd9727ae9459cfa770ca7c5239551c1d1108b2fc81b18a1f",
+      "bytes": 3850
+    },
+    {
+      "path": "worker/gmail-schedule.ts",
+      "sha256": "f1a7428040982b8a2cf53337c7a0cac808fa70990c3f3050bf84da108b7b3619",
+      "bytes": 1350
+    },
+    {
+      "path": "worker/gmail.ts",
+      "sha256": "6c43228fb24c364af2d3515c6d3008b7aed15e2c00d1abee1d0b82a95c6b880b",
+      "bytes": 36622
+    },
+    {
+      "path": "worker/index.ts",
+      "sha256": "1dace08ca60e2e936a31958ed4327b4d46847afbb0c2d8b07f0226c36a584ec2",
+      "bytes": 12344
+    },
+    {
+      "path": "src/lib/server/mail-transport/gmail-direct.ts",
+      "sha256": "226184cd817813dbdf6d9c174b6ded136f3f4ccec3c24163ebba94b6bcf03ae5",
+      "bytes": 1285
+    },
+    {
+      "path": "src/lib/server/mail-transport/composio-proxy.ts",
+      "sha256": "22643e5bc1c0708102583af197f5c756061773c9ce25ddc2554341c1cdc5728d",
+      "bytes": 15566
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/recovery.ts",
+      "sha256": "9327c6be1258f1a5ca877f4778c1a52a932e538b80c94486ea3b46740862954a",
+      "bytes": 4584
+    },
+    {
+      "path": "src/lib/server/mail-accounts/composio-connect/orchestrator.ts",
+      "sha256": "dfdf0c846917eea9e2f5d0b9b2be387db9b2f8414acf485ef8334fb88226235a",
+      "bytes": 23525
+    },
+    {
+      "path": "src/app/api/mail/composio/connect/recovery/candidate/route.ts",
+      "sha256": "5f99bda3c709e32b250f14d92662776ebef9dc40b9e80bfc6d749a004857d1ee",
+      "bytes": 139
+    },
+    {
+      "path": "supabase/migrations/039_campaign_delivery_controls.sql",
+      "sha256": "5e39c7ce4a71df5dd43d4ddad70e69ad5e1cadd8e0e092e4aec22f11937bd8d1",
+      "bytes": 31216
+    },
+    {
+      "path": "package.json",
+      "sha256": "5bf43b7f63dca00f11dc48b33b68917ead4b7919801f2c81caa6eae6d44be801",
+      "bytes": 1339
+    }
+  ],
+  "providerCalls": 0,
+  "productionMutations": 0,
+  "credentialsRead": false
+}

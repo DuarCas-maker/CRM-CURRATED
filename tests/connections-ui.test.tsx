@@ -25,10 +25,10 @@ const render = (
     />,
   );
 };
-test("CON-AC01/02/04: exclusive module has three accessible tabs, source dates and operational separation", () => {
+test("CON-AC01/02/04: module has four accessible provider tabs, source dates and operational separation", () => {
   const html = render();
-  assert.equal((html.match(/role="tab"/g) || []).length, 3);
-  assert.equal((html.match(/role="tabpanel"/g) || []).length, 3);
+  assert.equal((html.match(/role="tab"/g) || []).length, 4);
+  assert.equal((html.match(/role="tabpanel"/g) || []).length, 4);
   for (const label of [
     "Composio",
     "Instantly",

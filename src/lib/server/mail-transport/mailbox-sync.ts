@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { z } from "zod";
+import { simpleMailEnabled } from "../../mail-connections";
 import {
   transportProvider,
   transportRevision,
@@ -53,6 +54,10 @@ export async function syncSelectedMailbox<T extends { id: string }>(
   if (!transportRevision.safeParse(revision).success) return;
   if (!z.uuid().safeParse(account).success)
     throw new TransportSelectionError("R06_INVALID_INPUT");
+  const managed =
+    simpleMailEnabled() &&
+    (await deps.rpc("simple_mail_managed", { account })) === true;
+  if (managed) await deps.rpc("simple_mail_recover_sync", { account });
   const capability = randomBytes(32).toString("hex");
   const raw = await deps.rpc("mail_sync_begin", {
     account,
@@ -69,6 +74,14 @@ export async function syncSelectedMailbox<T extends { id: string }>(
   const c = parsed.data;
   const args = { cycle: c.id, capability };
   try {
+    const initial = managed
+      ? await deps.rpc("simple_mail_sync_floor", { account })
+      : null;
+    if (
+      initial !== null &&
+      !z.iso.datetime({ offset: true }).safeParse(initial).success
+    )
+      throw new TransportSelectionError("R06_UNAVAILABLE");
     if (c.provider === "composio" && !deps.composioEnabled)
       throw new TransportSelectionError("R06_DENIED");
     return await withMailRuntime(deps, () =>
@@ -87,6 +100,59 @@ export async function syncSelectedMailbox<T extends { id: string }>(
           const baseline = historyId.parse(
             (await ports.request<{ historyId: string }>("profile")).historyId,
           );
+          if (initial && !c.history_id) {
+            const progress = z
+              .strictObject({
+                baseline: historyId,
+                page: z.string().nullable(),
+                done: z.boolean(),
+              })
+              .parse(
+                await deps.rpc("simple_mail_initial_begin", {
+                  ...args,
+                  baseline,
+                }),
+              );
+            if (progress.done)
+              throw new TransportSelectionError("R06_UNAVAILABLE");
+            const params = new URLSearchParams({
+              q: `after:${Math.floor(Date.parse(String(initial)) / 1000)} -in:spam -in:trash -in:drafts`,
+              maxResults: "100",
+              includeSpamTrash: "false",
+            });
+            if (progress.page) params.set("pageToken", progress.page);
+            const response = messagesPage.parse(
+              await ports.request<unknown>(`messages?${params}`),
+            );
+            if (response.nextPageToken === progress.page)
+              throw new TransportSelectionError("R06_UNAVAILABLE");
+            if ((response.messages?.length ?? 0) > 100)
+              throw new TransportSelectionError("R06_UNAVAILABLE");
+            for (const id of new Set(
+              (response.messages ?? []).map((m) => m.id),
+            )) {
+              await validateMailboxScope();
+              let message: T;
+              try {
+                message = await ports.request<T>(`messages/${id}?format=full`);
+              } catch (e) {
+                if (e instanceof GmailError && e.status === 404) continue;
+                throw e;
+              }
+              if (message.id !== id)
+                throw new TransportSelectionError("R06_DENIED");
+              await validateMailboxScope();
+              await ports.ingest({ id: account, email: c.email }, message);
+            }
+            await validateMailboxScope();
+            await deps.rpc("simple_mail_initial_advance", {
+              ...args,
+              expected_page: progress.page,
+              next_page: response.nextPageToken ?? null,
+            });
+            if (response.nextPageToken) await deps.rpc("mail_sync_abort", args);
+            return;
+          }
           const ids = new Set<string>();
           let full = !c.history_id;
           async function paginate(history: boolean) {
@@ -157,10 +223,13 @@ export async function syncSelectedMailbox<T extends { id: string }>(
             await ports.ingest({ id: account, email: c.email }, message);
           }
           await validateMailboxScope();
-          await deps.rpc("mail_sync_complete", {
-            ...args,
-            checkpoint: baseline,
-          });
+          await deps.rpc(
+            managed ? "simple_mail_sync_complete" : "mail_sync_complete",
+            {
+              ...args,
+              checkpoint: baseline,
+            },
+          );
         },
       ),
     );

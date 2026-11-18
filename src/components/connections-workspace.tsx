@@ -31,6 +31,7 @@ import { GmailHistory } from "./gmail-history";
 import { InstantlyTrialControl } from "./instantly-trial-control";
 import { Integrations } from "./integrations";
 import "./connections-workspace.css";
+import { MailConnectionPanel } from "./mail-connection-panel";
 
 export function ConnectionsWorkspace({
   data,
@@ -39,8 +40,9 @@ export function ConnectionsWorkspace({
   busy,
   openCase,
   connectLegacy,
+  onAccountsChanged,
   initialSnapshot,
-  initialTab = "composio",
+  initialTab = "gmail",
 }: {
   data: Workspace;
   locale: Locale;
@@ -48,12 +50,20 @@ export function ConnectionsWorkspace({
   busy: boolean;
   openCase?: (id: string) => void;
   connectLegacy?: () => void;
+  onAccountsChanged?: () => void;
   initialSnapshot?: ConnectionsSnapshot;
   initialTab?: ConnectionTab;
 }) {
   const allowed = connectionsAllowed(data.profile, data.demo);
   const [tab, setTab] = useState<ConnectionTab>(initialTab),
     [query, setQuery] = useState("");
+  const [simpleUi, setSimpleUi] = useState(false);
+  useEffect(() => {
+    const provider = new URLSearchParams(window.location.search).get(
+      "mail_provider",
+    );
+    if (provider) setTab(provider === "composio" ? "composio" : "gmail");
+  }, []);
   const [snapshot, setSnapshot] = useState<ConnectionsSnapshot | null>(
     () =>
       initialSnapshot ?? (data.demo ? demoConnections(data.accounts) : null),
@@ -61,6 +71,10 @@ export function ConnectionsWorkspace({
   const [loading, setLoading] = useState(!data.demo && !initialSnapshot),
     [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
+  const mailChanged = () => {
+    setRevision((v) => v + 1);
+    onAccountsChanged?.();
+  };
   const id = useId(),
     tabs = useRef<HTMLDivElement>(null),
     connect = useRef<HTMLDivElement>(null);
@@ -147,17 +161,22 @@ export function ConnectionsWorkspace({
           } as Record<string, string>
         )[status] || status;
   function key(e: KeyboardEvent<HTMLButtonElement>, selected: ConnectionTab) {
-    const names: ConnectionTab[] = ["composio", "instantly", "texttorrent"],
+    const names: ConnectionTab[] = [
+        "gmail",
+        "composio",
+        "instantly",
+        "texttorrent",
+      ],
       index = names.indexOf(selected);
     const next =
       e.key === "ArrowRight"
-        ? (index + 1) % 3
+        ? (index + 1) % names.length
         : e.key === "ArrowLeft"
-          ? (index + 2) % 3
+          ? (index + names.length - 1) % names.length
           : e.key === "Home"
             ? 0
             : e.key === "End"
-              ? 2
+              ? names.length - 1
               : -1;
     if (next < 0) return;
     e.preventDefault();
@@ -206,6 +225,12 @@ export function ConnectionsWorkspace({
         {(
           [
             [
+              "gmail",
+              "Gmail",
+              Mail,
+              l("Conexión directa con Google", "Direct Google connection"),
+            ],
+            [
               "composio",
               "Composio",
               Mail,
@@ -252,364 +277,415 @@ export function ConnectionsWorkspace({
       <section
         className="cx-panel"
         role="tabpanel"
+        aria-labelledby={`${id}-gmail`}
+        id={`${id}-gmail-panel`}
+        hidden={tab !== "gmail"}
+        inert={tab !== "gmail"}
+      >
+        <MailConnectionPanel
+          provider="gmail_oauth"
+          accounts={accounts}
+          demo={data.demo}
+          onChanged={mailChanged}
+        />
+      </section>
+      <section
+        className="cx-panel"
+        role="tabpanel"
         aria-labelledby={`${id}-composio`}
         id={`${id}-composio-panel`}
         hidden={tab !== "composio"}
         inert={tab !== "composio"}
       >
-        <div className="cx-heading">
+        <MailConnectionPanel
+          provider="composio"
+          accounts={accounts}
+          demo={data.demo}
+          hideUnavailable
+          onAvailable={setSimpleUi}
+          onChanged={mailChanged}
+        />
+        {!simpleUi && (
           <div>
-            <h2>
-              Composio <span className="cx-mini">Gmail</span>
-            </h2>
-            <p>
-              {l(
-                "Cada buzón mantiene su identidad, marca y permisos.",
-                "Each mailbox keeps its identity, brand and permissions.",
-              )}
-            </p>
-          </div>
-          <button
-            type="button"
-            className="button primary"
-            disabled={data.demo}
-            onClick={() => {
-              connect.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
-              connect.current
-                ?.querySelector<HTMLButtonElement>("button:not(:disabled)")
-                ?.focus({ preventScroll: true });
-            }}
-          >
-            <Mail size={16} />
-            {l("Conectar correo", "Connect email")}
-            <ArrowUpRight size={15} />
-          </button>
-        </div>
-        <div className="cx-stats" aria-busy={loading}>
-          {[
-            [
-              l("Buzones registrados", "Registered mailboxes"),
-              total?.accounts,
-              l("Cuentas visibles en el CRM", "Accounts visible in CRM"),
-            ],
-            [
-              l("Gmail conectados", "Connected Gmail accounts"),
-              total?.gmailConnected,
-              l("Estado registrado de Gmail", "Recorded Gmail status"),
-            ],
-            [
-              l("Asociaciones Composio", "Composio bindings"),
-              total?.confirmed,
-              l(
-                "Confirmadas y sin revisión pendiente",
-                "Confirmed with no stale review",
-              ),
-            ],
-            [
-              l("Mensajes en CRM", "Messages in CRM"),
-              total?.messages,
-              l(
-                "Archivo y sincronización disponibles",
-                "Available archive and sync",
-              ),
-            ],
-          ].map(([label, value, note]) => (
-            <div key={String(label)}>
-              <span>{label}</span>
-              <strong>
-                {loading ? "…" : number(value as number | null | undefined)}
-              </strong>
-              <small>{note}</small>
+            <div className="cx-heading">
+              <div>
+                <h2>
+                  Composio <span className="cx-mini">Gmail</span>
+                </h2>
+                <p>
+                  {l(
+                    "Cada buzón mantiene su identidad, marca y permisos.",
+                    "Each mailbox keeps its identity, brand and permissions.",
+                  )}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="button primary"
+                disabled={data.demo}
+                onClick={() => {
+                  connect.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                  connect.current
+                    ?.querySelector<HTMLButtonElement>("button:not(:disabled)")
+                    ?.focus({ preventScroll: true });
+                }}
+              >
+                <Mail size={16} />
+                {l("Conectar correo", "Connect email")}
+                <ArrowUpRight size={15} />
+              </button>
             </div>
-          ))}
-        </div>
-        <section
-          className="panel cx-accounts"
-          aria-labelledby={`${id}-accounts`}
-        >
-          <div className="cx-heading">
-            <div>
-              <h3 id={`${id}-accounts`}>
-                {l("Tus cuentas de correo", "Your email accounts")}
-              </h3>
-              <p>
-                {l(
-                  "Gmail conectado y asociación Composio son estados diferentes.",
-                  "Gmail connection and Composio binding are different statuses.",
-                )}
-              </p>
+            <div className="cx-stats" aria-busy={loading}>
+              {[
+                [
+                  l("Buzones registrados", "Registered mailboxes"),
+                  total?.accounts,
+                  l("Cuentas visibles en el CRM", "Accounts visible in CRM"),
+                ],
+                [
+                  l("Gmail conectados", "Connected Gmail accounts"),
+                  total?.gmailConnected,
+                  l("Estado registrado de Gmail", "Recorded Gmail status"),
+                ],
+                [
+                  l("Asociaciones Composio", "Composio bindings"),
+                  total?.confirmed,
+                  l(
+                    "Confirmadas y sin revisión pendiente",
+                    "Confirmed with no stale review",
+                  ),
+                ],
+                [
+                  l("Mensajes en CRM", "Messages in CRM"),
+                  total?.messages,
+                  l(
+                    "Archivo y sincronización disponibles",
+                    "Available archive and sync",
+                  ),
+                ],
+              ].map(([label, value, note]) => (
+                <div key={String(label)}>
+                  <span>{label}</span>
+                  <strong>
+                    {loading ? "…" : number(value as number | null | undefined)}
+                  </strong>
+                  <small>{note}</small>
+                </div>
+              ))}
             </div>
-            <button
-              className="button"
-              type="button"
-              disabled={loading || data.demo || !!initialSnapshot}
-              onClick={() => setRevision((v) => v + 1)}
+            <section
+              className="panel cx-accounts"
+              aria-labelledby={`${id}-accounts`}
             >
-              <RefreshCw size={15} />
-              {l("Actualizar resumen", "Refresh summary")}
-            </button>
-          </div>
-          <label className="field cx-search">
-            <span>{l("Buscar cuenta o marca", "Search account or brand")}</span>
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={l(
-                "Correo, organización o marca…",
-                "Email, organization or brand…",
-              )}
-            />
-          </label>
-          {error && (
-            <p className="error-banner" role="alert">
-              {error}
-            </p>
-          )}
-          {loading && (
-            <p className="cx-empty" role="status">
-              {l(
-                "Consultando cuentas y sincronización…",
-                "Loading accounts and sync…",
-              )}
-            </p>
-          )}
-          {!loading && snapshot && !accounts.length && (
-            <div className="cx-empty">
-              <Mail size={28} />
-              <h4>
-                {l(
-                  "Aún no hay cuentas registradas",
-                  "No accounts registered yet",
-                )}
-              </h4>
-              <p>
-                {l(
-                  "Empieza conectando tu primer correo en el formulario de abajo.",
-                  "Start by connecting your first email in the form below.",
-                )}
-              </p>
-            </div>
-          )}
-          {!loading && accounts.length > 0 && (
-            <div
-              className="cx-table-scroll"
-              tabIndex={0}
-              role="region"
-              aria-label={l(
-                "Cuentas, permisos y sincronización",
-                "Accounts, permissions and sync",
-              )}
-            >
-              <table>
-                <thead>
-                  <tr>
-                    {[
-                      l("Cuenta", "Account"),
-                      "Gmail",
-                      "Composio",
-                      l("Registro en CRM", "CRM registration"),
-                      l("Última sincronización", "Last sync"),
-                      l("Mensajes en CRM", "Messages in CRM"),
-                      l("Permisos", "Permissions"),
-                    ].map((label) => (
-                      <th scope="col" key={label}>
-                        {label}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((a) => (
-                    <tr key={a.id}>
-                      <th scope="row">
-                        <strong>{a.email}</strong>
-                        <small>
-                          {a.brand ||
-                            l("Marca por revisar", "Brand pending review")}{" "}
-                          · {a.organization}
-                        </small>
-                      </th>
-                      <td>
-                        <span
-                          className={`cx-status ${a.status === "connected" ? "cx-good" : ""}`}
-                        >
-                          {a.status === "connected"
-                            ? l("Conectado", "Connected")
-                            : (
-                                {
-                                  disconnected: l(
-                                    "Desconectado",
-                                    "Disconnected",
-                                  ),
-                                  restricted: l("Restringido", "Restricted"),
-                                  error: l("Con error", "Error"),
-                                } as Record<string, string>
-                              )[a.status] || l("Por revisar", "Review")}
-                        </span>
-                      </td>
-                      <td>
-                        <span
-                          className={`cx-status ${a.association === "verified" && !a.association_stale ? "cx-good" : "cx-pending"}`}
-                        >
-                          {association(a.association, a.association_stale)}
-                        </span>
-                        <small>
-                          {l("Asociación registrada", "Binding registered")}:{" "}
-                          {date(a.association_at)}
-                        </small>
-                        <small>
-                          {l("Revisión", "Review")}: {date(a.reviewed_at)}
-                        </small>
-                      </td>
-                      <td>{date(a.registered_at)}</td>
-                      <td>{date(a.synced_at)}</td>
-                      <td className="cx-numeric">
-                        {a.messages === null
-                          ? l("No disponible", "Unavailable")
-                          : number(a.messages)}
-                      </td>
-                      <td>
-                        <details>
-                          <summary>
-                            {l("Ver permisos", "View permissions")}
-                          </summary>
-                          <p>
-                            {l(
-                              "Tu sesión tiene permiso de remitente",
-                              "Your session has sender permission",
-                            )}
-                            :{" "}
-                            {a.can_send === null
-                              ? l("No disponible", "Unavailable")
-                              : a.can_send
-                                ? l("Sí", "Yes")
-                                : l("No", "No")}
-                          </p>
-                          <small>
-                            {l(
-                              "Permisos explícitos de remitente",
-                              "Explicit sender permissions",
-                            )}
-                          </small>
-                          {a.permissions === null ? (
-                            <p>{l("No disponibles", "Unavailable")}</p>
-                          ) : !a.permissions.length ? (
-                            <p>
-                              {l(
-                                "Sin asignaciones explícitas",
-                                "No explicit assignments",
-                              )}
-                            </p>
-                          ) : (
-                            <ul>
-                              {a.permissions.map((p, i) => (
-                                <li key={i}>
-                                  {p.name} ·{" "}
-                                  {p.active
-                                    ? p.can_send
-                                      ? l("Envío autorizado", "Sending allowed")
-                                      : l(
-                                          "Envío no autorizado",
-                                          "Sending not allowed",
-                                        )
-                                    : l("Usuario inactivo", "Inactive user")}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                          <small>
-                            {l("Composio", "Composio")}:{" "}
-                            {association(a.association, a.association_stale)}
-                          </small>
-                        </details>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {!filtered.length && (
-                <p className="cx-empty">
-                  {l("No hay cuentas que coincidan.", "No accounts match.")}
+              <div className="cx-heading">
+                <div>
+                  <h3 id={`${id}-accounts`}>
+                    {l("Tus cuentas de correo", "Your email accounts")}
+                  </h3>
+                  <p>
+                    {l(
+                      "Gmail conectado y asociación Composio son estados diferentes.",
+                      "Gmail connection and Composio binding are different statuses.",
+                    )}
+                  </p>
+                </div>
+                <button
+                  className="button"
+                  type="button"
+                  disabled={loading || data.demo || !!initialSnapshot}
+                  onClick={() => setRevision((v) => v + 1)}
+                >
+                  <RefreshCw size={15} />
+                  {l("Actualizar resumen", "Refresh summary")}
+                </button>
+              </div>
+              <label className="field cx-search">
+                <span>
+                  {l("Buscar cuenta o marca", "Search account or brand")}
+                </span>
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={l(
+                    "Correo, organización o marca…",
+                    "Email, organization or brand…",
+                  )}
+                />
+              </label>
+              {error && (
+                <p className="error-banner" role="alert">
+                  {error}
                 </p>
               )}
+              {loading && (
+                <p className="cx-empty" role="status">
+                  {l(
+                    "Consultando cuentas y sincronización…",
+                    "Loading accounts and sync…",
+                  )}
+                </p>
+              )}
+              {!loading && snapshot && !accounts.length && (
+                <div className="cx-empty">
+                  <Mail size={28} />
+                  <h4>
+                    {l(
+                      "Aún no hay cuentas registradas",
+                      "No accounts registered yet",
+                    )}
+                  </h4>
+                  <p>
+                    {l(
+                      "Empieza conectando tu primer correo en el formulario de abajo.",
+                      "Start by connecting your first email in the form below.",
+                    )}
+                  </p>
+                </div>
+              )}
+              {!loading && accounts.length > 0 && (
+                <div
+                  className="cx-table-scroll"
+                  tabIndex={0}
+                  role="region"
+                  aria-label={l(
+                    "Cuentas, permisos y sincronización",
+                    "Accounts, permissions and sync",
+                  )}
+                >
+                  <table>
+                    <thead>
+                      <tr>
+                        {[
+                          l("Cuenta", "Account"),
+                          "Gmail",
+                          "Composio",
+                          l("Registro en CRM", "CRM registration"),
+                          l("Última sincronización", "Last sync"),
+                          l("Mensajes en CRM", "Messages in CRM"),
+                          l("Permisos", "Permissions"),
+                        ].map((label) => (
+                          <th scope="col" key={label}>
+                            {label}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map((a) => (
+                        <tr key={a.id}>
+                          <th scope="row">
+                            <strong>{a.email}</strong>
+                            <small>
+                              {a.brand ||
+                                l(
+                                  "Marca por revisar",
+                                  "Brand pending review",
+                                )}{" "}
+                              · {a.organization}
+                            </small>
+                          </th>
+                          <td>
+                            <span
+                              className={`cx-status ${a.status === "connected" ? "cx-good" : ""}`}
+                            >
+                              {a.status === "connected"
+                                ? l("Conectado", "Connected")
+                                : (
+                                    {
+                                      disconnected: l(
+                                        "Desconectado",
+                                        "Disconnected",
+                                      ),
+                                      restricted: l(
+                                        "Restringido",
+                                        "Restricted",
+                                      ),
+                                      error: l("Con error", "Error"),
+                                    } as Record<string, string>
+                                  )[a.status] || l("Por revisar", "Review")}
+                            </span>
+                          </td>
+                          <td>
+                            <span
+                              className={`cx-status ${a.association === "verified" && !a.association_stale ? "cx-good" : "cx-pending"}`}
+                            >
+                              {association(a.association, a.association_stale)}
+                            </span>
+                            <small>
+                              {l("Asociación registrada", "Binding registered")}
+                              : {date(a.association_at)}
+                            </small>
+                            <small>
+                              {l("Revisión", "Review")}: {date(a.reviewed_at)}
+                            </small>
+                          </td>
+                          <td>{date(a.registered_at)}</td>
+                          <td>{date(a.synced_at)}</td>
+                          <td className="cx-numeric">
+                            {a.messages === null
+                              ? l("No disponible", "Unavailable")
+                              : number(a.messages)}
+                          </td>
+                          <td>
+                            <details>
+                              <summary>
+                                {l("Ver permisos", "View permissions")}
+                              </summary>
+                              <p>
+                                {l(
+                                  "Tu sesión tiene permiso de remitente",
+                                  "Your session has sender permission",
+                                )}
+                                :{" "}
+                                {a.can_send === null
+                                  ? l("No disponible", "Unavailable")
+                                  : a.can_send
+                                    ? l("Sí", "Yes")
+                                    : l("No", "No")}
+                              </p>
+                              <small>
+                                {l(
+                                  "Permisos explícitos de remitente",
+                                  "Explicit sender permissions",
+                                )}
+                              </small>
+                              {a.permissions === null ? (
+                                <p>{l("No disponibles", "Unavailable")}</p>
+                              ) : !a.permissions.length ? (
+                                <p>
+                                  {l(
+                                    "Sin asignaciones explícitas",
+                                    "No explicit assignments",
+                                  )}
+                                </p>
+                              ) : (
+                                <ul>
+                                  {a.permissions.map((p, i) => (
+                                    <li key={i}>
+                                      {p.name} ·{" "}
+                                      {p.active
+                                        ? p.can_send
+                                          ? l(
+                                              "Envío autorizado",
+                                              "Sending allowed",
+                                            )
+                                          : l(
+                                              "Envío no autorizado",
+                                              "Sending not allowed",
+                                            )
+                                        : l(
+                                            "Usuario inactivo",
+                                            "Inactive user",
+                                          )}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                              <small>
+                                {l("Composio", "Composio")}:{" "}
+                                {association(
+                                  a.association,
+                                  a.association_stale,
+                                )}
+                              </small>
+                            </details>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {!filtered.length && (
+                    <p className="cx-empty">
+                      {l("No hay cuentas que coincidan.", "No accounts match.")}
+                    </p>
+                  )}
+                </div>
+              )}
+              <div className="cx-footnote">
+                <Clock3 size={14} />
+                <span>
+                  {l(
+                    "Las fechas corresponden al registro y las comprobaciones del CRM. La fecha de conexión externa no está disponible. Los mensajes cuentan registros archivados, no todo el buzón remoto.",
+                    "Dates refer to CRM registration and checks. The external connection date is unavailable. Messages count archived records, not the entire remote mailbox.",
+                  )}
+                </span>
+              </div>
+            </section>
+            <div ref={connect} className="cx-connect">
+              <ComposioConnect
+                locale={locale}
+                allowed={allowed}
+                demo={data.demo}
+                accounts={data.accounts}
+              />
             </div>
-          )}
-          <div className="cx-footnote">
-            <Clock3 size={14} />
-            <span>
-              {l(
-                "Las fechas corresponden al registro y las comprobaciones del CRM. La fecha de conexión externa no está disponible. Los mensajes cuentan registros archivados, no todo el buzón remoto.",
-                "Dates refer to CRM registration and checks. The external connection date is unavailable. Messages count archived records, not the entire remote mailbox.",
-              )}
-            </span>
+            <details className="cx-tools">
+              <summary>
+                <ShieldCheck size={17} />
+                {l(
+                  "Asociaciones, permisos y transporte",
+                  "Bindings, permissions and transport",
+                )}
+              </summary>
+              <div className="cx-tools-body">
+                <Bindings
+                  locale={locale}
+                  allowed={allowed}
+                  demo={data.demo}
+                  accounts={data.accounts}
+                />
+                <Integrations
+                  data={data}
+                  locale={locale}
+                  act={manage}
+                  busy={busy}
+                  area="access"
+                />
+                <MailTransportSettings
+                  locale={locale}
+                  allowed={allowed}
+                  demo={data.demo}
+                  accounts={data.accounts}
+                />
+              </div>
+            </details>
+            <details className="cx-tools">
+              <summary>
+                <Mail size={17} />
+                {l(
+                  "Histórico y sincronización de Gmail",
+                  "Gmail history and sync",
+                )}
+              </summary>
+              <div className="cx-tools-body">
+                <p className="muted">
+                  {l(
+                    "El histórico conserva su conexión Gmail y sus revisiones actuales.",
+                    "History retains its current Gmail connection and review controls.",
+                  )}
+                </p>
+                <GmailHistory
+                  workspace={data}
+                  locale={locale}
+                  openCase={openCase}
+                />
+                {!data.gmail_history_enabled && connectLegacy && (
+                  <button
+                    type="button"
+                    className="button"
+                    onClick={connectLegacy}
+                  >
+                    {l("Conectar Google Workspace", "Connect Google Workspace")}
+                  </button>
+                )}
+              </div>
+            </details>
           </div>
-        </section>
-        <div ref={connect} className="cx-connect">
-          <ComposioConnect
-            locale={locale}
-            allowed={allowed}
-            demo={data.demo}
-            accounts={data.accounts}
-          />
-        </div>
-        <details className="cx-tools">
-          <summary>
-            <ShieldCheck size={17} />
-            {l(
-              "Asociaciones, permisos y transporte",
-              "Bindings, permissions and transport",
-            )}
-          </summary>
-          <div className="cx-tools-body">
-            <Bindings
-              locale={locale}
-              allowed={allowed}
-              demo={data.demo}
-              accounts={data.accounts}
-            />
-            <Integrations
-              data={data}
-              locale={locale}
-              act={manage}
-              busy={busy}
-              area="access"
-            />
-            <MailTransportSettings
-              locale={locale}
-              allowed={allowed}
-              demo={data.demo}
-              accounts={data.accounts}
-            />
-          </div>
-        </details>
-        <details className="cx-tools">
-          <summary>
-            <Mail size={17} />
-            {l("Histórico y sincronización de Gmail", "Gmail history and sync")}
-          </summary>
-          <div className="cx-tools-body">
-            <p className="muted">
-              {l(
-                "El histórico conserva su conexión Gmail y sus revisiones actuales.",
-                "History retains its current Gmail connection and review controls.",
-              )}
-            </p>
-            <GmailHistory
-              workspace={data}
-              locale={locale}
-              openCase={openCase}
-            />
-            {!data.gmail_history_enabled && connectLegacy && (
-              <button type="button" className="button" onClick={connectLegacy}>
-                {l("Conectar Google Workspace", "Connect Google Workspace")}
-              </button>
-            )}
-          </div>
-        </details>
+        )}
       </section>
       <section
         className="cx-panel"

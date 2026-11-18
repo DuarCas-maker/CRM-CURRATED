@@ -1,0 +1,69 @@
+{
+  "recordedAt": "2026-11-18T04:01:46.093Z",
+  "workspace": "santino_workspace",
+  "project": "pr_y-80FotblnGt",
+  "authConfig": "ac_0c4QEKnwPtOd",
+  "plan": "Hobby",
+  "priceUsdMonthly": 0,
+  "billingPage": {
+    "toolCallsMonthly": 100000,
+    "triggerEventsMonthly": 50000,
+    "connectedAccounts": "unlimited",
+    "instantCreditsUsd": 2,
+    "instantCreditsIncludedInMailBudget": false
+  },
+  "usagePage": {
+    "range": "Month to date",
+    "month": "2026-11",
+    "toolCalls": 3,
+    "managedAppCallsRounded": "33.18K",
+    "proxyRemainingShown": false
+  },
+  "usageApi": {
+    "method": "POST",
+    "path": "/api/v3.1/project/usage/summary",
+    "httpStatus": 200,
+    "from": 1793491200000,
+    "to": 1794973578587,
+    "entities": {
+      "tool_calls": {
+        "unit": "count",
+        "total_quantity": "3",
+        "event_count": 3
+      }
+    },
+    "proxyCounterReturned": false
+  },
+  "publishedPricing": {
+    "toolCallsMonthly": 100000,
+    "managedAppCallsSubsetMonthly": 20000,
+    "proxyMonthly": 1000,
+    "appliesToThisProjectVerified": false,
+    "source": "https://composio.dev/pricing/platform"
+  },
+  "decision": {
+    "remainingCalls": null,
+    "remainingProxy": null,
+    "hardCapFreeVerified": false,
+    "seedIncludedBudget": false,
+    "reason": "No exact applicable proxy meter/remaining period; managed-app UI and base tool-call aggregation cannot be substituted for it. Legacy/grandfathered applicability not established."
+  },
+  "apiReads": {
+    "administrative": 2,
+    "authConfigGet": 1,
+    "usageSummaryPost": 1,
+    "toolsExecute": 0,
+    "proxyExecute": 0,
+    "mailboxReads": 0,
+    "emailSends": 0,
+    "purchases": 0
+  },
+  "limitations": [
+    "UI counters are rounded and different meters",
+    "No org key created, no plan changed, no paid credits used",
+    "Do not infer 99997 calls or 997 proxy units from this observation"
+  ],
+  "secretValuesCaptured": false,
+  "environmentFilesCopied": false,
+  "configurationChanged": false
+}

@@ -1,0 +1,62 @@
+.simple-mail {
+  min-width: 0;
+  padding: 24px;
+}
+.simple-mail .button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.simple-mail h2,
+.simple-mail-notice,
+.simple-mail-alert {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.simple-mail-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+.simple-mail-form .field {
+  flex: 1 1 240px;
+}
+.simple-mail-form .button {
+  min-height: 42px;
+}
+.simple-mail-notice {
+  padding: 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 85%, #77b28c);
+}
+.simple-mail-alert {
+  padding: 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 85%, #c27b61);
+}
+.simple-mail .table-wrap {
+  overflow-x: auto;
+  margin-top: 24px;
+}
+.simple-mail table {
+  min-width: 680px;
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .simple-mail {
+    padding: 16px;
+  }
+  .simple-mail-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .simple-mail .cx-heading {
+    align-items: flex-start;
+  }
+  .simple-mail-form .button {
+    width: 100%;
+  }
+}

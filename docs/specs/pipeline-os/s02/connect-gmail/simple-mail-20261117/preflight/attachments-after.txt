@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: preview detects safe supported content and rejects HTML and SVG regardless of filename
+ok 1 - preview detects safe supported content and rejects HTML and SVG regardless of filename
+  ---
+  duration_ms: 1.2735
+  type: 'test'
+  ...
+# Subtest: attachment selection is empty by default, filtered, persistent, permissioned and required before import
+ok 2 - attachment selection is empty by default, filtered, persistent, permissioned and required before import
+  ---
+  duration_ms: 3477.0765
+  type: 'test'
+  ...
+# Subtest: worker never fetches or uploads unselected future or historical files, and selected retries preserve stored copies
+ok 3 - worker never fetches or uploads unselected future or historical files, and selected retries preserve stored copies
+  ---
+  duration_ms: 22.6963
+  type: 'test'
+  ...
+# Subtest: FLOW AC02: new lender evaluation belongs to current owner without handoff; sender grant remains mandatory; no delivery worker
+ok 4 - FLOW AC02: new lender evaluation belongs to current owner without handoff; sender grant remains mandatory; no delivery worker
+  ---
+  duration_ms: 3580.5526
+  type: 'test'
+  ...
+# Subtest: FLOW AC02/04/05/06: owner without handoff, RLS, evidence, atomic lender choice, manual CAS and funding separation
+ok 5 - FLOW AC02/04/05/06: owner without handoff, RLS, evidence, atomic lender choice, manual CAS and funding separation
+  ---
+  duration_ms: 2527.4571
+  type: 'test'
+  ...
+# Subtest: FLOW AC01/02: approve the generated report, reject with audit, invalidate on source change; owner/admin/MFA and mailbox boundaries
+ok 6 - FLOW AC01/02: approve the generated report, reject with audit, invalidate on source change; owner/admin/MFA and mailbox boundaries
+  ---
+  duration_ms: 2453.4156
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9190.484

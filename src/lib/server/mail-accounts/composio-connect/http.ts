@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import { AsyncLocalStorage } from "node:async_hooks";
+import {
+  includedComposioFetch,
+  withIncludedUsage,
+} from "../onboarding/included";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   ConnectError,
@@ -513,9 +517,11 @@ async function engine(
                 requiresV2: true,
                 legacy: async () => fail(),
               });
-        return lease.emit(() => ctx.p.fetchImpl(input, init));
+        return lease.emit(() =>
+          includedComposioFetch(input, init, ctx.p.fetchImpl),
+        );
       }
-      return ctx.p.fetchImpl(input, init);
+      return includedComposioFetch(input, init, ctx.p.fetchImpl);
     },
   });
   return createComposioConnectOrchestrator({
@@ -785,15 +791,36 @@ export async function connectCallback(request: Request) {
       return fail("CONNECT_NOT_READY");
     const e = await engine(ctx, c, api, s, id, cookie);
     try {
-      await e.callback({
-        attempt_id: id,
-        expected_revision: cookie.callback_revision,
-        idempotency_key: cookie.callback_key,
-        browser_proof: cookie.proof,
-        state,
-        status,
-        connected_account_id: connection,
-      });
+      const runCallback = () =>
+        e.callback({
+          attempt_id: id,
+          expected_revision: cookie.callback_revision,
+          idempotency_key: cookie.callback_key,
+          browser_proof: cookie.proof,
+          state,
+          status,
+          connected_account_id: connection,
+        });
+      if (process.env.SIMPLE_MAIL_ENABLED === "true")
+        await withIncludedUsage(
+          {
+            account: null,
+            reserve: async (request_key, account, proxy) => {
+              const reserved = await p
+                .service()
+                .rpc("simple_mail_included_reserve", {
+                  request_key,
+                  account,
+                  calls: 1,
+                  proxy: proxy ? 1 : 0,
+                  project: c.descriptor.config.project_id,
+                });
+              return !reserved.error && reserved.data === true;
+            },
+          },
+          runCallback,
+        );
+      else await runCallback();
       await inspect(p, api, s, id, cookie);
     } catch (e) {
       if (
@@ -808,6 +835,17 @@ export async function connectCallback(request: Request) {
             e.code,
         );
       throw e;
+    }
+    if (process.env.SIMPLE_MAIL_ENABLED === "true") {
+      const found = await ctx.u.db.rpc("simple_mail_find_attempt", {
+        attempt: id,
+      });
+      if (!found.error && typeof found.data === "string")
+        return redirect(
+          c.descriptor.callback_origin +
+            "/?module=connections&mail_provider=composio&mail_connection=" +
+            encodeURIComponent(found.data),
+        );
     }
     return redirect(
       c.descriptor.callback_origin +

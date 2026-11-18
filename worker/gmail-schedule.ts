@@ -1,4 +1,7 @@
 import { gmailPushEnabled } from "../src/lib/gmail-sync";
+import { z } from "zod";
+import { selectedMailboxSchedule } from "../src/lib/server/mail-transport/mailbox-schedule";
+import type { RuntimeDependencies } from "../src/lib/server/mail-transport/runtime-context";
 
 type MailboxCredential = {
   account_id: string;
@@ -12,6 +15,22 @@ type MailboxJob = {
   payload: { account_id: string; route_revision?: number };
   dedupe_key: string;
 };
+
+// Keep legacy mailboxes on their old scheduler. A paused/stale managed route must
+// never fall back to a legacy credential merely because it still exists.
+export async function simpleMailboxSchedule(
+  legacy: MailboxCredential[],
+  deps: RuntimeDependencies,
+): Promise<MailboxCredential[]> {
+  const managed = new Set(
+    z.array(z.uuid()).parse(await deps.rpc("simple_mail_managed_accounts", {})),
+  );
+  const routed = await selectedMailboxSchedule(deps);
+  return [
+    ...legacy.filter((a) => !managed.has(a.account_id)),
+    ...routed.filter((a) => managed.has(a.account_id)),
+  ];
+}
 
 export async function scheduleMailboxJobs(
   credentials: MailboxCredential[],

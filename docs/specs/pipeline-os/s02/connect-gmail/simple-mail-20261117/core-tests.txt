@@ -1,0 +1,264 @@
+TAP version 13
+# Subtest: CON-AC01/02/04: module has four accessible provider tabs, source dates and operational separation
+ok 1 - CON-AC01/02/04: module has four accessible provider tabs, source dates and operational separation
+  ---
+  duration_ms: 38.2245
+  type: 'test'
+  ...
+# Subtest: CON-AC05: TextTorrent remains pending and Instantly configuration does not claim live connectivity
+ok 2 - CON-AC05: TextTorrent remains pending and Instantly configuration does not claim live connectivity
+  ---
+  duration_ms: 32.3954
+  type: 'test'
+  ...
+# Subtest: CON-AC06: other roles and inactive admins cannot render accounts or provider controls
+ok 3 - CON-AC06: other roles and inactive admins cannot render accounts or provider controls
+  ---
+  duration_ms: 1.7197
+  type: 'test'
+  ...
+# Subtest: CON-AC01/04: settings retain roles while provider and sender controls are centralized
+ok 4 - CON-AC01/04: settings retain roles while provider and sender controls are centralized
+  ---
+  duration_ms: 2.4889
+  type: 'test'
+  ...
+# Subtest: CON-AC01/06: actual CRM menu exposes Connections to the admin and preserves existing sections
+ok 5 - CON-AC01/06: actual CRM menu exposes Connections to the admin and preserves existing sections
+  ---
+  duration_ms: 78.0088
+  type: 'test'
+  ...
+# Subtest: Simple mail SQL: real role/MFA, identity, advisor, replay, included budget and preservation
+    # Subtest: human begins with fixed brand; duplicate returns same receipt
+    ok 1 - human begins with fixed brand; duplicate returns same receipt
+      ---
+      duration_ms: 11.988
+      type: 'test'
+      ...
+    # Subtest: advisor required and mailbox domain mismatch denied
+    ok 2 - advisor required and mailbox domain mismatch denied
+      ---
+      duration_ms: 2.1665
+      type: 'test'
+      ...
+    # Subtest: MFA and session ownership enforced in DB
+    ok 3 - MFA and session ownership enforced in DB
+      ---
+      duration_ms: 3.1024
+      type: 'test'
+      ...
+    # Subtest: public identity assertion cannot save a credential
+    ok 4 - public identity assertion cannot save a credential
+      ---
+      duration_ms: 1.6808
+      type: 'test'
+      ...
+    # Subtest: server identity receipt and automatic brand confirmation
+    ok 5 - server identity receipt and automatic brand confirmation
+      ---
+      duration_ms: 22.325
+      type: 'test'
+      ...
+    # Subtest: finalize grants selected advisor, starts thirty-day sync and never starts campaigns
+    ok 6 - finalize grants selected advisor, starts thirty-day sync and never starts campaigns
+      ---
+      duration_ms: 9.2993
+      type: 'test'
+      ...
+    # Subtest: Composio identity, current-context candidate and effective scopes verify without another Google consent
+    ok 7 - Composio identity, current-context candidate and effective scopes verify without another Google consent
+      ---
+      duration_ms: 449.7216
+      type: 'test'
+      ...
+    # Subtest: included usage is closed until evidence and uses all applicable meters
+    ok 8 - included usage is closed until evidence and uses all applicable meters
+      ---
+      duration_ms: 8.1977
+      type: 'test'
+      ...
+    # Subtest: a saved Composio identity is adopted with fresh MFA without a new Connect attempt
+    ok 9 - a saved Composio identity is adopted with fresh MFA without a new Connect attempt
+      ---
+      duration_ms: 12.8687
+      type: 'test'
+      ...
+    # Subtest: fallback SQL reserves one child, requires actual B2 admission and keeps uncertain messages held
+    ok 10 - fallback SQL reserves one child, requires actual B2 admission and keeps uncertain messages held
+      ---
+      duration_ms: 67.849
+      type: 'test'
+      ...
+    # Subtest: private ledgers are inaccessible to authenticated/anon/service tables
+    ok 11 - private ledgers are inaccessible to authenticated/anon/service tables
+      ---
+      duration_ms: 2.13
+      type: 'test'
+      ...
+    # Subtest: Composio-first new mailbox can confirm brand and register its observed identity automatically
+    ok 12 - Composio-first new mailbox can confirm brand and register its observed identity automatically
+      ---
+      duration_ms: 189.2429
+      type: 'test'
+      ...
+    # Subtest: ten independent mailboxes remain scoped and create no campaigns or outgoing mail
+    ok 13 - ten independent mailboxes remain scoped and create no campaigns or outgoing mail
+      ---
+      duration_ms: 113.0894
+      type: 'test'
+      ...
+    # Subtest: initial page cursor is durable and CAS guarded; completion requires actual runtime read receipts
+    ok 14 - initial page cursor is durable and CAS guarded; completion requires actual runtime read receipts
+      ---
+      duration_ms: 23.2816
+      type: 'test'
+      ...
+    # Subtest: expired read-cycle recovery preserves request and outgoing uncertainty evidence
+    ok 15 - expired read-cycle recovery preserves request and outgoing uncertainty evidence
+      ---
+      duration_ms: 8.6942
+      type: 'test'
+      ...
+    # Subtest: read status exposes sync attention without leaking errors and degrades revoked advisor permission
+    ok 16 - read status exposes sync attention without leaking errors and degrades revoked advisor permission
+      ---
+      duration_ms: 5.7243
+      type: 'test'
+      ...
+    # Subtest: disconnect is local, idempotent and preserves identity/history
+    ok 17 - disconnect is local, idempotent and preserves identity/history
+      ---
+      duration_ms: 10.2156
+      type: 'test'
+      ...
+    1..17
+ok 6 - Simple mail SQL: real role/MFA, identity, advisor, replay, included budget and preservation
+  ---
+  duration_ms: 3326.7542
+  type: 'test'
+  ...
+# Subtest: Connection HTTP rejects closed, unauthorized, cross-origin, invalid and oversized requests before effects
+ok 7 - Connection HTTP rejects closed, unauthorized, cross-origin, invalid and oversized requests before effects
+  ---
+  duration_ms: 8.4429
+  type: 'test'
+  ...
+# Subtest: Repeated connect returns same durable state and authorization URL without leaking private correlation
+ok 8 - Repeated connect returns same durable state and authorization URL without leaking private correlation
+  ---
+  duration_ms: 6.0123
+  type: 'test'
+  ...
+# Subtest: Composio without included capacity does not create even an onboarding/link
+ok 9 - Composio without included capacity does not create even an onboarding/link
+  ---
+  duration_ms: 0.7602
+  type: 'test'
+  ...
+# Subtest: Thirty-day setup resumes from a saved identity and finalizes once ready
+ok 10 - Thirty-day setup resumes from a saved identity and finalizes once ready
+  ---
+  duration_ms: 0.9088
+  type: 'test'
+  ...
+# Subtest: A pending code exchange does not reopen Google; an expired authorization requires explicit reconnect
+ok 11 - A pending code exchange does not reopen Google; an expired authorization requires explicit reconnect
+  ---
+  duration_ms: 1.0541
+  type: 'test'
+  ...
+# Subtest: Included guard charges each attempted request and never emits when capacity is unknown
+ok 12 - Included guard charges each attempted request and never emits when capacity is unknown
+  ---
+  duration_ms: 0.5136
+  type: 'test'
+  ...
+# Subtest: actual Composio callback reserves every metadata/profile request and blocks unknown free capacity
+ok 13 - actual Composio callback reserves every metadata/profile request and blocks unknown free capacity
+  ---
+  duration_ms: 3985.2724
+  type: 'test'
+  ...
+# Subtest: simple-mail feature refuses a Composio request outside a budget scope
+ok 14 - simple-mail feature refuses a Composio request outside a budget scope
+  ---
+  duration_ms: 0.5549
+  type: 'test'
+  ...
+# Subtest: hybrid scheduler continues Composio-only reception and removes stale managed legacy credentials
+ok 15 - hybrid scheduler continues Composio-only reception and removes stale managed legacy credentials
+  ---
+  duration_ms: 3.4019
+  type: 'test'
+  ...
+# Subtest: new mailbox uses exactly thirty-day floor and releases cycle on malformed floor
+ok 16 - new mailbox uses exactly thirty-day floor and releases cycle on malformed floor
+  ---
+  duration_ms: 3.5821
+  type: 'test'
+  ...
+# Subtest: thirty-day import resumes saved pages, retries an interrupted page and commits its original baseline
+ok 17 - thirty-day import resumes saved pages, retries an interrupted page and commits its original baseline
+  ---
+  duration_ms: 2.2116
+  type: 'test'
+  ...
+# Subtest: Automatic fallback boundaries never duplicate an uncertain send
+    # Subtest: known OAuth preparation failure uses one Composio POST after durable cancellation
+    ok 1 - known OAuth preparation failure uses one Composio POST after durable cancellation
+      ---
+      duration_ms: 35.9208
+      type: 'test'
+      ...
+    # Subtest: generic, quota and permission failures do not qualify
+    ok 2 - generic, quota and permission failures do not qualify
+      ---
+      duration_ms: 2.015
+      type: 'test'
+      ...
+    # Subtest: a direct POST timeout never starts fallback
+    ok 3 - a direct POST timeout never starts fallback
+      ---
+      duration_ms: 1.4241
+      type: 'test'
+      ...
+    # Subtest: missing durable no-emission acknowledgment blocks fallback
+    ok 4 - missing durable no-emission acknowledgment blocks fallback
+      ---
+      duration_ms: 0.464
+      type: 'test'
+      ...
+    # Subtest: included usage, revocation and changed configuration stop before wire
+    ok 5 - included usage, revocation and changed configuration stop before wire
+      ---
+      duration_ms: 2.7681
+      type: 'test'
+      ...
+    # Subtest: uncertain fallback has exactly one POST and no recursive retry
+    ok 6 - uncertain fallback has exactly one POST and no recursive retry
+      ---
+      duration_ms: 2.0818
+      type: 'test'
+      ...
+    # Subtest: default closed mode preserves old behavior
+    ok 7 - default closed mode preserves old behavior
+      ---
+      duration_ms: 0.3422
+      type: 'test'
+      ...
+    1..7
+ok 18 - Automatic fallback boundaries never duplicate an uncertain send
+  ---
+  duration_ms: 46.3724
+  type: 'test'
+  ...
+1..18
+# tests 42
+# suites 0
+# pass 42
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5794.8558

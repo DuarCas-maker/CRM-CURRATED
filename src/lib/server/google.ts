@@ -4,6 +4,8 @@ import { setTimeout as delay } from "node:timers/promises";
 import { decrypt } from "./crypto";
 import { serviceClient, checkDb, HttpError } from "./supabase";
 import { GmailError, isGmailQuotaError } from "../gmail-errors";
+import { simpleMailEnabled } from "../mail-connections";
+import { DirectCredentialUnavailable } from "./mail-transport/errors";
 import { GmailQuotaPacer, gmailRequestCost } from "../gmail-quota";
 import {
   reserveGmailQuota,
@@ -19,6 +21,8 @@ import { createMailTransport } from "./mail-transport/factory";
 import {
   mailRoutingActive,
   executeRuntimeMail,
+  simpleAccountRuntime,
+  withMailRuntime,
 } from "./mail-transport/runtime-context";
 import {
   authorizeWorkerRequest,
@@ -113,6 +117,24 @@ export async function gmailToken(accountId: string) {
     const response = (
       error as { response?: { status?: number; data?: { error?: string } } }
     ).response;
+    // Only credential preparation failed: no Gmail send has been invoked.
+    if (
+      simpleMailEnabled() &&
+      response?.status !== 403 &&
+      response?.status !== 429 &&
+      !isGmailQuotaError(error)
+    ) {
+      const backup = await db.rpc("simple_mail_backup_ready", {
+        account: accountId,
+      });
+      if (!backup.error && backup.data === true) {
+        const saved = await db.rpc("simple_mail_direct_unavailable", {
+          account: accountId,
+        });
+        if (saved.error) throw new Error("DIRECT_HEALTH_UNAVAILABLE");
+        throw new DirectCredentialUnavailable();
+      }
+    }
     if (response?.status === 401 || response?.data?.error === "invalid_grant") {
       checkDb(
         await db
@@ -140,6 +162,11 @@ export async function gmail<T>(
   init: RequestInit = {},
   beforeRequest?: () => Promise<void>,
 ): Promise<T> {
+  const simple = await simpleAccountRuntime(accountId);
+  if (simple)
+    return withMailRuntime(simple, () =>
+      gmail<T>(accountId, path, init, beforeRequest),
+    );
   // Opt-in validation precedes credentials; default/direct compatibility remains unchanged.
   const quotaV2 = mailQuotaEnabled();
   if (quotaV2 && !mailRoutingActive() && !mailboxScope() && !inWorkerPilot())
