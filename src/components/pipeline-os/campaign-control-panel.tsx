@@ -176,43 +176,40 @@ export function CampaignControlPanel({
           </button>
         </p>
       )}
-      <div className="cc-overview-metrics">
-        {[
-          ["campaigns", "Campañas", "Campaigns"],
-          ["sent", "Enviados", "Sent"],
-          ["pending", "Por enviar", "Pending"],
-          ["replied", "Respondieron", "Replied"],
-        ].map(([key, es, en]) => (
-          <div key={key}>
-            <span>{t(locale, es, en)}</span>
-            <strong>
-              {number(
-                overview?.summary[key as keyof ControlOverview["summary"]],
-              )}
-            </strong>
-            <small>
-              {key === "campaigns"
-                ? t(
-                    locale,
-                    `${number(overview?.summary.active)} activas · ${number(overview?.summary.scheduled)} programadas`,
-                    `${number(overview?.summary.active)} active · ${number(overview?.summary.scheduled)} scheduled`,
-                  )
-                : key === "sent"
-                  ? t(locale, "Confirmados por Gmail", "Confirmed by Gmail")
-                  : key === "pending"
-                    ? t(
-                        locale,
-                        "Incluye los que esperan horario o cupo",
-                        "Includes waiting for hours or capacity",
-                      )
-                    : t(
-                        locale,
-                        "Respuesta confirmada al primer correo",
-                        "Confirmed reply to initial email",
-                      )}
-            </small>
+      <div className="cc-summary-groups">
+        <section className="cc-summary-group cc-summary-campaigns" aria-label={t(locale, "Resumen de campañas", "Campaign summary")}>
+          <h3 className="cc-summary-label">{t(locale, "Campañas", "Campaigns")}</h3>
+          <div className="cc-overview-metrics cc-campaign-metrics">
+            <div>
+              <span>{t(locale, "Total de campañas", "Total campaigns")}</span>
+              <strong>{number(overview?.summary.campaigns)}</strong>
+              <small>
+                {t(
+                  locale,
+                  `${number(overview?.summary.active)} activas · ${number(overview?.summary.scheduled)} programadas`,
+                  `${number(overview?.summary.active)} active · ${number(overview?.summary.scheduled)} scheduled`,
+                )}
+              </small>
+            </div>
           </div>
-        ))}
+        </section>
+        <section className="cc-summary-group" aria-label={t(locale, "Resumen de leads", "Lead summary")}>
+          <h3 className="cc-summary-label">{t(locale, "Leads", "Leads")}</h3>
+          <div className="cc-overview-metrics cc-lead-metrics">
+            {[
+              { key: "available", es: "Leads disponibles para envío", en: "Leads available to send", value: overview?.funnel.available, detailEs: "Listos en Preparar leads", detailEn: "Ready in Prepare leads" },
+              { key: "pending", es: "Leads por enviar / programados", en: "Leads pending / scheduled", value: overview?.summary.pending, detailEs: "En campaña; esperan fecha o cupo", detailEn: "In a campaign; waiting for schedule or capacity" },
+              { key: "sent", es: "Leads enviados", en: "Leads sent", value: overview?.summary.sent, detailEs: "Envío confirmado por Gmail", detailEn: "Send confirmed by Gmail" },
+              { key: "replied", es: "Leads que respondieron", en: "Leads who replied", value: overview?.summary.replied, detailEs: "Respuesta confirmada a la campaña", detailEn: "Confirmed reply to the campaign" },
+            ].map((metric) => (
+              <div key={metric.key} className={metric.key === "available" ? "cc-metric-available" : undefined}>
+                <span>{t(locale, metric.es, metric.en)}</span>
+                <strong>{number(metric.value)}</strong>
+                <small>{t(locale, metric.detailEs, metric.detailEn)}</small>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
       {!campaignsOnly && <section className="cc-surface cc-funnel">
         <div className="cc-section-head">
