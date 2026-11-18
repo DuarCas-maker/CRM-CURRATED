@@ -1,4 +1,5 @@
 import { db, checked, alertAdmins } from "./db";
+import { workerErrorCode } from "./errors";
 import { parseImport } from "../src/lib/server/parse-import";
 import { normalizeRow, type Mapping } from "../src/lib/imports";
 import { startScrub, pollScrub } from "./bouncer";
@@ -346,13 +347,13 @@ while (!stopping) {
       console.log(
         JSON.stringify({ job: job.id, kind: job.kind, result: "completed" }),
       );
-    } catch {
+    } catch (error) {
       checked(
         await client.rpc("finish_job", {
           job_id: job.id,
           lease: job.lease_token,
           success: false,
-          error_code: "PROCESSING_FAILED",
+          error_code: workerErrorCode(error),
         }),
       );
       if (job.attempts >= 5) {
@@ -387,6 +388,7 @@ while (!stopping) {
           job: job.id,
           kind: job.kind,
           result: "retry_or_failed",
+          error_code: workerErrorCode(error),
         }),
       );
     } finally {

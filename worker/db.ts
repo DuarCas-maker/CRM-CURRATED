@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { WorkerDatabaseError } from "./errors";
 export function db() {
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -13,9 +14,9 @@ export function db() {
 }
 export function checked<T>(r: {
   data: T;
-  error: { message: string } | null;
+  error: { message: string; code?: string } | null;
 }): T {
-  if (r.error) throw new Error("DATABASE_OPERATION_FAILED");
+  if (r.error) throw new WorkerDatabaseError(r.error.code);
   return r.data;
 }
 export async function alertAdmins(event: string, title: string) {
