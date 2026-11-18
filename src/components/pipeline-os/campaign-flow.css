@@ -22,7 +22,7 @@
 }
 .cf-funnel {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   border: 1px solid var(--pos-line);
   border-radius: 14px;
   overflow: hidden;
@@ -59,6 +59,21 @@
   font-weight: 550;
   color: var(--pos-ink);
 }
+.cf-funnel .cf-stage-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+}
+.cf-stage-label svg { flex-shrink: 0; opacity: .55; }
+.cf-funnel .cf-ready { background: var(--pos-soft); }
+.cf-funnel .cf-ready strong { color: var(--pos-good-ink); }
+.cf-exceptions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; margin-top: -12px; }
+.cf-exceptions button { display: inline-flex; align-items: center; gap: 8px; padding: 6px 0; background: transparent; border: 0; border-bottom: 1px solid transparent; color: var(--pos-muted); font: inherit; font-size: 12px; cursor: pointer; }
+.cf-exceptions button.selected { border-bottom-color: var(--pos-accent); color: var(--pos-ink); }
+.cf-exceptions strong { padding: 2px 7px; border-radius: 5px; background: var(--pos-panel2); color: var(--pos-ink); font-weight: 550; }
+.cf-exceptions small { margin-left: auto; color: var(--pos-muted); font-size: 11px; }
 .cf-pool-tools {
   display: flex;
   gap: 14px;
@@ -282,7 +297,7 @@
 }
 @media (max-width: 1000px) {
   .cf-funnel {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .cf-funnel button,
   .cf-funnel .cf-stat {

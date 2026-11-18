@@ -1,0 +1,18 @@
+{
+  "state": "applied",
+  "at": "2026-11-18T04:13:10.054Z",
+  "sqlSha256": "7823cb9af5640656b6d856bd8f1fbd717ab9a59b045ab549575569b20710497d",
+  "changedFunctions": [],
+  "addedFunctions": [
+    "campaign_flow_v1.lead_states()",
+    "public.campaign_flow_leads(text, text, integer, integer)"
+  ],
+  "acl": {
+    "anon": false,
+    "service": false,
+    "privateAuth": false,
+    "authenticated": true
+  },
+  "backup": "/var/lib/postgresql/data/campaign-lead-funnel-20261118T040952Z/pre-flow.dump",
+  "realProviderRequests": 0
+}

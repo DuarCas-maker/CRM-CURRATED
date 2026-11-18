@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "exclusiveStates": 8,
+  "distinctContacts": 15,
+  "countsMatchEveryFilter": true,
+  "nativeEligiblePoolMatches": true,
+  "permissionsAndMfa": true,
+  "reversalPassed": true,
+  "existingLaunchUnchanged": true,
+  "sqlSha256": "7823cb9af5640656b6d856bd8f1fbd717ab9a59b045ab549575569b20710497d",
+  "realProviderRequests": 0,
+  "postgres": "PostgreSQL 15.19, compiled by Visual C++ build 1944, 64-bit",
+  "remoteMutations": 0
+}

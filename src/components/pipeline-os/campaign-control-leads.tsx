@@ -7,6 +7,7 @@ import {
   campaignControlRequest,
 } from "@/lib/campaign-control-client";
 import { verificationReason } from "@/lib/campaign-import-review";
+import { requestLeadFunnel, leadFunnelDescription, leadFunnelLabel, leadFunnelReason, type LeadFunnelFilter, type LeadFunnelRow } from "@/lib/campaign-lead-funnel";
 import { Modal, t } from "../ui";
 export function CampaignControlLeads({
   batch,
@@ -14,12 +15,16 @@ export function CampaignControlLeads({
   locale,
   manage,
   changed,
+  funnelFilter,
+  refreshKey = 0,
 }: {
   batch: string;
   filter: string;
   locale: Locale;
   manage: boolean;
   changed: () => void;
+  funnelFilter?: LeadFunnelFilter;
+  refreshKey?: number;
 }) {
   const [query, setQuery] = useState(""),
     [page, setPage] = useState(0),
@@ -36,6 +41,8 @@ export function CampaignControlLeads({
     [busy, setBusy] = useState(false),
     [notice, setNotice] = useState("");
   const keys = useRef(new Map<string, string>());
+  const canVerify = manage && (!funnelFilter || ["all", "pending", "review"].includes(funnelFilter));
+  const pauseRefresh = Boolean(funnelFilter && (confirm || busy));
   const [actionError,setActionError]=useState('');
   useEffect(()=>{setConfirm(false);setAccepted(false);},[selected]);
   useEffect(() => {
@@ -48,12 +55,16 @@ export function CampaignControlLeads({
     setAccepted(false);
   }, [page]);
   useEffect(() => {
+    if (pauseRefresh) return;
     const abort = new AbortController();
     setLoading(true);
     setResult(null);
     const timer = setTimeout(
       () =>
-        void campaignControlRequest<{ rows: ControlLead[]; total: number }>(
+        void (funnelFilter ? requestLeadFunnel(
+          new URLSearchParams({ filter: funnelFilter, search: query, page: String(page), size: "50" }),
+          abort.signal,
+        ) : campaignControlRequest<{ rows: ControlLead[]; total: number }>(
           new URLSearchParams({
             mode: "leads",
             filter,
@@ -62,7 +73,7 @@ export function CampaignControlLeads({
             ...(batch ? { batch } : {}),
           }).toString(),
           abort.signal,
-        )
+        ))
           .then((r) => {
             if (abort.signal.aborted) return;
             setResult(r);
@@ -87,7 +98,7 @@ export function CampaignControlLeads({
       abort.abort();
       clearTimeout(timer);
     };
-  }, [batch, filter, query, page, revision]);
+  }, [batch, filter, query, page, revision, funnelFilter, refreshKey, pauseRefresh]);
   const selectable =
     result?.rows
       .filter((x) => x.retryable && !x.suppressed)
@@ -132,10 +143,10 @@ export function CampaignControlLeads({
       <div className="cc-section-head cc-verification-header">
         <div>
           <h3>
-            {t(locale, "Contactos y verificación", "Contacts and verification")}
+            {funnelFilter ? leadFunnelLabel(funnelFilter, locale) : t(locale, "Contactos y verificación", "Contacts and verification")}
           </h3>
           <p>
-            {t(
+            {funnelFilter ? leadFunnelDescription(funnelFilter, locale) : t(
               locale,
               "Revisa los motivos antes de gastar créditos. La selección se limita a esta página.",
               "Review reasons before using credits. Selection applies to this page only.",
@@ -158,7 +169,7 @@ export function CampaignControlLeads({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          {manage && (
+          {canVerify && (
             <button
               className="pos-btn pos-primary"
               disabled={!selected.length || loading || busy}
@@ -190,7 +201,7 @@ export function CampaignControlLeads({
           {notice}
         </p>
       )}
-      {filter === "review" && (
+      {filter === "review" && !funnelFilter && (
         <p className="cc-callout">
           {t(
             locale,
@@ -213,7 +224,7 @@ export function CampaignControlLeads({
       ) : (
         result && (
           <>
-            {manage && (
+            {canVerify && selectable.length > 0 && (
               <label className="cc-check">
                 <input
                   type="checkbox"
@@ -248,7 +259,7 @@ export function CampaignControlLeads({
               <div className="cc-contact-list">
                 {result.rows.map((row) => (
                   <label className="cc-contact-row" key={row.contact_id}>
-                    {manage && (
+                    {canVerify && (
                       <input
                         type="checkbox"
                         checked={selected.includes(row.contact_id)}
@@ -274,7 +285,9 @@ export function CampaignControlLeads({
                       </span>
                     </span>
                     <span className="cc-contact-note">
-                      {row.suppressed
+                      {funnelFilter
+                        ? leadFunnelReason(row as LeadFunnelRow, locale)
+                        : row.suppressed
                         ? t(
                             locale,
                             "Baja o bloqueo; excluido.",

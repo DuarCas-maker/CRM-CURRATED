@@ -10,8 +10,7 @@ import {
 } from "lucide-react";
 import type { Locale, Workspace } from "@/lib/domain";
 import { type FlowPool } from "@/lib/campaign-flow";
-import type { ControlOverview } from "@/lib/campaign-control";
-import { campaignControlRequest } from "@/lib/campaign-control-client";
+import { leadFunnelLabel, leadFunnelDescription, requestLeadFunnel, type LeadFunnelFilter, type LeadFunnelPage } from "@/lib/campaign-lead-funnel";
 import type { Action } from "../crm";
 import { ImportWizard } from "../import-wizard";
 import { CampaignControlPanel } from "./campaign-control-panel";
@@ -51,9 +50,9 @@ export function CampaignFlowPanel({
     [importing, setImporting] = useState(false),
     [composing, setComposing] = useState(false);
   const [preferredTemplate, setPreferredTemplate] = useState(initialTemplate);
-  const [overview, setOverview] = useState<ControlOverview | null>(null),
+  const [overview, setOverview] = useState<LeadFunnelPage | null>(null),
     [pool, setPool] = useState<FlowPool | null>(null);
-  const [filter, setFilter] = useState("available"),
+  const [filter, setFilter] = useState<LeadFunnelFilter>("available"),
     [query, setQuery] = useState(""),
     [size, setSize] = useState(20),
     [page, setPage] = useState(0),
@@ -90,7 +89,7 @@ export function CampaignFlowPanel({
     const abort = new AbortController();
     setLoading(true);
     void Promise.all([
-      campaignControlRequest<ControlOverview>("mode=overview", abort.signal),
+      requestLeadFunnel(new URLSearchParams({ size: "20" }), abort.signal),
       flowRead<FlowPool>(
         new URLSearchParams({
           search: query,
@@ -199,8 +198,8 @@ export function CampaignFlowPanel({
               <p>
                 {t(
                   locale,
-                  "Importa y verifica con Bouncer. Solo los válidos disponibles pueden entrar a una campaña.",
-                  "Import and verify with Bouncer. Only valid, available contacts can enter a campaign.",
+                  "Importa, verifica y prepara tu próximo lote para campaña.",
+                  "Import, verify and prepare your next campaign batch.",
                 )}
               </p>
             </div>
@@ -215,47 +214,27 @@ export function CampaignFlowPanel({
             className="cf-funnel"
             aria-label={t(locale, "Estado de los leads", "Lead status")}
           >
-            {(
-              [
-                ["all", "Total", "total"],
-                ["available", "Disponibles", "available"],
-                ["valid", "Válidos", "valid"],
-                ["pending", "Por validar", "pending"],
-                ["running", "En validación", "running"],
-                ["review", "Revisar Bouncer", "review"],
-                ["uncertain", "Dudosos", "uncertain"],
-                ["invalid", "Inválidos", "invalid"],
-              ] as const
-            ).map(([id, label, key]) =>
-              id === "running" ? (
-                <div
-                  key={id}
-                  className="cf-stat"
-                  role="status"
-                  aria-live="polite"
-                  aria-atomic="true"
-                  title={t(
-                    locale,
-                    "Verificaciones en cola o que Bouncer está procesando.",
-                    "Verifications queued or being processed by Bouncer.",
-                  )}
-                >
-                  <span>{t(locale, "En validación", "Verifying")}</span>
-                  <strong>{number(overview?.funnel.running)}</strong>
-                </div>
-              ) : (
+            {(["all", "pending", "running", "available", "campaign", "contacted"] as const).map((id, index) => (
                 <button
                   key={id}
                   disabled={composing}
-                  className={filter === id ? "selected" : ""}
+                  className={[filter === id ? "selected" : "", id === "available" ? "cf-ready" : ""].join(" ")}
                   onClick={() => setFilter(id)}
                   aria-pressed={filter === id}
+                  title={leadFunnelDescription(id, locale)}
                 >
-                  <span>{label}</span>
-                  <strong>{number(overview?.funnel[key])}</strong>
+                  <span className="cf-stage-label">{leadFunnelLabel(id, locale)}{index < 5 && <ArrowRight size={13} aria-hidden="true" />}</span>
+                  <strong>{number(overview?.funnel[id === "all" ? "total" : id])}</strong>
                 </button>
-              ),
-            )}
+            ))}
+          </div>
+          <div className="cf-exceptions" aria-label={t(locale, "Contactos que requieren atención", "Contacts needing attention")}>
+            {(["review", "excluded", "restricted"] as const).map((id) => (
+              <button key={id} className={filter === id ? "selected" : ""} disabled={composing} aria-pressed={filter === id} title={leadFunnelDescription(id, locale)} onClick={() => setFilter(id)}>
+                {leadFunnelLabel(id, locale)} <strong>{number(overview?.funnel[id])}</strong>
+              </button>
+            ))}
+            <small>{t(locale, "Cada lead aparece en un solo estado.", "Each lead appears in exactly one state.")}</small>
           </div>
           {!manage && (
             <p className="pos-info">
@@ -282,7 +261,7 @@ export function CampaignFlowPanel({
             >
               <div className="cc-section-head">
                 <div>
-                  <h3>{t(locale, "Leads disponibles", "Available leads")}</h3>
+                  <h3>{leadFunnelLabel("available", locale)}</h3>
                   <p>
                     {number(pool?.total)}{" "}
                     {t(
@@ -443,6 +422,8 @@ export function CampaignFlowPanel({
               locale={locale}
               manage={manage}
               changed={refresh}
+              funnelFilter={filter}
+              refreshKey={revision}
             />
           )}
           {composing && (

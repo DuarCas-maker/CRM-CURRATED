@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-18T04:09:57.503248+00:00",
+  "path": "/var/lib/postgresql/data/campaign-lead-funnel-20261118T040952Z/pre-flow.dump",
+  "bytes": 58515706,
+  "sha256": "6d46f28ac190b46bd1b99afa9a4914378d9a627b7020b7fed0e29cef441553b1",
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}

@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 import { randomUUID, createHash } from "node:crypto";
 import { execFileSync, execFile } from "node:child_process";
 import { flowFixture, flowRoot } from "./fixtures/campaign-flow";
+import { exerciseLeadFunnel, funnelRoot } from "./fixtures/campaign-lead-funnel";
 const bin =
   process.env.CAMPAIGN_TEST_PG_BIN ||
   path.resolve(".local/toolchains/postgresql-15/bin");
@@ -196,6 +197,12 @@ try {
     return { db, users, asUser, command } as any;
   };
   const f = await flowFixture(factory as any);
+  if (process.env.CAMPAIGN_TEST_LEAD_FUNNEL === "1") {
+    sql(fs.readFileSync("docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/up.sql", "utf8"));
+    const result = { ...(await exerciseLeadFunnel(f)), postgres: sql("select version()"), remoteMutations: 0 };
+    fs.writeFileSync(funnelRoot + "native-result.json", JSON.stringify(result, null, 2) + "\n");
+    console.log(JSON.stringify(result));
+  } else {
   if (ownerRevision) sql(fs.readFileSync(revisionRoot + "up.sql", "utf8"));
   // Reversal before history restores exactly the protected boundaries.
   sql(fs.readFileSync(revisionRoot + "down.sql", "utf8"));
@@ -256,6 +263,7 @@ try {
     JSON.stringify(result, null, 2) + "\n",
   );
   console.log(JSON.stringify(result));
+  }
 } finally {
   if (started) run("pg_ctl", ["-D", data, "-m", "fast", "-w", "stop"]);
 }

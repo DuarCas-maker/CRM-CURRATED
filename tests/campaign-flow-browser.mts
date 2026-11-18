@@ -5,7 +5,8 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
-import { flowOwnerFixture as flowFixture } from "./fixtures/campaign-flow-owner";
+import { funnelFixture as flowFixture } from "./fixtures/campaign-lead-funnel";
+import { queueFixture } from "./fixtures/campaign-control";
 import {
   readControl,
   writeControl,
@@ -39,7 +40,7 @@ for (let i = 0; i < 69; i++) {
 // No scrub jobs or provider requests are started by this harness.
 const inValidation = (
   await db.query<{ id: string }>(
-    "select id from contacts where verification='pending' order by id limit 3",
+    "select id from contacts where verification='pending' order by email limit 3",
   )
 ).rows;
 for (const [i, contact] of inValidation.entries()) {
@@ -48,6 +49,14 @@ for (const [i, contact] of inValidation.entries()) {
     [contact.id, randomUUID(), i === 2 ? "submitted" : "queued"],
   );
 }
+// All lifecycle stages are synthetic. There is no worker or outbound provider.
+const syntheticCampaign = await f.launch();
+await queueFixture(f, syntheticCampaign.id);
+await db.exec("reset role");
+await db.exec("update outbox set status='sent',gmail_message_id='synthetic-ui-confirmed',sent_at=now() where id=(select id from outbox order by id limit 1)");
+await db.exec("update contacts set verification='invalid' where email='lead-55@example.test'");
+await db.exec("update opportunities set stage='documents_pending' where contact_id=(select id from contacts where email='lead-54@example.test')");
+await db.exec("insert into verifications(contact_id,request_key,result,state,reason) select id,'synthetic-ui-credit-error','pending','technical_error','provider_http_402' from contacts where email='lead-65@example.test' and not exists(select 1 from verifications v where v.contact_id=contacts.id)");
 await db.query(
   "update email_templates set subject='Una conversación para {{company}}',body=$1,body_format='markdown' where id=$2",
   [
@@ -76,6 +85,7 @@ const signatures: Record<string, string[]> = {
   campaign_control_command: ["kind", "p", "request_key"],
   brand_prepare_context: ["account", "preparation", "purpose", "case_id"],
   campaign_flow_pool: ["search_text", "page_number", "page_size"],
+  campaign_flow_leads: ["filter", "search_text", "page_number", "page_size"],
   campaign_flow_launch: ["p", "request_key"],
   campaign_flow_progress: ["campaign"],
 };
@@ -157,6 +167,10 @@ http
         failRead = true;
         return json(res, 200, {});
       }
+      if (u.pathname === "/qa/recover-read") {
+        failRead = false;
+        return json(res, 200, {});
+      }
       if (u.pathname === "/qa/workspace") {
         return json(
           res,
@@ -214,7 +228,6 @@ http
       if (u.pathname.startsWith("/api/")) {
         try {
           if (failRead && req.method === "GET") {
-            failRead = false;
             return json(res, 503, {
               error: "Ensayo: consulta temporalmente no disponible.",
             });

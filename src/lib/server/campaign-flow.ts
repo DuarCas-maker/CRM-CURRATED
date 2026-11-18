@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { flowLaunchSchema } from "../campaign-flow";
+import { leadFunnelFilters } from "../campaign-lead-funnel";
 import { campaignTemplateSchema } from "../campaign-templates";
 import { deliveryContext, deliveryResult } from "./brand-delivery";
 import { HttpError } from "./supabase";
@@ -36,6 +37,15 @@ export async function readFlow(url: URL, ctx: Context) {
     });
   }
   allowed(ctx);
+  if (url.searchParams.has("mode")) {
+    z.literal("leads").parse(url.searchParams.get("mode"));
+    return rpc(ctx, "campaign_flow_leads", {
+      filter: z.enum(leadFunnelFilters).parse(url.searchParams.get("filter") || "all"),
+      search_text: z.string().max(200).parse(url.searchParams.get("search") || ""),
+      page_number: z.coerce.number().int().min(0).max(1000000).parse(url.searchParams.get("page") || 0),
+      page_size: z.coerce.number().refine((v) => [20, 50, 100].includes(v)).parse(url.searchParams.get("size") || 50),
+    });
+  }
   return rpc(ctx, "campaign_flow_pool", {
     search_text: z
       .string()
