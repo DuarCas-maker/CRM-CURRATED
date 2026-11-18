@@ -213,6 +213,39 @@
   gap: 10px;
   min-width: 0;
 }
+.cc-verification-header {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+}
+.cc-verification-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 10px;
+  min-width: 0;
+}
+.cc-verification-tools input {
+  flex: 1 1 230px;
+  min-width: 0;
+}
+.cc-verification-tools .pos-btn {
+  flex-shrink: 0;
+}
+@media (max-width: 1000px) {
+  .cc-verification-header {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  .cc-verification-tools {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .cc-verification-tools .pos-btn {
+    width: 100%;
+  }
+}
 .cc-tools input {
   width: 230px;
 }

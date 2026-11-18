@@ -221,22 +221,41 @@ export function CampaignFlowPanel({
                 ["available", "Disponibles", "available"],
                 ["valid", "Válidos", "valid"],
                 ["pending", "Por validar", "pending"],
+                ["running", "En validación", "running"],
                 ["review", "Revisar Bouncer", "review"],
                 ["uncertain", "Dudosos", "uncertain"],
                 ["invalid", "Inválidos", "invalid"],
               ] as const
-            ).map(([id, label, key]) => (
-              <button
-                key={id}
-                disabled={composing}
-                className={filter === id ? "selected" : ""}
-                onClick={() => setFilter(id)}
-                aria-pressed={filter === id}
-              >
-                <span>{label}</span>
-                <strong>{number(overview?.funnel[key])}</strong>
-              </button>
-            ))}
+            ).map(([id, label, key]) =>
+              id === "running" ? (
+                <div
+                  key={id}
+                  className="cf-stat"
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+                  title={t(
+                    locale,
+                    "Verificaciones en cola o que Bouncer está procesando.",
+                    "Verifications queued or being processed by Bouncer.",
+                  )}
+                >
+                  <span>{t(locale, "En validación", "Verifying")}</span>
+                  <strong>{number(overview?.funnel.running)}</strong>
+                </div>
+              ) : (
+                <button
+                  key={id}
+                  disabled={composing}
+                  className={filter === id ? "selected" : ""}
+                  onClick={() => setFilter(id)}
+                  aria-pressed={filter === id}
+                >
+                  <span>{label}</span>
+                  <strong>{number(overview?.funnel[key])}</strong>
+                </button>
+              ),
+            )}
           </div>
           {!manage && (
             <p className="pos-info">

@@ -129,7 +129,7 @@ export function CampaignControlLeads({
   }
   return (
     <section className="cc-surface cc-leads" aria-busy={loading}>
-      <div className="cc-section-head">
+      <div className="cc-section-head cc-verification-header">
         <div>
           <h3>
             {t(locale, "Contactos y verificación", "Contacts and verification")}
@@ -142,21 +142,39 @@ export function CampaignControlLeads({
             )}
           </p>
         </div>
-        <input
-          aria-label={t(
-            locale,
-            "Buscar contacto de la base",
-            "Search pool contacts",
+        <div className="cc-verification-tools">
+          <input
+            aria-label={t(
+              locale,
+              "Buscar contacto de la base",
+              "Search pool contacts",
+            )}
+            placeholder={t(
+              locale,
+              "Buscar empresa, contacto o correo…",
+              "Search company, contact or email…",
+            )}
+            maxLength={200}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          {manage && (
+            <button
+              className="pos-btn pos-primary"
+              disabled={!selected.length || loading || busy}
+              onClick={() => {
+                setAccepted(false);
+                setConfirm(true);
+              }}
+            >
+              {t(
+                locale,
+                "Revisar verificación con Bouncer",
+                "Review Bouncer verification",
+              )}
+            </button>
           )}
-          placeholder={t(
-            locale,
-            "Buscar empresa, contacto o correo…",
-            "Search company, contact or email…",
-          )}
-          maxLength={200}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        </div>
       </div>
       {error && (
         <p role="alert" className="pos-alert">
@@ -213,6 +231,9 @@ export function CampaignControlLeads({
                   "Select verifiable contacts on this page",
                 )}{" "}
                 · {result.total} {t(locale, "contactos", "contacts")}
+                {selected.length > 0 && (
+                  <> · {selected.length} {t(locale, "seleccionados", "selected")}</>
+                )}
               </label>
             )}
             {!result.rows.length ? (
@@ -287,27 +308,6 @@ export function CampaignControlLeads({
                 {t(locale, "Siguiente", "Next")}
               </button>
             </div>
-            {manage && (
-              <div className="cc-actions">
-                <span>
-                  {selected.length} {t(locale, "seleccionados", "selected")}
-                </span>
-                <button
-                  className="pos-btn"
-                  disabled={!selected.length}
-                  onClick={() => {
-                    setAccepted(false);
-                    setConfirm(true);
-                  }}
-                >
-                  {t(
-                    locale,
-                    "Revisar verificación con Bouncer",
-                    "Review Bouncer verification",
-                  )}
-                </button>
-              </div>
-            )}
           </>
         )
       )}

@@ -35,6 +35,19 @@ for (let i = 0; i < 69; i++) {
     ],
   );
 }
+// Synthetic queue/submitted states for the read-only "En validación" card.
+// No scrub jobs or provider requests are started by this harness.
+const inValidation = (
+  await db.query<{ id: string }>(
+    "select id from contacts where verification='pending' order by id limit 3",
+  )
+).rows;
+for (const [i, contact] of inValidation.entries()) {
+  await db.query(
+    "insert into verifications(contact_id,request_key,result,state) values($1,$2,'pending',$3)",
+    [contact.id, randomUUID(), i === 2 ? "submitted" : "queued"],
+  );
+}
 await db.query(
   "update email_templates set subject='Una conversación para {{company}}',body=$1,body_format='markdown' where id=$2",
   [

@@ -22,21 +22,24 @@
 }
 .cf-funnel {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   border: 1px solid var(--pos-line);
   border-radius: 14px;
   overflow: hidden;
   background: var(--pos-panel);
 }
-.cf-funnel button {
+.cf-funnel button,
+.cf-funnel .cf-stat {
   background: transparent;
   color: var(--pos-muted);
   border: 0;
   border-right: 1px solid var(--pos-line);
   padding: 20px;
   text-align: left;
-  cursor: pointer;
   font: inherit;
+}
+.cf-funnel button {
+  cursor: pointer;
 }
 .cf-funnel button:last-child {
   border: 0;
@@ -279,9 +282,10 @@
 }
 @media (max-width: 1000px) {
   .cf-funnel {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .cf-funnel button {
+  .cf-funnel button,
+  .cf-funnel .cf-stat {
     border-bottom: 1px solid var(--pos-line);
   }
   .cf-compose-grid {
@@ -304,7 +308,8 @@
   .cf-funnel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .cf-funnel button {
+  .cf-funnel button,
+  .cf-funnel .cf-stat {
     padding: 15px;
   }
   .cf-pool-tools,
