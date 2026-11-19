@@ -8,3 +8,9 @@ Síntoma informado: entrada y varias secciones lentas en la aplicación publicad
 4. Confirmado por dependencia del efecto: Pipeline OS vuelve a leer tablero al cambiar data después de refresh.
 
 No confirmado: duración/plan de consultas SQL reales, presión de CPU/RAM o red de producción y causa concreta de cada carga fallida reportada. Las correcciones se limitan a defectos demostrados, con medición sintética y regresión offline.
+
+## Hallazgos de publicación
+
+- React418 en Resumen: HTML inicial diferente entre UTC/Bogotá. Reproducido con la misma fixture; resuelto con contexto de zona estable durante hidratación y reloj as_of para etiquetas relativas.
+- workspace_stats:7118–7440ms por GET aunque la pantalla no lo usa. Resuelto cargándolo solo en reports/overview legacy, y colas administrativas solo en su módulo.
+- La comprobación de navegación tras8866e84 detectó un defecto introducido en WorkspaceReader: llamar this.fetchImpl(...) cambia el receptor de fetch nativo y el navegador lo rechaza con Illegal invocation. El puerto ficticio inicial no lo detectaba. Nueva regresión reproduce el receptor global y falla antes; fetchImpl.call(globalThis,...) la corrige. Fixture real loopback sin reemplazar window.fetch muestra Lectura correcta y consola vacía antes de republicar. No se ocultó el error ni se sustituyeron consultas por datos ficticios en producción.

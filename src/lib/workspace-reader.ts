@@ -38,7 +38,7 @@ export class WorkspaceReader<T> {
     const promise = (async () => {
       try {
         const request = async () => {
-          const response = await this.fetchImpl(url, {
+          const response = await this.fetchImpl.call(globalThis, url, {
             signal: controller.signal,
             cache: "no-store",
           });

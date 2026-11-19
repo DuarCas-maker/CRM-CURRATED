@@ -2,6 +2,20 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { WorkspaceReader } from "../src/lib/workspace-reader";
 
+test("the default browser fetch keeps its global receiver", async () => {
+  const previous = globalThis.fetch;
+  try {
+    globalThis.fetch = function (this: unknown) {
+      if (this !== globalThis) throw new TypeError("Illegal invocation");
+      return Promise.resolve(Response.json({ ok: true }));
+    };
+    const reader = new WorkspaceReader<{ ok: boolean }>();
+    assert.deepEqual(await reader.read("/api/workspace"), { ok: true });
+  } finally {
+    globalThis.fetch = previous;
+  }
+});
+
 function port() {
   const calls: {
     url: string;

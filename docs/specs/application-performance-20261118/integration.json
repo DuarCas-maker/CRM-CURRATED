@@ -44,7 +44,7 @@
     },
     {
       "path": "src/lib/workspace-reader.ts",
-      "sha256": "ab7dddf371d0a4f26eee02256c4265da98f7a54c18b50b5a9d7e1259b6a28ec7"
+      "sha256": "4367257acce899d0bd59e6b98e0ca9e49fc1f48bd2ef431c7b7fc510819665d9"
     },
     {
       "path": "tests/crm-hydration.test.tsx",
@@ -60,11 +60,11 @@
     },
     {
       "path": "tests/workspace-reader.test.ts",
-      "sha256": "46f0be322dc12a0f1cd82d759eee8448f84dac391ec1fa1a524989b0206a83e1"
+      "sha256": "52c977bb559f2be1084496d895956092cab3ebb6636877c2c2a58f7e4f356ec8"
     }
   ],
   "rootWipPreserved": true,
   "conflictResolved": "crm import only: preserved UserManagement and WorkspaceReader",
   "additionalFix": "timezone-stable initial summary rendering, FR-005",
-  "predecessor": "9cfdcc169d078328938a40447b7f6654fbebb927"
+  "predecessor": "8866e84a902e739e358fbe35161746614d96407f"
 }
