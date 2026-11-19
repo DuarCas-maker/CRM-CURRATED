@@ -42,6 +42,7 @@ import {
   type PrivateConnection,
 } from "./service";
 import { withIncludedUsage, includedComposioFetch } from "./included";
+import { simpleMailReturnUrl } from "./return-url";
 
 export function simpleWorkspace() {
   const all = configuredOrganizations(),
@@ -447,10 +448,7 @@ export async function simpleDirectCallback(
   const ports = await productionOnboarding(request),
     api = createOnboarding(ports);
   const view = await api.get(z.uuid().parse(id));
-  const destination = new URL(
-    "/?module=connections&mail_connection=" + encodeURIComponent(view.id),
-    request.url,
-  );
+  const destination = simpleMailReturnUrl(view.id);
   if (view.state === "ready" || view.state === "preparing") {
     return Response.redirect(destination, 303);
   }

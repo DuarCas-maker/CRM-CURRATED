@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: Connection HTTP rejects closed, unauthorized, cross-origin, invalid and oversized requests before effects
+ok 1 - Connection HTTP rejects closed, unauthorized, cross-origin, invalid and oversized requests before effects
+  ---
+  duration_ms: 10.7834
+  type: 'test'
+  ...
+# Subtest: Gmail-only release blocks Composio even with free capacity, including resuming an existing attempt
+ok 2 - Gmail-only release blocks Composio even with free capacity, including resuming an existing attempt
+  ---
+  duration_ms: 9.7255
+  type: 'test'
+  ...
+# Subtest: Composio product flag is closed by default and cannot be enabled without the main feature
+ok 3 - Composio product flag is closed by default and cannot be enabled without the main feature
+  ---
+  duration_ms: 0.2768
+  type: 'test'
+  ...
+# Subtest: Repeated connect returns same durable state and authorization URL without leaking private correlation
+ok 4 - Repeated connect returns same durable state and authorization URL without leaking private correlation
+  ---
+  duration_ms: 1.4722
+  type: 'test'
+  ...
+# Subtest: Composio without included capacity does not create even an onboarding/link
+ok 5 - Composio without included capacity does not create even an onboarding/link
+  ---
+  duration_ms: 0.4539
+  type: 'test'
+  ...
+# Subtest: Thirty-day setup resumes from a saved identity and finalizes once ready
+ok 6 - Thirty-day setup resumes from a saved identity and finalizes once ready
+  ---
+  duration_ms: 1.8819
+  type: 'test'
+  ...
+# Subtest: A pending code exchange does not reopen Google; an expired authorization requires explicit reconnect
+ok 7 - A pending code exchange does not reopen Google; an expired authorization requires explicit reconnect
+  ---
+  duration_ms: 1.0268
+  type: 'test'
+  ...
+# Subtest: Included guard charges each attempted request and never emits when capacity is unknown
+ok 8 - Included guard charges each attempted request and never emits when capacity is unknown
+  ---
+  duration_ms: 1.3938
+  type: 'test'
+  ...
+# Subtest: actual Composio callback reserves every metadata/profile request and blocks unknown free capacity
+ok 9 - actual Composio callback reserves every metadata/profile request and blocks unknown free capacity
+  ---
+  duration_ms: 5797.3585
+  type: 'test'
+  ...
+# Subtest: simple-mail feature refuses a Composio request outside a budget scope
+ok 10 - simple-mail feature refuses a Composio request outside a budget scope
+  ---
+  duration_ms: 0.6501
+  type: 'test'
+  ...
+# Subtest: OAuth behind a container proxy returns only to the configured public CRM
+ok 11 - OAuth behind a container proxy returns only to the configured public CRM
+  ---
+  duration_ms: 3.8303
+  type: 'test'
+  ...
+# Subtest: Invalid public-origin configuration fails closed without internal-host fallback
+ok 12 - Invalid public-origin configuration fails closed without internal-host fallback
+  ---
+  duration_ms: 0.7282
+  type: 'test'
+  ...
+# Subtest: Public origins normalize their root slash; configured localhost remains usable in development
+ok 13 - Public origins normalize their root slash; configured localhost remains usable in development
+  ---
+  duration_ms: 0.1868
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7842.1001
