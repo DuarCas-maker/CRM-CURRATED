@@ -120,13 +120,18 @@ export async function readPipelineBoard(
   db: SupabaseClient,
   profile: Profile,
   query: Partial<PipelineQuery> = {},
+  pageSize = 50,
+  includeCampaigns = true,
 ) {
   const raw = await readTable<Opportunity>(
     db,
     "opportunity_workspace",
     "id,company,contact,email,phone,industry,amount,stage,seller_id,closer_id,next_action,next_action_at,created_at,updated_at,application_complete,application_signed,funded_at,funded_amount,handed_off_at",
   );
-  const opportunities = await campaignFlowCases(db, raw.filter((o) => canSeeOpportunity(profile, o)));
+  const opportunities = await campaignFlowCases(
+    db,
+    raw.filter((o) => canSeeOpportunity(profile, o)),
+  );
   const ids = opportunities.map((o) => o.id);
   const closerIds = opportunities
     .filter((o) => canSeeArea(profile, o, "closer"))
@@ -182,11 +187,13 @@ export async function readPipelineBoard(
       "id,opportunity_id,sequence_number,state,classification,is_unclassified_archive,started_at",
       closerIds,
     ),
-    readTable<Pick<Workspace["campaigns"][number], "id" | "status">>(
-      db,
-      "campaign_workspace",
-      "id,status",
-    ),
+    includeCampaigns
+      ? readTable<Pick<Workspace["campaigns"][number], "id" | "status">>(
+          db,
+          "campaign_workspace",
+          "id,status",
+        )
+      : Promise.resolve([]),
   ]);
   const directory = { profiles, accounts, lenders, lender_contacts };
   // Reuse the CRM's evidence rules, but page metadata with the catalog's exact-count reader.
@@ -327,6 +334,8 @@ export async function readPipelineBoard(
     },
     processes,
     query,
+    Date.now(),
+    pageSize,
   );
 }
 

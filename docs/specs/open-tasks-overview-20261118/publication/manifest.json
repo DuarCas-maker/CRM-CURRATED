@@ -1,0 +1,97 @@
+{
+  "base": "7dde2e8c6414fc404dc3bc05655b9ad09aa9975a",
+  "branch": "codex/open-tasks-release-20261118",
+  "files": [
+    {
+      "path": "src/lib/pipeline-os/tasks-overview.ts",
+      "sha256": "ac10c38b7455f15ce0bf656e5f328d82c82e8e3e13162affa3e3d92a476bc785"
+    },
+    {
+      "path": "src/lib/server/pipeline-tasks.ts",
+      "sha256": "820b51e0336b15384ff2c0147508b45f8088bb51266a5bd69992312b52d5dee1"
+    },
+    {
+      "path": "src/lib/server/pipeline-tasks-http.ts",
+      "sha256": "c5924cde1508c5497b2d9dcedf0f3ce1076dd327251a545e2d6d2c5f3b507a55"
+    },
+    {
+      "path": "src/app/api/pipeline-os/tasks/route.ts",
+      "sha256": "3763cb19077685fbaff53add28e7dc02404e9527706f9593b5355a73d8f8c65e"
+    },
+    {
+      "path": "src/components/pipeline-os/tasks-overview.tsx",
+      "sha256": "0a53f3cf8082c5039ad1751f626ca02537e4efc5ed2ebf96d5e1b302eb32cf9e"
+    },
+    {
+      "path": "src/components/pipeline-os/tasks-overview.css",
+      "sha256": "24c67bec932e2ee327d79d6288b689a9f4977579be768642835b5c7287118126"
+    },
+    {
+      "path": "tests/tasks-overview.test.ts",
+      "sha256": "95a4970e76b88fd26b9f088300897d197c32473777ac71deee64e7f588de7dfe"
+    },
+    {
+      "path": "tests/tasks-overview-reader.test.ts",
+      "sha256": "0dafb77f058c9d8dc14170635e936ff4ec1707733bc147f2c513380b0ee216d0"
+    },
+    {
+      "path": "tests/tasks-overview-http.test.ts",
+      "sha256": "0d609bce6d743141f047e56b996d23f413087495e90b790aeb5451c7a6a6735f"
+    },
+    {
+      "path": "tests/tasks-overview-ui.test.tsx",
+      "sha256": "6e6d9b1b50e2f219aa096378875a613b2947afb2b774e229add7e773c930dd64"
+    },
+    {
+      "path": "tests/fixtures/tasks-overview.ts",
+      "sha256": "78abc64b8ca64f89a5dddca927e4059be77255d5466d04dd687dd2bcb58314d8"
+    },
+    {
+      "path": "tests/fixtures/tasks-overview-ui.tsx",
+      "sha256": "3260258ee2a743f0684594f1fbf904f6024bb7019316f7990b38e690f5b8383f"
+    },
+    {
+      "path": "scripts/preview-tasks-overview.mjs",
+      "sha256": "f31080d1c190b820ead7c3ac41277df2ad466a980d77012219bc6bc663c3f3ef"
+    },
+    {
+      "path": "scripts/verify-tasks-overview-build.mjs",
+      "sha256": "082d6439aa1cb0431ba767a92f68b804e930c00c52348d144168e522265ddc20"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "7cc3695a792529aadc29a90bee0932500996d6ee4df70717ecc2975f0881d3cd"
+    },
+    {
+      "path": "src/lib/server/pipeline-os-module.ts",
+      "sha256": "c3494b5d7f8ebc7880ef7e1c8d2756bf0d13b5a37fc11fb127a3fc721640cc49"
+    }
+  ],
+  "coordinatorPreserved": 9,
+  "newProductFiles": 6,
+  "sharedProductFiles": 2,
+  "tests": {
+    "runtime": "22.23.4",
+    "passed": 92,
+    "failed": 0,
+    "skipped": 0
+  },
+  "build": {
+    "runtime": "22.23.4",
+    "exitCode": 0,
+    "staticPages": 60
+  },
+  "historicalBaseline": {
+    "test": "pipeline-os-workspace-stats-compat.test.ts",
+    "failed": 12,
+    "reason": "ABC_BASE_FUNCTION_INVENTORY_MISMATCH",
+    "reproducedWithoutDelta": true
+  },
+  "scope": {
+    "databaseWrites": false,
+    "migrations": false,
+    "newEnvironmentVariables": false,
+    "workerChanges": false,
+    "providerCalls": false
+  }
+}

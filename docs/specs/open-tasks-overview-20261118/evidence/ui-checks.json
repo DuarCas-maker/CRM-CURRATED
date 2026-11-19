@@ -1,0 +1,47 @@
+{
+  "source": "fictional local fixture",
+  "realCalls": 0,
+  "viewports": [
+    {
+      "documentWidth": 346,
+      "height": 900,
+      "tableScroll": 1130,
+      "tableWidth": 317,
+      "width": 360
+    },
+    {
+      "documentWidth": 755,
+      "height": 900,
+      "tableScroll": 1150,
+      "tableWidth": 713,
+      "width": 768
+    },
+    {
+      "documentWidth": 1266,
+      "height": 1000,
+      "tableScroll": 1213,
+      "tableWidth": 1213,
+      "width": 1280
+    }
+  ],
+  "repSwitch": {
+    "samuel": 36,
+    "santino": 37
+  },
+  "managedSantino": 2,
+  "accountFilter": 1,
+  "rapidSwitch": {
+    "heading": "Leads de Santino Ejemplo",
+    "leadRows": 37
+  },
+  "stageNavigation": {
+    "heading": "Oferta pendiente",
+    "rows": 7
+  },
+  "secondPageRows": 23,
+  "searchRows": 1,
+  "keyboard": true,
+  "errorRetry": true,
+  "emptyState": true,
+  "consoleErrors": []
+}

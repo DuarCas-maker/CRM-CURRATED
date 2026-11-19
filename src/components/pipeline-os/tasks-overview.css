@@ -1,0 +1,196 @@
+.pipeline-os .pos-tasks-overview {
+  margin-bottom: 28px;
+  min-width: 0;
+}
+.pipeline-os .pos-tasks-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 14px;
+}
+.pipeline-os .pos-tasks-heading h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+}
+.pipeline-os .pos-tasks-heading p {
+  margin: 0;
+  color: var(--pos-muted);
+  font-size: 12px;
+}
+.pipeline-os .pos-card.pos-tasks-summary {
+  padding: 0;
+  overflow: hidden;
+}
+.pipeline-os .pos-tasks-table {
+  min-width: 1130px;
+}
+.pipeline-os .pos-tasks-table th:not(:first-child),
+.pipeline-os .pos-tasks-table td {
+  text-align: right;
+  vertical-align: middle;
+  min-width: 78px;
+}
+.pipeline-os .pos-tasks-table thead th {
+  white-space: normal;
+  max-width: 128px;
+  line-height: 1.45;
+}
+.pipeline-os .pos-tasks-table tbody th {
+  position: static;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--pos-ink);
+  min-width: 270px;
+  width: 300px;
+  padding: 14px 16px;
+}
+.pipeline-os .pos-tasks-table td {
+  font-size: 14px;
+}
+.pipeline-os .pos-tasks-total th,
+.pipeline-os .pos-tasks-total td {
+  background: var(--pos-panel2);
+  border-bottom: 1px solid var(--pos-line2);
+}
+.pipeline-os .pos-tasks-selected th,
+.pipeline-os .pos-tasks-selected td {
+  background: var(--pos-soft);
+}
+.pipeline-os .pos-tasks-selected th:first-child {
+  box-shadow: inset 3px 0 var(--pos-accent);
+}
+.pipeline-os .pos-tasks-owner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 3px 0;
+  color: var(--pos-ink);
+  font-weight: 600;
+  min-height: 32px;
+}
+.pipeline-os .pos-tasks-avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--pos-soft);
+  color: var(--pos-soft-ink);
+  font-size: 11px;
+}
+.pipeline-os .pos-tasks-accounts {
+  display: grid;
+  gap: 9px;
+  margin: 8px 0 0 38px;
+}
+.pipeline-os .pos-tasks-account {
+  display: grid;
+  text-align: left;
+  gap: 2px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--pos-muted);
+  font-size: 11px;
+  min-height: 32px;
+}
+.pipeline-os .pos-tasks-account > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-wrap: anywhere;
+}
+.pipeline-os .pos-tasks-account small {
+  font-size: 10px;
+  padding-left: 17px;
+}
+.pipeline-os .pos-tasks-account:hover,
+.pipeline-os .pos-tasks-account[aria-pressed="true"] {
+  color: var(--pos-accent);
+  text-decoration: underline;
+}
+.pipeline-os .pos-tasks-number {
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--pos-accent);
+  font-weight: 600;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 4px 7px;
+}
+.pipeline-os .pos-tasks-number:hover {
+  background: var(--pos-soft);
+  text-decoration: underline;
+}
+.pipeline-os .pos-tasks-note {
+  padding: 12px 16px;
+  margin: 0;
+  color: var(--pos-muted);
+  font-size: 11px;
+  border-top: 1px solid var(--pos-line);
+  line-height: 1.65;
+}
+.pipeline-os .pos-tasks-detail {
+  margin-top: 26px;
+}
+.pipeline-os .pos-tasks-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.pipeline-os .pos-tasks-status button[aria-pressed="true"] {
+  background: var(--pos-accent);
+  color: var(--pos-on-accent);
+  border-color: var(--pos-accent);
+}
+.pipeline-os .pos-tasks-status > span {
+  margin-left: auto;
+}
+.pipeline-os .pos-card.pos-tasks-leads {
+  padding: 0;
+}
+.pipeline-os .pos-tasks-line {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+}
+.pipeline-os .pos-tasks-replied {
+  color: var(--pos-good-ink);
+  background: var(--pos-good);
+}
+.pipeline-os .pos-tasks-overview .pos-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+@media (max-width: 600px) {
+  .pipeline-os .pos-tasks-heading {
+    gap: 10px;
+  }
+  .pipeline-os .pos-tasks-heading > div {
+    min-width: 0;
+  }
+  .pipeline-os .pos-tasks-heading > button {
+    flex: none;
+  }
+  .pipeline-os .pos-tasks-heading h3 {
+    font-size: 15px;
+  }
+  .pipeline-os .pos-tasks-table tbody th {
+    min-width: 235px;
+  }
+  .pipeline-os .pos-tasks-status > span {
+    width: 100%;
+    margin-left: 0;
+  }
+}

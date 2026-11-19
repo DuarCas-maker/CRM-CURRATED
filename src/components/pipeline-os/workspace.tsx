@@ -62,6 +62,7 @@ import {
 import { PipelineLeads } from "./leads";
 import { MasterPipeline } from "./master-pipeline";
 import { LenderTemplateLibrary } from "../lender-templates";
+import { OpenTasksOverview } from "./tasks-overview";
 import "./workspace.css";
 
 type Page =
@@ -617,7 +618,8 @@ export function PipelineOSWorkspace({
       );
     if (
       !boardReady &&
-      (isGroup(p) || ["stats", "updates", "recap"].includes(p))
+      ((isGroup(p) && p !== "tasks") ||
+        ["stats", "updates", "recap"].includes(p))
     )
       return (
         <>
@@ -640,74 +642,93 @@ export function PipelineOSWorkspace({
     if (p === "tasks")
       return (
         <>
-          {stageStrip()}
-          <div className="pos-tiles">
-            {tile(
-              FileText,
-              l("app"),
-              t(
-                locale,
-                "Aplicación y documentación por completar",
-                "Application and documents to complete",
-              ),
-              board.counts.app,
-              t(locale, "expedientes", "files"),
-              "app",
-              level,
-            )}
-            {tile(
-              Landmark,
-              l("need"),
-              t(
-                locale,
-                "Revisar UW y buscar financiación",
-                "Review UW and find financing",
-              ),
-              board.counts.need,
-              t(locale, "expedientes", "files"),
-              "need",
-              level,
-            )}
-            {tile(
-              Sparkles,
-              l("offers"),
-              t(
-                locale,
-                "Comparar y presentar opciones",
-                "Compare and present options",
-              ),
-              board.counts.offers,
-              t(locale, "expedientes", "files"),
-              "offers",
-              level,
-            )}
-            {tile(
-              Send,
-              l("docsout"),
-              t(
-                locale,
-                "Contratos enviados con evidencia",
-                "Contracts sent with evidence",
-              ),
-              board.counts.docsout,
-              t(locale, "expedientes", "files"),
-              "docsout",
-              level,
-            )}
-            {tile(
-              CircleCheck,
-              l("signed"),
-              t(
-                locale,
-                "Firma confirmada, preparar fondeo",
-                "Signature confirmed, prepare funding",
-              ),
-              board.counts.signed,
-              t(locale, "expedientes", "files"),
-              "signed",
-              level,
-            )}
-          </div>
+          <OpenTasksOverview
+            data={data}
+            processes={processes}
+            locale={locale}
+            owner={owner}
+            query={query}
+            onOwner={changeOwner}
+            open={rowOpen}
+            onStage={(id, stage) => {
+              changeOwner(id);
+              go(["tasks", stage]);
+            }}
+          />
+          {boardReady && stageStrip()}
+          {!boardReady ? (
+            <div className="pos-card pos-empty" role="status">
+              {t(locale, "Actualizando etapas…", "Updating stages…")}
+            </div>
+          ) : (
+            <div className="pos-tiles">
+              {tile(
+                FileText,
+                l("app"),
+                t(
+                  locale,
+                  "Aplicación y documentación por completar",
+                  "Application and documents to complete",
+                ),
+                board.counts.app,
+                t(locale, "expedientes", "files"),
+                "app",
+                level,
+              )}
+              {tile(
+                Landmark,
+                l("need"),
+                t(
+                  locale,
+                  "Revisar UW y buscar financiación",
+                  "Review UW and find financing",
+                ),
+                board.counts.need,
+                t(locale, "expedientes", "files"),
+                "need",
+                level,
+              )}
+              {tile(
+                Sparkles,
+                l("offers"),
+                t(
+                  locale,
+                  "Comparar y presentar opciones",
+                  "Compare and present options",
+                ),
+                board.counts.offers,
+                t(locale, "expedientes", "files"),
+                "offers",
+                level,
+              )}
+              {tile(
+                Send,
+                l("docsout"),
+                t(
+                  locale,
+                  "Contratos enviados con evidencia",
+                  "Contracts sent with evidence",
+                ),
+                board.counts.docsout,
+                t(locale, "expedientes", "files"),
+                "docsout",
+                level,
+              )}
+              {tile(
+                CircleCheck,
+                l("signed"),
+                t(
+                  locale,
+                  "Firma confirmada, preparar fondeo",
+                  "Signature confirmed, prepare funding",
+                ),
+                board.counts.signed,
+                t(locale, "expedientes", "files"),
+                "signed",
+                level,
+              )}
+            </div>
+          )}
         </>
       );
     if (isGroup(p))
