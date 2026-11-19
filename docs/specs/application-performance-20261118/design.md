@@ -29,3 +29,7 @@ Pruebas de regresión con puertos ficticios y guardia offline, typecheck, build 
 ## Ajuste técnico durante implementación
 
 Se evaluó limitar los RPC de acceso a seis simultáneos, pero eso añade hasta 17 rondas para una página de 100 expedientes. Al no existir evidencia de saturación real, se conserva su concurrencia original para evitar introducir una regresión. Un RPC de lectura por lote sería una optimización SQL posterior que requiere su propio contrato y prueba de permisos.
+
+## Postflight: timeout SQL persistente
+
+La primera versión70cee99 completó rolling update/health. Desaparece React418 en la entrada comprobada, pero un GET Pipeline devuelve statement timeout. No se atribuye a una tabla sin evidencia: añadir un resumen seguro por solicitud lenta (>=1500ms), máximo ocho nombres de recursos REST, número/duración de lecturas y operación/código del fallo. Sin URLs, filtros, cuerpos, identidad o credenciales. No reintentar consultas ni ocultar fallos. El resumen permite decidir la corrección siguiente sobre la operación observada en producción.

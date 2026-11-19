@@ -1,6 +1,6 @@
 import { mailAccess } from "./mail-access";
 import { senderCapabilities, BrandDeliveryError } from "./brand-delivery";
-import { requireUser, checkDb } from "./supabase";
+import { requireUser, checkDb, HttpError } from "./supabase";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile, Workspace } from "../domain";
 import { stages } from "../domain";
@@ -15,8 +15,70 @@ import { loadOpportunitySignals } from "./opportunity-signals";
 export async function loadWorkspace(
   params = new URLSearchParams(),
 ): Promise<Workspace> {
-  const { db, profile } = await requireUser();
-  return readWorkspace(db, profile, params);
+  const started = performance.now();
+  const reads = new Map<
+    string,
+    { calls: number; max_ms: number; total_ms: number }
+  >();
+  let failure: { operation?: string; code?: string } | undefined;
+  try {
+    const { db, profile } = await requireUser({
+      fetchImpl: async (input, init) => {
+        const url = new URL(
+          typeof input === "string" || input instanceof URL ? input : input.url,
+        );
+        // Only fixed REST resource names; never log URLs, filters, IDs or bodies.
+        const resource = url.pathname.split("/").at(-1) || "unknown";
+        const operation = /^[a-z_]+$/.test(resource) ? resource : "other";
+        const before = performance.now();
+        try {
+          return await fetch(input, init);
+        } finally {
+          const ms = Math.round(performance.now() - before);
+          const sample = reads.get(operation) || {
+            calls: 0,
+            max_ms: 0,
+            total_ms: 0,
+          };
+          sample.calls++;
+          sample.max_ms = Math.max(sample.max_ms, ms);
+          sample.total_ms += ms;
+          reads.set(operation, sample);
+        }
+      },
+    });
+    return await readWorkspace(db, profile, params);
+  } catch (error) {
+    if (
+      error instanceof HttpError &&
+      error.cause &&
+      typeof error.cause === "object"
+    ) {
+      const cause = error.cause as { operation?: string; code?: string };
+      failure = {
+        operation: /^[a-z_.]+$/.test(cause.operation || "")
+          ? cause.operation
+          : "unknown",
+        code: /^[A-Z0-9]+$/.test(cause.code || "") ? cause.code : "unknown",
+      };
+    }
+    throw error;
+  } finally {
+    const duration_ms = Math.round(performance.now() - started);
+    if (duration_ms >= 1500 || failure)
+      console.info(
+        "workspace_read",
+        JSON.stringify({
+          duration_ms,
+          failure,
+          reads: Object.fromEntries(
+            [...reads.entries()]
+              .sort((a, b) => b[1].max_ms - a[1].max_ms)
+              .slice(0, 8),
+          ),
+        }),
+      );
+  }
 }
 
 export async function readWorkspace(
