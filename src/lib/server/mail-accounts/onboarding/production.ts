@@ -42,6 +42,8 @@ import {
   type PrivateConnection,
 } from "./service";
 import { withIncludedUsage, includedComposioFetch } from "./included";
+import { simpleMailReturnUrl } from "./return-url";
+import { legacyMailboxPorts, prepareLegacyMailbox } from "./legacy-account";
 
 export function simpleWorkspace() {
   const all = configuredOrganizations(),
@@ -108,6 +110,8 @@ export async function productionOnboarding(
     state: token,
     encrypt,
     decrypt,
+    prepareDirect: (input) =>
+      prepareLegacyMailbox(legacyMailboxPorts(db), input, simpleWorkspace().id),
     async directUrl(r, state) {
       (await cookies()).set("simple_mail_state_" + r.id, hash(state), {
         httpOnly: true,
@@ -447,10 +451,7 @@ export async function simpleDirectCallback(
   const ports = await productionOnboarding(request),
     api = createOnboarding(ports);
   const view = await api.get(z.uuid().parse(id));
-  const destination = new URL(
-    "/?module=connections&mail_connection=" + encodeURIComponent(view.id),
-    request.url,
-  );
+  const destination = simpleMailReturnUrl(view.id);
   if (view.state === "ready" || view.state === "preparing") {
     return Response.redirect(destination, 303);
   }

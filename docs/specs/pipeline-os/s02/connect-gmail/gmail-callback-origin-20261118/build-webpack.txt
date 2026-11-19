@@ -1,0 +1,117 @@
+▲ Next.js 16.3.8 (webpack)
+✓ Running next.config.ts took 52ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 11.3s
+  Running TypeScript ...
+  Finished TypeScript in 2.0s ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/59) ...
+  Generating static pages using 15 workers (14/59)
+  Generating static pages using 15 workers (29/59)
+  Generating static pages using 15 workers (44/59)
+✓ Generating static pages using 15 workers (59/59) in 1897ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /api/actions
+├ ƒ /api/ai/usage
+├ ƒ /api/application-links
+├ ƒ /api/auth/logout
+├ ƒ /api/brands
+├ ƒ /api/campaign-templates
+├ ƒ /api/campaign-templates/assets
+├ ƒ /api/campaigns
+├ ƒ /api/campaigns/center
+├ ƒ /api/campaigns/control
+├ ƒ /api/campaigns/flow
+├ ƒ /api/campaigns/import
+├ ƒ /api/company-application
+├ ƒ /api/company-application/extract
+├ ƒ /api/connections
+├ ƒ /api/conversations/[id]/messages
+├ ƒ /api/conversations/channels
+├ ƒ /api/conversations/clients
+├ ƒ /api/documents
+├ ƒ /api/documents/[id]
+├ ƒ /api/documents/classify
+├ ƒ /api/documents/receive-upload
+├ ƒ /api/documents/review
+├ ƒ /api/gmail/archive/[id]
+├ ƒ /api/gmail/archive/[id]/thread
+├ ƒ /api/gmail/attachments
+├ ƒ /api/gmail/attachments/preview
+├ ƒ /api/gmail/callback
+├ ƒ /api/gmail/cases/[id]
+├ ƒ /api/gmail/config
+├ ƒ /api/gmail/connect
+├ ƒ /api/gmail/files/[id]
+├ ƒ /api/gmail/history
+├ ƒ /api/gmail/push
+├ ƒ /api/gmail/team
+├ ƒ /api/health
+├ ƒ /api/import
+├ ƒ /api/import/[id]/report
+├ ƒ /api/import/preview
+├ ƒ /api/integrations/instantly/control/[nonce]
+├ ƒ /api/integrations/instantly/trials/[nonce]
+├ ƒ /api/integrations/instantly/trials/[nonce]/lease
+├ ƒ /api/integrations/instantly/webhook/[nonce]
+├ ƒ /api/lenders/catalogue
+├ ƒ /api/lenders/guidelines
+├ ƒ /api/lenders/import
+├ ƒ /api/mail
+├ ƒ /api/mail/accounts/[id]/composio
+├ ƒ /api/mail/accounts/[id]/composio/check
+├ ƒ /api/mail/accounts/[id]/composio/verification-setup
+├ ƒ /api/mail/accounts/[id]/transport
+├ ƒ /api/mail/accounts/[id]/transport/review
+├ ƒ /api/mail/composio/connect
+├ ƒ /api/mail/composio/connect/[id]
+├ ƒ /api/mail/composio/connect/[id]/[action]
+├ ƒ /api/mail/composio/connect/callback
+├ ƒ /api/mail/composio/connect/recovery
+├ ƒ /api/mail/composio/connect/recovery/candidate
+├ ƒ /api/mail/connections
+├ ƒ /api/mail/connections/[id]
+├ ƒ /api/mail/connections/[id]/continue
+├ ƒ /api/mail/connections/[id]/disconnect
+├ ƒ /api/mail/lender-preview
+├ ƒ /api/mail/recipient-selections
+├ ƒ /api/mail/review/[id]
+├ ƒ /api/mail/sent-files
+├ ƒ /api/mail/templates
+├ ƒ /api/mail/uploads
+├ ƒ /api/mail/uploads/[id]
+├ ƒ /api/operations/settings
+├ ƒ /api/pipeline-os
+├ ƒ /api/pipeline-os/case-flow
+├ ƒ /api/pipeline-os/case-progress
+├ ƒ /api/pipeline-os/mail-review
+├ ƒ /api/pipeline-os/master
+├ ƒ /api/public/applications/[token]
+├ ƒ /api/public/documents/[token]
+├ ƒ /api/public/unsubscribe/[token]
+├ ƒ /api/push
+├ ƒ /api/underwriting
+├ ƒ /api/underwriting/files
+├ ƒ /api/underwriting/report
+├ ƒ /api/underwriting/settings
+├ ƒ /api/users
+├ ƒ /api/workspace
+├ ƒ /apply/[token]
+├ ƒ /auth/confirm
+├ ○ /auth/password
+├ ƒ /demo
+├ ƒ /login
+├ ○ /manifest.webmanifest
+├ ƒ /pipeline-os
+├ ƒ /pipeline-os/demo
+└ ƒ /unsubscribe/[token]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

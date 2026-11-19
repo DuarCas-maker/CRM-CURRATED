@@ -5,7 +5,9 @@ import {
   mailConnectionInput,
   mailConnectionView,
   mailConnectionsOptions,
+  matchingAdvisor,
   type MailConnection,
+  type MailConnectionInput,
 } from "../../../mail-connections";
 import { HttpError } from "../../supabase";
 
@@ -67,6 +69,7 @@ export interface OnboardingPorts {
   state(): string;
   encrypt(value: string): string;
   decrypt(value: string): string;
+  prepareDirect?(input: MailConnectionInput): Promise<void>;
   directUrl(record: PrivateConnection, state: string): Promise<string>;
   composioBegin(record: PrivateConnection): Promise<string>;
   composioUrl(record: PrivateConnection): Promise<string>;
@@ -108,6 +111,17 @@ export function createOnboarding(p: OnboardingPorts) {
         state = p.state();
       if (input.email.split("@")[1] !== workspace.domain)
         throw new HttpError(400, "SIMPLE_WORKSPACE_MISMATCH");
+      if (input.provider === "gmail_oauth" && p.prepareDirect) {
+        // The human options RPC checks MFA/session before a legacy brand write.
+        const options = mailConnectionsOptions.parse(
+          await simpleRpc(p.human, "simple_mail_options"),
+        );
+        const advisor =
+          matchingAdvisor(input.email, options.advisors) ?? input.advisor_id;
+        if (!advisor || !options.advisors.some((a) => a.id === advisor))
+          throw new HttpError(409, "SIMPLE_ADVISOR_REQUIRED");
+        await p.prepareDirect(input);
+      }
       if (input.provider === "composio") await budget();
       const initial = mailConnectionView.parse(
         await simpleRpc(p.human, "simple_mail_begin", {
@@ -219,13 +233,17 @@ export function simpleConnectionError(error: unknown) {
       "La preparación venció. Revisa el estado de la conexión antes de retomarla.",
     SIMPLE_NOT_CONFIGURED:
       "La conexión necesita preparación del administrador.",
+    SIMPLE_LEGACY_REVIEW_REQUIRED:
+      "La configuración previa de esta cuenta necesita revisión en Configuración → Marcas antes de conectarla. No se ha iniciado la autorización de Google.",
+    SIMPLE_UNAVAILABLE:
+      "No se pudo preparar la conexión. Inténtalo de nuevo; conservamos el correo y el asesor seleccionados.",
   };
   return Response.json(
     {
       code,
       error:
         messages[code] ??
-        "No se pudo completar la conexión. Actualiza el estado para retomarla.",
+        "No se pudo completar la conexión. Inténtalo de nuevo.",
     },
     {
       status: error instanceof HttpError ? error.status : 503,

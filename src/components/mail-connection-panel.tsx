@@ -13,6 +13,8 @@ import { ProtectedForm } from "./unsaved-changes";
 import "./mail-connection-panel.css";
 
 type Options = ReturnType<typeof mailConnectionsOptions.parse>;
+type RetryAction =
+  { kind: "connect" } | { kind: "continue"; id: string } | { kind: "refresh" };
 export function MailConnectionPanel({
   provider,
   accounts,
@@ -36,6 +38,7 @@ export function MailConnectionPanel({
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
+  const [retry, setRetry] = useState<RetryAction | null>(null);
   const intent = useRef<{ fingerprint: string; key: string } | null>(null),
     continued = useRef(new Set<string>()),
     mounted = useRef(true);
@@ -77,6 +80,7 @@ export function MailConnectionPanel({
         setOptions(value);
         onAvailable?.(value.enabled);
         setError("");
+        setRetry(null);
       }
     } catch (e) {
       if (mounted.current) {
@@ -86,6 +90,7 @@ export function MailConnectionPanel({
             ? e.message
             : "Actualiza el estado para continuar.",
         );
+        setRetry({ kind: "refresh" });
       }
     } finally {
       if (mounted.current) setLoading(false);
@@ -119,6 +124,7 @@ export function MailConnectionPanel({
   async function continueConnection(id: string, navigate = true) {
     setBusy(true);
     setError("");
+    setRetry(null);
     try {
       const row = await response(
         await fetch(
@@ -155,12 +161,13 @@ export function MailConnectionPanel({
       setError(
         e instanceof Error ? e.message : "No se pudo retomar la preparación.",
       );
+      setRetry({ kind: "continue", id });
     } finally {
       setBusy(false);
     }
   }
-  async function connect(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function connect(e?: { preventDefault(): void }) {
+    e?.preventDefault();
     if (demo) {
       setNotice(
         "Demostración: no se abrirá Google ni se conectarán cuentas reales.",
@@ -170,6 +177,7 @@ export function MailConnectionPanel({
     setBusy(true);
     setError("");
     setNotice("");
+    setRetry(null);
     const normalized = email.trim().toLowerCase(),
       matched = matchingAdvisor(normalized, options?.advisors ?? []);
     const body = {
@@ -212,6 +220,7 @@ export function MailConnectionPanel({
       setError(
         e instanceof Error ? e.message : "No se pudo conectar la cuenta.",
       );
+      setRetry({ kind: "connect" });
     } finally {
       setBusy(false);
     }
@@ -232,6 +241,7 @@ export function MailConnectionPanel({
       onChanged?.();
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo desconectar.");
+      setRetry({ kind: "refresh" });
     } finally {
       setBusy(false);
     }
@@ -288,10 +298,29 @@ export function MailConnectionPanel({
       </p>
       {loading && <p role="status">Consultando conexiones…</p>}
       {error && (
-        <p className="simple-mail-alert" role="alert">
+        <div className="simple-mail-alert" role="alert">
           <AlertCircle size={17} />
-          {error}
-        </p>
+          <span>{error}</span>
+          {retry && (
+            <button
+              type="button"
+              className="button"
+              disabled={busy || loading}
+              onClick={() => {
+                if (retry.kind === "connect") void connect();
+                else if (retry.kind === "continue")
+                  void continueConnection(retry.id);
+                else void load();
+              }}
+            >
+              {retry.kind === "connect"
+                ? "Reintentar conexión"
+                : retry.kind === "continue"
+                  ? "Retomar conexión"
+                  : "Actualizar estado"}
+            </button>
+          )}
+        </div>
       )}
       {notice && (
         <p className="simple-mail-notice" role="status">
@@ -322,6 +351,9 @@ export function MailConnectionPanel({
                   onChange={(e) => {
                     setEmail(e.target.value);
                     setAdvisor("");
+                    setRetry(null);
+                    setError("");
+                    setNotice("");
                   }}
                   disabled={busy}
                 />
@@ -332,7 +364,12 @@ export function MailConnectionPanel({
                   <select
                     required
                     value={advisor}
-                    onChange={(e) => setAdvisor(e.target.value)}
+                    onChange={(e) => {
+                      setAdvisor(e.target.value);
+                      setRetry(null);
+                      setError("");
+                      setNotice("");
+                    }}
                     disabled={busy}
                   >
                     <option value="">Selecciona un asesor</option>

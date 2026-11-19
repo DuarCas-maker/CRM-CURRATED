@@ -1,0 +1,143 @@
+TAP version 13
+# Subtest: Connection HTTP rejects closed, unauthorized, cross-origin, invalid and oversized requests before effects
+ok 1 - Connection HTTP rejects closed, unauthorized, cross-origin, invalid and oversized requests before effects
+  ---
+  duration_ms: 11.0424
+  type: 'test'
+  ...
+# Subtest: Gmail-only release blocks Composio even with free capacity, including resuming an existing attempt
+ok 2 - Gmail-only release blocks Composio even with free capacity, including resuming an existing attempt
+  ---
+  duration_ms: 10.7175
+  type: 'test'
+  ...
+# Subtest: Composio product flag is closed by default and cannot be enabled without the main feature
+ok 3 - Composio product flag is closed by default and cannot be enabled without the main feature
+  ---
+  duration_ms: 0.4557
+  type: 'test'
+  ...
+# Subtest: Repeated connect returns same durable state and authorization URL without leaking private correlation
+ok 4 - Repeated connect returns same durable state and authorization URL without leaking private correlation
+  ---
+  duration_ms: 2.6936
+  type: 'test'
+  ...
+# Subtest: Composio without included capacity does not create even an onboarding/link
+ok 5 - Composio without included capacity does not create even an onboarding/link
+  ---
+  duration_ms: 0.7393
+  type: 'test'
+  ...
+# Subtest: Thirty-day setup resumes from a saved identity and finalizes once ready
+ok 6 - Thirty-day setup resumes from a saved identity and finalizes once ready
+  ---
+  duration_ms: 1.5726
+  type: 'test'
+  ...
+# Subtest: A pending code exchange does not reopen Google; an expired authorization requires explicit reconnect
+ok 7 - A pending code exchange does not reopen Google; an expired authorization requires explicit reconnect
+  ---
+  duration_ms: 1.1481
+  type: 'test'
+  ...
+# Subtest: Included guard charges each attempted request and never emits when capacity is unknown
+ok 8 - Included guard charges each attempted request and never emits when capacity is unknown
+  ---
+  duration_ms: 0.8544
+  type: 'test'
+  ...
+# Subtest: actual Composio callback reserves every metadata/profile request and blocks unknown free capacity
+ok 9 - actual Composio callback reserves every metadata/profile request and blocks unknown free capacity
+  ---
+  duration_ms: 4680.5033
+  type: 'test'
+  ...
+# Subtest: simple-mail feature refuses a Composio request outside a budget scope
+ok 10 - simple-mail feature refuses a Composio request outside a budget scope
+  ---
+  duration_ms: 0.7188
+  type: 'test'
+  ...
+# Subtest: Legacy Gmail adapter: real audited brand commands recover an existing row before OAuth
+    # Subtest: create missing review
+    ok 1 - create missing review
+      ---
+      duration_ms: 59.929
+      type: 'test'
+      ...
+    # Subtest: reuse compatible pending review
+    ok 2 - reuse compatible pending review
+      ---
+      duration_ms: 29.6032
+      type: 'test'
+      ...
+    # Subtest: seller cannot confirm even with a previously read account snapshot
+    ok 3 - seller cannot confirm even with a previously read account snapshot
+      ---
+      duration_ms: 5.1638
+      type: 'test'
+      ...
+    # Subtest: MFA remains mandatory for automatic legacy confirmation
+    ok 4 - MFA remains mandatory for automatic legacy confirmation
+      ---
+      duration_ms: 8.1373
+      type: 'test'
+      ...
+    1..4
+ok 11 - Legacy Gmail adapter: real audited brand commands recover an existing row before OAuth
+  ---
+  duration_ms: 2687.9479
+  type: 'test'
+  ...
+# Subtest: Legacy unbranded row uses audited proposal/confirmation, preserves identity and is replay safe
+ok 12 - Legacy unbranded row uses audited proposal/confirmation, preserves identity and is replay safe
+  ---
+  duration_ms: 3.3622
+  type: 'test'
+  ...
+# Subtest: Compatible pending review is confirmed without replacing its evidence
+ok 13 - Compatible pending review is confirmed without replacing its evidence
+  ---
+  duration_ms: 0.2738
+  type: 'test'
+  ...
+# Subtest: New and already branded accounts are left to the normal onboarding contract
+ok 14 - New and already branded accounts are left to the normal onboarding contract
+  ---
+  duration_ms: 0.2167
+  type: 'test'
+  ...
+# Subtest: Different workspace, connected account, conflicting/stale/historical reviews never auto-confirm
+ok 15 - Different workspace, connected account, conflicting/stale/historical reviews never auto-confirm
+  ---
+  duration_ms: 0.6772
+  type: 'test'
+  ...
+# Subtest: Proposal conflict and concurrent DB revision guards stop confirmation; MFA denial stays forbidden
+ok 16 - Proposal conflict and concurrent DB revision guards stop confirmation; MFA denial stays forbidden
+  ---
+  duration_ms: 0.5518
+  type: 'test'
+  ...
+# Subtest: Unknown errors do not promise a saved attempt; legacy conflict explains where to review
+ok 17 - Unknown errors do not promise a saved attempt; legacy conflict explains where to review
+  ---
+  duration_ms: 3.0683
+  type: 'test'
+  ...
+# Subtest: Human MFA/options and active advisor validation precede every legacy write
+ok 18 - Human MFA/options and active advisor validation precede every legacy write
+  ---
+  duration_ms: 2.9905
+  type: 'test'
+  ...
+1..18
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5526.4654

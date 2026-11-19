@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-19T01:56:11.061Z",
+  "files": 89,
+  "regressionReusedFrom": "2026-11-19T01:54:26.517Z",
+  "checks": [
+    {
+      "check": "regression",
+      "exit": 0
+    },
+    {
+      "check": "types",
+      "exit": 0
+    },
+    {
+      "check": "typecheck",
+      "exit": 0
+    },
+    {
+      "check": "build-webpack",
+      "exit": 0
+    }
+  ],
+  "realCredentials": false,
+  "externalFetchGuard": true
+}

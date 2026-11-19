@@ -1,0 +1,3400 @@
+TAP version 13
+# Subtest: campaign mail sends the frozen generic attachment and rejects changed bytes before Gmail
+ok 1 - campaign mail sends the frozen generic attachment and rejects changed bytes before Gmail
+  ---
+  duration_ms: 33.3542
+  type: 'test'
+  ...
+# Subtest: response rates use confirmed contacts and CSV neutralizes formulas
+ok 2 - response rates use confirmed contacts and CSV neutralizes formulas
+  ---
+  duration_ms: 0.8037
+  type: 'test'
+  ...
+# Subtest: contact pages and campaign lists retain full authorized totals
+ok 3 - contact pages and campaign lists retain full authorized totals
+  ---
+  duration_ms: 2182.1655
+  type: 'test'
+  ...
+# Subtest: replies from another campaign never transfer, and missing headers require an unambiguous Gmail thread
+ok 4 - replies from another campaign never transfer, and missing headers require an unambiguous Gmail thread
+  ---
+  duration_ms: 1899.2388
+  type: 'test'
+  ...
+# Subtest: only eligible prepared leads are frozen; new campaigns discard followups and preserve idempotency
+ok 5 - only eligible prepared leads are frozen; new campaigns discard followups and preserve idempotency
+  ---
+  duration_ms: 2193.091
+  type: 'test'
+  ...
+# Subtest: scheduling persists enrollment without sending early, and final delivery rechecks advanced cases
+ok 6 - scheduling persists enrollment without sending early, and final delivery rechecks advanced cases
+  ---
+  duration_ms: 2195.8735
+  type: 'test'
+  ...
+# Subtest: metrics require initial Gmail acceptance and correct reply evidence; paging, attention, tests and RLS stay separate
+ok 7 - metrics require initial Gmail acceptance and correct reply evidence; paging, attention, tests and RLS stay separate
+  ---
+  duration_ms: 2284.8218
+  type: 'test'
+  ...
+# Subtest: CC HTTP: actual route runs with isolated session fixtures
+ok 8 - CC HTTP: actual route runs with isolated session fixtures
+  ---
+  duration_ms: 963.4775
+  type: 'test'
+  ...
+# Subtest: CC: API validates canonical selections, MFA roles, missing RPC and Bouncer configuration before commands
+ok 9 - CC: API validates canonical selections, MFA roles, missing RPC and Bouncer configuration before commands
+  ---
+  duration_ms: 12.426
+  type: 'test'
+  ...
+# Subtest: CC: future scheduling, pause and resume are atomic across senders
+ok 10 - CC: future scheduling, pause and resume are atomic across senders
+  ---
+  duration_ms: 2422.4946
+  type: 'test'
+  ...
+# Subtest: CC: campaigns created later through the classic import remain visible with their file and limit
+ok 11 - CC: campaigns created later through the classic import remain visible with their file and limit
+  ---
+  duration_ms: 2398.1457
+  type: 'test'
+  ...
+# Subtest: CC: different brands are rejected before group creation; mailbox data stays private for an owner without send permission
+ok 12 - CC: different brands are rejected before group creation; mailbox data stays private for an owner without send permission
+  ---
+  duration_ms: 2458.856
+  type: 'test'
+  ...
+# Subtest: CC: one visible campaign, deterministic disjoint senders, replay and role-gated funnel
+ok 13 - CC: one visible campaign, deterministic disjoint senders, replay and role-gated funnel
+  ---
+  duration_ms: 2536.2799
+  type: 'test'
+  ...
+# Subtest: CC: activation freezes four unique enrollments and pause applies to all senders
+ok 14 - CC: activation freezes four unique enrollments and pause applies to all senders
+  ---
+  duration_ms: 2725.0495
+  type: 'test'
+  ...
+# Subtest: CC: conflicting scopes and changed brands roll back the entire group
+ok 15 - CC: conflicting scopes and changed brands roll back the entire group
+  ---
+  duration_ms: 2435.7845
+  type: 'test'
+  ...
+# Subtest: CC: global cap reserves at most one across two senders without altering admission or attempts
+ok 16 - CC: global cap reserves at most one across two senders without altering admission or attempts
+  ---
+  duration_ms: 2295.2733
+  type: 'test'
+  ...
+# Subtest: CC: manual reassignment preserves frozen intent and one active sequence; unsafe sends cannot move
+ok 17 - CC: manual reassignment preserves frozen intent and one active sequence; unsafe sends cannot move
+  ---
+  duration_ms: 2308.2683
+  type: 'test'
+  ...
+# Subtest: CC: review categories and Bouncer confirmation remain scoped, atomic and non-repeating
+ok 18 - CC: review categories and Bouncer confirmation remain scoped, atomic and non-repeating
+  ---
+  duration_ms: 2208.9143
+  type: 'test'
+  ...
+# Subtest: CC: a sender with no assigned leads stays draft; excluding a pending contact preserves history and totals
+ok 19 - CC: a sender with no assigned leads stays draft; excluding a pending contact preserves history and totals
+  ---
+  duration_ms: 2485.4007
+  type: 'test'
+  ...
+# Subtest: CC: migration reversal restores the installed claim and keeps legacy metadata/history
+ok 20 - CC: migration reversal restores the installed claim and keeps legacy metadata/history
+  ---
+  duration_ms: 2238.5877
+  type: 'test'
+  ...
+# Subtest: formatted campaigns escape contact data and raw HTML, validate links, and retain a plain alternative
+ok 21 - formatted campaigns escape contact data and raw HTML, validate links, and retain a plain alternative
+  ---
+  duration_ms: 2.1778
+  type: 'test'
+  ...
+# Subtest: system templates are authoritative, versions and archives are durable, and test sends don't alter the client
+ok 22 - system templates are authoritative, versions and archives are durable, and test sends don't alter the client
+  ---
+  duration_ms: 2254.9999
+  type: 'test'
+  ...
+# Subtest: audience review blocks incomplete data, honors exclusions and rechecks suppression immediately before Gmail
+ok 23 - audience review blocks incomplete data, honors exclusions and rechecks suppression immediately before Gmail
+  ---
+  duration_ms: 2300.2877
+  type: 'test'
+  ...
+# Subtest: rolling account budgets combine campaigns, reserve operational capacity, deduplicate observed Gmail and wait on stale usage
+ok 24 - rolling account budgets combine campaigns, reserve operational capacity, deduplicate observed Gmail and wait on stale usage
+  ---
+  duration_ms: 2336.4761
+  type: 'test'
+  ...
+# Subtest: distributed quota reservations serialize one mailbox and share the project budget across mailboxes
+ok 25 - distributed quota reservations serialize one mailbox and share the project budget across mailboxes
+  ---
+  duration_ms: 2111.7021
+  type: 'test'
+  ...
+# Subtest: CF HTTP: real route rejects unauthorized origins and unavailable schema
+ok 26 - CF HTTP: real route rejects unauthorized origins and unavailable schema
+  ---
+  duration_ms: 935.9924
+  type: 'test'
+  ...
+# Subtest: CF import HTTP: actual multipart route registers one atomic bounded consent
+ok 27 - CF import HTTP: actual multipart route registers one atomic bounded consent
+  ---
+  duration_ms: 911.4526
+  type: 'test'
+  ...
+# Subtest: CF owner: new selection belongs to the creator, ignores a forged seller, and keeps four reminders
+ok 28 - CF owner: new selection belongs to the creator, ignores a forged seller, and keeps four reminders
+  ---
+  duration_ms: 2299.6741
+  type: 'test'
+  ...
+# Subtest: CF owner: historical case and receipt stay untouched; reversal changes only future launches
+ok 29 - CF owner: historical case and receipt stay untouched; reversal changes only future launches
+  ---
+  duration_ms: 2418.034
+  type: 'test'
+  ...
+# Subtest: CF owner: MFA, role, template revision and source guards fail atomically
+ok 30 - CF owner: MFA, role, template revision and source guards fail atomically
+  ---
+  duration_ms: 2387.6057
+  type: 'test'
+  ...
+# Subtest: CF worker: typed follow-ups reuse the initial Gmail thread; historical sequences keep their behavior
+ok 31 - CF worker: typed follow-ups reuse the initial Gmail thread; historical sequences keep their behavior
+  ---
+  duration_ms: 32.2281
+  type: 'test'
+  ...
+# Subtest: CF calendar: calendar intervals, Sunday shift and actual delayed anchor
+ok 32 - CF calendar: calendar intervals, Sunday shift and actual delayed anchor
+  ---
+  duration_ms: 1.9417
+  type: 'test'
+  ...
+# Subtest: CF SQL: exact pool launch, immutable four steps, replay and advisor preservation
+ok 33 - CF SQL: exact pool launch, immutable four steps, replay and advisor preservation
+  ---
+  duration_ms: 2439.4652
+  type: 'test'
+  ...
+# Subtest: CF SQL: negative MFA, stale template, unavailable contacts and duplicates leave no campaign
+ok 34 - CF SQL: negative MFA, stale template, unavailable contacts and duplicates leave no campaign
+  ---
+  duration_ms: 2526.998
+  type: 'test'
+  ...
+# Subtest: CF SQL: PostgreSQL civil calendar preserves local hour across DST and moves only Sunday
+ok 35 - CF SQL: PostgreSQL civil calendar preserves local hour across DST and moves only Sunday
+  ---
+  duration_ms: 2330.903
+  type: 'test'
+  ...
+# Subtest: CF SQL: bounded import consent is atomic, owner-scoped, idempotent and never retries prior errors
+ok 36 - CF SQL: bounded import consent is atomic, owner-scoped, idempotent and never retries prior errors
+  ---
+  duration_ms: 2350.2334
+  type: 'test'
+  ...
+# Subtest: CF SQL: first accepted send advances once from actual confirmation; reply prevents the pending reminder
+ok 37 - CF SQL: first accepted send advances once from actual confirmation; reply prevents the pending reminder
+  ---
+  duration_ms: 2607.5257
+  type: 'test'
+  ...
+# Subtest: CF SQL: a reply to a reminder on a new Gmail thread counts once and opens its actual conversation
+ok 38 - CF SQL: a reply to a reminder on a new Gmail thread counts once and opens its actual conversation
+  ---
+  duration_ms: 2499.0514
+  type: 'test'
+  ...
+# Subtest: CF SQL: pause/resume cannot discover a fifth recipient and never restarts terminal enrollments
+ok 39 - CF SQL: pause/resume cannot discover a fifth recipient and never restarts terminal enrollments
+  ---
+  duration_ms: 2299.5042
+  type: 'test'
+  ...
+# Subtest: CF SQL: Sunday final boundary defers without an admission, charge attempt or terminal pause
+ok 40 - CF SQL: Sunday final boundary defers without an admission, charge attempt or terminal pause
+  ---
+  duration_ms: 2333.7691
+  type: 'test'
+  ...
+# Subtest: CF SQL: prepared pool is separate from Documents; existing client evidence and historical campaigns are preserved
+ok 41 - CF SQL: prepared pool is separate from Documents; existing client evidence and historical campaigns are preserved
+  ---
+  duration_ms: 2566.584
+  type: 'test'
+  ...
+# Subtest: CF SQL: schema reversal is clean before history and does not bypass the original brand boundary
+ok 42 - CF SQL: schema reversal is clean before history and does not bypass the original brand boundary
+  ---
+  duration_ms: 2497.2987
+  type: 'test'
+  ...
+# Subtest: CF API: invalid sequence and unauthorized role stop before brand preparation; read queries are bounded
+ok 43 - CF API: invalid sequence and unauthorized role stop before brand preparation; read queries are bounded
+  ---
+  duration_ms: 8.8416
+  type: 'test'
+  ...
+# Subtest: CF Documents: unsent typed campaigns stay out, accepted and advanced cases retain engagement
+ok 44 - CF Documents: unsent typed campaigns stay out, accepted and advanced cases retain engagement
+  ---
+  duration_ms: 1.0521
+  type: 'test'
+  ...
+# Subtest: CI: HTTP creation validates sender brand and preserves file scope before the atomic RPC
+ok 45 - CI: HTTP creation validates sender brand and preserves file scope before the atomic RPC
+  ---
+  duration_ms: 11.1241
+  type: 'test'
+  ...
+# Subtest: CI: installed brand guards preserve the trusted snapshot while freezing file recipients
+ok 46 - CI: installed brand guards preserve the trusted snapshot while freezing file recipients
+  ---
+  duration_ms: 2350.6759
+  type: 'test'
+  ...
+# Subtest: CI: inherited service privilege correction is source guarded and changes only the five ACLs
+ok 47 - CI: inherited service privilege correction is source guarded and changes only the five ACLs
+  ---
+  duration_ms: 2260.5032
+  type: 'test'
+  ...
+# Subtest: CI: preview, snapshot and manual activation stay inside the chosen file; rollback preserves history
+ok 48 - CI: preview, snapshot and manual activation stay inside the chosen file; rollback preserves history
+  ---
+  duration_ms: 2311.6478
+  type: 'test'
+  ...
+# Subtest: CI: Bouncer approval freezes the count, is idempotent and never activates or retries uncertain work
+ok 49 - CI: Bouncer approval freezes the count, is idempotent and never activates or retries uncertain work
+  ---
+  duration_ms: 2180.2822
+  type: 'test'
+  ...
+# Subtest: CI: RPCs reject non-admin, aal1, missing batches and unauthorized senders
+ok 50 - CI: RPCs reject non-admin, aal1, missing batches and unauthorized senders
+  ---
+  duration_ms: 2182.8475
+  type: 'test'
+  ...
+# Subtest: CI: HTTP contract fails closed on missing RPC and never falls back to global leads
+ok 51 - CI: HTTP contract fails closed on missing RPC and never falls back to global leads
+  ---
+  duration_ms: 10.7449
+  type: 'test'
+  ...
+# Subtest: Lead funnel: real SQL exclusive states, counts, transitions, pool, permissions and reversal
+ok 52 - Lead funnel: real SQL exclusive states, counts, transitions, pool, permissions and reversal
+  ---
+  duration_ms: 2692.8608
+  type: 'test'
+  ...
+# Subtest: Lead funnel: HTTP reader bounds, admin gate and missing-schema failure
+ok 53 - Lead funnel: HTTP reader bounds, admin gate and missing-schema failure
+  ---
+  duration_ms: 9.7991
+  type: 'test'
+  ...
+# Subtest: 043 preserves legacy sequences and idempotent receipts while new campaigns become first-contact only
+ok 54 - 043 preserves legacy sequences and idempotent receipts while new campaigns become first-contact only
+  ---
+  duration_ms: 2106.3424
+  type: 'test'
+  ...
+# Subtest: campaign operational status distinguishes full sync blockage from partial sender waits
+ok 55 - campaign operational status distinguishes full sync blockage from partial sender waits
+  ---
+  duration_ms: 0.5977
+  type: 'test'
+  ...
+# Subtest: reference templates personalize subjects and tables, retain quoted figures, signature and safe formatting
+ok 56 - reference templates personalize subjects and tables, retain quoted figures, signature and safe formatting
+  ---
+  duration_ms: 6.7834
+  type: 'test'
+  ...
+# Subtest: tables reject malformed structure and unknown styling without allowing HTML or URL injection
+ok 57 - tables reject malformed structure and unknown styling without allowing HTML or URL injection
+  ---
+  duration_ms: 0.5109
+  type: 'test'
+  ...
+# Subtest: installing the two templates is idempotent and preserves edits and version history
+ok 58 - installing the two templates is idempotent and preserves edits and version history
+  ---
+  duration_ms: 28.5199
+  type: 'test'
+  ...
+# Subtest: readiness shares enrollment rules, distinguishes preparation, and keeps totals across pages/search
+ok 59 - readiness shares enrollment rules, distinguishes preparation, and keeps totals across pages/search
+  ---
+  duration_ms: 2556.6578
+  type: 'test'
+  ...
+# Subtest: readiness counts unique confirmed initial contacts, excluding tests, followups, errors and uncertain sends
+ok 60 - readiness counts unique confirmed initial contacts, excluding tests, followups, errors and uncertain sends
+  ---
+  duration_ms: 2314.2856
+  type: 'test'
+  ...
+# Subtest: CS: review scope, unique contacts, reasons, filters and pagination use only the chosen batch
+ok 61 - CS: review scope, unique contacts, reasons, filters and pagination use only the chosen batch
+  ---
+  duration_ms: 2588.6419
+  type: 'test'
+  ...
+# Subtest: CS: retry is atomic, scoped and idempotent; history is retained and no campaign is activated
+ok 62 - CS: retry is atomic, scoped and idempotent; history is retained and no campaign is activated
+  ---
+  duration_ms: 2076.3816
+  type: 'test'
+  ...
+# Subtest: CS: forged, stale, suppressed, uncertain and duplicate selections fail with zero partial queue
+ok 63 - CS: forged, stale, suppressed, uncertain and duplicate selections fail with zero partial queue
+  ---
+  duration_ms: 2263.548
+  type: 'test'
+  ...
+# Subtest: CS: role, MFA, inactive actor, ACL and rollback preserve existing sources and records
+ok 64 - CS: role, MFA, inactive actor, ACL and rollback preserve existing sources and records
+  ---
+  duration_ms: 2151.1147
+  type: 'test'
+  ...
+# Subtest: CS: a conflicting pending verification rolls back all selected contacts and receipts
+ok 65 - CS: a conflicting pending verification rolls back all selected contacts and receipts
+  ---
+  duration_ms: 2250.7765
+  type: 'test'
+  ...
+# Subtest: CS: HTTP review/retry validates strict envelopes and fails closed without configuration or installed RPC
+ok 66 - CS: HTTP review/retry validates strict envelopes and fails closed without configuration or installed RPC
+  ---
+  duration_ms: 12.484
+  type: 'test'
+  ...
+# Subtest: CS: reasons distinguish insufficient credits from uncertain requests without echoing provider payloads
+ok 67 - CS: reasons distinguish insufficient credits from uncertain requests without echoing provider payloads
+  ---
+  duration_ms: 0.5496
+  type: 'test'
+  ...
+# Subtest: templates require unsubscribe and known merge fields in every step
+ok 68 - templates require unsubscribe and known merge fields in every step
+  ---
+  duration_ms: 6.7439
+  type: 'test'
+  ...
+# Subtest: template permissions, versions, immutable campaign attachments and generic delivery
+ok 69 - template permissions, versions, immutable campaign attachments and generic delivery
+  ---
+  duration_ms: 2317.5182
+  type: 'test'
+  ...
+# Subtest: CON-AC01/02/04: module has four accessible provider tabs, source dates and operational separation
+ok 70 - CON-AC01/02/04: module has four accessible provider tabs, source dates and operational separation
+  ---
+  duration_ms: 47.6147
+  type: 'test'
+  ...
+# Subtest: CON-AC05: TextTorrent remains pending and Instantly configuration does not claim live connectivity
+ok 71 - CON-AC05: TextTorrent remains pending and Instantly configuration does not claim live connectivity
+  ---
+  duration_ms: 32.0029
+  type: 'test'
+  ...
+# Subtest: CON-AC06: other roles and inactive admins cannot render accounts or provider controls
+ok 72 - CON-AC06: other roles and inactive admins cannot render accounts or provider controls
+  ---
+  duration_ms: 2.6122
+  type: 'test'
+  ...
+# Subtest: CON-AC01/04: settings retain roles while provider and sender controls are centralized
+ok 73 - CON-AC01/04: settings retain roles while provider and sender controls are centralized
+  ---
+  duration_ms: 7.0105
+  type: 'test'
+  ...
+# Subtest: CON-AC01/06: actual CRM menu exposes Connections to the admin and preserves existing sections
+ok 74 - CON-AC01/06: actual CRM menu exposes Connections to the admin and preserves existing sections
+  ---
+  duration_ms: 92.5926
+  type: 'test'
+  ...
+# Subtest: CON-AC02/03: unknown data stays unknown and Gmail is separate from a confirmed Composio association
+ok 75 - CON-AC02/03: unknown data stays unknown and Gmail is separate from a confirmed Composio association
+  ---
+  duration_ms: 1.3225
+  type: 'test'
+  ...
+# Subtest: CON-AC06: only active production superadmins access Connections; demo does not widen production permissions
+ok 76 - CON-AC06: only active production superadmins access Connections; demo does not widen production permissions
+  ---
+  duration_ms: 0.2703
+  type: 'test'
+  ...
+# Subtest: CON-AC06: HTTP denies before any reads and never caches account metadata
+ok 77 - CON-AC06: HTTP denies before any reads and never caches account metadata
+  ---
+  duration_ms: 11.8396
+  type: 'test'
+  ...
+# Subtest: CON-AC06: unknown query and unexpected response fields fail closed
+ok 78 - CON-AC06: unknown query and unexpected response fields fail closed
+  ---
+  duration_ms: 2.1944
+  type: 'test'
+  ...
+# Subtest: CON-AC02/03/06: real reader selects metadata only, exact counts by mailbox, and preserves partial failures
+ok 79 - CON-AC02/03/06: real reader selects metadata only, exact counts by mailbox, and preserves partial failures
+  ---
+  duration_ms: 6.9204
+  type: 'test'
+  ...
+# Subtest: CON-AC03/06: missing permission catalog is unknown, while duplicate account catalogs fail explicitly
+ok 80 - CON-AC03/06: missing permission catalog is unknown, while duplicate account catalogs fail explicitly
+  ---
+  duration_ms: 1.8376
+  type: 'test'
+  ...
+# Subtest: analysis progress includes skipped reads and distinguishes Gmail's estimate from saved messages
+ok 81 - analysis progress includes skipped reads and distinguishes Gmail's estimate from saved messages
+  ---
+  duration_ms: 0.6999
+  type: 'test'
+  ...
+# Subtest: missing, reached or exceeded estimates never falsely report completion or zero remaining
+ok 82 - missing, reached or exceeded estimates never falsely report completion or zero remaining
+  ---
+  duration_ms: 0.2717
+  type: 'test'
+  ...
+# Subtest: completed scanning reports the final saved count while commercial import can still await approval
+ok 83 - completed scanning reports the final saved count while commercial import can still await approval
+  ---
+  duration_ms: 0.1599
+  type: 'test'
+  ...
+# Subtest: preview detects safe supported content and rejects HTML and SVG regardless of filename
+ok 84 - preview detects safe supported content and rejects HTML and SVG regardless of filename
+  ---
+  duration_ms: 1.0695
+  type: 'test'
+  ...
+# Subtest: attachment selection is empty by default, filtered, persistent, permissioned and required before import
+ok 85 - attachment selection is empty by default, filtered, persistent, permissioned and required before import
+  ---
+  duration_ms: 2400.2521
+  type: 'test'
+  ...
+# Subtest: worker never fetches or uploads unselected future or historical files, and selected retries preserve stored copies
+ok 86 - worker never fetches or uploads unselected future or historical files, and selected retries preserve stored copies
+  ---
+  duration_ms: 23.0436
+  type: 'test'
+  ...
+# Subtest: candidate filters validate supported states and keep exact email punctuation
+ok 87 - candidate filters validate supported states and keep exact email punctuation
+  ---
+  duration_ms: 4.3037
+  type: 'test'
+  ...
+# Subtest: database requests combine search and filters before pagination, retaining the run and exact filtered count
+ok 88 - database requests combine search and filters before pagination, retaining the run and exact filtered count
+  ---
+  duration_ms: 24.7117
+  type: 'test'
+  ...
+# Subtest: pending, selected, queued and imported are separate; combined email search treats SQL wildcards literally
+ok 89 - pending, selected, queued and imported are separate; combined email search treats SQL wildcards literally
+  ---
+  duration_ms: 1649.4925
+  type: 'test'
+  ...
+# Subtest: Gmail history is controlled, recoverable, permissioned, and separate from new-lead validation
+ok 90 - Gmail history is controlled, recoverable, permissioned, and separate from new-lead validation
+  ---
+  duration_ms: 2732.8274
+  type: 'test'
+  ...
+# Subtest: recipient parsing preserves quoted commas, multiple direct recipients and copy-only participants
+ok 91 - recipient parsing preserves quoted commas, multiple direct recipients and copy-only participants
+  ---
+  duration_ms: 4.1943
+  type: 'test'
+  ...
+# Subtest: historical queries include sent and archived messages but never spam, trash or drafts
+ok 92 - historical queries include sent and archived messages but never spam, trash or drafts
+  ---
+  duration_ms: 0.3724
+  type: 'test'
+  ...
+# Subtest: automatic responses and campaigns are distinguishable from personal communication
+ok 93 - automatic responses and campaigns are distinguishable from personal communication
+  ---
+  duration_ms: 0.9991
+  type: 'test'
+  ...
+# Subtest: a temporary failure or an unclassified delivery report never becomes a permanent bounce or funding rejection
+ok 94 - a temporary failure or an unclassified delivery report never becomes a permanent bounce or funding rejection
+  ---
+  duration_ms: 0.4197
+  type: 'test'
+  ...
+# Subtest: both inline and remote attachments preserve separate MIME part identities
+ok 95 - both inline and remote attachments preserve separate MIME part identities
+  ---
+  duration_ms: 0.3112
+  type: 'test'
+  ...
+# Subtest: recent documents are copied; active cases also retrieve identifiable older application/bank/contract files
+ok 96 - recent documents are copied; active cases also retrieve identifiable older application/bank/contract files
+  ---
+  duration_ms: 0.3525
+  type: 'test'
+  ...
+# Subtest: attachment counter repair only advances after a complete batch and deduplicates replayed pages
+ok 97 - attachment counter repair only advances after a complete batch and deduplicates replayed pages
+  ---
+  duration_ms: 54.7337
+  type: 'test'
+  ...
+# Subtest: 403 quota, Workspace policy and permission failures remain distinct without exposing raw Google data
+ok 98 - 403 quota, Workspace policy and permission failures remain distinct without exposing raw Google data
+  ---
+  duration_ms: 5.8728
+  type: 'test'
+  ...
+# Subtest: Gmail Retry-After supports seconds and HTTP dates without reducing Google's wait
+ok 99 - Gmail Retry-After supports seconds and HTTP dates without reducing Google's wait
+  ---
+  duration_ms: 1.5019
+  type: 'test'
+  ...
+# Subtest: Gmail reads are paced below the new per-user quota, including parallel requests, without serializing different accounts
+ok 100 - Gmail reads are paced below the new per-user quota, including parallel requests, without serializing different accounts
+  ---
+  duration_ms: 8.3444
+  type: 'test'
+  ...
+# Subtest: quota rejections lower only the affected account's request rate and diagnostics omit message IDs
+ok 101 - quota rejections lower only the affected account's request rate and diagnostics omit message IDs
+  ---
+  duration_ms: 0.8431
+  type: 'test'
+  ...
+# Subtest: archive quota recovery retains its cursor and messages, clears stale errors, and still pauses real policy failures
+ok 102 - archive quota recovery retains its cursor and messages, clears stale errors, and still pauses real policy failures
+  ---
+  duration_ms: 10422.1412
+  type: 'test'
+  ...
+# (node:46612) ExperimentalWarning: The MockTimers API is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: a failed status read retains data, retries only GET and clears the connection warning on recovery
+ok 103 - a failed status read retains data, retries only GET and clears the connection warning on recovery
+  ---
+  duration_ms: 25.0797
+  type: 'test'
+  ...
+# Subtest: manual refreshes coalesce during a slow request and never overlap status reads
+ok 104 - manual refreshes coalesce during a slow request and never overlap status reads
+  ---
+  duration_ms: 5.1441
+  type: 'test'
+  ...
+# Subtest: changing analysis cancels the old read and ignores even late uncancellable responses
+ok 105 - changing analysis cancels the old read and ignores even late uncancellable responses
+  ---
+  duration_ms: 1.41
+  type: 'test'
+  ...
+# Subtest: a hung status read times out and the next read can recover
+ok 106 - a hung status read times out and the next read can recover
+  ---
+  duration_ms: 1.8873
+  type: 'test'
+  ...
+# Subtest: proxy failures and expired CRM sessions are distinct from Gmail authorization or a stopped analysis
+ok 107 - proxy failures and expired CRM sessions are distinct from Gmail authorization or a stopped analysis
+  ---
+  duration_ms: 2.5995
+  type: 'test'
+  ...
+# Subtest: reloading restores a valid saved analysis; absent or invalid choices prefer an active historical run
+ok 108 - reloading restores a valid saved analysis; absent or invalid choices prefer an active historical run
+  ---
+  duration_ms: 0.2482
+  type: 'test'
+  ...
+# Subtest: external sending usage resumes pages, stores metadata only and marks freshness only after a complete scan
+ok 109 - external sending usage resumes pages, stores metadata only and marks freshness only after a complete scan
+  ---
+  duration_ms: 488.0814
+  type: 'test'
+  ...
+# Subtest: Gmail keeps existing push deployments unless polling is explicitly selected
+ok 110 - Gmail keeps existing push deployments unless polling is explicitly selected
+  ---
+  duration_ms: 0.8612
+  type: 'test'
+  ...
+# Subtest: polling schedules every connected mailbox without watch jobs and preserves retry deduplication
+ok 111 - polling schedules every connected mailbox without watch jobs and preserves retry deduplication
+  ---
+  duration_ms: 1.0017
+  type: 'test'
+  ...
+# Subtest: push mode still schedules reconciliation and renews missing or expiring watches
+ok 112 - push mode still schedules reconciliation and renews missing or expiring watches
+  ---
+  duration_ms: 0.3236
+  type: 'test'
+  ...
+# Subtest: old watch jobs are harmless in polling even without topic, credentials or database configuration
+ok 113 - old watch jobs are harmless in polling even without topic, credentials or database configuration
+  ---
+  duration_ms: 0.637
+  type: 'test'
+  ...
+# Subtest: polling ignores old push callbacks without authentication, parsing, network or database writes
+ok 114 - polling ignores old push callbacks without authentication, parsing, network or database writes
+  ---
+  duration_ms: 2.381
+  type: 'test'
+  ...
+# Subtest: push still requires configured audience and authenticated callbacks
+ok 115 - push still requires configured audience and authenticated callbacks
+  ---
+  duration_ms: 0.937
+  type: 'test'
+  ...
+# Subtest: a misspelled sync mode fails before scheduling jobs or calling Gmail
+ok 116 - a misspelled sync mode fails before scheduling jobs or calling Gmail
+  ---
+  duration_ms: 0.5112
+  type: 'test'
+  ...
+# Subtest: team identity validates an exact email without implicitly granting or requiring CRM membership
+ok 117 - team identity validates an exact email without implicitly granting or requiring CRM membership
+  ---
+  duration_ms: 2.7219
+  type: 'test'
+  ...
+# Subtest: team thread worker retries a partial page without advancing its persistent cursor
+ok 118 - team thread worker retries a partial page without advancing its persistent cursor
+  ---
+  duration_ms: 31.8925
+  type: 'test'
+  ...
+# Subtest: team history associates separate cases, preserves ownership and requires evidence to resolve lender waits
+ok 119 - team history associates separate cases, preserves ownership and requires evidence to resolve lender waits
+  ---
+  duration_ms: 2356.0671
+  type: 'test'
+  ...
+# Subtest: live Gmail team mail preserves campaigns and waits, and an unassociated team thread never matches a customer
+ok 120 - live Gmail team mail preserves campaigns and waits, and an unassociated team thread never matches a customer
+  ---
+  duration_ms: 827.1471
+  type: 'test'
+  ...
+# Subtest: an import sees, selects and incorporates later thread attachments across scans and live directories without crossing mailboxes
+ok 121 - an import sees, selects and incorporates later thread attachments across scans and live directories without crossing mailboxes
+  ---
+  duration_ms: 1866.2748
+  type: 'test'
+  ...
+# Subtest: MIME alternatives produce one readable body and never mix a text attachment into the email
+ok 122 - MIME alternatives produce one readable body and never mix a text attachment into the email
+  ---
+  duration_ms: 1.2658
+  type: 'test'
+  ...
+# Subtest: chat hides signatures and quoted history without rewriting original evidence
+ok 123 - chat hides signatures and quoted history without rewriting original evidence
+  ---
+  duration_ms: 0.6965
+  type: 'test'
+  ...
+# Subtest: shared historical send belongs to each addressed lender, but actual replies stay with the sender's lender
+ok 124 - shared historical send belongs to each addressed lender, but actual replies stay with the sender's lender
+  ---
+  duration_ms: 0.7423
+  type: 'test'
+  ...
+# Subtest: team replies are on our side but internal messages and customer mail keep separate channels
+ok 125 - team replies are on our side but internal messages and customer mail keep separate channels
+  ---
+  duration_ms: 0.1806
+  type: 'test'
+  ...
+# Subtest: reply suggestions exclude hidden copies and other lenders; MIME preserves reviewed visible CC
+ok 126 - reply suggestions exclude hidden copies and other lenders; MIME preserves reviewed visible CC
+  ---
+  duration_ms: 1.5476
+  type: 'test'
+  ...
+# Subtest: date order compares actual instants across time zones and leaves pagination data unchanged
+ok 127 - date order compares actual instants across time zones and leaves pagination data unchanged
+  ---
+  duration_ms: 0.9606
+  type: 'test'
+  ...
+# Subtest: a queued or failed reply remains visible in its thread with the sender and visible recipients
+ok 128 - a queued or failed reply remains visible in its thread with the sender and visible recipients
+  ---
+  duration_ms: 0.356
+  type: 'test'
+  ...
+# Subtest: the queued bubble is replaced by actual mail without hiding unrelated messages from another mailbox
+ok 129 - the queued bubble is replaced by actual mail without hiding unrelated messages from another mailbox
+  ---
+  duration_ms: 0.141
+  type: 'test'
+  ...
+# Subtest: manual email is transactional, permissioned, idempotent, recoverable and associated with its case
+ok 130 - manual email is transactional, permissioned, idempotent, recoverable and associated with its case
+  ---
+  duration_ms: 2178.542
+  type: 'test'
+  ...
+# Subtest: Simple mail SQL: real role/MFA, identity, advisor, replay, included budget and preservation
+    # Subtest: human begins with fixed brand; duplicate returns same receipt
+    ok 1 - human begins with fixed brand; duplicate returns same receipt
+      ---
+      duration_ms: 17.3417
+      type: 'test'
+      ...
+    # Subtest: advisor required and mailbox domain mismatch denied
+    ok 2 - advisor required and mailbox domain mismatch denied
+      ---
+      duration_ms: 3.3104
+      type: 'test'
+      ...
+    # Subtest: MFA and session ownership enforced in DB
+    ok 3 - MFA and session ownership enforced in DB
+      ---
+      duration_ms: 4.8325
+      type: 'test'
+      ...
+    # Subtest: public identity assertion cannot save a credential
+    ok 4 - public identity assertion cannot save a credential
+      ---
+      duration_ms: 2.9006
+      type: 'test'
+      ...
+    # Subtest: server identity receipt and automatic brand confirmation
+    ok 5 - server identity receipt and automatic brand confirmation
+      ---
+      duration_ms: 28.7422
+      type: 'test'
+      ...
+    # Subtest: finalize grants selected advisor, starts thirty-day sync and never starts campaigns
+    ok 6 - finalize grants selected advisor, starts thirty-day sync and never starts campaigns
+      ---
+      duration_ms: 12.3059
+      type: 'test'
+      ...
+    # Subtest: Composio identity, current-context candidate and effective scopes verify without another Google consent
+    ok 7 - Composio identity, current-context candidate and effective scopes verify without another Google consent
+      ---
+      duration_ms: 622.1782
+      type: 'test'
+      ...
+    # Subtest: included usage is closed until evidence and uses all applicable meters
+    ok 8 - included usage is closed until evidence and uses all applicable meters
+      ---
+      duration_ms: 11.2981
+      type: 'test'
+      ...
+    # Subtest: a saved Composio identity is adopted with fresh MFA without a new Connect attempt
+    ok 9 - a saved Composio identity is adopted with fresh MFA without a new Connect attempt
+      ---
+      duration_ms: 15.6621
+      type: 'test'
+      ...
+    # Subtest: fallback SQL reserves one child, requires actual B2 admission and keeps uncertain messages held
+    ok 10 - fallback SQL reserves one child, requires actual B2 admission and keeps uncertain messages held
+      ---
+      duration_ms: 96.9196
+      type: 'test'
+      ...
+    # Subtest: private ledgers are inaccessible to authenticated/anon/service tables
+    ok 11 - private ledgers are inaccessible to authenticated/anon/service tables
+      ---
+      duration_ms: 2.8502
+      type: 'test'
+      ...
+    # Subtest: Composio-first new mailbox can confirm brand and register its observed identity automatically
+    ok 12 - Composio-first new mailbox can confirm brand and register its observed identity automatically
+      ---
+      duration_ms: 296.4349
+      type: 'test'
+      ...
+    # Subtest: ten independent mailboxes remain scoped and create no campaigns or outgoing mail
+    ok 13 - ten independent mailboxes remain scoped and create no campaigns or outgoing mail
+      ---
+      duration_ms: 157.7668
+      type: 'test'
+      ...
+    # Subtest: initial page cursor is durable and CAS guarded; completion requires actual runtime read receipts
+    ok 14 - initial page cursor is durable and CAS guarded; completion requires actual runtime read receipts
+      ---
+      duration_ms: 26.609
+      type: 'test'
+      ...
+    # Subtest: expired read-cycle recovery preserves request and outgoing uncertainty evidence
+    ok 15 - expired read-cycle recovery preserves request and outgoing uncertainty evidence
+      ---
+      duration_ms: 10.9208
+      type: 'test'
+      ...
+    # Subtest: read status exposes sync attention without leaking errors and degrades revoked advisor permission
+    ok 16 - read status exposes sync attention without leaking errors and degrades revoked advisor permission
+      ---
+      duration_ms: 9.9539
+      type: 'test'
+      ...
+    # Subtest: disconnect is local, idempotent and preserves identity/history
+    ok 17 - disconnect is local, idempotent and preserves identity/history
+      ---
+      duration_ms: 12.7948
+      type: 'test'
+      ...
+    1..17
+ok 131 - Simple mail SQL: real role/MFA, identity, advisor, replay, included budget and preservation
+  ---
+  duration_ms: 4235.0341
+  type: 'test'
+  ...
+# Subtest: Connection HTTP rejects closed, unauthorized, cross-origin, invalid and oversized requests before effects
+ok 132 - Connection HTTP rejects closed, unauthorized, cross-origin, invalid and oversized requests before effects
+  ---
+  duration_ms: 9.5524
+  type: 'test'
+  ...
+# Subtest: Gmail-only release blocks Composio even with free capacity, including resuming an existing attempt
+ok 133 - Gmail-only release blocks Composio even with free capacity, including resuming an existing attempt
+  ---
+  duration_ms: 8.8103
+  type: 'test'
+  ...
+# Subtest: Composio product flag is closed by default and cannot be enabled without the main feature
+ok 134 - Composio product flag is closed by default and cannot be enabled without the main feature
+  ---
+  duration_ms: 0.2443
+  type: 'test'
+  ...
+# Subtest: Repeated connect returns same durable state and authorization URL without leaking private correlation
+ok 135 - Repeated connect returns same durable state and authorization URL without leaking private correlation
+  ---
+  duration_ms: 1.5568
+  type: 'test'
+  ...
+# Subtest: Composio without included capacity does not create even an onboarding/link
+ok 136 - Composio without included capacity does not create even an onboarding/link
+  ---
+  duration_ms: 0.4778
+  type: 'test'
+  ...
+# Subtest: Thirty-day setup resumes from a saved identity and finalizes once ready
+ok 137 - Thirty-day setup resumes from a saved identity and finalizes once ready
+  ---
+  duration_ms: 1.3536
+  type: 'test'
+  ...
+# Subtest: A pending code exchange does not reopen Google; an expired authorization requires explicit reconnect
+ok 138 - A pending code exchange does not reopen Google; an expired authorization requires explicit reconnect
+  ---
+  duration_ms: 1.3735
+  type: 'test'
+  ...
+# Subtest: Included guard charges each attempted request and never emits when capacity is unknown
+ok 139 - Included guard charges each attempted request and never emits when capacity is unknown
+  ---
+  duration_ms: 0.8618
+  type: 'test'
+  ...
+# Subtest: actual Composio callback reserves every metadata/profile request and blocks unknown free capacity
+ok 140 - actual Composio callback reserves every metadata/profile request and blocks unknown free capacity
+  ---
+  duration_ms: 5104.4362
+  type: 'test'
+  ...
+# Subtest: simple-mail feature refuses a Composio request outside a budget scope
+ok 141 - simple-mail feature refuses a Composio request outside a budget scope
+  ---
+  duration_ms: 0.8719
+  type: 'test'
+  ...
+# Subtest: Legacy Gmail adapter: real audited brand commands recover an existing row before OAuth
+    # Subtest: create missing review
+    ok 1 - create missing review
+      ---
+      duration_ms: 56.1549
+      type: 'test'
+      ...
+    # Subtest: reuse compatible pending review
+    ok 2 - reuse compatible pending review
+      ---
+      duration_ms: 28.5194
+      type: 'test'
+      ...
+    # Subtest: seller cannot confirm even with a previously read account snapshot
+    ok 3 - seller cannot confirm even with a previously read account snapshot
+      ---
+      duration_ms: 6.5908
+      type: 'test'
+      ...
+    # Subtest: MFA remains mandatory for automatic legacy confirmation
+    ok 4 - MFA remains mandatory for automatic legacy confirmation
+      ---
+      duration_ms: 8.7346
+      type: 'test'
+      ...
+    1..4
+ok 142 - Legacy Gmail adapter: real audited brand commands recover an existing row before OAuth
+  ---
+  duration_ms: 2509.8269
+  type: 'test'
+  ...
+# Subtest: Legacy unbranded row uses audited proposal/confirmation, preserves identity and is replay safe
+ok 143 - Legacy unbranded row uses audited proposal/confirmation, preserves identity and is replay safe
+  ---
+  duration_ms: 3.18
+  type: 'test'
+  ...
+# Subtest: Compatible pending review is confirmed without replacing its evidence
+ok 144 - Compatible pending review is confirmed without replacing its evidence
+  ---
+  duration_ms: 0.2408
+  type: 'test'
+  ...
+# Subtest: New and already branded accounts are left to the normal onboarding contract
+ok 145 - New and already branded accounts are left to the normal onboarding contract
+  ---
+  duration_ms: 0.2064
+  type: 'test'
+  ...
+# Subtest: Different workspace, connected account, conflicting/stale/historical reviews never auto-confirm
+ok 146 - Different workspace, connected account, conflicting/stale/historical reviews never auto-confirm
+  ---
+  duration_ms: 0.7018
+  type: 'test'
+  ...
+# Subtest: Proposal conflict and concurrent DB revision guards stop confirmation; MFA denial stays forbidden
+ok 147 - Proposal conflict and concurrent DB revision guards stop confirmation; MFA denial stays forbidden
+  ---
+  duration_ms: 0.5506
+  type: 'test'
+  ...
+# Subtest: Unknown errors do not promise a saved attempt; legacy conflict explains where to review
+ok 148 - Unknown errors do not promise a saved attempt; legacy conflict explains where to review
+  ---
+  duration_ms: 2.5419
+  type: 'test'
+  ...
+# Subtest: OAuth behind a container proxy returns only to the configured public CRM
+ok 149 - OAuth behind a container proxy returns only to the configured public CRM
+  ---
+  duration_ms: 3.1942
+  type: 'test'
+  ...
+# Subtest: Invalid public-origin configuration fails closed without internal-host fallback
+ok 150 - Invalid public-origin configuration fails closed without internal-host fallback
+  ---
+  duration_ms: 0.5487
+  type: 'test'
+  ...
+# Subtest: Public origins normalize their root slash; configured localhost remains usable in development
+ok 151 - Public origins normalize their root slash; configured localhost remains usable in development
+  ---
+  duration_ms: 0.2076
+  type: 'test'
+  ...
+# Subtest: hybrid scheduler continues Composio-only reception and removes stale managed legacy credentials
+ok 152 - hybrid scheduler continues Composio-only reception and removes stale managed legacy credentials
+  ---
+  duration_ms: 3.3084
+  type: 'test'
+  ...
+# Subtest: new mailbox uses exactly thirty-day floor and releases cycle on malformed floor
+ok 153 - new mailbox uses exactly thirty-day floor and releases cycle on malformed floor
+  ---
+  duration_ms: 3.873
+  type: 'test'
+  ...
+# Subtest: thirty-day import resumes saved pages, retries an interrupted page and commits its original baseline
+ok 154 - thirty-day import resumes saved pages, retries an interrupted page and commits its original baseline
+  ---
+  duration_ms: 2.9358
+  type: 'test'
+  ...
+# Subtest: basic replies remain available without an advanced Gmail signature or unsupported recipient controls
+ok 155 - basic replies remain available without an advanced Gmail signature or unsupported recipient controls
+  ---
+  duration_ms: 14.1477
+  type: 'test'
+  ...
+# Subtest: basic replies cannot fall back to an unpermitted original mailbox
+ok 156 - basic replies cannot fall back to an unpermitted original mailbox
+  ---
+  duration_ms: 1.6234
+  type: 'test'
+  ...
+# Subtest: advanced replies retain sender, copies, attachments and the signature readiness requirement
+ok 157 - advanced replies retain sender, copies, attachments and the signature readiness requirement
+  ---
+  duration_ms: 5.6098
+  type: 'test'
+  ...
+# Subtest: explicit demo mailbox status still permits the existing simulated reply
+ok 158 - explicit demo mailbox status still permits the existing simulated reply
+  ---
+  duration_ms: 1.3384
+  type: 'test'
+  ...
+# Subtest: company replies expose the reviewed recipient, copies and authorized account without requiring the advanced signature feature
+ok 159 - company replies expose the reviewed recipient, copies and authorized account without requiring the advanced signature feature
+  ---
+  duration_ms: 4.0827
+  type: 'test'
+  ...
+# Subtest: reply modes require an explicit brand review even with a technically permitted sender
+ok 160 - reply modes require an explicit brand review even with a technically permitted sender
+  ---
+  duration_ms: 10.0588
+  type: 'test'
+  ...
+# Subtest: Automatic fallback boundaries never duplicate an uncertain send
+    # Subtest: known OAuth preparation failure uses one Composio POST after durable cancellation
+    ok 1 - known OAuth preparation failure uses one Composio POST after durable cancellation
+      ---
+      duration_ms: 43.0852
+      type: 'test'
+      ...
+    # Subtest: generic, quota and permission failures do not qualify
+    ok 2 - generic, quota and permission failures do not qualify
+      ---
+      duration_ms: 2.2372
+      type: 'test'
+      ...
+    # Subtest: a direct POST timeout never starts fallback
+    ok 3 - a direct POST timeout never starts fallback
+      ---
+      duration_ms: 1.3267
+      type: 'test'
+      ...
+    # Subtest: missing durable no-emission acknowledgment blocks fallback
+    ok 4 - missing durable no-emission acknowledgment blocks fallback
+      ---
+      duration_ms: 0.5647
+      type: 'test'
+      ...
+    # Subtest: included usage, revocation and changed configuration stop before wire
+    ok 5 - included usage, revocation and changed configuration stop before wire
+      ---
+      duration_ms: 2.4892
+      type: 'test'
+      ...
+    # Subtest: uncertain fallback has exactly one POST and no recursive retry
+    ok 6 - uncertain fallback has exactly one POST and no recursive retry
+      ---
+      duration_ms: 1.8497
+      type: 'test'
+      ...
+    # Subtest: default closed mode preserves old behavior
+    ok 7 - default closed mode preserves old behavior
+      ---
+      duration_ms: 0.4878
+      type: 'test'
+      ...
+    1..7
+ok 161 - Automatic fallback boundaries never duplicate an uncertain send
+  ---
+  duration_ms: 53.6254
+  type: 'test'
+  ...
+# Subtest: forwarding sends the original encrypted attachment bytes and refuses altered content before any Gmail send
+ok 162 - forwarding sends the original encrypted attachment bytes and refuses altered content before any Gmail send
+  ---
+  duration_ms: 34.0961
+  type: 'test'
+  ...
+# Subtest: a completed live directory stays available after reload without a historical analysis
+ok 163 - a completed live directory stays available after reload without a historical analysis
+  ---
+  duration_ms: 0.6321
+  type: 'test'
+  ...
+# Subtest: interest includes information, pricing, applications and future contact; ambiguity stays in review
+ok 164 - interest includes information, pricing, applications and future contact; ambiguity stays in review
+  ---
+  duration_ms: 5.1944
+  type: 'test'
+  ...
+# Subtest: quoted campaigns, delivery senders, holidays and outgoing messages cannot create interest
+ok 165 - quoted campaigns, delivery senders, holidays and outgoing messages cannot create interest
+  ---
+  duration_ms: 2.7154
+  type: 'test'
+  ...
+# Subtest: all mail linked to a case stays visible regardless of intent, age, direction or classifier backfill
+ok 166 - all mail linked to a case stays visible regardless of intent, age, direction or classifier backfill
+  ---
+  duration_ms: 9.5878
+  type: 'test'
+  ...
+# Subtest: a real-time sync path receives a reply without any historical run and never advances the cursor after an incomplete write
+ok 167 - a real-time sync path receives a reply without any historical run and never advances the cursor after an incomplete write
+  ---
+  duration_ms: 1875.0928
+  type: 'test'
+  ...
+# Subtest: mail keeps received sender defaults, excludes hidden copies from replies and preserves HTML signature with Unicode attachments
+ok 168 - mail keeps received sender defaults, excludes hidden copies from replies and preserves HTML signature with Unicode attachments
+  ---
+  duration_ms: 7.98
+  type: 'test'
+  ...
+# Subtest: live mail works before historical import, requires manual new-thread association, shares case mail and queues independent lender sends
+ok 169 - live mail works before historical import, requires manual new-thread association, shares case mail and queues independent lender sends
+  ---
+  duration_ms: 2168.0444
+  type: 'test'
+  ...
+# Subtest: Outlook quoted history folds without changing the original email evidence
+ok 170 - Outlook quoted history folds without changing the original email evidence
+  ---
+  duration_ms: 0.941
+  type: 'test'
+  ...
+# Subtest: a simple separator in an email never hides content without an actual quoted header block
+ok 171 - a simple separator in an email never hides content without an actual quoted header block
+  ---
+  duration_ms: 0.4994
+  type: 'test'
+  ...
+# Subtest: personal recipient selections enforce ownership, active membership and MFA through RLS
+ok 172 - personal recipient selections enforce ownership, active membership and MFA through RLS
+  ---
+  duration_ms: 1291.1462
+  type: 'test'
+  ...
+# Subtest: search and sort use active companies and their contacts
+ok 173 - search and sort use active companies and their contacts
+  ---
+  duration_ms: 9.1382
+  type: 'test'
+  ...
+# Subtest: saved selections reject malformed/duplicate recipients, allow the catalog and omit message templates
+ok 174 - saved selections reject malformed/duplicate recipients, allow the catalog and omit message templates
+  ---
+  duration_ms: 4.384
+  type: 'test'
+  ...
+# Subtest: deleted, inactive and reassigned recipients are detected without substituting a different address
+ok 175 - deleted, inactive and reassigned recipients are detected without substituting a different address
+  ---
+  duration_ms: 0.8957
+  type: 'test'
+  ...
+# Subtest: bulk file selection keeps approval, case and storage rules and counts other attachments
+ok 176 - bulk file selection keeps approval, case and storage rules and counts other attachments
+  ---
+  duration_ms: 1.7184
+  type: 'test'
+  ...
+# Subtest: shared composer renders only selected lender cards, separate CC and explicit scope in both languages
+ok 177 - shared composer renders only selected lender cards, separate CC and explicit scope in both languages
+  ---
+  duration_ms: 39.9621
+  type: 'test'
+  ...
+# Subtest: sender retries confirmed quota rejections but never blindly repeats an uncertain Gmail POST
+ok 178 - sender retries confirmed quota rejections but never blindly repeats an uncertain Gmail POST
+  ---
+  duration_ms: 25367.3175
+  type: 'test'
+  ...
+# Subtest: S00 connections are offline by default, even when credentials exist
+ok 179 - S00 connections are offline by default, even when credentials exist
+  ---
+  duration_ms: 1.1205
+  type: 'test'
+  ...
+# Subtest: S00 missing configuration causes no requests and independent fixed diagnostics
+ok 180 - S00 missing configuration causes no requests and independent fixed diagnostics
+  ---
+  duration_ms: 0.3312
+  type: 'test'
+  ...
+# Subtest: S00 uses six bounded GETs, isolates credentials and redacts successful payloads
+ok 181 - S00 uses six bounded GETs, isolates credentials and redacts successful payloads
+  ---
+  duration_ms: 23.1922
+  type: 'test'
+  ...
+# Subtest: S00 can verify a Composio project key without choosing missing connection IDs
+ok 182 - S00 can verify a Composio project key without choosing missing connection IDs
+  ---
+  duration_ms: 0.539
+  type: 'test'
+  ...
+# Subtest: S00 rejects an auth config or connection ID mistakenly saved as the API key
+ok 183 - S00 rejects an auth config or connection ID mistakenly saved as the API key
+  ---
+  duration_ms: 0.277
+  type: 'test'
+  ...
+# Subtest: S00 distinguishes two Gmail connections from two distinct provider mailboxes
+ok 184 - S00 distinguishes two Gmail connections from two distinct provider mailboxes
+  ---
+  duration_ms: 3.9429
+  type: 'test'
+  ...
+# Subtest: S00 rejects duplicate or malformed Composio IDs before constructing a URL
+ok 185 - S00 rejects duplicate or malformed Composio IDs before constructing a URL
+  ---
+  duration_ms: 0.2606
+  type: 'test'
+  ...
+# Subtest: S00 does not accept mismatched or inactive Gmail accounts as ready
+ok 186 - S00 does not accept mismatched or inactive Gmail accounts as ready
+  ---
+  duration_ms: 4.2223
+  type: 'test'
+  ...
+# Subtest: S00 stops dependent requests for a disabled auth config or wrong workspace
+ok 187 - S00 stops dependent requests for a disabled auth config or wrong workspace
+  ---
+  duration_ms: 0.6104
+  type: 'test'
+  ...
+# Subtest: S00 reports an unpinned Instantly workspace without claiming expected identity
+ok 188 - S00 reports an unpinned Instantly workspace without claiming expected identity
+  ---
+  duration_ms: 0.9423
+  type: 'test'
+  ...
+# Subtest: S00 rejects arbitrary subaccount selection in the parent-only TextTorrent probe
+ok 189 - S00 rejects arbitrary subaccount selection in the parent-only TextTorrent probe
+  ---
+  duration_ms: 0.1652
+  type: 'test'
+  ...
+# Subtest: S00 classifies HTTP failures without retries, error content or dependent requests
+ok 190 - S00 classifies HTTP failures without retries, error content or dependent requests
+  ---
+  duration_ms: 1.2333
+  type: 'test'
+  ...
+# Subtest: S00 never follows a credential-bearing redirect
+ok 191 - S00 never follows a credential-bearing redirect
+  ---
+  duration_ms: 0.3697
+  type: 'test'
+  ...
+# Subtest: S00 rejects invalid JSON, non-JSON, oversized responses and unknown shapes
+ok 192 - S00 rejects invalid JSON, non-JSON, oversized responses and unknown shapes
+  ---
+  duration_ms: 3.7908
+  type: 'test'
+  ...
+# Subtest: S00 rejects HTTP 200 with TextTorrent failure or missing identity
+ok 193 - S00 rejects HTTP 200 with TextTorrent failure or missing identity
+  ---
+  duration_ms: 2.7907
+  type: 'test'
+  ...
+# Subtest: S00 bounds timeouts and hides network and abort exception text
+ok 194 - S00 bounds timeouts and hides network and abort exception text
+  ---
+  duration_ms: 18.8582
+  type: 'test'
+  ...
+# Subtest: S00 connection CLI never loads files, defaults offline and redacts invalid arguments
+ok 195 - S00 connection CLI never loads files, defaults offline and redacts invalid arguments
+  ---
+  duration_ms: 493.5603
+  type: 'test'
+  ...
+# Subtest: CW2-AC02/04: engine and real offline adapter register one candidate; replay emits no second link
+ok 196 - CW2-AC02/04: engine and real offline adapter register one candidate; replay emits no second link
+  ---
+  duration_ms: 57.5081
+  type: 'test'
+  ...
+# Subtest: CW2-AC04: identity mismatch never registers or activates a transport
+ok 197 - CW2-AC04: identity mismatch never registers or activates a transport
+  ---
+  duration_ms: 3.8315
+  type: 'test'
+  ...
+# Subtest: CW2-AC04: unknown link emission becomes uncertain; neither start nor resume creates a retry
+ok 198 - CW2-AC04: unknown link emission becomes uncertain; neither start nor resume creates a retry
+  ---
+  duration_ms: 1.6462
+  type: 'test'
+  ...
+# Subtest: CW2-AC04: changed context and expired MFA session deny before provider
+ok 199 - CW2-AC04: changed context and expired MFA session deny before provider
+  ---
+  duration_ms: 1.0379
+  type: 'test'
+  ...
+# Subtest: CW2-AC03: upstream descriptor uses the same C2/R06 context and rejects rotated expected version
+ok 200 - CW2-AC03: upstream descriptor uses the same C2/R06 context and rejects rotated expected version
+  ---
+  duration_ms: 0.5884
+  type: 'test'
+  ...
+# Subtest: CW2-AC03: a successful onboarding profile cannot replace effective-grant evidence C2
+ok 201 - CW2-AC03: a successful onboarding profile cannot replace effective-grant evidence C2
+  ---
+  duration_ms: 4.614
+  type: 'test'
+  ...
+# Subtest: T003-UT01: role/AAL/active/session guards reject before effects and protect replay
+ok 202 - T003-UT01: role/AAL/active/session guards reject before effects and protect replay
+  ---
+  duration_ms: 22.5794
+  type: 'test'
+  ...
+# Subtest: T003-UT01: authorization revision and browser proof cannot be silently replaced
+ok 203 - T003-UT01: authorization revision and browser proof cannot be silently replaced
+  ---
+  duration_ms: 0.9633
+  type: 'test'
+  ...
+# Subtest: T003-UT02: concurrent starts/callbacks share a durable claim and one provider effect
+ok 204 - T003-UT02: concurrent starts/callbacks share a durable claim and one provider effect
+  ---
+  duration_ms: 7.1105
+  type: 'test'
+  ...
+# Subtest: T003-UT03: load/claim unavailable never emits and pending persistence is not a success
+ok 205 - T003-UT03: load/claim unavailable never emits and pending persistence is not a success
+  ---
+  duration_ms: 1.7592
+  type: 'test'
+  ...
+# Subtest: T003-UT03: a proven non-emission releases the claim; only a new explicit call can issue
+ok 206 - T003-UT03: a proven non-emission releases the claim; only a new explicit call can issue
+  ---
+  duration_ms: 2.3989
+  type: 'test'
+  ...
+# Subtest: T003-UT04: creation timeout aborts and persists uncertainty, never retries
+ok 207 - T003-UT04: creation timeout aborts and persists uncertainty, never retries
+  ---
+  duration_ms: 1.7381
+  type: 'test'
+  ...
+# Subtest: T003-UT04: elapsed deadline is enforced even if a scheduler callback is delayed
+ok 208 - T003-UT04: elapsed deadline is enforced even if a scheduler callback is delayed
+  ---
+  duration_ms: 0.9403
+  type: 'test'
+  ...
+# Subtest: T003-UT04: failed uncertainty ledger is surfaced without exposing provider details
+ok 209 - T003-UT04: failed uncertainty ledger is surfaced without exposing provider details
+  ---
+  duration_ms: 1.0767
+  type: 'test'
+  ...
+# Subtest: T003-UT05: save-before-commit loss requires reconciliation; save-after-commit loss recovers durable result
+ok 210 - T003-UT05: save-before-commit loss requires reconciliation; save-after-commit loss recovers durable result
+  ---
+  duration_ms: 2.404
+  type: 'test'
+  ...
+# Subtest: T003-UT06: resume uses saved link, clamps expiry and never extends original deadline
+ok 211 - T003-UT06: resume uses saved link, clamps expiry and never extends original deadline
+  ---
+  duration_ms: 2.7281
+  type: 'test'
+  ...
+# Subtest: T003-UT06: completing registration purges navigation and a prior resume cannot reopen OAuth
+ok 212 - T003-UT06: completing registration purges navigation and a prior resume cannot reopen OAuth
+  ---
+  duration_ms: 4.1338
+  type: 'test'
+  ...
+# Subtest: T003-UT07: invalid callback/foreign correlation or connection never calls identity provider
+ok 213 - T003-UT07: invalid callback/foreign correlation or connection never calls identity provider
+  ---
+  duration_ms: 2.9375
+  type: 'test'
+  ...
+# Subtest: T003-UT07: actual primary identity/tuple mismatches reject without creating a candidate
+ok 214 - T003-UT07: actual primary identity/tuple mismatches reject without creating a candidate
+  ---
+  duration_ms: 15.2746
+  type: 'test'
+  ...
+# Subtest: T003-UT07: failed consent rejects locally without a profile read or revoke operation
+ok 215 - T003-UT07: failed consent rejects locally without a profile read or revoke operation
+  ---
+  duration_ms: 1.285
+  type: 'test'
+  ...
+# Subtest: T003-UT08: cancellation wins over a late creation result and records residual only
+ok 216 - T003-UT08: cancellation wins over a late creation result and records residual only
+  ---
+  duration_ms: 1.5736
+  type: 'test'
+  ...
+# Subtest: T003-UT08: cancellation wins over a late identity result without resetting terminal state
+ok 217 - T003-UT08: cancellation wins over a late identity result without resetting terminal state
+  ---
+  duration_ms: 2.3279
+  type: 'test'
+  ...
+# Subtest: T003-UT09: changed context blocks before emission and after a claim
+ok 218 - T003-UT09: changed context blocks before emission and after a claim
+  ---
+  duration_ms: 0.5716
+  type: 'test'
+  ...
+# Subtest: T003-UT09: session/config changes during provider work cannot finish a positive operation
+ok 219 - T003-UT09: session/config changes during provider work cannot finish a positive operation
+  ---
+  duration_ms: 1.7889
+  type: 'test'
+  ...
+# Subtest: T003-UT10: exact receipt replays without effects; different fingerprint conflicts
+ok 220 - T003-UT10: exact receipt replays without effects; different fingerprint conflicts
+  ---
+  duration_ms: 2.5603
+  type: 'test'
+  ...
+# Subtest: T003-UT11: successful lifecycle yields one candidate and no transport/evidence grant
+ok 221 - T003-UT11: successful lifecycle yields one candidate and no transport/evidence grant
+  ---
+  duration_ms: 3.4023
+  type: 'test'
+  ...
+# Subtest: T003-UT11: committed registration with lost acknowledgement is recovered through receipt only
+ok 222 - T003-UT11: committed registration with lost acknowledgement is recovered through receipt only
+  ---
+  duration_ms: 3.3011
+  type: 'test'
+  ...
+# Subtest: T003-UT12: malformed dependencies/snapshots and hostile redirects fail closed
+ok 223 - T003-UT12: malformed dependencies/snapshots and hostile redirects fail closed
+  ---
+  duration_ms: 2.8111
+  type: 'test'
+  ...
+# Subtest: T003-UT12: only explicit navigation exposes the capability URL; status/errors stay minimal
+ok 224 - T003-UT12: only explicit navigation exposes the capability URL; status/errors stay minimal
+  ---
+  duration_ms: 1.8072
+  type: 'test'
+  ...
+# Subtest: T003-UT12: dependency errors cannot smuggle a reconciliation result or private details
+ok 225 - T003-UT12: dependency errors cannot smuggle a reconciliation result or private details
+  ---
+  duration_ms: 1.2512
+  type: 'test'
+  ...
+# Subtest: T003-UT12: inconsistent persisted states cannot trigger a second link creation
+ok 226 - T003-UT12: inconsistent persisted states cannot trigger a second link creation
+  ---
+  duration_ms: 1.3762
+  type: 'test'
+  ...
+# Subtest: T003-UT10: omitted optional callback fields and undefined have the same receipt fingerprint
+ok 227 - T003-UT10: omitted optional callback fields and undefined have the same receipt fingerprint
+  ---
+  duration_ms: 2.8033
+  type: 'test'
+  ...
+# Subtest: T003-UT03: timer installation failure prevents provider emission and releases the claim
+ok 228 - T003-UT03: timer installation failure prevents provider emission and releases the claim
+  ---
+  duration_ms: 0.6639
+  type: 'test'
+  ...
+# Subtest: T-002 native PG15: authorization, inactive onboarding, C1 preservation and real concurrency
+ok 229 - T-002 native PG15: authorization, inactive onboarding, C1 preservation and real concurrency # SKIP
+  ---
+  duration_ms: 0.5395
+  type: 'test'
+  ...
+# Subtest: HTTP session consumes SDK-verified claims and rechecks the current exact profile
+ok 230 - HTTP session consumes SDK-verified claims and rechecks the current exact profile
+  ---
+  duration_ms: 7.7299
+  type: 'test'
+  ...
+# Subtest: COMPAT04: failed identity return is visible and never offers another Google authorization
+ok 231 - COMPAT04: failed identity return is visible and never offers another Google authorization
+  ---
+  duration_ms: 27.5397
+  type: 'test'
+  ...
+# Subtest: COMPAT05: stale callback notice cannot block a server-verified candidate
+ok 232 - COMPAT05: stale callback notice cannot block a server-verified candidate
+  ---
+  duration_ms: 0.8479
+  type: 'test'
+  ...
+# Subtest: HTTP UI: demo/non-admin hidden, no automatic account or provider work
+ok 233 - HTTP UI: demo/non-admin hidden, no automatic account or provider work
+  ---
+  duration_ms: 1.5436
+  type: 'test'
+  ...
+# Subtest: HTTP UI: ES/EN states never label consent or candidate as active transport
+ok 234 - HTTP UI: ES/EN states never label consent or candidate as active transport
+  ---
+  duration_ms: 6.6021
+  type: 'test'
+  ...
+# Subtest: HTTP UI: disabled, busy, empty and safe error states remain readable
+ok 235 - HTTP UI: disabled, busy, empty and safe error states remain readable
+  ---
+  duration_ms: 1.5677
+  type: 'test'
+  ...
+# Subtest: HTTP public schemas reject tuples/secrets, unsafe revisions and duplicate return IDs
+ok 236 - HTTP public schemas reject tuples/secrets, unsafe revisions and duplicate return IDs
+  ---
+  duration_ms: 0.4599
+  type: 'test'
+  ...
+# Subtest: HTTP correlation is deterministic per actor/session/receipt and domain separated
+ok 237 - HTTP correlation is deterministic per actor/session/receipt and domain separated
+  ---
+  duration_ms: 2.9875
+  type: 'test'
+  ...
+# Subtest: HTTP feature off denies mutations and reads no configuration/RPC/provider
+ok 238 - HTTP feature off denies mutations and reads no configuration/RPC/provider
+  ---
+  duration_ms: 2143.3244
+  type: 'test'
+  ...
+# Subtest: HTTP origin, shape, foreign session and absent cookie deny before provider
+ok 239 - HTTP origin, shape, foreign session and absent cookie deny before provider
+  ---
+  duration_ms: 2069.8063
+  type: 'test'
+  ...
+# Subtest: HTTP full offline flow: begin ACK replay, secure cookie, POST navigation, callback replay, B1 adopt and candidate
+ok 240 - HTTP full offline flow: begin ACK replay, secure cookie, POST navigation, callback replay, B1 adopt and candidate
+  ---
+  duration_ms: 2399.952
+  type: 'test'
+  ...
+# Subtest: HTTP wrong primary mailbox redirects to a safe result and never materializes a candidate
+ok 241 - HTTP wrong primary mailbox redirects to a safe result and never materializes a candidate
+  ---
+  duration_ms: 1954.7673
+  type: 'test'
+  ...
+# Subtest: HTTP unknown creation cannot be repeated and cookie expiry does not extend
+ok 242 - HTTP unknown creation cannot be repeated and cookie expiry does not extend
+  ---
+  duration_ms: 1671.6695
+  type: 'test'
+  ...
+# Subtest: T004-UT01: descriptor validation rejects missing/unknown provenance and inconsistent context before transport
+ok 243 - T004-UT01: descriptor validation rejects missing/unknown provenance and inconsistent context before transport
+  ---
+  duration_ms: 9.0524
+  type: 'test'
+  ...
+# Subtest: T004-UT01: exact generation, credential/config revisions, provenance and callback snapshot are required
+ok 244 - T004-UT01: exact generation, credential/config revisions, provenance and callback snapshot are required
+  ---
+  duration_ms: 0.9676
+  type: 'test'
+  ...
+# Subtest: T004-UT02: link creation uses exactly one fixed POST and returns only normalized link fields
+ok 245 - T004-UT02: link creation uses exactly one fixed POST and returns only normalized link fields
+  ---
+  duration_ms: 21.4115
+  type: 'test'
+  ...
+# Subtest: T004-UT02: factory snapshots configuration and credentials without exposing them
+ok 246 - T004-UT02: factory snapshots configuration and credentials without exposing them
+  ---
+  duration_ms: 0.8313
+  type: 'test'
+  ...
+# Subtest: T004-UT03: invalid link shape, timestamp, expiry, sharing or navigation is rejected after one emission
+ok 247 - T004-UT03: invalid link shape, timestamp, expiry, sharing or navigation is rejected after one emission
+  ---
+  duration_ms: 7.0002
+  type: 'test'
+  ...
+# Subtest: T004-UT04: HTTP failures and thrown transport errors are unknown outcomes, with no automatic retry
+ok 248 - T004-UT04: HTTP failures and thrown transport errors are unknown outcomes, with no automatic retry
+  ---
+  duration_ms: 3.2876
+  type: 'test'
+  ...
+# Subtest: T004-UT04: header timeout aborts emitted creation and ignores a late acknowledgement
+ok 249 - T004-UT04: header timeout aborts emitted creation and ignores a late acknowledgement
+  ---
+  duration_ms: 0.4391
+  type: 'test'
+  ...
+# Subtest: T004-UT05: invalid tuple, path injection, callback and pre-abort do not emit
+ok 250 - T004-UT05: invalid tuple, path injection, callback and pre-abort do not emit
+  ---
+  duration_ms: 1.8515
+  type: 'test'
+  ...
+# Subtest: T004-UT05: timer/clock installation failures before emission are safe and leave no abort listener
+ok 251 - T004-UT05: timer/clock installation failures before emission are safe and leave no abort listener
+  ---
+  duration_ms: 0.5337
+  type: 'test'
+  ...
+# Subtest: T004-UT06: identity reads connection/config/profile in order with exact account and owner
+ok 252 - T004-UT06: identity reads connection/config/profile in order with exact account and owner
+  ---
+  duration_ms: 3.3893
+  type: 'test'
+  ...
+# Subtest: COMPAT01: OAuth2 auth config remains authoritative when root scheme is absent or null
+ok 253 - COMPAT01: OAuth2 auth config remains authoritative when root scheme is absent or null
+  ---
+  duration_ms: 1.9492
+  type: 'test'
+  ...
+# Subtest: COMPAT02: missing root scheme never substitutes for valid nested OAuth2 metadata
+ok 254 - COMPAT02: missing root scheme never substitutes for valid nested OAuth2 metadata
+  ---
+  duration_ms: 2.5804
+  type: 'test'
+  ...
+# Subtest: T004-UT07: foreign connection metadata stops before config/profile
+ok 255 - T004-UT07: foreign connection metadata stops before config/profile
+  ---
+  duration_ms: 3.2895
+  type: 'test'
+  ...
+# Subtest: T004-UT08: missing/foreign/disabled auth config stops before profile
+ok 256 - T004-UT08: missing/foreign/disabled auth config stops before profile
+  ---
+  duration_ms: 2.2224
+  type: 'test'
+  ...
+# Subtest: T004-UT08: proxy outer/inner status and primary Gmail email must all be valid
+ok 257 - T004-UT08: proxy outer/inner status and primary Gmail email must all be valid
+  ---
+  duration_ms: 2.2335
+  type: 'test'
+  ...
+# Subtest: T004-UT09: non-JSON, redirects, empty/malformed bodies and declared oversize are rejected
+ok 258 - T004-UT09: non-JSON, redirects, empty/malformed bodies and declared oversize are rejected
+  ---
+  duration_ms: 1.937
+  type: 'test'
+  ...
+# Subtest: T004-UT09: streamed oversize is bounded independently of Content-Length and the body is cancelled
+ok 259 - T004-UT09: streamed oversize is bounded independently of Content-Length and the body is cancelled
+  ---
+  duration_ms: 1.1716
+  type: 'test'
+  ...
+# Subtest: T004-UT10: stalled body is cancelled on abort, without a late parse or follow-up
+ok 260 - T004-UT10: stalled body is cancelled on abort, without a late parse or follow-up
+  ---
+  duration_ms: 0.686
+  type: 'test'
+  ...
+# Subtest: T004-UT10: elapsed time rejects delayed scheduler success and stops identity between steps
+ok 261 - T004-UT10: elapsed time rejects delayed scheduler success and stops identity between steps
+  ---
+  duration_ms: 0.847
+  type: 'test'
+  ...
+# Subtest: T004-UT10: identity per-read timeout aborts pending second request and never reaches profile
+ok 262 - T004-UT10: identity per-read timeout aborts pending second request and never reaches profile
+  ---
+  duration_ms: 0.5535
+  type: 'test'
+  ...
+# Subtest: T004-UT11: forged dependency exceptions never assert non-emission or leak private payloads
+ok 263 - T004-UT11: forged dependency exceptions never assert non-emission or leak private payloads
+  ---
+  duration_ms: 1.1508
+  type: 'test'
+  ...
+# Subtest: T004-UT12: required injected dependencies have no global fallback or eager effect
+ok 264 - T004-UT12: required injected dependencies have no global fallback or eager effect
+  ---
+  duration_ms: 0.2479
+  type: 'test'
+  ...
+# Subtest: T004-UT10: a progressing body stops at deadline even while timer callbacks are delayed
+ok 265 - T004-UT10: a progressing body stops at deadline even while timer callbacks are delayed
+  ---
+  duration_ms: 0.375
+  type: 'test'
+  ...
+# Subtest: T004-UT10: three bounded identity reads can share the thirty-second phase without a ten-second global cutoff
+ok 266 - T004-UT10: three bounded identity reads can share the thirty-second phase without a ten-second global cutoff
+  ---
+  duration_ms: 2.3378
+  type: 'test'
+  ...
+# Subtest: RECON01: expired connection is verified once, original deadline preserved, brand review continues without Google
+ok 267 - RECON01: expired connection is verified once, original deadline preserved, brand review continues without Google
+  ---
+  duration_ms: 2478.8562
+  type: 'test'
+  ...
+# Subtest: RECON02: bad origin and client connection substitution are rejected before provider access
+ok 268 - RECON02: bad origin and client connection substitution are rejected before provider access
+  ---
+  duration_ms: 2154.2099
+  type: 'test'
+  ...
+# Subtest: RECON03: wrong Gmail does not materialize; failed reconciliation never retries
+ok 269 - RECON03: wrong Gmail does not materialize; failed reconciliation never retries
+  ---
+  duration_ms: 2234.0884
+  type: 'test'
+  ...
+# Subtest: RECON04: revision drift and a still-live original attempt cannot be reconciled
+ok 270 - RECON04: revision drift and a still-live original attempt cannot be reconciled
+  ---
+  duration_ms: 2458.6801
+  type: 'test'
+  ...
+# Subtest: RECON05: tables and service executor closed to human/anon; empty rollback is exact
+ok 271 - RECON05: tables and service executor closed to human/anon; empty rollback is exact
+  ---
+  duration_ms: 3445.3404
+  type: 'test'
+  ...
+# Subtest: RECON06: lost MFA and disabled actor cannot issue a recovery
+ok 272 - RECON06: lost MFA and disabled actor cannot issue a recovery
+  ---
+  duration_ms: 2467.484
+  type: 'test'
+  ...
+# Subtest: RECON07: policy closure, brand drift and changed config stop before provider
+ok 273 - RECON07: policy closure, brand drift and changed config stop before provider
+  ---
+  duration_ms: 7283.1408
+  type: 'test'
+  ...
+# Subtest: RECON08: foreign connected-account owner stops before Gmail quota and retry is forbidden
+ok 274 - RECON08: foreign connected-account owner stops before Gmail quota and retry is forbidden
+  ---
+  duration_ms: 2649.2008
+  type: 'test'
+  ...
+# Subtest: RECON09: policy revocation between metadata reads blocks profile and materialization
+ok 275 - RECON09: policy revocation between metadata reads blocks profile and materialization
+  ---
+  duration_ms: 2450.5321
+  type: 'test'
+  ...
+# Subtest: REG01: fresh human approval registers a candidate after expiry without provider or transport
+ok 276 - REG01: fresh human approval registers a candidate after expiry without provider or transport
+  ---
+  duration_ms: 2426.5738
+  type: 'test'
+  ...
+# Subtest: REG02: pending brand, bad origin and missing MFA remain closed
+ok 277 - REG02: pending brand, bad origin and missing MFA remain closed
+  ---
+  duration_ms: 2412.0008
+  type: 'test'
+  ...
+# Subtest: REG03: changed approval snapshot and closed policy cannot register
+ok 278 - REG03: changed approval snapshot and closed policy cannot register
+  ---
+  duration_ms: 2560.7005
+  type: 'test'
+  ...
+# Subtest: REG04: candidate approval has no anon/service entry point and revocation cannot be overwritten
+ok 279 - REG04: candidate approval has no anon/service entry point and revocation cannot be overwritten
+  ---
+  duration_ms: 2702.1931
+  type: 'test'
+  ...
+# Subtest: COMPAT03: callback error is an allowlisted hint bound to a unique valid attempt reference
+ok 280 - COMPAT03: callback error is an allowlisted hint bound to a unique valid attempt reference
+  ---
+  duration_ms: 2.0095
+  type: 'test'
+  ...
+# Subtest: REC01: prepared attempt reference survives reload without mailbox or provider material
+ok 281 - REC01: prepared attempt reference survives reload without mailbox or provider material
+  ---
+  duration_ms: 1.0012
+  type: 'test'
+  ...
+# Subtest: REC02: explicit reset clears attempt and stale callback error, preserving CRM navigation
+ok 282 - REC02: explicit reset clears attempt and stale callback error, preserving CRM navigation
+  ---
+  duration_ms: 0.1864
+  type: 'test'
+  ...
+# Subtest: REC03: invalid references are rejected and duplicate callback arguments cannot be resumed
+ok 283 - REC03: invalid references are rejected and duplicate callback arguments cannot be resumed
+  ---
+  duration_ms: 1.0163
+  type: 'test'
+  ...
+# Subtest: REC04: active v2 conflict can resume only in original browser/session without recreating provider link
+ok 284 - REC04: active v2 conflict can resume only in original browser/session without recreating provider link
+  ---
+  duration_ms: 2881.9944
+  type: 'test'
+  ...
+# Subtest: REC05: expired receipt does not silently retry; explicit fresh preparation preserves prior evidence
+ok 285 - REC05: expired receipt does not silently retry; explicit fresh preparation preserves prior evidence
+  ---
+  duration_ms: 2672.3608
+  type: 'test'
+  ...
+# Subtest: Connect setup CLI prepares once only under private local storage, never prints key material
+ok 286 - Connect setup CLI prepares once only under private local storage, never prints key material
+  ---
+  duration_ms: 1099.057
+  type: 'test'
+  ...
+# Subtest: Connect setup prepares CAS publication and null Google quota without reading a key or activating transport
+ok 287 - Connect setup prepares CAS publication and null Google quota without reading a key or activating transport
+  ---
+  duration_ms: 9.3631
+  type: 'test'
+  ...
+# Subtest: Connect setup rejects wrong destination, duplicate organizations, disabled policy, secrets and unsafe generations
+ok 288 - Connect setup rejects wrong destination, duplicate organizations, disabled policy, secrets and unsafe generations
+  ---
+  duration_ms: 1.7573
+  type: 'test'
+  ...
+# Subtest: CW3 local SQL composes with R06; rollback restores ACL and existing function bodies
+ok 289 - CW3 local SQL composes with R06; rollback restores ACL and existing function bodies
+  ---
+  duration_ms: 2285.504
+  type: 'test'
+  ...
+# Subtest: CW3 durable candidate remains inactive; C2 and R06 are explicit independent steps
+ok 290 - CW3 durable candidate remains inactive; C2 and R06 are explicit independent steps
+  ---
+  duration_ms: 2668.7361
+  type: 'test'
+  ...
+# Subtest: CW3 private state is encrypted and uncertain link never reopens or permits rollback
+ok 291 - CW3 private state is encrypted and uncertain link never reopens or permits rollback
+  ---
+  duration_ms: 2322.6632
+  type: 'test'
+  ...
+# Subtest: CW3 foreign mailbox is rejected without account materialization or candidate
+ok 292 - CW3 foreign mailbox is rejected without account materialization or candidate
+  ---
+  duration_ms: 2404.6021
+  type: 'test'
+  ...
+# Subtest: T-009 native PG15: durable store, encrypted state, tickets, composition and real contention
+ok 293 - T-009 native PG15: durable store, encrypted state, tickets, composition and real contention # SKIP
+  ---
+  duration_ms: 0.8349
+  type: 'test'
+  ...
+# Subtest: T009-TEST04: AES-GCM envelopes use distinct nonces, copied keys and bind attempt/type/generation
+ok 294 - T009-TEST04: AES-GCM envelopes use distinct nonces, copied keys and bind attempt/type/generation
+  ---
+  duration_ms: 5.9797
+  type: 'test'
+  ...
+# Subtest: T009-TEST04: retained key ID reads old data; missing key, invalid sizes, RNG and oversized envelopes fail closed
+ok 295 - T009-TEST04: retained key ID reads old data; missing key, invalid sizes, RNG and oversized envelopes fail closed
+  ---
+  duration_ms: 0.825
+  type: 'test'
+  ...
+# Subtest: T009-TEST02: adapter obtains a human ticket then forwards the identical payload through service only
+ok 296 - T009-TEST02: adapter obtains a human ticket then forwards the identical payload through service only
+  ---
+  duration_ms: 7.2026
+  type: 'test'
+  ...
+# Subtest: T009-TEST02: missing ticket or human failure never invokes service; provider errors are sanitized
+ok 297 - T009-TEST02: missing ticket or human failure never invokes service; provider errors are sanitized
+  ---
+  duration_ms: 2.2833
+  type: 'test'
+  ...
+# Subtest: T009-TEST03: descriptor generation/revisions mismatch is rejected without pretending a verified context
+ok 298 - T009-TEST03: descriptor generation/revisions mismatch is rejected without pretending a verified context
+  ---
+  duration_ms: 3.4598
+  type: 'test'
+  ...
+# Subtest: T009-TEST04: encrypted navigation is decrypted only after authorized snapshot and validates URL/state consistency
+ok 299 - T009-TEST04: encrypted navigation is decrypted only after authorized snapshot and validates URL/state consistency
+  ---
+  duration_ms: 2.5689
+  type: 'test'
+  ...
+# Subtest: T009-TEST06: claim replay returns no new capability; malformed winner/foreign state never escapes
+ok 300 - T009-TEST06: claim replay returns no new capability; malformed winner/foreign state never escapes
+  ---
+  duration_ms: 3.1613
+  type: 'test'
+  ...
+# Subtest: T009-TEST07: negative ledger only uses service with lease and cannot acquire a human positive ticket
+ok 301 - T009-TEST07: negative ledger only uses service with lease and cannot acquire a human positive ticket
+  ---
+  duration_ms: 0.5621
+  type: 'test'
+  ...
+# Subtest: T009-TEST08: intent validation does not materialize provider identity or send state in plaintext to RPC
+ok 302 - T009-TEST08: intent validation does not materialize provider identity or send state in plaintext to RPC
+  ---
+  duration_ms: 3.5016
+  type: 'test'
+  ...
+# Subtest: T009-TEST12: factory requires explicit clients, secrets and context and makes no eager calls
+ok 303 - T009-TEST12: factory requires explicit clients, secrets and context and makes no eager calls
+  ---
+  duration_ms: 0.7093
+  type: 'test'
+  ...
+# Subtest: T009-TEST04: forged dependency error codes cannot expose private data through auxiliary methods
+ok 304 - T009-TEST04: forged dependency error codes cannot expose private data through auxiliary methods
+  ---
+  duration_ms: 0.9862
+  type: 'test'
+  ...
+# Subtest: T009-TEST09: registration requires a service-issued grant before calling the human C1 facade
+ok 305 - T009-TEST09: registration requires a service-issued grant before calling the human C1 facade
+  ---
+  duration_ms: 1.1535
+  type: 'test'
+  ...
+# Subtest: Connect v2 native PG15: pre-account quota, candidate, concurrency and recovery
+ok 306 - Connect v2 native PG15: pre-account quota, candidate, concurrency and recovery # SKIP
+  ---
+  duration_ms: 0.6285
+  type: 'test'
+  ...
+# Subtest: COMPAT06: callback without duplicate scheme reaches brand review with one admitted profile and no second link
+ok 307 - COMPAT06: callback without duplicate scheme reaches brand review with one admitted profile and no second link
+  ---
+  duration_ms: 2664.4564
+  type: 'test'
+  ...
+# Subtest: Connect v2: new mailbox reserves profile before materialization and registers only a candidate
+ok 308 - Connect v2: new mailbox reserves profile before materialization and registers only a candidate
+  ---
+  duration_ms: 2839.8104
+  type: 'test'
+  ...
+# Subtest: Connect v2: existing mailbox keeps direct credentials and transport while adding a v2 candidate
+ok 309 - Connect v2: existing mailbox keeps direct credentials and transport while adding a v2 candidate
+  ---
+  duration_ms: 2529.2324
+  type: 'test'
+  ...
+# Subtest: Connect v2: full quota window closes before profile emission or account materialization
+ok 310 - Connect v2: full quota window closes before profile emission or account materialization
+  ---
+  duration_ms: 2341.91
+  type: 'test'
+  ...
+# Subtest: Connect v2: publisher CAS and strict context reject stale/extra settings without changing live generation
+ok 311 - Connect v2: publisher CAS and strict context reject stale/extra settings without changing live generation
+  ---
+  duration_ms: 2274.583
+  type: 'test'
+  ...
+# Subtest: Connect v2: wrong Gmail consumes only the bounded profile and never materializes a candidate
+ok 312 - Connect v2: wrong Gmail consumes only the bounded profile and never materializes a candidate
+  ---
+  duration_ms: 2568.7013
+  type: 'test'
+  ...
+# Subtest: Connect v2: policy closure before link denies all provider calls
+ok 313 - Connect v2: policy closure before link denies all provider calls
+  ---
+  duration_ms: 2504.6687
+  type: 'test'
+  ...
+# Subtest: Connect v2: policy closure on return prevents profile emission
+ok 314 - Connect v2: policy closure on return prevents profile emission
+  ---
+  duration_ms: 2561.2597
+  type: 'test'
+  ...
+# Subtest: Connect v2: private ledger and RPCs deny anon/authenticated; foreign authority and replay deny service
+ok 315 - Connect v2: private ledger and RPCs deny anon/authenticated; foreign authority and replay deny service
+  ---
+  duration_ms: 2689.819
+  type: 'test'
+  ...
+# Subtest: Connect v2: descriptor cannot mix Google project provenance or disabled policy
+ok 316 - Connect v2: descriptor cannot mix Google project provenance or disabled policy
+  ---
+  duration_ms: 2316.2444
+  type: 'test'
+  ...
+# Subtest: Connect v2 profile lease: abort, denial and one-use emit stay closed without network
+ok 317 - Connect v2 profile lease: abort, denial and one-use emit stay closed without network
+  ---
+  duration_ms: 1.3228
+  type: 'test'
+  ...
+# Subtest: QGR-I03 legacy C2 cannot bypass active v2 admission
+ok 318 - QGR-I03 legacy C2 cannot bypass active v2 admission
+  ---
+  duration_ms: 1.9047
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 verifies synthetic authorized evidence without a Google project or OAuth link
+ok 319 - QGR-I03 v2 verifies synthetic authorized evidence without a Google project or OAuth link
+  ---
+  duration_ms: 13.661
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 does not reinterpret v1 context or invented Google IDs
+ok 320 - QGR-I03 v2 does not reinterpret v1 context or invented Google IDs
+  ---
+  duration_ms: 0.4826
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 metadata mismatch blocks: owner
+ok 321 - QGR-I03 v2 metadata mismatch blocks: owner
+  ---
+  duration_ms: 0.7476
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 metadata mismatch blocks: account
+ok 322 - QGR-I03 v2 metadata mismatch blocks: account
+  ---
+  duration_ms: 1.603
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 metadata mismatch blocks: configuration
+ok 323 - QGR-I03 v2 metadata mismatch blocks: configuration
+  ---
+  duration_ms: 0.6722
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 metadata mismatch blocks: inactive
+ok 324 - QGR-I03 v2 metadata mismatch blocks: inactive
+  ---
+  duration_ms: 0.6776
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 effective evidence invalid: missing
+ok 325 - QGR-I03 v2 effective evidence invalid: missing
+  ---
+  duration_ms: 1.1657
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 effective evidence invalid: declared
+ok 326 - QGR-I03 v2 effective evidence invalid: declared
+  ---
+  duration_ms: 1.8995
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 effective evidence invalid: owner
+ok 327 - QGR-I03 v2 effective evidence invalid: owner
+  ---
+  duration_ms: 1.779
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 effective evidence invalid: connection
+ok 328 - QGR-I03 v2 effective evidence invalid: connection
+  ---
+  duration_ms: 1.2346
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 effective evidence invalid: revision
+ok 329 - QGR-I03 v2 effective evidence invalid: revision
+  ---
+  duration_ms: 1.1298
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 effective evidence invalid: credential
+ok 330 - QGR-I03 v2 effective evidence invalid: credential
+  ---
+  duration_ms: 0.6904
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 effective evidence invalid: expired
+ok 331 - QGR-I03 v2 effective evidence invalid: expired
+  ---
+  duration_ms: 0.8663
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 effective evidence invalid: old
+ok 332 - QGR-I03 v2 effective evidence invalid: old
+  ---
+  duration_ms: 0.8563
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 effective evidence invalid: scope
+ok 333 - QGR-I03 v2 effective evidence invalid: scope
+  ---
+  duration_ms: 0.7632
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 revocation and policy change during pacing block profile
+ok 334 - QGR-I03 v2 revocation and policy change during pacing block profile
+  ---
+  duration_ms: 2.7309
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 mailbox mismatch and stale context after profile never pass
+ok 335 - QGR-I03 v2 mailbox mismatch and stale context after profile never pass
+  ---
+  duration_ms: 3.5889
+  type: 'test'
+  ...
+# Subtest: QGR-I03 grants expiring during quota wait stop before profile
+ok 336 - QGR-I03 grants expiring during quota wait stop before profile
+  ---
+  duration_ms: 1.0849
+  type: 'test'
+  ...
+# Subtest: QGR-I03 abort bounds an unresponsive provider and sanitizes its details
+ok 337 - QGR-I03 abort bounds an unresponsive provider and sanitizes its details
+  ---
+  duration_ms: 12.1421
+  type: 'test'
+  ...
+# Subtest: QGR-I03 v2 digest includes policy limits/generation and credential/config revision
+ok 338 - QGR-I03 v2 digest includes policy limits/generation and credential/config revision
+  ---
+  duration_ms: 0.4427
+  type: 'test'
+  ...
+# Subtest: QGR-I03 wire discards declared grants/tokens when tokeninfo denies proof
+ok 339 - QGR-I03 wire discards declared grants/tokens when tokeninfo denies proof
+  ---
+  duration_ms: 27.9245
+  type: 'test'
+  ...
+# Subtest: QGR-I03 profile wire requires a v2 lease and pins owner/connection/endpoint
+ok 340 - QGR-I03 profile wire requires a v2 lease and pins owner/connection/endpoint
+  ---
+  duration_ms: 2.2525
+  type: 'test'
+  ...
+# Subtest: QGR-I03 profile rechecks deadline after its final asynchronous authorization
+ok 341 - QGR-I03 profile rechecks deadline after its final asynchronous authorization
+  ---
+  duration_ms: 0.697
+  type: 'test'
+  ...
+# Subtest: QGR-I03 metadata wire rejects malformed response without retry: status
+ok 342 - QGR-I03 metadata wire rejects malformed response without retry: status
+  ---
+  duration_ms: 0.6008
+  type: 'test'
+  ...
+# Subtest: QGR-I03 metadata wire rejects malformed response without retry: redirect
+ok 343 - QGR-I03 metadata wire rejects malformed response without retry: redirect
+  ---
+  duration_ms: 0.4762
+  type: 'test'
+  ...
+# Subtest: QGR-I03 metadata wire rejects malformed response without retry: type
+ok 344 - QGR-I03 metadata wire rejects malformed response without retry: type
+  ---
+  duration_ms: 0.3816
+  type: 'test'
+  ...
+# Subtest: QGR-I03 metadata wire rejects malformed response without retry: utf8
+ok 345 - QGR-I03 metadata wire rejects malformed response without retry: utf8
+  ---
+  duration_ms: 0.431
+  type: 'test'
+  ...
+# Subtest: QGR-I03 metadata wire rejects malformed response without retry: length
+ok 346 - QGR-I03 metadata wire rejects malformed response without retry: length
+  ---
+  duration_ms: 0.3436
+  type: 'test'
+  ...
+# Subtest: QGR-I03 metadata wire rejects malformed response without retry: overflow
+ok 347 - QGR-I03 metadata wire rejects malformed response without retry: overflow
+  ---
+  duration_ms: 0.5232
+  type: 'test'
+  ...
+# Subtest: QGR-I03 metadata stream abort stays bounded and makes one attempt
+ok 348 - QGR-I03 metadata stream abort stays bounded and makes one attempt
+  ---
+  duration_ms: 10.8395
+  type: 'test'
+  ...
+# Subtest: R06-I03 push test isolated mock process
+ok 349 - R06-I03 push test isolated mock process
+  ---
+  duration_ms: 886.9868
+  type: 'test'
+  ...
+# Subtest: R06-I03 safe review helper rejects unexpected DB fields and wrong account
+ok 350 - R06-I03 safe review helper rejects unexpected DB fields and wrong account
+  ---
+  duration_ms: 4.4118
+  type: 'test'
+  ...
+# Subtest: R06-I03 disabled Composio permits safe pause/cancel but refuses activating commands
+ok 351 - R06-I03 disabled Composio permits safe pause/cancel but refuses activating commands
+  ---
+  duration_ms: 1.2494
+  type: 'test'
+  ...
+# Subtest: R06-I03 API test isolated mock process
+ok 352 - R06-I03 API test isolated mock process
+  ---
+  duration_ms: 896.7245
+  type: 'test'
+  ...
+# Subtest: R06-I03 SQL: marker, exact sources, rollback and least privilege
+    # Subtest: unknown base cannot be overwritten
+    ok 1 - unknown base cannot be overwritten
+      ---
+      duration_ms: 3.4791
+      type: 'test'
+      ...
+    1..1
+ok 353 - R06-I03 SQL: marker, exact sources, rollback and least privilege
+  ---
+  duration_ms: 2327.8435
+  type: 'test'
+  ...
+# Subtest: R06-I03 durable cycle: stale jobs, flags, capability, unresolved and no TTL takeover
+ok 354 - R06-I03 durable cycle: stale jobs, flags, capability, unresolved and no TTL takeover
+  ---
+  duration_ms: 2409.8564
+  type: 'test'
+  ...
+# Subtest: R06-I03 actual runtime composition: exact large cursor and fresh Composio has no direct credentials
+ok 355 - R06-I03 actual runtime composition: exact large cursor and fresh Composio has no direct credentials
+  ---
+  duration_ms: 2568.917
+  type: 'test'
+  ...
+# Subtest: R06-I03 read failure keeps cursor and admission uncertain; no repeated provider request
+ok 356 - R06-I03 read failure keeps cursor and admission uncertain; no repeated provider request
+  ---
+  duration_ms: 2388.8154
+  type: 'test'
+  ...
+# Subtest: R06-I03 review contains CAS but no external tuple; late direct OAuth guarded
+ok 357 - R06-I03 review contains CAS but no external tuple; late direct OAuth guarded
+  ---
+  duration_ms: 2383.4565
+  type: 'test'
+  ...
+# Subtest: R06-I03 a claimed direct callback cannot change credentials after a transport transition
+ok 358 - R06-I03 a claimed direct callback cannot change credentials after a transport transition
+  ---
+  duration_ms: 2301.5453
+  type: 'test'
+  ...
+# Subtest: R06-I03 contractual quota rejection releases the cycle without advancing or repeating a request
+ok 359 - R06-I03 contractual quota rejection releases the cycle without advancing or repeating a request
+  ---
+  duration_ms: 1877.7801
+  type: 'test'
+  ...
+# Subtest: R06-I03 epoch and cursor CAS are checked again before durable completion
+ok 360 - R06-I03 epoch and cursor CAS are checked again before durable completion
+  ---
+  duration_ms: 2178.0863
+  type: 'test'
+  ...
+# Subtest: R06-I03 missing session/configuration policy blocks both review and provider admission
+ok 361 - R06-I03 missing session/configuration policy blocks both review and provider admission
+  ---
+  duration_ms: 2361.0982
+  type: 'test'
+  ...
+# Subtest: R06-I03 unversioned jobs retire without even opening a cycle
+ok 362 - R06-I03 unversioned jobs retire without even opening a cycle
+  ---
+  duration_ms: 1.2898
+  type: 'test'
+  ...
+# Subtest: R06-I03 pagination de-duplicates IDs and commits exact decimal only after all ingestion
+ok 363 - R06-I03 pagination de-duplicates IDs and commits exact decimal only after all ingestion
+  ---
+  duration_ms: 4.6985
+  type: 'test'
+  ...
+# Subtest: R06-I03 expired history falls back to bounded query; missing message is skipped
+ok 364 - R06-I03 expired history falls back to bounded query; missing message is skipped
+  ---
+  duration_ms: 1.1699
+  type: 'test'
+  ...
+# Subtest: R06-I03 ingest fails without advancing the checkpoint
+ok 365 - R06-I03 ingest fails without advancing the checkpoint
+  ---
+  duration_ms: 0.5619
+  type: 'test'
+  ...
+# Subtest: R06-I03 identity fails without advancing the checkpoint
+ok 366 - R06-I03 identity fails without advancing the checkpoint
+  ---
+  duration_ms: 0.4047
+  type: 'test'
+  ...
+# Subtest: R06-I03 malformed fails without advancing the checkpoint
+ok 367 - R06-I03 malformed fails without advancing the checkpoint
+  ---
+  duration_ms: 0.6936
+  type: 'test'
+  ...
+# Subtest: R06-I03 loop fails without advancing the checkpoint
+ok 368 - R06-I03 loop fails without advancing the checkpoint
+  ---
+  duration_ms: 0.4071
+  type: 'test'
+  ...
+# Subtest: R06-I03 quota fails without advancing the checkpoint
+ok 369 - R06-I03 quota fails without advancing the checkpoint
+  ---
+  duration_ms: 0.2168
+  type: 'test'
+  ...
+# Subtest: R06-I03 stale fails without advancing the checkpoint
+ok 370 - R06-I03 stale fails without advancing the checkpoint
+  ---
+  duration_ms: 0.559
+  type: 'test'
+  ...
+# Subtest: R06-I03 expired fails without advancing the checkpoint
+ok 371 - R06-I03 expired fails without advancing the checkpoint
+  ---
+  duration_ms: 0.5931
+  type: 'test'
+  ...
+# Subtest: R06-I03 mismatched route rejects before token/quota even inside a valid cycle
+ok 372 - R06-I03 mismatched route rejects before token/quota even inside a valid cycle
+  ---
+  duration_ms: 2.2999
+  type: 'test'
+  ...
+# Subtest: R06-I03 scheduling filters disabled Composio, skips reception off and never watches proxy
+ok 373 - R06-I03 scheduling filters disabled Composio, skips reception off and never watches proxy
+  ---
+  duration_ms: 0.8418
+  type: 'test'
+  ...
+# Subtest: R06-I03 old watch and changed provider do not enter the direct OAuth callback
+ok 374 - R06-I03 old watch and changed provider do not enter the direct OAuth callback
+  ---
+  duration_ms: 0.1975
+  type: 'test'
+  ...
+# Subtest: R06-I03 panel distinguishes verified binding from blocked Composio and receiving state in ES/EN
+ok 375 - R06-I03 panel distinguishes verified binding from blocked Composio and receiving state in ES/EN
+  ---
+  duration_ms: 8.1385
+  type: 'test'
+  ...
+# Subtest: R06-I03 selection, pause and resume are explicit separate commands
+ok 376 - R06-I03 selection, pause and resume are explicit separate commands
+  ---
+  duration_ms: 0.5885
+  type: 'test'
+  ...
+# Subtest: R06-I03 admin-only panel has no default mailbox, demo or non-admin network surface
+ok 377 - R06-I03 admin-only panel has no default mailbox, demo or non-admin network surface
+  ---
+  duration_ms: 1.1306
+  type: 'test'
+  ...
+# Subtest: R06-I03 review contract rejects private extras and unsafe CAS numbers
+ok 378 - R06-I03 review contract rejects private extras and unsafe CAS numbers
+  ---
+  duration_ms: 3.0399
+  type: 'test'
+  ...
+# Subtest: QGR-I03 native PG15 quota admission delta
+ok 379 - QGR-I03 native PG15 quota admission delta # SKIP
+  ---
+  duration_ms: 0.562
+  type: 'test'
+  ...
+# Subtest: QGR-I03 Connect existing profile is quota-reserved and admitted; no legacy double debit
+ok 380 - QGR-I03 Connect existing profile is quota-reserved and admitted; no legacy double debit
+  ---
+  duration_ms: 2491.2163
+  type: 'test'
+  ...
+# Subtest: QGR-I03 Connect policy changes while pacing cancel before profile proxy
+ok 381 - QGR-I03 Connect policy changes while pacing cancel before profile proxy
+  ---
+  duration_ms: 2479.6864
+  type: 'test'
+  ...
+# Subtest: QGR-I03 Connect new mailbox closes v2 before profile until pre-account quota scope exists
+ok 382 - QGR-I03 Connect new mailbox closes v2 before profile until pre-account quota scope exists
+  ---
+  duration_ms: 2365.3279
+  type: 'test'
+  ...
+# Subtest: QGR-I03 facade integration in an isolated process
+ok 383 - QGR-I03 facade integration in an isolated process
+  ---
+  duration_ms: 1054.8007
+  type: 'test'
+  ...
+# Subtest: QGR-I04 native PG15: binding v2 and runtime
+ok 384 - QGR-I04 native PG15: binding v2 and runtime # SKIP
+  ---
+  duration_ms: 0.7097
+  type: 'test'
+  ...
+# Subtest: I04 HTTP offline composition
+ok 385 - I04 HTTP offline composition
+  ---
+  duration_ms: 898.5365
+  type: 'test'
+  ...
+# Subtest: I04 UI has explicit read/check/confirm actions, no Google project or secret input, ES/EN and access gating
+ok 386 - I04 UI has explicit read/check/confirm actions, no Google project or secret input, ES/EN and access gating
+  ---
+  duration_ms: 10.4194
+  type: 'test'
+  ...
+# Subtest: I04 DTO v2 is explicit, strict and never accepts browser policy/proof or fake Google project
+ok 387 - I04 DTO v2 is explicit, strict and never accepts browser policy/proof or fake Google project
+  ---
+  duration_ms: 4.9455
+  type: 'test'
+  ...
+# Subtest: I04 orchestration: four admitted synthetic requests with exact tokeninfo receipt; check does not confirm
+ok 388 - I04 orchestration: four admitted synthetic requests with exact tokeninfo receipt; check does not confirm
+  ---
+  duration_ms: 30.5087
+  type: 'test'
+  ...
+# Subtest: I04 replay never recreates provider requests or accesses API key
+ok 389 - I04 replay never recreates provider requests or accesses API key
+  ---
+  duration_ms: 0.5814
+  type: 'test'
+  ...
+# Subtest: I04 authorization and disabled gates precede credential/factory access
+ok 390 - I04 authorization and disabled gates precede credential/factory access
+  ---
+  duration_ms: 0.8734
+  type: 'test'
+  ...
+# Subtest: I04 session revocation or descriptor rotation during check stops subsequent wires
+ok 391 - I04 session revocation or descriptor rotation during check stops subsequent wires
+  ---
+  duration_ms: 2.7309
+  type: 'test'
+  ...
+# Subtest: I04 page reads and malformed commands never instantiate service or read credentials
+ok 392 - I04 page reads and malformed commands never instantiate service or read credentials
+  ---
+  duration_ms: 0.892
+  type: 'test'
+  ...
+# Subtest: R1 resolved v2 cannot smuggle v1 quota or omit policy generation
+ok 393 - R1 resolved v2 cannot smuggle v1 quota or omit policy generation
+  ---
+  duration_ms: 2.3585
+  type: 'test'
+  ...
+# Subtest: R1 runtime v2 uses aggregate lease and preserves IDs without direct token or fallback
+ok 394 - R1 runtime v2 uses aggregate lease and preserves IDs without direct token or fallback
+  ---
+  duration_ms: 7.8834
+  type: 'test'
+  ...
+# Subtest: QGR-I03 disabled policy still respects an explicit request deadline
+ok 395 - QGR-I03 disabled policy still respects an explicit request deadline
+  ---
+  duration_ms: 6.8789
+  type: 'test'
+  ...
+# Subtest: QGR-I03 disabled feature preserves direct path without v2 RPC
+ok 396 - QGR-I03 disabled feature preserves direct path without v2 RPC
+  ---
+  duration_ms: 0.2876
+  type: 'test'
+  ...
+# Subtest: QGR-I03 disabled policy permits direct legacy; Composio/v2 still closed
+ok 397 - QGR-I03 disabled policy permits direct legacy; Composio/v2 still closed
+  ---
+  duration_ms: 0.7353
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cost profile
+ok 398 - QGR-I03 cost profile
+  ---
+  duration_ms: 1.7689
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cost history?startHistoryId=1
+ok 399 - QGR-I03 cost history?startHistoryId=1
+  ---
+  duration_ms: 0.4861
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cost messages
+ok 400 - QGR-I03 cost messages
+  ---
+  duration_ms: 0.3504
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cost messages/a1?format=full
+ok 401 - QGR-I03 cost messages/a1?format=full
+  ---
+  duration_ms: 0.5134
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cost threads/b1?format=metadata
+ok 402 - QGR-I03 cost threads/b1?format=metadata
+  ---
+  duration_ms: 0.4858
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cost messages/a1/attachments/part
+ok 403 - QGR-I03 cost messages/a1/attachments/part
+  ---
+  duration_ms: 0.709
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cost messages/send
+ok 404 - QGR-I03 cost messages/send
+  ---
+  duration_ms: 2.5274
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cost watch
+ok 405 - QGR-I03 cost watch
+  ---
+  duration_ms: 0.4199
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cost stop
+ok 406 - QGR-I03 cost stop
+  ---
+  duration_ms: 0.3643
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cancels after pacing: revoked
+ok 407 - QGR-I03 cancels after pacing: revoked
+  ---
+  duration_ms: 0.4285
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cancels after pacing: policy
+ok 408 - QGR-I03 cancels after pacing: policy
+  ---
+  duration_ms: 0.2613
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cancels after pacing: deadline
+ok 409 - QGR-I03 cancels after pacing: deadline
+  ---
+  duration_ms: 0.2532
+  type: 'test'
+  ...
+# Subtest: QGR-I03 cancels after pacing: abort
+ok 410 - QGR-I03 cancels after pacing: abort
+  ---
+  duration_ms: 0.3181
+  type: 'test'
+  ...
+# Subtest: QGR-I03 lease emits once; rejected durable admission does not emit
+ok 411 - QGR-I03 lease emits once; rejected durable admission does not emit
+  ---
+  duration_ms: 0.7757
+  type: 'test'
+  ...
+# Subtest: QGR-I03 malformed/missing policy and receipt never fall back
+ok 412 - QGR-I03 malformed/missing policy and receipt never fall back
+  ---
+  duration_ms: 2.185
+  type: 'test'
+  ...
+# Subtest: QGR-I03 low-level transport rejects bypass, path substitution and second wire
+ok 413 - QGR-I03 low-level transport rejects bypass, path substitution and second wire
+  ---
+  duration_ms: 20.4
+  type: 'test'
+  ...
+# Subtest: QGR-I03 provider failure is not retried or switched
+ok 414 - QGR-I03 provider failure is not retried or switched
+  ---
+  duration_ms: 0.4782
+  type: 'test'
+  ...
+# Subtest: QGR-I03 request snapshot cannot be widened after reservation; deadline checked at transport
+ok 415 - QGR-I03 request snapshot cannot be widened after reservation; deadline checked at transport
+  ---
+  duration_ms: 0.7629
+  type: 'test'
+  ...
+# Subtest: QGR-I03 runtime passes its actual attempt/deadline/provider and admits once
+ok 416 - QGR-I03 runtime passes its actual attempt/deadline/provider and admits once
+  ---
+  duration_ms: 5.2201
+  type: 'test'
+  ...
+# Subtest: QGR-AC01: v2 accepts a policy without a Google project or invented provenance
+ok 417 - QGR-AC01: v2 accepts a policy without a Google project or invented provenance
+  ---
+  duration_ms: 4.6825
+  type: 'test'
+  ...
+# Subtest: QGR-AC01: absent, null and explicitly unknown Google metadata remain unknown
+ok 418 - QGR-AC01: absent, null and explicitly unknown Google metadata remain unknown
+  ---
+  duration_ms: 1.7858
+  type: 'test'
+  ...
+# Subtest: QGR-AC01: reviewed Google metadata is an explicit declaration, not a scope partition
+ok 419 - QGR-AC01: reviewed Google metadata is an explicit declaration, not a scope partition
+  ---
+  duration_ms: 0.781
+  type: 'test'
+  ...
+# Subtest: QGR-AC02: contradictory, incomplete or extra Google provenance is rejected
+ok 420 - QGR-AC02: contradictory, incomplete or extra Google provenance is rejected
+  ---
+  duration_ms: 0.65
+  type: 'test'
+  ...
+# Subtest: QGR-AC02/14: legacy contexts are never upgraded, even with a forged v2 discriminator
+ok 421 - QGR-AC02/14: legacy contexts are never upgraded, even with a forged v2 discriminator
+  ---
+  duration_ms: 0.749
+  type: 'test'
+  ...
+# Subtest: QGR-AC02: absent state/version, unknown modes and injected policy fields do not default open
+ok 422 - QGR-AC02: absent state/version, unknown modes and injected policy fields do not default open
+  ---
+  duration_ms: 0.4055
+  type: 'test'
+  ...
+# Subtest: QGR-AC02: policy IDs and generations are strict, bounded and noncoercing
+ok 423 - QGR-AC02: policy IDs and generations are strict, bounded and noncoercing
+  ---
+  duration_ms: 0.3483
+  type: 'test'
+  ...
+# Subtest: QGR-AC03: accounts, providers and Auth Configs all share one aggregate
+ok 424 - QGR-AC03: accounts, providers and Auth Configs all share one aggregate
+  ---
+  duration_ms: 0.2994
+  type: 'test'
+  ...
+# Subtest: QGR-AC04: direct and Composio preserve the same per-account scope
+ok 425 - QGR-AC04: direct and Composio preserve the same per-account scope
+  ---
+  duration_ms: 0.409
+  type: 'test'
+  ...
+# Subtest: QGR-AC03/06: policy replacement, generation and Google metadata cannot reset scopes
+ok 426 - QGR-AC03/06: policy replacement, generation and Google metadata cannot reset scopes
+  ---
+  duration_ms: 0.4414
+  type: 'test'
+  ...
+# Subtest: QGR-AC03: equivalent UUID casing cannot fragment policy or account scopes
+ok 427 - QGR-AC03: equivalent UUID casing cannot fragment policy or account scopes
+  ---
+  duration_ms: 0.1847
+  type: 'test'
+  ...
+# Subtest: QGR-AC05: disabled is valid configuration but never resolves an emission scope
+ok 428 - QGR-AC05: disabled is valid configuration but never resolves an emission scope
+  ---
+  duration_ms: 0.2731
+  type: 'test'
+  ...
+# Subtest: QGR-AC02/07: malformed or client-selected scope requests are rejected
+ok 429 - QGR-AC02/07: malformed or client-selected scope requests are rejected
+  ---
+  duration_ms: 1.1225
+  type: 'test'
+  ...
+# Subtest: QGR-AC03: a direct scope cannot masquerade as a Composio configuration
+ok 430 - QGR-AC03: a direct scope cannot masquerade as a Composio configuration
+  ---
+  duration_ms: 0.1529
+  type: 'test'
+  ...
+# Subtest: QGR-AC02: numeric limits reject coercion, fractions and unsafe/nonfinite values
+ok 431 - QGR-AC02: numeric limits reject coercion, fractions and unsafe/nonfinite values
+  ---
+  duration_ms: 1.115
+  type: 'test'
+  ...
+# Subtest: QGR-AC03: limits may be lower than the ceilings but never higher
+ok 432 - QGR-AC03: limits may be lower than the ceilings but never higher
+  ---
+  duration_ms: 0.3221
+  type: 'test'
+  ...
+# Subtest: QGR-AC03: an account budget cannot exceed its aggregate budget
+ok 433 - QGR-AC03: an account budget cannot exceed its aggregate budget
+  ---
+  duration_ms: 0.1401
+  type: 'test'
+  ...
+# Subtest: QGR-AC06: the rolling window cannot be omitted, shortened or silently coerced
+ok 434 - QGR-AC06: the rolling window cannot be omitted, shortened or silently coerced
+  ---
+  duration_ms: 0.3642
+  type: 'test'
+  ...
+# Subtest: QGR-AC07: resolved limits and identity references are immutable snapshots
+ok 435 - QGR-AC07: resolved limits and identity references are immutable snapshots
+  ---
+  duration_ms: 0.2335
+  type: 'test'
+  ...
+# Subtest: QGR-AC07: repeated resolution is deterministic and does not mutate frozen inputs
+ok 436 - QGR-AC07: repeated resolution is deterministic and does not mutate frozen inputs
+  ---
+  duration_ms: 0.2303
+  type: 'test'
+  ...
+# Subtest: QGR-AC02: errors never expose rejected values or Zod validation details
+ok 437 - QGR-AC02: errors never expose rejected values or Zod validation details
+  ---
+  duration_ms: 0.2559
+  type: 'test'
+  ...
+# Subtest: QGR-I02 native PG15: reserves, compatibility, permissions, rollback and contention
+ok 438 - QGR-I02 native PG15: reserves, compatibility, permissions, rollback and contention # SKIP
+  ---
+  duration_ms: 0.7975
+  type: 'test'
+  ...
+# Subtest: R06-I02 API composition in isolated mocked process
+ok 439 - R06-I02 API composition in isolated mocked process
+  ---
+  duration_ms: 5063.1213
+  type: 'test'
+  ...
+# Subtest: R06-I02 SQL: marker, source pin, additive rollback and ACL
+    # Subtest: marker required and external rollback restores I01 body/index/constraint
+    ok 1 - marker required and external rollback restores I01 body/index/constraint
+      ---
+      duration_ms: 8.6428
+      type: 'test'
+      ...
+    # Subtest: source mismatch rejects instead of replacing an unknown finish contract
+    ok 2 - source mismatch rejects instead of replacing an unknown finish contract
+      ---
+      duration_ms: 2.1055
+      type: 'test'
+      ...
+    # Subtest: service-only new RPC; no direct private table grants or human approval bypass
+    ok 3 - service-only new RPC; no direct private table grants or human approval bypass
+      ---
+      duration_ms: 4.8771
+      type: 'test'
+      ...
+    1..3
+ok 440 - R06-I02 SQL: marker, source pin, additive rollback and ACL
+  ---
+  duration_ms: 2364.3989
+  type: 'test'
+  ...
+# Subtest: R06-I02 SQL lifecycle: B2 acceptance and proven Google quota
+    # Subtest: finish stays blocked until actual mark_sent/B2 accepted; scope closes afterwards
+    ok 1 - finish stays blocked until actual mark_sent/B2 accepted; scope closes afterwards
+      ---
+      duration_ms: 68.5442
+      type: 'test'
+      ...
+    # Subtest: quota exception alone cannot release a send; persisted B2 known_quota can
+    ok 2 - quota exception alone cannot release a send; persisted B2 known_quota can
+      ---
+      duration_ms: 62.9273
+      type: 'test'
+      ...
+    1..2
+ok 441 - R06-I02 SQL lifecycle: B2 acceptance and proven Google quota
+  ---
+  duration_ms: 2354.561
+  type: 'test'
+  ...
+# Subtest: R06-I02 runtime: routing, scopes, quota and no fallback
+    # Subtest: product Composio remains code-disabled
+    ok 1 - product Composio remains code-disabled
+      ---
+      duration_ms: 0.4392
+      type: 'test'
+      ...
+    # Subtest: invalid compatibility flag cannot silently select legacy direct
+    ok 2 - invalid compatibility flag cannot silently select legacy direct
+      ---
+      duration_ms: 0.3593
+      type: 'test'
+      ...
+    # Subtest: gmail_oauth resolves before token, uses one quota and finishes read
+    ok 3 - gmail_oauth resolves before token, uses one quota and finishes read
+      ---
+      duration_ms: 7.0955
+      type: 'test'
+      ...
+    # Subtest: composio resolves before token, uses one quota and finishes read
+    ok 4 - composio resolves before token, uses one quota and finishes read
+      ---
+      duration_ms: 23.8072
+      type: 'test'
+      ...
+    # Subtest: missing/error snapshot fails before any token and does not expose DB text
+    ok 5 - missing/error snapshot fails before any token and does not expose DB text
+      ---
+      duration_ms: 0.6073
+      type: 'test'
+      ...
+    # Subtest: disabled Composio and missing/unproven configuration fail closed
+    ok 6 - disabled Composio and missing/unproven configuration fail closed
+      ---
+      duration_ms: 2.6681
+      type: 'test'
+      ...
+    # Subtest: configuration rotation during hook prevents proxy dispatch
+    ok 7 - configuration rotation during hook prevents proxy dispatch
+      ---
+      duration_ms: 1.1225
+      type: 'test'
+      ...
+    # Subtest: a send outside its account/outbox scope is denied before snapshot or token
+    ok 8 - a send outside its account/outbox scope is denied before snapshot or token
+      ---
+      duration_ms: 1.0193
+      type: 'test'
+      ...
+    # Subtest: send remains open until persistence then settles once; second send is denied
+    ok 9 - send remains open until persistence then settles once; second send is denied
+      ---
+      duration_ms: 0.96
+      type: 'test'
+      ...
+    # Subtest: accepted HTTP plus failed persistence remains uncertain and does not report completion
+    ok 10 - accepted HTTP plus failed persistence remains uncertain and does not report completion
+      ---
+      duration_ms: 0.6961
+      type: 'test'
+      ...
+    # Subtest: known Google quota survives error mapping; outer Composio failures never become Google failures
+    ok 11 - known Google quota survives error mapping; outer Composio failures never become Google failures
+      ---
+      duration_ms: 2.1404
+      type: 'test'
+      ...
+    # Subtest: pilot validates selected provider and counts HTTP only at the transport boundary
+    ok 12 - pilot validates selected provider and counts HTTP only at the transport boundary
+      ---
+      duration_ms: 1.9523
+      type: 'test'
+      ...
+    # Subtest: parallel dispatch scopes retain their own account and settle capability
+    ok 13 - parallel dispatch scopes retain their own account and settle capability
+      ---
+      duration_ms: 1.0413
+      type: 'test'
+      ...
+    1..13
+ok 442 - R06-I02 runtime: routing, scopes, quota and no fallback
+  ---
+  duration_ms: 46.5341
+  type: 'test'
+  ...
+# Subtest: R06-I02 runtime composed with real isolated SQL and fake provider
+    # Subtest: service ticket accepted by runtime; direct token prepared after acquire only
+    ok 1 - service ticket accepted by runtime; direct token prepared after acquire only
+      ---
+      duration_ms: 20.2163
+      type: 'test'
+      ...
+    # Subtest: Composio facade uses persisted tuple/context and no direct credential
+    ok 2 - Composio facade uses persisted tuple/context and no direct credential
+      ---
+      duration_ms: 41.6745
+      type: 'test'
+      ...
+    1..2
+ok 443 - R06-I02 runtime composed with real isolated SQL and fake provider
+  ---
+  duration_ms: 2518.0901
+  type: 'test'
+  ...
+# Subtest: R06 SQL: additive rollback, pinned C2 and least privilege
+    # Subtest: marker required; full rehearsal rolls back DDL, trigger and C2 definitions
+    ok 1 - marker required; full rehearsal rolls back DDL, trigger and C2 definitions
+      ---
+      duration_ms: 33.9527
+      type: 'test'
+      ...
+    # Subtest: source guard rejects an unexpected C2 definition without leaving partial DDL
+    ok 2 - source guard rejects an unexpected C2 definition without leaving partial DDL
+      ---
+      duration_ms: 16.13
+      type: 'test'
+      ...
+    # Subtest: only four pinned C2 bodies change; existing ACL and all other bodies preserved
+    ok 3 - only four pinned C2 bodies change; existing ACL and all other bodies preserved
+      ---
+      duration_ms: 30.8028
+      type: 'test'
+      ...
+    1..3
+ok 444 - R06 SQL: additive rollback, pinned C2 and least privilege
+  ---
+  duration_ms: 2364.537
+  type: 'test'
+  ...
+# Subtest: R06 SQL: direct defaults, human commands, drainage and cursor CAS
+    # Subtest: no implicit selection; MFA/session/role required
+    ok 1 - no implicit selection; MFA/session/role required
+      ---
+      duration_ms: 22.0951
+      type: 'test'
+      ...
+    # Subtest: bootstrap/idempotency preserve data and expose only sanitized page
+    ok 2 - bootstrap/idempotency preserve data and expose only sanitized page
+      ---
+      duration_ms: 20.6118
+      type: 'test'
+      ...
+    # Subtest: cutover cannot resume an old queued message; an explicit pause preserves it
+    ok 3 - cutover cannot resume an old queued message; an explicit pause preserves it
+      ---
+      duration_ms: 40.4275
+      type: 'test'
+      ...
+    # Subtest: drain denies new/revalidated attempts, but proven pre-wire cancellation can finish
+    ok 4 - drain denies new/revalidated attempts, but proven pre-wire cancellation can finish
+      ---
+      duration_ms: 36.7188
+      type: 'test'
+      ...
+    # Subtest: expired reservation and wrong capability cannot silently free a transition
+    ok 5 - expired reservation and wrong capability cannot silently free a transition
+      ---
+      duration_ms: 28.699
+      type: 'test'
+      ...
+    # Subtest: checkpoint uses exact decimal strings, CAS and one use; other account untouched
+    ok 6 - checkpoint uses exact decimal strings, CAS and one use; other account untouched
+      ---
+      duration_ms: 11.2963
+      type: 'test'
+      ...
+    # Subtest: a completed read ticket cannot advance a cursor after pause/revision change
+    ok 7 - a completed read ticket cannot advance a cursor after pause/revision change
+      ---
+      duration_ms: 11.5852
+      type: 'test'
+      ...
+    1..7
+ok 445 - R06 SQL: direct defaults, human commands, drainage and cursor CAS
+  ---
+  duration_ms: 2398.0804
+  type: 'test'
+  ...
+# Subtest: R06 SQL: one send, B2 admission and uncertainty without replay
+    # Subtest: send cannot bypass B2 or reserve the same message twice
+    ok 1 - send cannot bypass B2 or reserve the same message twice
+      ---
+      duration_ms: 24.3478
+      type: 'test'
+      ...
+    # Subtest: admitted/uncertain cannot be cancelled or called finished without accepted DB result
+    ok 2 - admitted/uncertain cannot be cancelled or called finished without accepted DB result
+      ---
+      duration_ms: 18.3029
+      type: 'test'
+      ...
+    # Subtest: existing accepted-result reconciliation closes the ledger, never replays the send
+    ok 3 - existing accepted-result reconciliation closes the ledger, never replays the send
+      ---
+      duration_ms: 37.3799
+      type: 'test'
+      ...
+    1..3
+ok 446 - R06 SQL: one send, B2 admission and uncertainty without replay
+  ---
+  duration_ms: 2306.6467
+  type: 'test'
+  ...
+# Subtest: R06 SQL: R05 new account, C2 bridge and operational approval
+    # Subtest: new R05 account remains disconnected without credential or send permission
+    ok 1 - new R05 account remains disconnected without credential or send permission
+      ---
+      duration_ms: 20.049
+      type: 'test'
+      ...
+    # Subtest: only completed R05 enables disconnected verification; general C1 ready is unchanged
+    ok 2 - only completed R05 enables disconnected verification; general C1 ready is unchanged
+      ---
+      duration_ms: 32.2263
+      type: 'test'
+      ...
+    # Subtest: explicit reviewed commit creates operational selection without resuming live/sync or granting send
+    ok 3 - explicit reviewed commit creates operational selection without resuming live/sync or granting send
+      ---
+      duration_ms: 43.341
+      type: 'test'
+      ...
+    # Subtest: resolver ticket binds exact connection; watch/foreign signature denied and no credential needed
+    ok 4 - resolver ticket binds exact connection; watch/foreign signature denied and no credential needed
+      ---
+      duration_ms: 12.6857
+      type: 'test'
+      ...
+    # Subtest: non-identity updates preserve operational approval; identity ABA invalidates even when restored
+    ok 5 - non-identity updates preserve operational approval; identity ABA invalidates even when restored
+      ---
+      duration_ms: 17.6748
+      type: 'test'
+      ...
+    # Subtest: config/head changes revoke tickets before dispatch, no default direct fallback
+    ok 6 - config/head changes revoke tickets before dispatch, no default direct fallback
+      ---
+      duration_ms: 19.3019
+      type: 'test'
+      ...
+    1..6
+ok 447 - R06 SQL: R05 new account, C2 bridge and operational approval
+  ---
+  duration_ms: 2336.2916
+  type: 'test'
+  ...
+# Subtest: R06 resolver: strict contracts and no implicit activation
+    # Subtest: malformed resource/account/revision rejected before store or credentials
+    ok 1 - malformed resource/account/revision rejected before store or credentials
+      ---
+      duration_ms: 7.9216
+      type: 'test'
+      ...
+    # Subtest: gmail_oauth: resolution precedes credentials; quota/hook/admission once
+    ok 2 - gmail_oauth: resolution precedes credentials; quota/hook/admission once
+      ---
+      duration_ms: 1.864
+      type: 'test'
+      ...
+    # Subtest: composio: resolution precedes credentials; quota/hook/admission once
+    ok 3 - composio: resolution precedes credentials; quota/hook/admission once
+      ---
+      duration_ms: 1.4129
+      type: 'test'
+      ...
+    # Subtest: missing/error store never selects a default provider
+    ok 4 - missing/error store never selects a default provider
+      ---
+      duration_ms: 1.2447
+      type: 'test'
+      ...
+    # Subtest: foreign account/revision/operation/binding cannot prepare credentials
+    ok 5 - foreign account/revision/operation/binding cannot prepare credentials
+      ---
+      duration_ms: 1.0602
+      type: 'test'
+      ...
+    # Subtest: exhausted budget rejects before OAuth or proxy preparation
+    ok 6 - exhausted budget rejects before OAuth or proxy preparation
+      ---
+      duration_ms: 0.5637
+      type: 'test'
+      ...
+    # Subtest: revocation while checking budget denies before preparing credentials
+    ok 7 - revocation while checking budget denies before preparing credentials
+      ---
+      duration_ms: 0.2775
+      type: 'test'
+      ...
+    # Subtest: ticket snapshot cannot be retargeted by a dependency in flight
+    ok 8 - ticket snapshot cannot be retargeted by a dependency in flight
+      ---
+      duration_ms: 0.3798
+      type: 'test'
+      ...
+    # Subtest: closed/expired lease denies before credentials
+    ok 9 - closed/expired lease denies before credentials
+      ---
+      duration_ms: 0.5413
+      type: 'test'
+      ...
+    # Subtest: revocation during quota, final hook failure or expiry prevents wire
+    ok 10 - revocation during quota, final hook failure or expiry prevents wire
+      ---
+      duration_ms: 0.7172
+      type: 'test'
+      ...
+    # Subtest: ambiguous proxy send makes one attempt, retains uncertainty and never falls back
+    ok 11 - ambiguous proxy send makes one attempt, retains uncertainty and never falls back
+      ---
+      duration_ms: 0.5605
+      type: 'test'
+      ...
+    # Subtest: accepted result with failed persistence does not return success or retry
+    ok 12 - accepted result with failed persistence does not return success or retry
+      ---
+      duration_ms: 0.4328
+      type: 'test'
+      ...
+    # Subtest: cleanup failure preserves sanitized failure; reads do not claim an uncertain delivery
+    ok 13 - cleanup failure preserves sanitized failure; reads do not claim an uncertain delivery
+      ---
+      duration_ms: 0.3797
+      type: 'test'
+      ...
+    1..13
+ok 448 - R06 resolver: strict contracts and no implicit activation
+  ---
+  duration_ms: 19.508
+  type: 'test'
+  ...
+# Subtest: AC01/10: product selects only direct, new modules have no env, DB, S00 or client imports
+ok 449 - AC01/10: product selects only direct, new modules have no env, DB, S00 or client imports
+  ---
+  duration_ms: 2.1588
+  type: 'test'
+  ...
+# Subtest: AC02: direct wire extraction preserves raw MIME, options, timeout, headers and JSON without quota or OAuth inside
+ok 450 - AC02: direct wire extraction preserves raw MIME, options, timeout, headers and JSON without quota or OAuth inside
+  ---
+  duration_ms: 2.8281
+  type: 'test'
+  ...
+# Subtest: AC02/07: direct provider keeps Gmail quota and permission errors with operation and Retry-After
+    # Subtest: 429
+    ok 1 - 429
+      ---
+      duration_ms: 0.8214
+      type: 'test'
+      ...
+    # Subtest: 403
+    ok 2 - 403
+      ---
+      duration_ms: 0.5734
+      type: 'test'
+      ...
+    # Subtest: 401
+    ok 3 - 401
+      ---
+      duration_ms: 0.4336
+      type: 'test'
+      ...
+    1..3
+ok 451 - AC02/07: direct provider keeps Gmail quota and permission errors with operation and Retry-After
+  ---
+  duration_ms: 2.2623
+  type: 'test'
+  ...
+# Subtest: AC03/09: each proxy resource preserves Gmail identity, body, cursor and signature, using only its bound connection
+    # Subtest: profile
+    ok 1 - profile
+      ---
+      duration_ms: 9.4346
+      type: 'test'
+      ...
+    # Subtest: messages
+    ok 2 - messages
+      ---
+      duration_ms: 1.0803
+      type: 'test'
+      ...
+    # Subtest: messages/abc123
+    ok 3 - messages/abc123
+      ---
+      duration_ms: 0.6332
+      type: 'test'
+      ...
+    # Subtest: threads/def456
+    ok 4 - threads/def456
+      ---
+      duration_ms: 0.495
+      type: 'test'
+      ...
+    # Subtest: history
+    ok 5 - history
+      ---
+      duration_ms: 0.8144
+      type: 'test'
+      ...
+    # Subtest: messages/abc123/attachments/fixture_part_1
+    ok 6 - messages/abc123/attachments/fixture_part_1
+      ---
+      duration_ms: 0.6989
+      type: 'test'
+      ...
+    # Subtest: settings/sendAs/mailbox%40example.test
+    ok 7 - settings/sendAs/mailbox%40example.test
+      ---
+      duration_ms: 0.6616
+      type: 'test'
+      ...
+    # Subtest: messages/send
+    ok 8 - messages/send
+      ---
+      duration_ms: 0.378
+      type: 'test'
+      ...
+    1..8
+ok 452 - AC03/09: each proxy resource preserves Gmail identity, body, cursor and signature, using only its bound connection
+  ---
+  duration_ms: 15.1202
+  type: 'test'
+  ...
+# Subtest: AC05/06: binding rejects unknown project, wrong identity, owner/config/status/revision and copies its snapshot
+ok 453 - AC05/06: binding rejects unknown project, wrong identity, owner/config/status/revision and copies its snapshot
+  ---
+  duration_ms: 4.6012
+  type: 'test'
+  ...
+# Subtest: AC06: unlisted routes, methods, injection, extra send fields and request options fail before any HTTP
+ok 454 - AC06: unlisted routes, methods, injection, extra send fields and request options fail before any HTTP
+  ---
+  duration_ms: 1.1946
+  type: 'test'
+  ...
+# Subtest: AC03/09: empty lists and zero-byte attachments are valid, but invalid unit resources or cursor types are not
+ok 455 - AC03/09: empty lists and zero-byte attachments are valid, but invalid unit resources or cursor types are not
+  ---
+  duration_ms: 5.8994
+  type: 'test'
+  ...
+# Subtest: AC07/08: external rejection stays a Composio error, with no retry, fallback, secret or false Google quota classification
+    # Subtest: 401
+    ok 1 - 401
+      ---
+      duration_ms: 0.4314
+      type: 'test'
+      ...
+    # Subtest: 403
+    ok 2 - 403
+      ---
+      duration_ms: 0.2192
+      type: 'test'
+      ...
+    # Subtest: 429
+    ok 3 - 429
+      ---
+      duration_ms: 0.1698
+      type: 'test'
+      ...
+    # Subtest: 500
+    ok 4 - 500
+      ---
+      duration_ms: 0.1708
+      type: 'test'
+      ...
+    # Subtest: 422
+    ok 5 - 422
+      ---
+      duration_ms: 0.2129
+      type: 'test'
+      ...
+    # Subtest: 302
+    ok 6 - 302
+      ---
+      duration_ms: 0.1607
+      type: 'test'
+      ...
+    1..6
+ok 456 - AC07/08: external rejection stays a Composio error, with no retry, fallback, secret or false Google quota classification
+  ---
+  duration_ms: 1.814
+  type: 'test'
+  ...
+# Subtest: AC07: wrapped Gmail errors preserve their Google layer, without using external Retry-After as Google's
+ok 457 - AC07: wrapped Gmail errors preserve their Google layer, without using external Retry-After as Google's
+  ---
+  duration_ms: 1.0156
+  type: 'test'
+  ...
+# Subtest: AC08: network failure or malformed success after POST remains uncertain and makes one attempt
+ok 458 - AC08: network failure or malformed success after POST remains uncertain and makes one attempt
+  ---
+  duration_ms: 1.5846
+  type: 'test'
+  ...
+# Subtest: AC06/08: aborted requests never dispatch; stalled body reads abort with redacted uncertainty
+ok 459 - AC06/08: aborted requests never dispatch; stalled body reads abort with redacted uncertainty
+  ---
+  duration_ms: 14.143
+  type: 'test'
+  ...
+# Subtest: AC09: attachment response exceeds old 2.1MB trial limit without corruption, oversized responses and raw payloads fail explicitly
+ok 460 - AC09: attachment response exceeds old 2.1MB trial limit without corruption, oversized responses and raw payloads fail explicitly
+  ---
+  duration_ms: 217.2905
+  type: 'test'
+  ...
+# Subtest: AC09: 18MiB outgoing attachment survives MIME then base64url, within the 40MiB proxy bound
+ok 461 - AC09: 18MiB outgoing attachment survives MIME then base64url, within the 40MiB proxy bound
+  ---
+  duration_ms: 539.838
+  type: 'test'
+  ...
+# Subtest: AC08/09: streamed overflow, wrong content type and corrupt UTF8 cannot masquerade as successful proxy JSON
+ok 462 - AC08/09: streamed overflow, wrong content type and corrupt UTF8 cannot masquerade as successful proxy JSON
+  ---
+  duration_ms: 1.5272
+  type: 'test'
+  ...
+# Subtest: AC03/09: caller mutation during a request cannot redirect its binding or change response correlation
+ok 463 - AC03/09: caller mutation during a request cannot redirect its binding or change response correlation
+  ---
+  duration_ms: 0.3171
+  type: 'test'
+  ...
+# Subtest: AC01/04/05: real facade retains OAuth -> reservation -> final hook -> direct wire, and vetoes before HTTP
+ok 464 - AC01/04/05: real facade retains OAuth -> reservation -> final hook -> direct wire, and vetoes before HTTP
+  ---
+  duration_ms: 51.794
+  type: 'test'
+  ...
+1..464
+# tests 562
+# suites 0
+# pass 556
+# fail 0
+# cancelled 0
+# skipped 6
+# todo 0
+# duration_ms 196162.0443
