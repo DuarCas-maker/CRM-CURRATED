@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ArrowUpRight, Check, Mail, RefreshCw, Users, X } from "lucide-react";
 import type { Locale, Workspace } from "@/lib/domain";
 import { WorkspaceReader } from "@/lib/workspace-reader";
@@ -45,6 +45,7 @@ type Props = {
   onOwner(id: string): void;
   open(id: string): void;
   onStage(owner: string, stage: TaskStage): void;
+  renderStages?(counts: Record<TaskStage, number> | null): ReactNode;
 };
 
 export function OpenTasksOverview({
@@ -56,6 +57,7 @@ export function OpenTasksOverview({
   onOwner,
   open,
   onStage,
+  renderStages,
 }: Props) {
   const [account, setAccount] = useState("all"),
     [status, setStatus] = useState<TaskOverviewQuery["status"]>("all"),
@@ -146,27 +148,36 @@ export function OpenTasksOverview({
     onOwner(id);
   }
   return (
-    <TasksOverviewView
-      overview={overview}
-      locale={locale}
-      owner={owner}
-      account={account}
-      status={status}
-      loading={loadedKey !== key || !overview}
-      error={error}
-      selectOwner={selectOwner}
-      changeStatus={(value) => {
-        setStatus(value);
-        setPage(0);
-      }}
-      changePage={setPage}
-      refresh={() => {
-        setLoadedKey("");
-        setRevision((n) => n + 1);
-      }}
-      open={open}
-      onStage={onStage}
-    />
+    <>
+      <TasksOverviewView
+        overview={overview}
+        locale={locale}
+        owner={owner}
+        account={account}
+        status={status}
+        loading={loadedKey !== key || !overview}
+        error={error}
+        selectOwner={selectOwner}
+        changeStatus={(value) => {
+          setStatus(value);
+          setPage(0);
+        }}
+        changePage={setPage}
+        refresh={() => {
+          setLoadedKey("");
+          setRevision((n) => n + 1);
+        }}
+        open={open}
+        onStage={onStage}
+      />
+      {renderStages?.(
+        !error && loadedKey === key && overview
+          ? owner === "all"
+            ? overview.totals.stages
+            : overview.byRep.find((r) => r.id === owner)?.stages || null
+          : null,
+      )}
+    </>
   );
 }
 

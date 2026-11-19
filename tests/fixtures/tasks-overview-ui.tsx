@@ -98,7 +98,8 @@ data.messages = source.messages.map((m) => ({
 data.campaigns = source.campaigns.map((c) => ({ ...data.campaigns[0], ...c }));
 let fail = false,
   empty = false,
-  slow = false;
+  slow = false,
+  boardReads = 0;
 window.fetch = async (input, init) => {
   const url = new URL(String(input), location.origin);
   if (
@@ -126,6 +127,9 @@ window.fetch = async (input, init) => {
     );
   }
   if (url.pathname === "/api/workspace") return Response.json(data);
+  boardReads++;
+  const counter = document.getElementById("fixture-board-reads");
+  if (counter) counter.textContent = String(boardReads);
   return Response.json(
     buildPipelineBoard(
       data,
@@ -141,6 +145,9 @@ function Fixture() {
     <>
       <div id="fixture-tools">
         <span>QA local · datos ficticios · cero llamadas reales</span>
+        <span>
+          Lecturas del tablero: <output id="fixture-board-reads">0</output>
+        </span>
         {["normal", "error", "empty", "slow"].map((mode) => (
           <button
             key={mode}

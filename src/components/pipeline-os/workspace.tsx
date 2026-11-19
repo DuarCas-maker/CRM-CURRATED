@@ -221,6 +221,13 @@ export function PipelineOSWorkspace({
   }, [initial.demo, data, processes, query, owner, group, page, hours]);
   useEffect(() => {
     if (initial.demo) return;
+    // The task overview already reads complete stage counts; a second board read
+    // on every owner/search change repeats the same expensive mail catalog.
+    if (current === "tasks") {
+      setLoading(false);
+      setError("");
+      return;
+    }
     if (loadedBoardParams.current === params) {
       setLoading(false);
       setError("");
@@ -248,7 +255,7 @@ export function PipelineOSWorkspace({
       disposed = true;
       boardReader.cancel();
     };
-  }, [params, initial.demo, boardReader]);
+  }, [params, current, initial.demo, boardReader]);
 
   async function readWorkspace(id?: string) {
     const res = await fetch(
@@ -519,7 +526,12 @@ export function PipelineOSWorkspace({
       </button>
     );
   }
-  function stageStrip() {
+  function stageStrip(
+    counts: Pick<
+      PipelineBoard["counts"],
+      (typeof pipelineStages)[number]
+    > = board.counts,
+  ) {
     return (
       <div className="pos-stage-strip">
         {pipelineStages.map((g) => (
@@ -528,7 +540,7 @@ export function PipelineOSWorkspace({
             className={current === g ? "pos-chosen" : ""}
             onClick={() => go(["tasks", g])}
           >
-            <b>{board.counts[g]}</b>
+            <b>{counts[g]}</b>
             <span>{pipelineLabel(g, locale)}</span>
           </button>
         ))}
@@ -650,87 +662,94 @@ export function PipelineOSWorkspace({
             locale={locale}
             owner={owner}
             query={query}
-            onOwner={changeOwner}
+            onOwner={(id) => {
+              changeOwner(id);
+              if (current !== "tasks") go(["tasks"]);
+            }}
             open={rowOpen}
             onStage={(id, stage) => {
               changeOwner(id);
               go(["tasks", stage]);
             }}
+            renderStages={(counts) => (
+              <>
+                {counts && stageStrip(counts)}
+                {!counts ? (
+                  <div className="pos-card pos-empty" role="status">
+                    {t(locale, "Actualizando etapas…", "Updating stages…")}
+                  </div>
+                ) : (
+                  <div className="pos-tiles">
+                    {tile(
+                      FileText,
+                      l("app"),
+                      t(
+                        locale,
+                        "Aplicación y documentación por completar",
+                        "Application and documents to complete",
+                      ),
+                      counts.app,
+                      t(locale, "expedientes", "files"),
+                      "app",
+                      level,
+                    )}
+                    {tile(
+                      Landmark,
+                      l("need"),
+                      t(
+                        locale,
+                        "Revisar UW y buscar financiación",
+                        "Review UW and find financing",
+                      ),
+                      counts.need,
+                      t(locale, "expedientes", "files"),
+                      "need",
+                      level,
+                    )}
+                    {tile(
+                      Sparkles,
+                      l("offers"),
+                      t(
+                        locale,
+                        "Comparar y presentar opciones",
+                        "Compare and present options",
+                      ),
+                      counts.offers,
+                      t(locale, "expedientes", "files"),
+                      "offers",
+                      level,
+                    )}
+                    {tile(
+                      Send,
+                      l("docsout"),
+                      t(
+                        locale,
+                        "Contratos enviados con evidencia",
+                        "Contracts sent with evidence",
+                      ),
+                      counts.docsout,
+                      t(locale, "expedientes", "files"),
+                      "docsout",
+                      level,
+                    )}
+                    {tile(
+                      CircleCheck,
+                      l("signed"),
+                      t(
+                        locale,
+                        "Firma confirmada, preparar fondeo",
+                        "Signature confirmed, prepare funding",
+                      ),
+                      counts.signed,
+                      t(locale, "expedientes", "files"),
+                      "signed",
+                      level,
+                    )}
+                  </div>
+                )}
+              </>
+            )}
           />
-          {boardReady && stageStrip()}
-          {!boardReady ? (
-            <div className="pos-card pos-empty" role="status">
-              {t(locale, "Actualizando etapas…", "Updating stages…")}
-            </div>
-          ) : (
-            <div className="pos-tiles">
-              {tile(
-                FileText,
-                l("app"),
-                t(
-                  locale,
-                  "Aplicación y documentación por completar",
-                  "Application and documents to complete",
-                ),
-                board.counts.app,
-                t(locale, "expedientes", "files"),
-                "app",
-                level,
-              )}
-              {tile(
-                Landmark,
-                l("need"),
-                t(
-                  locale,
-                  "Revisar UW y buscar financiación",
-                  "Review UW and find financing",
-                ),
-                board.counts.need,
-                t(locale, "expedientes", "files"),
-                "need",
-                level,
-              )}
-              {tile(
-                Sparkles,
-                l("offers"),
-                t(
-                  locale,
-                  "Comparar y presentar opciones",
-                  "Compare and present options",
-                ),
-                board.counts.offers,
-                t(locale, "expedientes", "files"),
-                "offers",
-                level,
-              )}
-              {tile(
-                Send,
-                l("docsout"),
-                t(
-                  locale,
-                  "Contratos enviados con evidencia",
-                  "Contracts sent with evidence",
-                ),
-                board.counts.docsout,
-                t(locale, "expedientes", "files"),
-                "docsout",
-                level,
-              )}
-              {tile(
-                CircleCheck,
-                l("signed"),
-                t(
-                  locale,
-                  "Firma confirmada, preparar fondeo",
-                  "Signature confirmed, prepare funding",
-                ),
-                board.counts.signed,
-                t(locale, "expedientes", "files"),
-                "signed",
-                level,
-              )}
-            </div>
-          )}
         </>
       );
     if (isGroup(p))
