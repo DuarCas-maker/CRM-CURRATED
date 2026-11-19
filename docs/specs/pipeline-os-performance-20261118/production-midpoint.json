@@ -1,0 +1,13 @@
+{
+  "revision":"05e5c9cb9102a862d28e89746dd082a4ff92f81f",
+  "deployment":"vkcgwyjc8k2nkqsjx0vm7kbo",
+  "finished":true,"healthy":true,"rolling_complete":true,
+  "authenticated_reads":[
+    {"kind":"board","observed_ms":15601,"navigation_timeout":true,"json":true,"error":null,"characters":44645,"rows":50,"total":242},
+    {"kind":"master","observed_ms":19698,"navigation_timeout":true,"json":true,"error":null,"characters":4518},
+    {"kind":"tasks","observed_ms":14966,"navigation_timeout":true,"json":true,"error":null,"characters":19745,"total":1988}
+  ],
+  "goal_closed":false,
+  "reason":"Improvement confirmed but reads remain too slow; iteration2 removes repeated visible-mail projections",
+  "client_rows_saved":false
+}

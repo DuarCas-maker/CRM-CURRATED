@@ -11,7 +11,7 @@ import { readTasksOverview } from "../../../src/lib/server/pipeline-tasks.ts";
 import { parseMasterQuery } from "../../../src/lib/pipeline-os/master-pipeline.ts";
 import { parseTaskOverviewQuery } from "../../../src/lib/pipeline-os/tasks-overview.ts";
 
-const baseline = "6ec093a83bd3aa01f3cbd1d1ee2013d882502664";
+const baseline = "05e5c9cb9102a862d28e89746dd082a4ff92f81f";
 const names = ["pipeline-os-module", "pipeline-master", "pipeline-tasks"];
 const virtual = Object.fromEntries(
   names.map((name) => [
@@ -78,7 +78,7 @@ try {
             ? parseMasterQuery(new URLSearchParams("tab=tasks"))
             : parseTaskOverviewQuery(new URLSearchParams());
       const value = await read(f.client, f.profile, params);
-      const calls = f.calls.map((c) => JSON.stringify(c)).sort();
+      const calls = f.calls.filter(c=>c.table!=="mail_conversations_visible").map((c) => JSON.stringify(c)).sort();
       if (revision === "before") {
         before = value;
         beforeCalls = calls;

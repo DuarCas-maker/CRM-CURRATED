@@ -22,10 +22,13 @@ for (const kind of ["board", "master"] as const) {
     assert.equal(result.rows.length, 50);
     const metrics = f.metrics();
     assert(metrics.peak <= 6, `global query peak ${metrics.peak} exceeds six`);
-    assert(Object.values(metrics.byTable).every(peak => peak <= 4), "each relation retains its four-batch cap");
     assert(
-      metrics.byTable.mail_conversations_visible > 1,
-      "separate conversation ID batches should overlap",
+      Object.values(metrics.byTable).every((peak) => peak <= 4),
+      "each relation retains its four-batch cap",
+    );
+    assert(
+      metrics.byTable.tasks > 1,
+      "independent task ID batches should overlap",
     );
     assert.equal(metrics.active, 0);
     assert(f.calls.every((c) => !c.batch || c.batch.length <= 50));
@@ -42,6 +45,64 @@ test("a failed catalog read propagates instead of returning partial successful t
     readPipelineBoard(f.client, f.profile),
     /Fixture permission denied/,
   );
+});
+
+test("one complete visible-mail page is reused while excluded case IDs never reach message reads", async () => {
+  const f = pipelinePerformanceFixture();
+  f.tables.mail_conversations_visible.push({
+    id: "archived-thread",
+    opportunity_id: "excluded-case",
+    area: "seller",
+  });
+  const board = await readPipelineBoard(f.client, f.profile);
+  assert.equal(board.total, 351);
+  const reads = f.calls.filter((c) => c.table === "mail_conversations_visible");
+  assert.equal(reads.length, 1);
+  assert(
+    f.calls
+      .filter((c) => c.table === "messages")
+      .every((c) => !c.batch?.includes("archived-thread")),
+  );
+});
+
+test("a mailbox larger than one page falls back to complete scoped batches", async () => {
+  const f = pipelinePerformanceFixture();
+  f.tables.mail_conversations_visible.push(
+    ...Array.from({ length: 1001 }, (_, i) => ({
+      id: `extra-${i}`,
+      opportunity_id: "excluded-case",
+      area: "seller",
+    })),
+  );
+  const board = await readPipelineBoard(f.client, f.profile);
+  assert.equal(board.total, 351);
+  const reads = f.calls.filter((c) => c.table === "mail_conversations_visible");
+  assert.equal(reads.length, 9);
+  assert.equal(reads.filter((c) => !c.batch).length, 1);
+  assert(
+    f.calls
+      .filter((c) => c.table === "messages")
+      .every((c) => !c.batch?.some((id) => String(id).startsWith("extra-"))),
+  );
+});
+
+test("a missing count, duplicate identity or permission error in the single page fails closed", async () => {
+  for (const kind of ["count", "duplicate", "permission"]) {
+    const f = pipelinePerformanceFixture({
+      missingCountTable:
+        kind === "count" ? "mail_conversations_visible" : undefined,
+      failTable:
+        kind === "permission" ? "mail_conversations_visible" : undefined,
+    });
+    if (kind === "duplicate")
+      f.tables.mail_conversations_visible.push({
+        ...f.tables.mail_conversations_visible[0],
+      });
+    await assert.rejects(
+      readPipelineBoard(f.client, f.profile),
+      /count unavailable|Catalog changed|Fixture permission denied/,
+    );
+  }
 });
 
 test("a source failure stops queued reads without poisoning a later request", async () => {

@@ -189,7 +189,7 @@ test("task reader reuses one complete mail snapshot for board evidence and reply
   assert(f.calls.filter((c) => c.table === "messages").every((c) => c.columns.includes("reply_intent")));
 });
 
-test("case metadata batches overlap with a limit of four without dropping cases", async () => {
+test("one complete mail projection replaces case batches without dropping cases", async () => {
   const f = fixtureDatabase();
   const seed = f.tables.opportunity_workspace[0];
   f.tables.opportunity_workspace = Array.from({ length: 251 }, (_, i) => ({
@@ -197,8 +197,8 @@ test("case metadata batches overlap with a limit of four without dropping cases"
   }));
   f.delayedTables.add("mail_conversations_visible");
   const result = await readTasksOverview(f.client, f.source.profile, parseTaskOverviewQuery(new URLSearchParams()));
-  assert.equal(f.peak.get("mail_conversations_visible"), 4);
-  assert.equal(f.calls.filter((c) => c.table === "mail_conversations_visible").length, 6);
+  assert.equal(f.peak.get("mail_conversations_visible"), 1);
+  assert.equal(f.calls.filter((c) => c.table === "mail_conversations_visible").length, 1);
   assert.equal(result.totals.stages.app, 251);
 });
 

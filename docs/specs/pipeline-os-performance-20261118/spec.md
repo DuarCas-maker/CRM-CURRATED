@@ -6,7 +6,7 @@ FR-001: reducir las esperas de lectura comunes del tablero sin alterar datos, cl
 
 FR-002: aplicar el mismo presupuesto a Master y solapar sus lecturas independientes, manteniendo filtrado antes de paginar y cuerpos solo de los mensajes visibles. AC-002: salida equivalente a la base para datos ficticios, límite global6 y pruebas de owner/ajeno/MFA/anon y HTTP existentes correctas.
 
-FR-003: beneficiar entrada, grupos y Tareas abiertas mediante el lector compartido, sin duplicar consultas ni crear caché global. AC-003: mismo número y alcance de lecturas en comparación sintética, menor espera; baseline/postflight en producción de entrada/board/Master/Tareas, con UI completa y sin nuevos errores en recorridos revisados.
+FR-003: beneficiar entrada, grupos y Tareas abiertas mediante el lector compartido, sin duplicar consultas ni crear caché global. AC-003: resultados idénticos en comparación sintética y menor espera; baseline/postflight en producción de entrada/board/Master/Tareas, con UI completa y sin nuevos errores en recorridos revisados. Iteración2/AC-004,005: reducir las proyecciones de correo repetidas con una página autorizada completa, filtrada antes de mensajes/snapshot; el alcance de las otras consultas permanece idéntico. Fallback completo y errores comprobados según change-request.md.
 
 No objetivos: rediseño, nuevos indicadores, alterar reglas financieras o de correo, SQL remoto, credenciales, transportes, worker/configuración, envíos, proveedores, dependencias. El rendimiento de otras rutas se conserva.
 

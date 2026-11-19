@@ -8,6 +8,7 @@ export function pipelinePerformanceFixture(
     cap?: number;
     delay?: number;
     failTable?: string;
+  missingCountTable?: string;
   } = {},
 ) {
   const { data } = pipelineModuleDemo();
@@ -147,7 +148,7 @@ export function pipelinePerformanceFixture(
         );
         return {
           data: rows.slice(offset, Math.min(end + 1, offset + cap)),
-          count: rows.length,
+          count: this.table === options.missingCountTable ? null : rows.length,
           error: null,
         };
       });

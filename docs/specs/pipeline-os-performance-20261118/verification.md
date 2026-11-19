@@ -35,3 +35,17 @@ Main avanzó otra vez con reutilización de mail snapshot y cap4 por relación. 
 La comparación final en synthetic.json usa6ec093a: Board309→316ms (95 queries), Master450→281ms (79), Tareas314→301ms (99). Mismo JSON completo y mismo alcance exacto por escenario. No se atribuye mejora sintética adicional relevante de Board/Tareas frente a6ec; su pico baja25/24→6 y el solapamiento ya recibido se conserva. Master reduce la espera y pico12→6. Los números anteriores contra087 son históricos de la primera versión local y no se presentan como benchmark del candidato conciliado. La publicación medirá el conjunto frente al baseline real087.
 
 Combinación final conciliada: **113/113 pruebas correctas**, cero fallos/omisiones,26 archivos. Cap4 original del frente Tareas y cap6 global propios pasan simultáneamente. TypeScript correcto y build público aislado Node22 completo,60/60 páginas. No quedan marcadores de conflicto; whitespace y revisión del delta contra6ec correctos. Fuentes web sin cambios de UI o protocolo; no se necesita repetir QA visual de diseño para esta modificación de servidor.
+
+## Iteración2
+
+Postflight05e5c9c: Board15601ms, Master19698ms, Tareas14966ms; todos correctos y mismos tamaños/conteos del baseline. Despliegue vkcgwyjc8k2nkqsjx0vm7kbo Finished/healthy/rolling completo. No se cerró como resuelta la velocidad general; ver change-request.md.
+
+Nueva prueba de página completa:351 casos, una consulta a mail_conversations_visible frente a ocho. Las filas de casos excluidos no llegan a filtros de mensajes ni al resultado. Catálogo mayor de una página y capREST17 usan el lector completo por lotes; se conserva total351. Se reemplaza la aserción histórica de cuatro consultas simultáneas del test Tareas por una proyección completa única, sin perder la aserción251 expedientes. El cap4/6 sigue comprobado en las demás relaciones.
+
+Benchmark contra05e5c9c,351 casos ficticios: Board328→290ms y95→88 queries; Master286→242ms y79→72; Tareas317→300ms y99→92. JSON idéntico, y todas las consultas ajenas a la vista de metadatos conservan exactamente alcance/columnas/offsets. Son tiempos sintéticos con coste uniforme por consulta; la reducción real de las proyecciones repetidas se verificará después de publicar.
+
+Iteración2: **116/116 pruebas correctas**, cero fallos/omisiones,26 archivos; build aislado correcto,60/60 páginas, TypeScript y whitespace sin errores. Validaciones de count/identidad/permisos corren dentro del presupuesto de lectura y rechazan trabajos en espera si falla la fuente. Se probó el rechazo de count ausente, identidad duplicada y permiso denegado en la ruta nueva, además del fallback por catálogo grande/cap pequeño.
+
+Durante este cierre se conserva fast-forward el avance7ce1366, solo UI/fixture/documentación de Tareas: reutiliza sus conteos y evita otro Board al filtrar. No se editan esos cambios. Se verifican types/UI y se recompila la combinación antes de publicar; el JSON servidor no cambia.
+
+Checks tras conservar7ce:17/17 pruebas afectadas de UI/lectores correctas, TypeScript correcto y nuevo build60/60 páginas. Revisión final del helper: misma vista y principal autorizado, solo metadatos, validación de count e identidad antes de usar la página, filtro de IDs antes de lectura de mensajes y callback; fallback no captura errores de permiso/transportes. Whitespace correcto y main7ce verificado antes del push.

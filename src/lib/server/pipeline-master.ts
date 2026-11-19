@@ -17,6 +17,7 @@ import {
 import { readPipelinePages } from "./pipeline-os-module";
 import { checkDb, requireUser } from "./supabase";
 import { campaignFlowCases } from "./campaign-flow-cases";
+import { readVisiblePipelineMail } from "./pipeline-visible-mail";
 import {
   createPipelineReadQueue,
   readPipelineBatches,
@@ -81,11 +82,17 @@ export async function readMasterPipeline(
   start.setUTCHours(0, 0, 0, 0);
   start.setUTCDate(start.getUTCDate() - query.days + 1);
   const mailRead = (async () => {
-    const conversations = await readRows<Workspace["conversations"][number]>(
-      db,
-      "mail_conversations_visible",
-      "id,opportunity_id,submission_id,process_id,account_id,subject,area,needs_attention,updated_at",
-      ids,
+    const columns =
+      "id,opportunity_id,submission_id,process_id,account_id,subject,area,needs_attention,updated_at";
+    const conversations = await readVisiblePipelineMail<
+      Workspace["conversations"][number]
+    >(db, columns, ids, run, () =>
+      readRows<Workspace["conversations"][number]>(
+        db,
+        "mail_conversations_visible",
+        columns,
+        ids,
+      ),
     );
     const visibleConversations = conversations.filter((c) => {
       const o = opportunities.find((o) => o.id === c.opportunity_id);

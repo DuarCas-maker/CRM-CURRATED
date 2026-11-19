@@ -16,6 +16,7 @@ import {
 } from "../pipeline-os/module";
 import { checkDb, HttpError, requireUser } from "./supabase";
 import { campaignFlowCases } from "./campaign-flow-cases";
+import { readVisiblePipelineMail } from "./pipeline-visible-mail";
 import {
   createPipelineReadQueue,
   readPipelineBatches,
@@ -161,15 +162,18 @@ export async function readPipelineBoard(
     .filter((o) => canSeeArea(profile, o, "closer"))
     .map((o) => o.id);
   const mailRead = (async () => {
-    const conversations = await readTable<
+    const columns = captureMail
+      ? "id,opportunity_id,submission_id,recipient_email,process_id,account_id,area"
+      : "id,opportunity_id,submission_id,recipient_email,process_id";
+    const conversations = await readVisiblePipelineMail<
       PipelineBoardMail["conversations"][number]
-    >(
-      db,
-      "mail_conversations_visible",
-      captureMail
-        ? "id,opportunity_id,submission_id,recipient_email,process_id,account_id,area"
-        : "id,opportunity_id,submission_id,recipient_email,process_id",
-      ids,
+    >(db, columns, ids, run, () =>
+      readTable<PipelineBoardMail["conversations"][number]>(
+        db,
+        "mail_conversations_visible",
+        columns,
+        ids,
+      ),
     );
     const messages = await readTable<PipelineBoardMail["messages"][number]>(
       db,

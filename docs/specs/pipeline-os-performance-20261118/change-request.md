@@ -1,0 +1,11 @@
+# Iteración2 — evitar escaneos repetidos del correo visible
+
+05e5c9c publicado y healthy. Postflight todavía lento: Board15601ms, Master19698ms y Tareas14966ms, todos JSON correctos, mismos tamaños/conteos que baseline. Tareas mejora frente a29299ms, pero no cierra la demora general. asOf del servidor de Tareas se observa aproximadamente14821ms después del inicio cliente (relojes entre hosts sin calibrar); la espera no se explica solo por el controlador del navegador.
+
+La fuente versionada049/050 define mail_conversations_visible sobre una función sin argumentos SECURITY DEFINER que evalúa visibilidad/redacción del correo. Consultarla por lotes vuelve a ejecutar esa proyección. Es una inferencia respaldada por la definición y el diseño de PostgreSQL, no un EXPLAIN actual de producción. Referencia: https://wiki.postgresql.org/wiki/Inlining_of_SQL_functions. No se consulta ni modifica SQL remoto para esta iteración.
+
+ADR-PERF-002: para entre101 y1000 casos elegibles, intentar una única página de hasta1000 metadatos de la misma vista autorizada y con las mismas columnas. Usarla solo si count exacto confirma que está completa; filtrar inmediatamente por los IDs elegibles antes de consultar mensajes, construir señales o entregar el callback. No leer tabla cruda ni cuerpos adicionales. Nunca devolver al cliente o snapshot filas fuera del conjunto elegible.
+
+Si el catálogo visible excede una página, conservar la lectura por lotes existente (cap real pequeño o más de1000 conversaciones). Si falta count, hay duplicados, error de permiso o respuesta vacía inconsistente: fallar, sin ocultarlo con fallback. Para100 casos o menos, o más de1000, usar directamente los lotes. El peor coste del modo de fallback es una consulta adicional acotada; no es una caché ni una modificación de permisos.
+
+AC-004: fixture con351 casos y conversaciones adicionales excluidas: una lectura completa de la vista en lugar de ocho, sin consultar mensajes ajenos y con resultado idéntico. AC-005: catálogo parcial/grande conserva todos los casos y respeta cap4/6; errores siguen visibles. La equivalencia de scopes de benchmark excluye únicamente el nuevo acceso a metadatos de esta vista; todas las demás consultas y el JSON completo deben conservarse.

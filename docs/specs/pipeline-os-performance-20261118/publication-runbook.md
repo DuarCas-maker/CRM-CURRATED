@@ -11,3 +11,5 @@ Destino verificado: https://crm.finlabinc.com, main en DuarCas-maker/CRM-CURRATE
 5. Si no mejora o aparecen errores, no declarar éxito: usar métricas seguras ya existentes y diagnosticar el nuevo cuello de botella. No aumentar timeouts ni saltar fuentes para producir un falso resultado completo.
 
 Reversa: nueva revisión que retire solo este incremento, preservando avances posteriores; alternativamente imagen anterior fea58d0 conforme al mecanismo Coolify. Sin restauración de datos, SQL o cambios de infraestructura. Detener publicación ante checks fallidos, permisos distintos o pérdida de contrato.
+
+Iteración2: preservar7ce1366 (reutilización de conteos de Tareas) e incorporar la página de metadatos completa validada en change-request.md. Último fallback de esta iteración: imagen7ce1366 o retirar únicamente pipeline-visible-mail.ts y sus dos callers; conservar cola y mejoras anteriores. No ejecutar SQL ni cambiar el timeout.
