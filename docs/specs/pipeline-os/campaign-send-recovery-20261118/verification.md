@@ -16,4 +16,8 @@ Navegador local con datos ficticios: aviso de sincronización visible en listado
 
 SQL productivo aplicado19/11 00:21:08Z después del respaldo reciente: una función añadida, cero funciones existentes cambiadas; anon/authenticated sin ejecución. Recibo en sql-application.json. No se invocó ninguna operación de envío desde el agente.
 
-Pendiente: publicar código T02 y verificar avance real del uso y de la cola; no declarar recuperación por tener pruebas verdes.
+Publicación T02: c250fea enviado a main sin force push. Worker observado con203 admisiones reales de cuota en la ventana de10 minutos, fecha de uso actualizada y seis tareas recientes Gmail sync/usage completadas sin error. La operación proviene del worker normal; ninguna invocación claim/send/finish ni ajuste artificial del uso desde el agente.
+
+Lectura de cierre19/11 00:31:46Z (18/11 19:31:46 America/Bogota): los mismos50 destinatarios,3 correos con ID Gmail confirmado y47 en cola, cero fallidos/inciertos. Los3 expedientes avanzaron al primer recordatorio; fechas calculadas desde su envío confirmado. Se observó avance en varias lecturas (1,2,3 enviados) y sincronizaciones posteriores completadas. No significa que los50 correos o los recordatorios futuros hayan terminado: la cola sigue su ritmo y sus controles vigentes. Evidencia acotada en production-recovery.json.
+
+Web: nuevo chunk observado en DOM productivo contiene el marcador de bloqueo; health200 y API de campañas anónima401 con no-store. Evidencia en public-postflight.json. La sesión del navegador integrado no terminó de renderizar el workspace productivo, por lo que no se afirma revisión autenticada completa; la verificación de la campaña se hizo con lecturas SQL acotadas y la visual se realizó localmente con datos ficticios.

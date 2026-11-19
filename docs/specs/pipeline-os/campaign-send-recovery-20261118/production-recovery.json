@@ -1,0 +1,54 @@
+{
+  "commit": "c250fea",
+  "checkedAt": "2026-11-19T00:31:46.608567+00:00",
+  "campaignStatus": "active",
+  "totalOriginalRecipients": 50,
+  "initialConfirmed": 3,
+  "queued": 47,
+  "failed": 0,
+  "uncertain": 0,
+  "usageAt": "2026-11-19T00:30:09.744+00:00",
+  "usageFresh": true,
+  "recentJobs": [
+    {
+      "kind": "gmail_sync",
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": "gmail_sync",
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": "gmail_sending_usage",
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": "gmail_sync",
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": "gmail_sending_usage",
+      "status": "completed",
+      "code": null
+    },
+    {
+      "kind": "gmail_sync",
+      "status": "completed",
+      "code": null
+    }
+  ],
+  "quotaAdmissions": 203,
+  "reminders": {
+    "lastDue": "2026-11-21T00:30:16.124667+00:00",
+    "firstDue": "2026-11-21T00:28:28.104549+00:00",
+    "awaitingFirstReminder": 3
+  },
+  "agentForcedSends": 0,
+  "accountQuotaChanged": false,
+  "credentialsChanged": false,
+  "all50Sent": false
+}
