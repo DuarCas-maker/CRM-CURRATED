@@ -36,6 +36,13 @@
   padding: 12px;
   border-radius: 8px;
   background: color-mix(in srgb, var(--panel) 85%, #c27b61);
+  flex-wrap: wrap;
+}
+.simple-mail-alert > svg {
+  flex-shrink: 0;
+}
+.simple-mail-alert > span {
+  flex: 1 1 240px;
 }
 .simple-mail .table-wrap {
   overflow-x: auto;

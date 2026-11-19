@@ -43,6 +43,7 @@ import {
 } from "./service";
 import { withIncludedUsage, includedComposioFetch } from "./included";
 import { simpleMailReturnUrl } from "./return-url";
+import { legacyMailboxPorts, prepareLegacyMailbox } from "./legacy-account";
 
 export function simpleWorkspace() {
   const all = configuredOrganizations(),
@@ -109,6 +110,8 @@ export async function productionOnboarding(
     state: token,
     encrypt,
     decrypt,
+    prepareDirect: (input) =>
+      prepareLegacyMailbox(legacyMailboxPorts(db), input, simpleWorkspace().id),
     async directUrl(r, state) {
       (await cookies()).set("simple_mail_state_" + r.id, hash(state), {
         httpOnly: true,

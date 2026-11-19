@@ -1,0 +1,12 @@
+# Alta Gmail heredada y recuperación visible
+
+SDD STRICT, continuación del alta automática Gmail autorizada. Base ac4dd12. Se reutilizan decisiones aceptadas: superadmin activo con MFA, Workspace configurado, correo esperado antes de Google, responsable seleccionado y preparación automática. No hay decisión de negocio nueva pendiente. No se cambia el alcance de acceso, proveedores ni envíos.
+
+H1 confirmada: fila antigua disconnected sin operating_brand_id. simple_mail_begin admite el caso pero llama brand_oauth_begin(reconnect), que exige marca confirmada. La transacción aborta antes de crear onboarding y el error se convierte en SIMPLE_UNAVAILABLE. La UI promete retomar un intento inexistente. H2 Google descartada: no hay estado OAuth creado. H3 conflicto operativo descartada para la cuenta reportada: queued/sending/uncertain/active_campaigns=0; revisión pending hacia la marca configurada sin historia aprobada. Lecturas productivas acotadas a metadata.
+
+- FR01/AC01: adaptar filas antiguas disconnected del Workspace configurado, sin marca, con brand_mapping_propose/confirm existentes. Reutilizar revisión pending compatible; nunca confirmar conflicto, otra marca, historia aprobada o revisión obsoleta. Preservar MFA, revisiones y auditoría. Sin DDL ni escritura directa de columnas protegidas.
+- FR02/AC02: conservar cuentas nuevas/ya marcadas y sus IDs, credenciales y permisos. No activar live/sync ni enviar antes del consentimiento/finalize existentes.
+- FR03/AC03: error al iniciar ofrece Reintentar conexión; error de intento conocido ofrece Retomar conexión; fallo de lectura ofrece Actualizar estado. Conservar correo, asesor e idempotencia. No prometer un intento guardado inexistente.
+- FR04/AC04: fixtures de compatibilidad, replay, conflictos y permisos; ensayo PostgreSQL nativo; regresión, tipos/build y QA visual. Publicación coordinada según autorización previa; consentimiento Google a cargo del usuario.
+
+T01 diagnóstico; T02 preparación humana previa a begin solo Gmail; T03 mensaje/acción contextual; T04 pruebas; T05 publicación; T06 comprobar alta hasta Google sin completar consentimiento. No decisión arquitectónica nueva: reutilización de contratos existentes. Reversa: redeploy ac4dd12 conservando revisiones y recibos. No borrar cuentas, auditoría ni credenciales. Sin migración, compra o cambio de plan; Composio cerrado. Backup nuevo omitido por autorización expresa anterior.
