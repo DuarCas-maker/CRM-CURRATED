@@ -1,0 +1,28 @@
+{
+  "base": "bd645bb5d17eee807d882b329686565e6de8b6a2",
+  "initialRelease": "fed1e49b638669439c5d3a2a59e19c4096d87b4e",
+  "files": [
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "b473ff4d811a5952e3267c0a2e0b95bca40749520fe28521749dbfe31fe6aaf5"
+    },
+    {
+      "path": "src/lib/server/pipeline-tasks.ts",
+      "sha256": "0546fc065c259eb954d3397afac5ec6e27df49dedc9645c244ad9fb617339244"
+    },
+    {
+      "path": "tests/tasks-overview-reader.test.ts",
+      "sha256": "c7a0df791fc8efb612426f12ea433fe8c3adc4e6c41e5caac546eb5238af6866"
+    }
+  ],
+  "unrelatedCoordinatorFilesPreserved": 8,
+  "tests": {
+    "node": "22.23.4",
+    "pass": 93,
+    "fail": 0,
+    "additionalDatabaseChecks": 5
+  },
+  "buildExit": 0,
+  "databaseWrites": false,
+  "timeoutIncreased": false
+}

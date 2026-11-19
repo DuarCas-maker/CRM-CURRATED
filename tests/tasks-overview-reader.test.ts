@@ -164,6 +164,33 @@ test("task reader only counts campaigns belonging to visible campaign groups", a
   assert.equal(result.byRep.find((r) => r.id === "samuel")?.sent, 0);
 });
 
+test("task overview never pages through unused unsent campaign facts", async () => {
+  const f = fixtureDatabase();
+  const seed = f.source.facts[0];
+  f.source.facts.push(
+    ...Array.from({ length: 4000 }, (_, i) => ({
+      ...seed,
+      contact_id: `pending-contact-${i}`,
+      campaignId: "campaign-a",
+      send_status: "queued",
+      sent_at: null,
+      reply_at: null,
+    })),
+  );
+  const result = await readTasksOverview(
+    f.client,
+    f.source.profile,
+    parseTaskOverviewQuery(new URLSearchParams()),
+  );
+  assert.equal(result.totals.sent, 2);
+  assert.equal(result.totals.leads, 73);
+  assert.equal(
+    f.calls.filter((c) => c.table === "rpc:campaign_contact_facts").length,
+    3,
+    "only the three sent-contact pages are useful; pending recipients must stay in the CRM lead catalog",
+  );
+});
+
 test("task reader reports incomplete catalogs and never requests campaign/lead facts for closers", async () => {
   const missing = fixtureDatabase(true);
   await assert.rejects(

@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile } from "../domain";
 import { isCloserRole, isSellerRole } from "../domain";
 import type { CampaignContact } from "../campaign-center";
+import type { PipelineBoard } from "../pipeline-os/module";
 import {
   buildTasksOverview,
   type TaskOverviewQuery,
@@ -23,19 +24,26 @@ async function readRows<T>(
       )
     : [undefined];
   const rows: T[] = [];
-  for (const batch of batches)
-    rows.push(
-      ...(await readPipelinePages<T>(async (offset) => {
-        let q = db.from(table).select(columns, { count: "exact" }).order("id");
-        if (batch) q = q.in(key, batch);
-        const result = await q.range(offset, offset + 499);
-        return {
-          rows: (checkDb(result, "pipeline_tasks." + table) ||
-            []) as unknown as T[],
-          total: result.count,
-        };
-      })),
+  for (let start = 0; start < batches.length; start += 4) {
+    const pages = await Promise.all(
+      batches.slice(start, start + 4).map((batch) =>
+        readPipelinePages<T>(async (offset) => {
+          let q = db
+            .from(table)
+            .select(columns, { count: "exact" })
+            .order("id");
+          if (batch) q = q.in(key, batch);
+          const result = await q.range(offset, offset + 499);
+          return {
+            rows: (checkDb(result, "pipeline_tasks." + table) ||
+              []) as unknown as T[],
+            total: result.count,
+          };
+        }),
+      ),
     );
+    rows.push(...pages.flat());
+  }
   return rows;
 }
 
@@ -44,68 +52,47 @@ export async function loadTasksOverview(query: TaskOverviewQuery) {
   return readTasksOverview(db, profile, query);
 }
 
-export async function readTasksOverview(
-  db: SupabaseClient,
-  profile: Profile,
-  query: TaskOverviewQuery,
-) {
-  const seller = isSellerRole(profile.role);
-  const [board, profiles, accounts, campaigns, leads] = await Promise.all([
-    readPipelineBoard(db, profile, { group: "files" }, 100000, false),
-    readRows<Profile>(db, "profiles", "id,name,email,role,active"),
-    readRows<TaskOverviewSource["accounts"][number]>(
-      db,
-      "mail_accounts",
-      "id,email,owner_id",
-    ),
-    seller
-      ? readRows<TaskOverviewSource["campaigns"][number]>(
-          db,
-          "campaigns",
-          "id,seller_id,account_id",
-        )
-      : [],
-    seller
-      ? readRows<TaskOverviewSource["leads"][number]>(
-          db,
-          "lead_workspace",
-          "id,contact_id,company,contact,email,seller_id,opportunity_id",
-        )
-      : [],
-  ]);
-  if (board.hasMore)
-    throw new HttpError(
-      503,
-      "El catálogo supera el límite de esta vista / Catalog exceeds this view's limit",
-    );
+async function readVisibleCampaigns(db: SupabaseClient, profile: Profile) {
+  if (!isSellerRole(profile.role)) return [];
   // Use the same visible campaign groups as the current Campaign Control view.
-  const groupCampaigns = seller
-    ? await readPipelinePages<{ id: string }>(async (offset) => {
-        const result = await db
-          .from("campaign_group_members")
-          .select("campaign_id", { count: "exact" })
-          .order("campaign_id")
-          .range(offset, offset + 499);
-        const rows = checkDb(result, "pipeline_tasks.campaign_groups") as
-          { campaign_id: string }[] | null;
-        return {
-          rows: (rows || []).map((r) => ({ id: r.campaign_id })),
-          total: result.count,
-        };
-      })
-    : [];
+  const [campaigns, groupCampaigns] = await Promise.all([
+    readRows<TaskOverviewSource["campaigns"][number]>(
+      db,
+      "campaigns",
+      "id,seller_id,account_id",
+    ),
+    readPipelinePages<{ id: string }>(async (offset) => {
+      const result = await db
+        .from("campaign_group_members")
+        .select("campaign_id", { count: "exact" })
+        .order("campaign_id")
+        .range(offset, offset + 499);
+      const rows = checkDb(result, "pipeline_tasks.campaign_groups") as
+        { campaign_id: string }[] | null;
+      return {
+        rows: (rows || []).map((r) => ({ id: r.campaign_id })),
+        total: result.count,
+      };
+    }),
+  ]);
   const grouped = new Set(groupCampaigns.map((c) => c.id));
-  const authorizedCampaigns = campaigns.filter(
+  return campaigns.filter(
     (c) =>
       grouped.has(c.id) &&
       (profile.role !== "seller" || c.seller_id === profile.id),
   );
+}
+
+async function readCampaignFacts(
+  db: SupabaseClient,
+  campaigns: TaskOverviewSource["campaigns"],
+) {
   const facts: TaskOverviewSource["facts"] = [];
   // Campaign Control uses the same contact facts, deduplicated across groups.
   // Four bounded concurrent campaigns, each independently paged by PostgREST.
-  for (let offset = 0; offset < authorizedCampaigns.length; offset += 4) {
+  for (let offset = 0; offset < campaigns.length; offset += 4) {
     const batches = await Promise.all(
-      authorizedCampaigns.slice(offset, offset + 4).map(async (c) => {
+      campaigns.slice(offset, offset + 4).map(async (c) => {
         const rows = await readPipelinePages<CampaignContact & { id: string }>(
           async (start) => {
             const result = await db
@@ -114,6 +101,8 @@ export async function readTasksOverview(
                 { campaign: c.id },
                 { count: "exact" },
               )
+              // Pending facts are discarded by the aggregator; never page them.
+              .eq("send_status", "sent")
               .order("contact_id")
               .range(start, start + 499);
             const page = checkDb(result, "pipeline_tasks.campaign_facts") as
@@ -129,6 +118,19 @@ export async function readTasksOverview(
     );
     facts.push(...batches.flat());
   }
+  return facts;
+}
+
+async function readCaseMail(
+  db: SupabaseClient,
+  profile: Profile,
+  board: PipelineBoard,
+) {
+  if (board.hasMore)
+    throw new HttpError(
+      503,
+      "El catálogo supera el límite de esta vista / Catalog exceeds this view's limit",
+    );
   const conversations = (
     await readRows<TaskOverviewSource["conversations"][number]>(
       db,
@@ -144,17 +146,56 @@ export async function readTasksOverview(
     conversations.map((c) => c.id),
     "conversation_id",
   );
+  return { conversations, messages };
+}
+
+export async function readTasksOverview(
+  db: SupabaseClient,
+  profile: Profile,
+  query: TaskOverviewQuery,
+) {
+  const boardRead = readPipelineBoard(
+    db,
+    profile,
+    { group: "files" },
+    100000,
+    false,
+  );
+  const campaignsRead = readVisibleCampaigns(db, profile);
+  const factsRead = campaignsRead.then((campaigns) =>
+    readCampaignFacts(db, campaigns),
+  );
+  const mailRead = boardRead.then((board) => readCaseMail(db, profile, board));
+  const [board, profiles, accounts, leads, campaigns, facts, mail] =
+    await Promise.all([
+      boardRead,
+      readRows<Profile>(db, "profiles", "id,name,email,role,active"),
+      readRows<TaskOverviewSource["accounts"][number]>(
+        db,
+        "mail_accounts",
+        "id,email,owner_id",
+      ),
+      isSellerRole(profile.role)
+        ? readRows<TaskOverviewSource["leads"][number]>(
+            db,
+            "lead_workspace",
+            "id,contact_id,company,contact,email,seller_id,opportunity_id",
+          )
+        : [],
+      campaignsRead,
+      factsRead,
+      mailRead,
+    ]);
   return buildTasksOverview(
     {
       profile,
       profiles,
       accounts,
-      campaigns: authorizedCampaigns,
+      campaigns,
       leads,
       cases: board.rows,
       facts,
-      conversations,
-      messages,
+      ...mail,
     },
     query,
   );

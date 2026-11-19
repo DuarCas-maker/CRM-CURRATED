@@ -154,7 +154,9 @@ export function PipelineOSWorkspace({
   const root = useRef<HTMLDivElement>(null);
   const { requestLeave, confirmation } = useLeaveConfirmation(locale);
   const current = path.at(-1),
-    group: PipelineGroup = current && isGroup(current) ? current : "files";
+    // Open tasks uses totals, not the board's task rows; reuse the loaded files view.
+    group: PipelineGroup =
+      current && current !== "tasks" && isGroup(current) ? current : "files";
   const params = new URLSearchParams({
     q: query,
     owner,
