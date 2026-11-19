@@ -12,4 +12,6 @@ Revisión: contenido comercial fuera de :::signature conservado, bajas preservad
 
 Producción SQL19/11 02:36:46Z: respaldo de67.490.945 bytes, listado y decodificación verificados (sin ensayo completo de recuperación de desastre); una función pública añadida, cero funciones existentes cambiadas; journal privado RLS. Dos plantillas pasan de v1/0 recordatorios/firma fija a v2/4 recordatorios/sin firma fija. Historial anterior conservado y hash de snapshots de campañas idéntico. Ver sql-application.json y backup.json.
 
-Pendiente: confirmar recursos y API después de publicar web.
+Publicación a650339 confirmada19/11 02:40:43Z: health200, nueva ruta de firma401 para sesión anónima y Cache-Control no-store. Dos chunks nuevos observados en DOM público devuelven200; contienen los marcadores de los defaults ingleses, firma automática y secciones de plantilla. Recibo en public-postflight.json.
+
+Límite de verificación productiva: el navegador integrado muestra el shell de carga; no se afirma consulta de firma autenticada real ni se enviaron correos de prueba. Permisos y ruta de lectura se probaron con el facade real y datos ficticios, SQL nativo y controles públicos; vista visual local registrada. Las campañas existentes conservan mensajes y recordatorios anteriores; las nuevas usan la versión actualizada de la plantilla. El servidor local de ensayo quedó detenido.

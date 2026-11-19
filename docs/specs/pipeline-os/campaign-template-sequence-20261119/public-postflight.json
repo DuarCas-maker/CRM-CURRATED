@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-19T02:40:43.206Z",
+  "commit": "a650339",
+  "health": 200,
+  "anonymousSignature": 401,
+  "cacheControl": "no-store",
+  "assets": [
+    {
+      "url": "https://crm.finlabinc.com/_next/static/chunks/3td5pqlj50g55.js",
+      "status": 200,
+      "markers": []
+    },
+    {
+      "url": "https://crm.finlabinc.com/_next/static/chunks/1g41vio7btocg.js",
+      "status": 200,
+      "markers": [
+        "Following up on our email",
+        "Automatic sender signature",
+        "Template messages"
+      ]
+    }
+  ],
+  "markers": {
+    "Following up on our email": true,
+    "Automatic sender signature": true,
+    "Template messages": true
+  },
+  "authenticatedProductionPreviewTested": false,
+  "providerTestSends": 0
+}
