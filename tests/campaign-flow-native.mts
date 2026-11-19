@@ -7,6 +7,7 @@ import { randomUUID, createHash } from "node:crypto";
 import { execFileSync, execFile } from "node:child_process";
 import { flowFixture, flowRoot } from "./fixtures/campaign-flow";
 import { exerciseLeadFunnel, funnelRoot } from "./fixtures/campaign-lead-funnel";
+import { exerciseLegacyWorkerContext, legacyWorkerRoot } from "./fixtures/legacy-worker-mail";
 const bin =
   process.env.CAMPAIGN_TEST_PG_BIN ||
   path.resolve(".local/toolchains/postgresql-15/bin");
@@ -197,7 +198,12 @@ try {
     return { db, users, asUser, command } as any;
   };
   const f = await flowFixture(factory as any);
-  if (process.env.CAMPAIGN_TEST_LEAD_FUNNEL === "1") {
+  if (process.env.CAMPAIGN_TEST_LEGACY_WORKER === "1") {
+    sql(fs.readFileSync("docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/up.sql", "utf8"));
+    const result = { ...(await exerciseLegacyWorkerContext(f)), postgres: sql("select version()"), remoteMutations: 0 };
+    fs.writeFileSync(legacyWorkerRoot + "native-result.json", JSON.stringify(result, null, 2) + "\n");
+    console.log(JSON.stringify(result));
+  } else if (process.env.CAMPAIGN_TEST_LEAD_FUNNEL === "1") {
     sql(fs.readFileSync("docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/up.sql", "utf8"));
     const result = { ...(await exerciseLeadFunnel(f)), postgres: sql("select version()"), remoteMutations: 0 };
     fs.writeFileSync(funnelRoot + "native-result.json", JSON.stringify(result, null, 2) + "\n");

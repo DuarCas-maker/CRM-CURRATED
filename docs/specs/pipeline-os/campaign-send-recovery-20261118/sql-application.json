@@ -1,0 +1,16 @@
+{
+  "state": "applied",
+  "at": "2026-11-19T00:21:08.548Z",
+  "sqlSha256": "cc745bec1a9236f83e2965807044f84b5e9681678767da4f7475cf4cbc98c054",
+  "changedFunctions": [],
+  "addedFunctions": [
+    "public.legacy_worker_mail_context(uuid, uuid, uuid, uuid, uuid)"
+  ],
+  "acl": {
+    "anon": false,
+    "service": true,
+    "authenticated": false
+  },
+  "backup": "/var/lib/postgresql/data/campaign-send-recovery-20261119T001841Z/pre-worker.dump",
+  "agentProviderRequests": 0
+}

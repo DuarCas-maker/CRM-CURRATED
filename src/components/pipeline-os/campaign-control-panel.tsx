@@ -10,7 +10,7 @@ import {
 import type { Locale, Workspace } from "@/lib/domain";
 import type { EmailTemplate } from "@/lib/campaign-templates";
 import { campaignLabels } from "@/lib/campaign-center";
-import { sendingBlockers, type ControlOverview } from "@/lib/campaign-control";
+import { sendingBlockers, campaignUsageBlocked, type ControlOverview } from "@/lib/campaign-control";
 import { campaignControlRequest } from "@/lib/campaign-control-client";
 import type { Action } from "../crm";
 import { CampaignTemplates } from "../campaign-templates";
@@ -386,8 +386,9 @@ export function CampaignControlPanel({
                         )}
                       </p>
                     </div>
-                    <span className={`cc-badge ${c.status}`}>
+                    <span className={`cc-badge ${campaignUsageBlocked(c) ? "waiting" : c.status}`}>
                       {label(c.status)}
+                      {campaignUsageBlocked(c) && t(locale, " · Bloqueada por sincronización de Gmail", " · Blocked by Gmail usage sync")}
                     </span>
                   </div>
                   <div className="cc-card-metrics">

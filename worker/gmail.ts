@@ -16,6 +16,7 @@ import {
 } from "../src/lib/server/mail-transport/runtime-context";
 import { syncSelectedMailbox } from "../src/lib/server/mail-transport/mailbox-sync";
 import { withSelectedDirectJob } from "../src/lib/server/mail-transport/mailbox-schedule";
+import { withLegacyWorkerDispatch, withLegacyWorkerReconciliation } from "../src/lib/server/mail-transport/legacy-worker-context";
 import {
   excludedGmailMessage,
   snapshotMessage,
@@ -716,7 +717,7 @@ export async function sendNext(
     );
     return;
   }
-  return withMailDispatch(msg.account_id, msg.id, async () => {
+  const deliver = () => withMailDispatch(msg.account_id, msg.id, async () => {
     let acceptedByGmail = false;
     let sendAttempted = false;
     let deliveryHeld = false;
@@ -1132,6 +1133,7 @@ export async function sendNext(
       );
     }
   });
+  return withLegacyWorkerDispatch(msg.account_id, msg.id, msg.brand_claim_token, deliver);
 }
 export async function reconcileUncertain() {
   const client = db();
@@ -1147,12 +1149,12 @@ export async function reconcileUncertain() {
     ) || [];
   for (const msg of messages) {
     try {
-      const result = await gmail<{
+      const result = await withLegacyWorkerReconciliation(msg.account_id, msg.id, () => gmail<{
         messages?: { id: string; threadId: string }[];
       }>(
         msg.account_id,
         `messages?${new URLSearchParams({ q: `in:sent rfc822msgid:${msg.message_id_header.replace(/[<>]/g, "")}` })}`,
-      );
+      ));
       if (result.messages?.length === 1)
         checked(
           await client.rpc("mark_sent", {

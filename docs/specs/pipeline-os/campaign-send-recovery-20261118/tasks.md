@@ -1,6 +1,6 @@
 # Tareas
 
-- T01 / FR-01: clasificación segura y prueba negativa de secretos; publicar y leer el siguiente error normal. En curso.
-- T02 / FR-02/03: corregir la causa confirmada, probar éxito/fallas sin red real y recuperar el flujo existente. Pendiente.
-- T03 / FR-04: motivo operativo visible junto al estado. Pendiente.
-- T04 / FR-05: regresión, build, revisión, publicación y lectura de sincronización/cola. Pendiente.
+- T01 / FR-01: completa. Clasificación segura publicada en b1d87c4; la tarea normal confirmó QGR_DENIED.
+- T02 / FR-02/03: implementada y probada offline. SQL aditivo aplicado después del respaldo; pendiente observar recuperación productiva tras publicar código.
+- T03 / FR-04: implementada. Aviso visible en listado/detalle cuando todos los remitentes con pendientes están bloqueados por uso desconocido; probado en navegador con datos ficticios.
+- T04 / FR-05: regresión, TypeScript, build webpack, ensayo PostgreSQL y revisión completos; publicación del código y lectura de sincronización/cola en curso.

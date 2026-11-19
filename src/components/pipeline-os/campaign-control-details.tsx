@@ -6,6 +6,7 @@ import { accountPreparation } from "@/lib/brand-delivery";
 import { campaignLabels } from "@/lib/campaign-center";
 import {
   sendingBlockers,
+  campaignUsageBlocked,
   type ControlCampaign,
   type ControlRecipient,
   type ControlSender,
@@ -288,8 +289,9 @@ export function CampaignControlDetails({
                 </span>
                 <h2>{campaign.name}</h2>
               </div>
-              <span className={`cc-badge ${campaign.status}`}>
+              <span className={`cc-badge ${campaignUsageBlocked(campaign) ? "waiting" : campaign.status}`}>
                 {label(campaign.status)}
+                {campaignUsageBlocked(campaign) && t(locale, " · Bloqueada por sincronización de Gmail", " · Blocked by Gmail usage sync")}
               </span>
             </div>
             <div className="cc-detail-metrics">

@@ -65,6 +65,10 @@ export interface ControlOverview {
   total: number;
   campaigns: ControlCampaign[];
 }
+export function campaignUsageBlocked(c: ControlCampaign) {
+  const pendingSenders = c.senders.filter(s => s.pending > 0);
+  return ["active", "scheduled"].includes(c.status) && c.metrics.pending > 0 && pendingSenders.length > 0 && pendingSenders.every(s => s.blockers.includes("usage_unknown"));
+}
 export interface ControlLead {
   contact_id: string;
   name: string;

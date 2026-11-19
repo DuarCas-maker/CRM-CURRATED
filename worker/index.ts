@@ -1,5 +1,6 @@
 import { db, checked, alertAdmins } from "./db";
 import { workerErrorCode } from "./errors";
+import { withLegacyWorkerJob } from "../src/lib/server/mail-transport/legacy-worker-context";
 import { parseImport } from "../src/lib/server/parse-import";
 import { normalizeRow, type Mapping } from "../src/lib/imports";
 import { startScrub, pollScrub } from "./bouncer";
@@ -275,6 +276,7 @@ while (!stopping) {
         .then(() => {});
     }, 60000);
     try {
+      await withLegacyWorkerJob(job, async () => {
       switch (job.kind) {
         case "gmail_sending_usage":
           await syncSendingUsage(job.payload);
@@ -337,6 +339,7 @@ while (!stopping) {
         default:
           throw new Error("UNKNOWN_JOB");
       }
+      });
       checked(
         await client.rpc("finish_job", {
           job_id: job.id,

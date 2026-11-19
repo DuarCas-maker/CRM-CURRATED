@@ -6,6 +6,7 @@ import { serviceClient, checkDb, HttpError } from "./supabase";
 import { GmailError, isGmailQuotaError } from "../gmail-errors";
 import { simpleMailEnabled } from "../mail-connections";
 import { DirectCredentialUnavailable } from "./mail-transport/errors";
+import { withLegacyWorkerRequest } from "./mail-transport/legacy-worker-context";
 import { GmailQuotaPacer, gmailRequestCost } from "../gmail-quota";
 import {
   reserveGmailQuota,
@@ -169,8 +170,10 @@ export async function gmail<T>(
     );
   // Opt-in validation precedes credentials; default/direct compatibility remains unchanged.
   const quotaV2 = mailQuotaEnabled();
-  if (quotaV2 && !mailRoutingActive() && !mailboxScope() && !inWorkerPilot())
+  if (quotaV2 && mailboxScope() && mailboxScope()!.account !== accountId)
     throw new MailQuotaError("QGR_DENIED");
+  if (quotaV2 && !mailRoutingActive() && !mailboxScope() && !inWorkerPilot())
+    return withLegacyWorkerRequest(accountId, path, init.method ?? "GET", () => !mailRoutingActive(), () => gmail<T>(accountId, path, init, beforeRequest));
   const reserve = async (
     project: string | undefined,
     provider: "gmail_oauth" | "composio",

@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-19T00:18:50.743318+00:00",
+  "path": "/var/lib/postgresql/data/campaign-send-recovery-20261119T001841Z/pre-worker.dump",
+  "bytes": 58745475,
+  "sha256": "ade434f80ad7d38176c785a031f3c0e777779940b256783fc272e6a5fabb471b",
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}

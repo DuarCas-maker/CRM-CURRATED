@@ -6,7 +6,7 @@ Autorización: el usuario pide proceder con la corrección tras el diagnóstico 
 
 Campaña de50 destinatarios activada el18/11 a05:30 America/Bogota. Cola creada a05:30:02, cero IDs Gmail y cero admisiones de marca. Última lectura de uso18/11 00:00:19, primera tarea fallida00:05. Más de70 tareas fallidas y reintentos internos de cola, mientras el worker sigue procesando otras tareas. `external_usage_synced_at` supera el umbral de15 minutos, por lo que la guarda pospone el envío.
 
-Base actualizada de17cbbd6 a95114ab por fast-forward, conservando WIP ajeno. Release Gmail directo: SIMPLE_MAIL y QGR habilitados, routing global cerrado; el target tiene credencial directa anterior y carece de ruta moderna. La combinación QGR=true/routing=false/sin scope reproduce QGR_DENIED antes de red. Falta confirmar el código específico de la tarea productiva: el worker lo reemplaza por PROCESSING_FAILED. Se publicará primero clasificación segura de errores y se observará una tarea normal; no se presume que toda falla sea de autenticación.
+Base actualizada de17cbbd6 a95114ab por fast-forward, conservando WIP ajeno. Release Gmail directo: SIMPLE_MAIL y QGR habilitados, routing global cerrado; el target tiene credencial directa anterior y carece de ruta moderna. La combinación QGR=true/routing=false/sin scope reproduce QGR_DENIED antes de red. T01 (b1d87c4) confirmó QGR_DENIED en una tarea productiva normal el19/11 a00:02:48Z. No es necesario reconectar OAuth ni desactivar cuotas: faltaba el contexto autorizado del worker para las cuentas directas anteriores.
 
 ## Requisitos y aceptación
 

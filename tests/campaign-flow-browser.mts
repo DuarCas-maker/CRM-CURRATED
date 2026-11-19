@@ -51,6 +51,8 @@ for (const [i, contact] of inValidation.entries()) {
 }
 // All lifecycle stages are synthetic. There is no worker or outbound provider.
 const syntheticCampaign = await f.launch();
+if (process.env.CAMPAIGN_TEST_USAGE_STALE === "1")
+  await db.exec("update mail_accounts set external_usage_synced_at=now()-interval '1 hour'");
 await queueFixture(f, syntheticCampaign.id);
 await db.exec("reset role");
 await db.exec("update outbox set status='sent',gmail_message_id='synthetic-ui-confirmed',sent_at=now() where id=(select id from outbox order by id limit 1)");

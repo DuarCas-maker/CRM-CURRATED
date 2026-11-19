@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "permissions": true,
+  "expiredLeaseDenied": true,
+  "foreignAccountDenied": true,
+  "modernRouteDenied": true,
+  "modernHealthDenied": true,
+  "claimRequired": true,
+  "uncertainDenied": true,
+  "reversalPassed": true,
+  "sqlSha256": "cc745bec1a9236f83e2965807044f84b5e9681678767da4f7475cf4cbc98c054",
+  "realProviderRequests": 0,
+  "postgres": "PostgreSQL 15.19, compiled by Visual C++ build 1944, 64-bit",
+  "remoteMutations": 0
+}
