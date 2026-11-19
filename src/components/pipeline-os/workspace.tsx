@@ -28,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import type { Campaign, Locale, Workspace } from "@/lib/domain";
+import { WorkspaceReader } from "@/lib/workspace-reader";
 import { currency, dateLabel, isSellerRole } from "@/lib/domain";
 import { demoAction } from "@/lib/demo-actions";
 import {
@@ -161,6 +162,13 @@ export function PipelineOSWorkspace({
     hours: String(hours),
   }).toString();
   const [boardKey, setBoardKey] = useState(params);
+  const [boardReader] = useState(() => new WorkspaceReader<PipelineBoard>());
+  const loadedBoardParams = useRef(params);
+  const currentBoardParams = useRef(params);
+  currentBoardParams.current = params;
+  const currentCaseId = useRef(caseId);
+  currentCaseId.current = caseId;
+  useEffect(() => () => boardReader.cancel(), [boardReader]);
   const boardReady = data.demo || boardKey === params;
   const l = (p: Page) => pageNames[p][locale === "es" ? 0 : 1];
   const manageCampaigns = ["superadmin", "seller_admin"].includes(
@@ -197,44 +205,47 @@ export function PipelineOSWorkspace({
   }, [locale]);
   useEffect(() => () => caseRequest.current?.abort(), []);
   useEffect(() => {
-    if (initial.demo) {
-      setBoard(
-        buildPipelineBoard(data, processes, {
-          q: query,
-          owner,
-          group,
-          page,
-          hours,
-        }),
-      );
+    if (!initial.demo) return;
+    setBoard(
+      buildPipelineBoard(data, processes, {
+        q: query,
+        owner,
+        group,
+        page,
+        hours,
+      }),
+    );
+  }, [initial.demo, data, processes, query, owner, group, page, hours]);
+  useEffect(() => {
+    if (initial.demo) return;
+    if (loadedBoardParams.current === params) {
+      setLoading(false);
+      setError("");
       return;
     }
-    const abort = new AbortController();
+    let disposed = false;
     const timer = setTimeout(async () => {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`/api/pipeline-os?${params}`, {
-          signal: abort.signal,
-          cache: "no-store",
-        });
-        const body = await res.json();
-        if (!res.ok) throw new Error(body.error);
-        if (!abort.signal.aborted) {
+        const body = await boardReader.read(`/api/pipeline-os?${params}`);
+        if (!disposed && body) {
           setBoard(body);
           setBoardKey(params);
+          loadedBoardParams.current = params;
         }
       } catch (e) {
-        if (!abort.signal.aborted) setError((e as Error).message);
+        if (!disposed) setError((e as Error).message);
       } finally {
-        if (!abort.signal.aborted) setLoading(false);
+        if (!disposed) setLoading(false);
       }
     }, 200);
     return () => {
       clearTimeout(timer);
-      abort.abort();
+      disposed = true;
+      boardReader.cancel();
     };
-  }, [params, initial.demo, data, processes, query, owner, group, page, hours]);
+  }, [params, initial.demo, boardReader]);
 
   async function readWorkspace(id?: string) {
     const res = await fetch(
@@ -258,21 +269,20 @@ export function PipelineOSWorkspace({
       );
       return;
     }
+    const requestParams = currentBoardParams.current;
+    const selectedCase = currentCaseId.current;
     const result = await Promise.all([
-      fetch(`/api/pipeline-os?${params}`, { cache: "no-store" }).then(
-        async (r) => {
-          const b = await r.json();
-          if (!r.ok) throw new Error(b.error);
-          return b as PipelineBoard;
-        },
-      ),
+      boardReader.read(`/api/pipeline-os?${requestParams}`, true),
       readWorkspace(),
-      caseId ? readWorkspace(caseId) : Promise.resolve(null),
+      selectedCase ? readWorkspace(selectedCase) : Promise.resolve(null),
     ]);
+    if (!result[0] || currentBoardParams.current !== requestParams) return;
     setBoard(result[0]);
-    setBoardKey(params);
+    setBoardKey(requestParams);
+    loadedBoardParams.current = requestParams;
     setData(result[1]);
-    if (result[2]) setCaseData(result[2]);
+    if (result[2] && currentCaseId.current === selectedCase)
+      setCaseData(result[2]);
   }
   async function manualRefresh() {
     setLoading(true);

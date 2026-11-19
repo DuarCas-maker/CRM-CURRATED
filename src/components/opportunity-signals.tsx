@@ -5,6 +5,7 @@ import {
   type OpportunitySignals,
 } from "@/lib/opportunity-signals";
 import { t } from "./ui";
+import { useLocalTimeZone } from "./local-dates";
 import "./opportunity-signals.css";
 
 export function LastOpportunitySend({
@@ -12,16 +13,23 @@ export function LastOpportunitySend({
   locale,
   label,
   lender = false,
+  asOf,
 }: {
   value: string | null;
   locale: Locale;
   label: string;
   lender?: boolean;
+  asOf?: string;
 }) {
+  const timeZone = useLocalTimeZone();
+  const elapsed = value
+    ? elapsedSend(value, locale, asOf ? Date.parse(asOf) : undefined)
+    : "";
   const exact = value
     ? new Intl.DateTimeFormat(locale, {
         dateStyle: "medium",
         timeStyle: "short",
+        timeZone,
       }).format(new Date(value))
     : undefined;
   return (
@@ -36,9 +44,9 @@ export function LastOpportunitySend({
         <time
           dateTime={value}
           title={exact}
-          aria-label={`${label}: ${elapsedSend(value, locale)} · ${exact}`}
+          aria-label={`${label}: ${elapsed} · ${exact}`}
         >
-          {elapsedSend(value, locale)}
+          {elapsed}
         </time>
       ) : (
         <span>{t(locale, "Sin envíos", "No sends")}</span>

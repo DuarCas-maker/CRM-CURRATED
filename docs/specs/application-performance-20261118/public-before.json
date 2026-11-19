@@ -1,0 +1,84 @@
+{
+  "at": "2026-11-19T03:26:39.459Z",
+  "authenticated": false,
+  "checks": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "duration_ms": 894,
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "duration_ms": 306,
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/api/workspace",
+      "status": 401,
+      "duration_ms": 289,
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/api/pipeline-os",
+      "status": 401,
+      "duration_ms": 276,
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/api/pipeline-os/master",
+      "status": 401,
+      "duration_ms": 288,
+      "cache_control": "no-store"
+    }
+  ],
+  "local_dates_asset": false,
+  "scripts": [
+    {
+      "path": "/_next/static/chunks/1ar4ftbz6tefj.js",
+      "status": 200,
+      "sha256": "d483ffe2637d8385f1ff07c6892455b4e7a5db4219a283d61d820c40b8dfe0e9"
+    },
+    {
+      "path": "/_next/static/chunks/2dqfkw2bcznx2.js",
+      "status": 200,
+      "sha256": "7cef61588e21126bdc78e137c92ab04e44bbca2eaf0448c5770e6e9f17366140"
+    },
+    {
+      "path": "/_next/static/chunks/turbopack-13924t022-08f.js",
+      "status": 200,
+      "sha256": "4b63f62e2f31c2fd1dddd179b657123f8d74f79bbd229c800bd5b18b9965b0cf"
+    },
+    {
+      "path": "/_next/static/chunks/2o7sxk05lmwb_.js",
+      "status": 200,
+      "sha256": "b1bf1fdbbaa4f7b712d78163e364494332628e1c70d4d6f6c3421f551b8780b0"
+    },
+    {
+      "path": "/_next/static/chunks/0mez52nm2efio.js",
+      "status": 200,
+      "sha256": "d836710020ecc3627c7ebba97d160ed52fd9f8c87bfc215612643ffdae5cf7da"
+    },
+    {
+      "path": "/_next/static/chunks/1wxqc9gkekl4u.js",
+      "status": 200,
+      "sha256": "2a6627da71e9d09f5a00439e457f75b608f2a85d5b308d0ac25119dd01cd4275"
+    },
+    {
+      "path": "/_next/static/chunks/0d4fn6xm8pd3z.js",
+      "status": 200,
+      "sha256": "349a2af0121371e22f46c83ad894b3c40058cffdfa8f583482fdf0e06bec0fed"
+    },
+    {
+      "path": "/_next/static/chunks/0cz1d0mv5g_q7.js",
+      "status": 200,
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "path": "/_next/static/chunks/2efhrnm4cv-td.js",
+      "status": 200,
+      "sha256": "6ace6587fef29abd2923691eb76d31d0513a8c1e5432fd3ec2832f2b0d78cb71"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "environment": "https://crm.finlabinc.com",
+  "revision_before": "dadf98b593d467f8cc154ae99ebe35bf387b51d8",
+  "authenticated": true,
+  "method": "browser navigation to same-origin GET; wall time includes navigation, JSON rendering and state observation; not isolated SQL time or p95",
+  "root_reload": {"result":"load_error", "digest":"4193365490", "duration_not_comparable":true},
+  "console_errors_before":["React418", "React441 after failed root reload"],
+  "reads":[
+    {"view":"overview", "observed_ms":16995, "characters":1068577, "opportunities":100, "error":null},
+    {"view":"pipeline", "observed_ms":13577, "characters":950080, "opportunities":100, "error":null},
+    {"view":"leads", "observed_ms":13920, "characters":591606, "opportunities":0, "error":null}
+  ],
+  "client_rows_saved":false
+}

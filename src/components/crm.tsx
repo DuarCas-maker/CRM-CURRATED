@@ -5,6 +5,7 @@ import { connectionsAllowed, connectionsInitialView } from "@/lib/connections";
 import { ConnectionsWorkspace } from "./connections-workspace";
 import { UserManagement } from "./user-management";
 import { canManageUsers } from "@/lib/user-management";
+import { WorkspaceReader } from "@/lib/workspace-reader";
 import { ProtectedForm, useLeaveConfirmation } from "./unsaved-changes";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import {
@@ -225,29 +226,50 @@ export default function CRM({ initial }: { initial: Workspace }) {
     stalled,
     ...(selected ? { case: selected } : {}),
   }).toString();
+  const [workspaceReader] = useState(() => new WorkspaceReader<Workspace>());
+  // The server has already loaded the unfiltered overview used on first render.
+  const loadedWorkspaceParams = useRef(requestParams);
+  const currentWorkspaceParams = useRef(requestParams);
+  currentWorkspaceParams.current = requestParams;
   useEffect(() => {
     if (initial.demo) return;
-    const abort = new AbortController();
-    const timer = setTimeout(async () => {
+    setLoading(false);
+    let disposed = false;
+    let timer: ReturnType<typeof setTimeout>;
+    async function update() {
+      if (document.hidden) {
+        timer = setTimeout(update, 15000);
+        return;
+      }
       setLoading(true);
       try {
-        const res = await fetch(`/api/workspace?${requestParams}`, {
-          signal: abort.signal,
-        });
-        const body = await res.json();
-        if (!res.ok) throw new Error(body.error);
-        if (!abort.signal.aborted) setData(body);
+        const body = await workspaceReader.read(
+          `/api/workspace?${requestParams}`,
+        );
+        if (!disposed && body) {
+          setData(body);
+          loadedWorkspaceParams.current = requestParams;
+          setError("");
+        }
       } catch (e) {
-        if (!abort.signal.aborted) setError((e as Error).message);
+        if (!disposed) setError((e as Error).message);
       } finally {
-        if (!abort.signal.aborted) setLoading(false);
+        if (!disposed) {
+          setLoading(false);
+          timer = setTimeout(update, 15000);
+        }
       }
-    }, 250);
+    }
+    timer = setTimeout(
+      update,
+      loadedWorkspaceParams.current === requestParams ? 15000 : 250,
+    );
     return () => {
+      disposed = true;
       clearTimeout(timer);
-      abort.abort();
+      workspaceReader.cancel();
     };
-  }, [requestParams, initial.demo]);
+  }, [requestParams, initial.demo, workspaceReader]);
   useEffect(() => {
     setPage(0);
   }, [
@@ -263,26 +285,6 @@ export default function CRM({ initial }: { initial: Workspace }) {
     processState,
     stalled,
   ]);
-  useEffect(() => {
-    if (initial.demo) return;
-    const controller = new AbortController();
-    const timer = setInterval(async () => {
-      if (document.hidden) return;
-      try {
-        const response = await fetch(`/api/workspace?${requestParams}`, {
-          signal: controller.signal,
-        });
-        if (response.ok) {
-          const body = await response.json();
-          if (!controller.signal.aborted) setData(body);
-        }
-      } catch {}
-    }, 15000);
-    return () => {
-      clearInterval(timer);
-      controller.abort();
-    };
-  }, [requestParams, initial.demo]);
   const profile = data.demo
     ? {
         ...data.profile,
@@ -455,10 +457,12 @@ export default function CRM({ initial }: { initial: Workspace }) {
   }, [toast]);
   async function refresh() {
     if (data.demo) return;
-    const res = await fetch(`/api/workspace?${requestParams}`);
-    const body = await res.json();
-    if (!res.ok) throw new Error(body.error);
-    setData(body);
+    const params = currentWorkspaceParams.current;
+    const body = await workspaceReader.read(`/api/workspace?${params}`, true);
+    if (body && currentWorkspaceParams.current === params) {
+      setData(body);
+      loadedWorkspaceParams.current = params;
+    }
   }
   const act: Action = async (kind, payload) => {
     let result: unknown;

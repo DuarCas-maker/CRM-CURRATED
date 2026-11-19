@@ -1,0 +1,69 @@
+{
+  "base": "dadf98b593d467f8cc154ae99ebe35bf387b51d8",
+  "branch": "codex/application-performance-release-20261118",
+  "files": [
+    {
+      "path": "src/app/layout.tsx",
+      "sha256": "f203fd8bdbe4de56474ed86009905a240d86af5c8961cb2f8c67c2e343c54e13"
+    },
+    {
+      "path": "src/components/crm.tsx",
+      "sha256": "0c0e4725f14a5cf3c9b9a43ca0d7aa9222438436944c3120331bc6a613ca8659"
+    },
+    {
+      "path": "src/components/financing-control-dashboard.tsx",
+      "sha256": "4a4d2fa391c2222a18a5ee9a67eaaff34768f0f508817753ff3e9dec90b015b6"
+    },
+    {
+      "path": "src/components/financing-tracking-table.tsx",
+      "sha256": "439920acf1305b259bae95c1c4588adfdf090c40ff2ea1e88c0c5759be178fd5"
+    },
+    {
+      "path": "src/components/local-dates.tsx",
+      "sha256": "9822becb318a3049d77fc1d24cde91bbdbb95a65a51b1cbefa4bce258fad30f0"
+    },
+    {
+      "path": "src/components/opportunity-signals.tsx",
+      "sha256": "5535c05e3f512c40830107b59a3a0f4a7667baef3c903528f24bff11ea78fe2c"
+    },
+    {
+      "path": "src/components/pipeline-os/workspace.tsx",
+      "sha256": "1369fbef4632be8f53728922026518c174ead9024c08059bd8c476e6274d4b57"
+    },
+    {
+      "path": "src/lib/domain.ts",
+      "sha256": "353b2ae6a1f1ac9b6dd120a9a0f93f1ad56135168853931928bb44c005c48136"
+    },
+    {
+      "path": "src/lib/server/workspace-mail.ts",
+      "sha256": "d03aaa36e85983eef9569b1b62899748872b6c552342f1dae7361a7f62dd341f"
+    },
+    {
+      "path": "src/lib/server/workspace.ts",
+      "sha256": "050709f718a3d360d2de01c401c59715ad7dc0e3bb86b648520e421f397f5081"
+    },
+    {
+      "path": "src/lib/workspace-reader.ts",
+      "sha256": "ab7dddf371d0a4f26eee02256c4265da98f7a54c18b50b5a9d7e1259b6a28ec7"
+    },
+    {
+      "path": "tests/crm-hydration.test.tsx",
+      "sha256": "33978cde0d9f774d0418ae3cd09fb7943b5a16323420ba62e823797ac15cdfc4"
+    },
+    {
+      "path": "tests/workspace-mail.test.ts",
+      "sha256": "9434de9d48468745a4970248a7a2acca5be61559c05ba28b5fb8c11ffd736e9a"
+    },
+    {
+      "path": "tests/workspace-performance.test.ts",
+      "sha256": "8ea8d955b1a43b08486649b4f4918c7713250e488923024b34e46bdb42d1f23b"
+    },
+    {
+      "path": "tests/workspace-reader.test.ts",
+      "sha256": "46f0be322dc12a0f1cd82d759eee8448f84dac391ec1fa1a524989b0206a83e1"
+    }
+  ],
+  "rootWipPreserved": true,
+  "conflictResolved": "crm import only: preserved UserManagement and WorkspaceReader",
+  "additionalFix": "timezone-stable initial summary rendering, FR-005"
+}

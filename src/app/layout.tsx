@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { LocalDates } from "@/components/local-dates";
 import "./globals.css";
 import "@/components/user-management.css";
 export const metadata: Metadata = {
@@ -17,7 +18,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        <LocalDates>{children}</LocalDates>
+      </body>
     </html>
   );
 }

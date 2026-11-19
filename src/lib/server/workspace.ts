@@ -1,7 +1,8 @@
 import { mailAccess } from "./mail-access";
 import { senderCapabilities, BrandDeliveryError } from "./brand-delivery";
 import { requireUser, checkDb } from "./supabase";
-import type { Workspace } from "../domain";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Profile, Workspace } from "../domain";
 import { stages } from "../domain";
 import { filterLeadTab, parseLeadTab } from "../lead-tabs";
 import { z } from "zod";
@@ -15,7 +16,14 @@ export async function loadWorkspace(
   params = new URLSearchParams(),
 ): Promise<Workspace> {
   const { db, profile } = await requireUser();
-  const extensionsReady = await crmExtensionsReady(db);
+  return readWorkspace(db, profile, params);
+}
+
+export async function readWorkspace(
+  db: SupabaseClient,
+  profile: Profile,
+  params = new URLSearchParams(),
+): Promise<Workspace> {
   const page = Math.max(
     0,
     Math.min(100000, Math.floor(Number(params.get("page")) || 0)),
@@ -36,75 +44,87 @@ export async function loadWorkspace(
     days > 0
       ? new Date(Date.now() - Math.min(days, 36500) * 86400000).toISOString()
       : null;
-  let financingControl: Workspace["financing_control"];
-  if (extensionsReady && (params.get("view") || "overview") === "overview") {
-    const control = await db.rpc("financing_control_dashboard", {
-      search_text: search,
-      owner_filter: owner,
-      stage_filter: stage,
-      campaign_filter: campaign,
-      since_filter: since,
-      attention_filter: params.get("attention") || "all",
-      cursor_offset: page * 50,
-      process_state_filter: params.get("process_state") || null,
-      stalled_days: [3, 5, 7, 14].includes(Number(params.get("stalled")))
-        ? Number(params.get("stalled"))
-        : null,
-    });
-    // A missing v2 migration preserves the original overview. Other failures surface.
-    if (!control.error || !["PGRST202", "42883"].includes(control.error.code))
-      financingControl = checkDb(control, "financing_control_dashboard");
+  async function readFinancingControl(extensionsReady: boolean) {
+    if (extensionsReady && (params.get("view") || "overview") === "overview") {
+      const control = await db.rpc("financing_control_dashboard", {
+        search_text: search,
+        owner_filter: owner,
+        stage_filter: stage,
+        campaign_filter: campaign,
+        since_filter: since,
+        attention_filter: params.get("attention") || "all",
+        cursor_offset: page * 50,
+        process_state_filter: params.get("process_state") || null,
+        stalled_days: [3, 5, 7, 14].includes(Number(params.get("stalled")))
+          ? Number(params.get("stalled"))
+          : null,
+      });
+      // A missing v2 migration preserves the original overview. Other failures surface.
+      if (!control.error || !["PGRST202", "42883"].includes(control.error.code))
+        return checkDb(
+          control,
+          "financing_control_dashboard",
+        ) as Workspace["financing_control"];
+    }
   }
   const preparing = !caseId && params.get("view") === "leads";
   const leadSection = params.get("lead_section") || "preparing";
-  let leadPreparation: Workspace["lead_preparation"];
-  if (preparing) {
-    const result = await db.rpc("lead_preparation_overview", {
-      search_text: search,
-      owner_filter: owner,
-      since_filter: since,
-      verification_filter: [
-        "pending",
-        "valid",
-        "invalid",
-        "uncertain",
-      ].includes(params.get("stage") || "")
-        ? params.get("stage")
-        : null,
-      cursor_offset: leadSection === "verifications" ? page * 50 : 0,
-    });
-    // Preserve the existing inbox while migration 044 awaits activation.
-    if (!result.error || !["PGRST202", "42883"].includes(result.error.code))
-      leadPreparation = checkDb(result, "lead_preparation_overview");
+  async function readLeadPreparation() {
+    if (preparing) {
+      const result = await db.rpc("lead_preparation_overview", {
+        search_text: search,
+        owner_filter: owner,
+        since_filter: since,
+        verification_filter: [
+          "pending",
+          "valid",
+          "invalid",
+          "uncertain",
+        ].includes(params.get("stage") || "")
+          ? params.get("stage")
+          : null,
+        cursor_offset: leadSection === "verifications" ? page * 50 : 0,
+      });
+      // Preserve the existing inbox while migration 044 awaits activation.
+      if (!result.error || !["PGRST202", "42883"].includes(result.error.code))
+        return checkDb(
+          result,
+          "lead_preparation_overview",
+        ) as Workspace["lead_preparation"];
+    }
   }
-  let leadResponse: { data: Workspace["leads"] | null; count: number | null } =
-    { data: [], count: 0 };
-  if (preparing && !["verifications", "imports"].includes(leadSection)) {
-    let leadQuery = db
-      .from("lead_workspace")
-      .select("*", { count: "exact" })
-      .order("created_at", { ascending: false });
-    leadQuery = filterLeadTab(
-      leadQuery,
-      parseLeadTab(params.get("lead_status")),
-    );
-    if (search)
-      leadQuery = leadQuery.or(
-        `company.ilike.%${search}%,contact.ilike.%${search}%,email.ilike.%${search}%`,
+  async function readLeads(): Promise<{
+    data: Workspace["leads"];
+    count: number | null;
+  }> {
+    if (preparing && !["verifications", "imports"].includes(leadSection)) {
+      let leadQuery = db
+        .from("lead_workspace")
+        .select("*", { count: "exact" })
+        .order("created_at", { ascending: false });
+      leadQuery = filterLeadTab(
+        leadQuery,
+        parseLeadTab(params.get("lead_status")),
       );
-    if (owner) leadQuery = leadQuery.eq("seller_id", owner);
-    if (since) leadQuery = leadQuery.gte("created_at", since);
-    if (
-      ["pending", "valid", "invalid", "uncertain"].includes(
-        params.get("stage") || "",
+      if (search)
+        leadQuery = leadQuery.or(
+          `company.ilike.%${search}%,contact.ilike.%${search}%,email.ilike.%${search}%`,
+        );
+      if (owner) leadQuery = leadQuery.eq("seller_id", owner);
+      if (since) leadQuery = leadQuery.gte("created_at", since);
+      if (
+        ["pending", "valid", "invalid", "uncertain"].includes(
+          params.get("stage") || "",
+        )
       )
-    )
-      leadQuery = leadQuery.eq("verification", params.get("stage"));
-    const result = await leadQuery.range(page * 100, page * 100 + 99);
-    leadResponse = {
-      data: checkDb(result, "lead_workspace") || [],
-      count: result.count,
-    };
+        leadQuery = leadQuery.eq("verification", params.get("stage"));
+      const result = await leadQuery.range(page * 100, page * 100 + 99);
+      return {
+        data: checkDb(result, "lead_workspace") || [],
+        count: result.count,
+      };
+    }
+    return { data: [], count: 0 };
   }
   const opportunityView =
     !caseId && params.get("view") === "tasks"
@@ -126,10 +146,39 @@ export async function loadWorkspace(
     if (campaign) query = query.eq("campaign_id", campaign);
     if (since) query = query.gte("created_at", since);
   }
-  const response = await query.range(page * 100, page * 100 + 99);
-  const opportunities = preparing
-    ? []
-    : checkDb(response, opportunityView) || [];
+  const [
+    readiness,
+    response,
+    statsResult,
+    preferencesResult,
+    leadPreparation,
+    leadResponse,
+  ] = await Promise.all([
+    crmExtensionsReady(db).then(async (ready) => ({
+      ready,
+      control: await readFinancingControl(ready),
+    })),
+    preparing
+      ? Promise.resolve({ data: [], count: 0, error: null })
+      : query.range(page * 100, page * 100 + 99),
+    db.rpc("workspace_stats", {
+      search_text: search,
+      stage_filter: preparing ? null : stage,
+      owner_filter: owner,
+      campaign_filter: campaign,
+      since_filter: since,
+    }),
+    db
+      .from("notification_preferences")
+      .select("internal,email,push,locale")
+      .eq("user_id", profile.id)
+      .maybeSingle(),
+    readLeadPreparation(),
+    readLeads(),
+  ]);
+  const extensionsReady = readiness.ready;
+  const financingControl = readiness.control;
+  const opportunities = checkDb(response, opportunityView) || [];
   const caseIds = opportunities.map((o) => o.id);
   if (gmailHistoryEnabled() && caseIds.length) {
     const metadata =
@@ -143,22 +192,9 @@ export async function loadWorkspace(
     for (const o of opportunities)
       Object.assign(o, metadata.find((m) => m.id === o.id) || {});
   }
-  const stats = checkDb(
-    await db.rpc("workspace_stats", {
-      search_text: search,
-      stage_filter: preparing ? null : stage,
-      owner_filter: owner,
-      campaign_filter: campaign,
-      since_filter: since,
-    }),
-    "workspace_stats",
-  );
+  const stats = checkDb(statsResult, "workspace_stats");
   const preferences = checkDb(
-    await db
-      .from("notification_preferences")
-      .select("internal,email,push,locale")
-      .eq("user_id", profile.id)
-      .maybeSingle(),
+    preferencesResult,
     "notification_preferences",
   ) || { internal: true, email: false, push: false, locale: "es" };
   const queries = [
@@ -197,6 +233,7 @@ export async function loadWorkspace(
   ]);
   const entries = await Promise.all(
     queries.map(async ([key, table]) => {
+      if (related.has(key) && !caseIds.length) return [key, []] as const;
       const sort = [
         "imports",
         "activities",
@@ -231,15 +268,14 @@ export async function loadWorkspace(
     }),
   );
   const data = Object.fromEntries(entries) as unknown as Workspace;
-  data.mail_access = Object.fromEntries(
-    await Promise.all(
+  const [mailContexts, lenders, lenderContacts] = await Promise.all([
+    Promise.all(
       caseIds.map(async (id) => [id, await mailAccess(db, id)] as const),
     ),
-  );
-  const [lenders, lenderContacts] = await Promise.all([
     readDirectory("lenders", "id"),
     readDirectory("lender_contacts", "email"),
   ]);
+  data.mail_access = Object.fromEntries(mailContexts);
   data.lenders = lenders as Workspace["lenders"];
   data.lender_contacts = lenderContacts as Workspace["lender_contacts"];
   // Dashboard rows have their own ordering and can include cases outside the

@@ -15,7 +15,8 @@ import {
   OpportunityDocuments,
   OpportunityLenders,
 } from "./opportunity-signals";
-import { dateLabel, stageLabels } from "@/lib/domain";
+import { stageLabels } from "@/lib/domain";
+import { useLocalDateLabel } from "./local-dates";
 import { processStates } from "@/lib/financing-history";
 import {
   controlAction,
@@ -89,6 +90,7 @@ function RowDetails({
 }) {
   const a = controlAction(r, locale),
     na = t(locale, "No disponible", "Not available");
+  const dateLabel = useLocalDateLabel();
   const date = (value: string | null) =>
     value ? dateLabel(value, locale, true) : na;
   return (
@@ -218,6 +220,7 @@ export function FinancingTrackingTable({
   stageName: (value: string) => string;
 }) {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const dateLabel = useLocalDateLabel();
   const s = data.summary,
     na = t(locale, "No disponible", "Not available");
   const number = (value: number | null) =>
@@ -660,11 +663,13 @@ export function FinancingTrackingTable({
                             )}
                           </small>
                           <LastOpportunitySend
+                            asOf={data.as_of}
                             value={opportunitySignals[r.id].lastClientSentAt}
                             label={t(locale, "Cliente", "Client")}
                             locale={locale}
                           />
                           <LastOpportunitySend
+                            asOf={data.as_of}
                             value={opportunitySignals[r.id].lastLenderSentAt}
                             label="Lender"
                             locale={locale}

@@ -547,11 +547,13 @@ export const dateLabel = (
   value: string | null,
   locale: Locale,
   withTime = false,
+  timeZone?: string,
 ) =>
   value
     ? new Intl.DateTimeFormat(locale === "es" ? "es" : "en", {
         day: "numeric",
         month: "short",
+        ...(timeZone ? { timeZone } : {}),
         ...(withTime ? { hour: "2-digit", minute: "2-digit" } : {}),
       }).format(new Date(value))
     : "—";

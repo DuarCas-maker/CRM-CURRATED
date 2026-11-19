@@ -8,6 +8,39 @@ const uuid = (i: number) =>
 const filterIds = (url: URL, column: string) =>
   url.searchParams.get(column)!.slice(4, -1).split(",");
 
+test("message batches overlap with at most four active queries and retain their global order", async () => {
+  let active = 0,
+    peak = 0;
+  const ids = Array.from({ length: 450 }, (_, i) => uuid(i));
+  const db = createClient("https://workspace.test", "fixture", {
+    auth: { persistSession: false },
+    global: {
+      fetch: async (input) => {
+        const url = new URL(String(input));
+        if (url.pathname.endsWith("/message_attachments"))
+          return Response.json([]);
+        active++;
+        peak = Math.max(peak, active);
+        await new Promise((resolve) => setTimeout(resolve, 3));
+        active--;
+        return Response.json(
+          filterIds(url, "conversation_id").map((id) => ({
+            id,
+            sent_at: "2026-11-18T12:00:00Z",
+          })),
+        );
+      },
+    },
+  });
+  const result = await loadWorkspaceMail(db, ids);
+  assert(peak > 1, "independent message batches must not wait for each other");
+  assert(peak <= 4, "mail reads must stay bounded");
+  assert.deepEqual(
+    result.messages.map((m) => m.id),
+    [...ids].reverse(),
+  );
+});
+
 test("large workspaces keep request URLs short and select the newest 1000 messages across every batch", async () => {
   const conversations = Array.from({ length: 3000 }, (_, i) => uuid(i));
   const requests: URL[] = [];

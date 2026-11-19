@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { Locale, Workspace } from "@/lib/domain";
-import { currency, dateLabel } from "@/lib/domain";
+import { currency } from "@/lib/domain";
+import { useLocalDateLabel } from "./local-dates";
 import { processStates } from "@/lib/financing-history";
 import type {
   ControlRow,
@@ -106,6 +107,7 @@ export function FinancingControlDashboard({
   loading?: boolean;
   opportunitySignals?: Workspace["opportunity_signals"];
 }) {
+  const dateLabel = useLocalDateLabel();
   const s = data.summary,
     en = locale === "en",
     na = t(locale, "No disponible", "Not available");

@@ -5,6 +5,7 @@ import { checkDb } from "./supabase";
 // Keep UUID filters below proxy request-line limits, even for large mailboxes.
 const ID_BATCH_SIZE = 50;
 const MAIL_LIMIT = 1000;
+const MESSAGE_CONCURRENCY = 4;
 
 export async function loadWorkspaceMail(
   db: SupabaseClient,
@@ -12,18 +13,31 @@ export async function loadWorkspaceMail(
 ) {
   const ids = [...new Set(conversationIds)];
   let messages: Workspace["messages"] = [];
-  for (let offset = 0; offset < ids.length; offset += ID_BATCH_SIZE) {
-    const rows =
-      checkDb(
-        await db
-          .from("messages")
-          .select("*")
-          .in("conversation_id", ids.slice(offset, offset + ID_BATCH_SIZE))
-          .order("sent_at", { ascending: false })
-          .order("id", { ascending: false })
-          .limit(MAIL_LIMIT),
-        "messages",
-      ) || [];
+  for (
+    let offset = 0;
+    offset < ids.length;
+    offset += ID_BATCH_SIZE * MESSAGE_CONCURRENCY
+  ) {
+    const batches = Array.from({ length: MESSAGE_CONCURRENCY }, (_, i) =>
+      ids.slice(offset + i * ID_BATCH_SIZE, offset + (i + 1) * ID_BATCH_SIZE),
+    ).filter((batch) => batch.length);
+    const rows = (
+      await Promise.all(
+        batches.map(
+          async (batch) =>
+            checkDb(
+              await db
+                .from("messages")
+                .select("*")
+                .in("conversation_id", batch)
+                .order("sent_at", { ascending: false })
+                .order("id", { ascending: false })
+                .limit(MAIL_LIMIT),
+              "messages",
+            ) || [],
+        ),
+      )
+    ).flat();
     // Each batch can contain older mail. Apply the limit globally after merging.
     messages = [...messages, ...rows]
       .sort(
