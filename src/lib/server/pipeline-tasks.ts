@@ -8,7 +8,11 @@ import {
   type TaskOverviewQuery,
   type TaskOverviewSource,
 } from "../pipeline-os/tasks-overview";
-import { readPipelineBoard, readPipelinePages } from "./pipeline-os-module";
+import {
+  readPipelineBoard,
+  readPipelinePages,
+  type PipelineBoardMail,
+} from "./pipeline-os-module";
 import { checkDb, HttpError, requireUser } from "./supabase";
 
 async function readRows<T>(
@@ -48,36 +52,8 @@ async function readRows<T>(
 }
 
 export async function loadTasksOverview(query: TaskOverviewQuery) {
-  const started = performance.now();
-  const reads = new Map<string, { calls: number; max_ms: number; total_ms: number }>();
-  try {
-    const { db, profile } = await requireUser({
-      fetchImpl: async (input, init) => {
-        const url = new URL(
-          typeof input === "string" || input instanceof URL ? input : input.url,
-        );
-        // Fixed resource names and durations only: never IDs, filters, URLs or bodies.
-        const resource = url.pathname.split("/").at(-1) || "unknown";
-        const operation = /^[a-z_]+$/.test(resource) ? resource : "other";
-        const before = performance.now();
-        try {
-          return await fetch(input, init);
-        } finally {
-          const ms = Math.round(performance.now() - before);
-          const sample = reads.get(operation) || { calls: 0, max_ms: 0, total_ms: 0 };
-          sample.calls++;
-          sample.max_ms = Math.max(sample.max_ms, ms);
-          sample.total_ms += ms;
-          reads.set(operation, sample);
-        }
-      },
-    });
-    return await readTasksOverview(db, profile, query);
-  } finally {
-    const duration_ms = Math.round(performance.now() - started);
-    if (duration_ms >= 1500)
-      console.info("pipeline_tasks_read", JSON.stringify({ duration_ms, reads: Object.fromEntries(reads) }));
-  }
+  const { db, profile } = await requireUser();
+  return readTasksOverview(db, profile, query);
 }
 
 async function readVisibleCampaigns(db: SupabaseClient, profile: Profile) {
@@ -149,31 +125,23 @@ async function readCampaignFacts(
   return facts;
 }
 
-async function readCaseMail(
-  db: SupabaseClient,
+function visibleCaseMail(
   profile: Profile,
   board: PipelineBoard,
+  mail: PipelineBoardMail,
 ) {
   if (board.hasMore)
     throw new HttpError(
       503,
       "El catálogo supera el límite de esta vista / Catalog exceeds this view's limit",
     );
-  const conversations = (
-    await readRows<TaskOverviewSource["conversations"][number]>(
-      db,
-      "mail_conversations_visible",
-      "id,opportunity_id,account_id,area,submission_id,recipient_email",
-      board.rows.map((r) => r.id),
-    )
-  ).filter((c) => c.area !== "closer" || isCloserRole(profile.role));
-  const messages = await readRows<TaskOverviewSource["messages"][number]>(
-    db,
-    "messages",
-    "id,conversation_id,direction,sender,sent_at,status,nature,reply_intent,participants",
-    conversations.map((c) => c.id),
-    "conversation_id",
+  const visibleCases = new Set(board.rows.map((r) => r.id));
+  const conversations = mail.conversations.filter(
+    (c) => visibleCases.has(c.opportunity_id) &&
+      (c.area !== "closer" || isCloserRole(profile.role)),
   );
+  const conversationIds = new Set(conversations.map((c) => c.id));
+  const messages = mail.messages.filter((m) => conversationIds.has(m.conversation_id));
   return { conversations, messages };
 }
 
@@ -182,18 +150,23 @@ export async function readTasksOverview(
   profile: Profile,
   query: TaskOverviewQuery,
 ) {
+  let mailSnapshot: PipelineBoardMail | undefined;
   const boardRead = readPipelineBoard(
     db,
     profile,
     { group: "files" },
     100000,
     false,
+    (mail) => { mailSnapshot = mail; },
   );
   const campaignsRead = readVisibleCampaigns(db, profile);
   const factsRead = campaignsRead.then((campaigns) =>
     readCampaignFacts(db, campaigns),
   );
-  const mailRead = boardRead.then((board) => readCaseMail(db, profile, board));
+  const mailRead = boardRead.then((board) => {
+    if (!mailSnapshot) throw new HttpError(503, "No se pudo comprobar el correo / Mail snapshot unavailable");
+    return visibleCaseMail(profile, board, mailSnapshot);
+  });
   const [board, profiles, accounts, leads, campaigns, facts, mail] =
     await Promise.all([
       boardRead,
