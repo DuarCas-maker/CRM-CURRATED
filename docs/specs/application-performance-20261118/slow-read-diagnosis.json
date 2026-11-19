@@ -1,0 +1,13 @@
+{
+  "revision":"9cfdcc169d078328938a40447b7f6654fbebb927",
+  "source":"Coolify runtime logs; sanitized workspace_read aggregates only",
+  "samples":[
+    {"duration_ms":10195,"workspace_stats_ms":7267,"jobs_ms":1800},
+    {"duration_ms":10040,"workspace_stats_ms":7118,"jobs_ms":2015},
+    {"duration_ms":10335,"workspace_stats_ms":7430,"jobs_ms":2102},
+    {"duration_ms":12710,"workspace_stats_ms":7440,"jobs_ms":2243}
+  ],
+  "conclusion":"legacy statistics dominate latency even on screens that never render them; administrative queues also load globally",
+  "client_rows_saved":false,
+  "urls_filters_credentials_saved":false
+}

@@ -208,28 +208,40 @@ export async function readWorkspace(
     if (campaign) query = query.eq("campaign_id", campaign);
     if (since) query = query.gte("created_at", since);
   }
+  const readinessPromise = crmExtensionsReady(db).then(async (ready) => ({
+    ready,
+    control: await readFinancingControl(ready),
+  }));
+  async function readStats() {
+    const view = params.get("view") || "overview";
+    if (view !== "reports") {
+      if (view !== "overview" || (await readinessPromise).control)
+        return undefined;
+    }
+    return checkDb(
+      await db.rpc("workspace_stats", {
+        search_text: search,
+        stage_filter: preparing ? null : stage,
+        owner_filter: owner,
+        campaign_filter: campaign,
+        since_filter: since,
+      }),
+      "workspace_stats",
+    );
+  }
   const [
     readiness,
     response,
-    statsResult,
+    stats,
     preferencesResult,
     leadPreparation,
     leadResponse,
   ] = await Promise.all([
-    crmExtensionsReady(db).then(async (ready) => ({
-      ready,
-      control: await readFinancingControl(ready),
-    })),
+    readinessPromise,
     preparing
       ? Promise.resolve({ data: [], count: 0, error: null })
       : query.range(page * 100, page * 100 + 99),
-    db.rpc("workspace_stats", {
-      search_text: search,
-      stage_filter: preparing ? null : stage,
-      owner_filter: owner,
-      campaign_filter: campaign,
-      since_filter: since,
-    }),
+    readStats(),
     db
       .from("notification_preferences")
       .select("internal,email,push,locale")
@@ -254,11 +266,13 @@ export async function readWorkspace(
     for (const o of opportunities)
       Object.assign(o, metadata.find((m) => m.id === o.id) || {});
   }
-  const stats = checkDb(statsResult, "workspace_stats");
   const preferences = checkDb(
     preferencesResult,
     "notification_preferences",
   ) || { internal: true, email: false, push: false, locale: "es" };
+  const administrationView = ["settings", "connections"].includes(
+    params.get("view") || "overview",
+  );
   const queries = [
     ["profiles", "profiles"],
     ["tasks", "tasks"],
@@ -279,7 +293,7 @@ export async function readWorkspace(
       ["email_templates", "email_templates"],
       ["campaign_assets", "campaign_assets"],
     );
-  if (profile.role === "superadmin")
+  if (profile.role === "superadmin" && administrationView)
     queries.push(["integration_jobs", "jobs"], ["outbox_status", "outbox"]);
   if (gmailHistoryEnabled())
     queries.push(["gmail_files", "gmail_saved_attachments"]);
@@ -295,6 +309,8 @@ export async function readWorkspace(
   ]);
   const entries = await Promise.all(
     queries.map(async ([key, table]) => {
+      if (key === "mail_review" && !administrationView)
+        return [key, []] as const;
       if (related.has(key) && !caseIds.length) return [key, []] as const;
       const sort = [
         "imports",

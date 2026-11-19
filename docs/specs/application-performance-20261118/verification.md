@@ -77,3 +77,11 @@ Rama aislada codex/application-performance-release-20261118 sobre main dadf98b. 
 - Smoke anónimo previo: health/login200; Workspace/Pipeline/Master401/no-store; todavía no se observa el nuevo asset de fechas.
 
 Runbook, autorización y reversa en publication-runbook.md. Publicación y postflight se registrarán después de ejecutarlos.
+
+### Continuación por hallazgo real de base de datos
+
+70cee99: web17bksuzs1ibhji8ekm96qthf finalizada y healthy, rolling update completo; worker actualizado automáticamente y Running. Asset de fechas nuevo confirmado. Desaparece React418 en la entrada posterior observada, pero un GET Pipeline devuelve statement timeout y overview sigue en16,8s. No se cerró el objetivo con esa evidencia parcial.
+
+9cfdcc1: diagnóstico seguro de lecturas lentas publicado. El build/check Node22 y cuatro tests de Workspace pasaron. Cuatro registros de producción identifican workspace_stats7118–7440ms y jobs1800–2243ms; ver slow-read-diagnosis.json. No se escribieron datos ni se ejecutó SQL remoto.
+
+Corrección siguiente, FR-006/007: no leer estadísticas legacy cuando no se renderizan; mantenerlas completas en reports y fallback del overview. Leer colas/revisiones administrativas solo en settings/connections, conservando la restricción superadmin. **86/86 pruebas correctas**, TypeScript y build aislado Node22 correctos,60/60 páginas. Tests incluyen nueve vistas sin estadísticas, fallback con migración ausente, reportes con su agregado y seller sin lectura jobs/outbox. Revisión del diff y whitespace correctos.

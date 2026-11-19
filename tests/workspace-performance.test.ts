@@ -88,7 +88,7 @@ test("workspace overlaps independent reads, preserves filters and uses the suppl
   const data = await readWorkspace(
     f.db,
     seed.profile,
-    new URLSearchParams({ view: "tasks", case: caseId }),
+    new URLSearchParams({ view: "reports", case: caseId }),
   );
   assert.equal(data.opportunities[0].id, caseId);
   assert.deepEqual(data.mail_access?.[caseId], {
@@ -124,6 +124,11 @@ test("the initial overview retains dashboards and the existing optional-migratio
       missingControl ? undefined : { rows: [] },
     );
     assert.deepEqual(data.operational, { fixture: true });
+    assert.equal(
+      f.calls.some((u) => u.pathname.endsWith("/workspace_stats")),
+      missingControl,
+    );
+    assert.deepEqual(data.stats, missingControl ? { total: 1 } : undefined);
     assert.equal(
       f.calls.filter((u) => u.pathname.endsWith("/financing_control_dashboard"))
         .length,
@@ -192,11 +197,75 @@ test("workspace overlaps directories with existing permission reads and surfaces
       readWorkspace(
         denied.db,
         seed.profile,
-        new URLSearchParams({ view: "tasks" }),
+        new URLSearchParams({
+          view: table === "workspace_stats" ? "reports" : "tasks",
+        }),
       ),
       table === "mail_access_context"
         ? /Mail access contract/
         : /Permission denied/,
     );
   }
+});
+
+test("lists and unrelated modules never wait for the unused legacy aggregate", async () => {
+  for (const view of [
+    "pipeline",
+    "leads",
+    "tasks",
+    "inbox",
+    "campaigns",
+    "lenders",
+    "settings",
+    "connections",
+    "users",
+  ]) {
+    const f = fixture({ deny: "workspace_stats" });
+    const data = await readWorkspace(
+      f.db,
+      seed.profile,
+      new URLSearchParams({ view }),
+    );
+    assert.equal(data.stats, undefined);
+    assert(!f.calls.some((u) => u.pathname.endsWith("/workspace_stats")), view);
+  }
+  const reports = fixture();
+  const report = await readWorkspace(
+    reports.db,
+    seed.profile,
+    new URLSearchParams({ view: "reports", q: "fixture", page: "2" }),
+  );
+  assert.deepEqual(report.stats, { total: 1 });
+  const rpc = reports.calls.find((u) =>
+    u.pathname.endsWith("/workspace_stats"),
+  );
+  assert(rpc, "reports must keep their complete server aggregate");
+});
+
+test("administrative queues are read only in settings and connections", async () => {
+  for (const view of [
+    "overview",
+    "pipeline",
+    "leads",
+    "reports",
+    "settings",
+    "connections",
+  ]) {
+    const f = fixture({ ready: true });
+    await readWorkspace(f.db, seed.profile, new URLSearchParams({ view }));
+    for (const table of ["jobs", "outbox", "mail_review"]) {
+      assert.equal(
+        f.calls.some((u) => u.pathname.endsWith("/" + table)),
+        ["settings", "connections"].includes(view),
+        view + ":" + table,
+      );
+    }
+  }
+  const seller = fixture();
+  await readWorkspace(
+    seller.db,
+    { ...seed.profile, role: "seller" },
+    new URLSearchParams({ view: "settings" }),
+  );
+  assert(!seller.calls.some((u) => /\/(jobs|outbox)$/.test(u.pathname)));
 });

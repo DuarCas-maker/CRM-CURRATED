@@ -22,6 +22,8 @@ El código resuelve las demás reglas: conservar RLS, MFA, contratos de Workspac
 | FR-003 | Evitar recargas duplicadas y respuestas obsoletas en el CRM. | AC-003: una lectura activa por pantalla; solicitudes idénticas comparten resultado; una lectura antigua no reemplaza la nueva; carga inicial del servidor reutilizada. |
 | FR-004 | Evitar esperas indefinidas en las recargas del CRM y duplicados en Pipeline OS. | AC-004: timeout de lectura con error recuperable, polling tras completar la lectura, y refrescar Pipeline no dispara otra lectura por actualizar sus datos. |
 | FR-005 | Evitar reconstruir el Resumen por diferencias de fechas entre servidor y navegador. | AC-005: HTML inicial idéntico en UTC/Bogotá, español/inglés; tras hidratar se conserva la hora local del navegador. |
+| FR-006 | Consultar las estadísticas antiguas solo cuando la pantalla las utiliza. | AC-006: reportes y fallback de overview reciben estadísticas completas; el overview con control moderno y el resto de pantallas no invocan workspace_stats. |
+| FR-007 | Cargar colas y revisiones administrativas al entrar a su módulo. | AC-007: jobs/outbox/mail_review se leen en settings/connections, conservando el rol previo; las otras pantallas no los consultan. |
 
 Extensión de publicación autorizada el18/11: el usuario pide desplegar y verificar rapidez/sin errores. Baseline real muestra React418 en Resumen; prueba de render entre zonas horarias reproduce la discrepancia. FR-005 corrige ese defecto dentro de la verificación solicitada, sin cambiar reglas financieras ni guardar preferencias nuevas.
 
