@@ -6,7 +6,11 @@ import { renderTemplate } from "@/lib/domain";
 import { accountPreparation } from "@/lib/brand-delivery";
 import { campaignPreviewValues } from "@/lib/campaign-templates";
 import { renderCampaignContent } from "@/lib/campaign-content";
-import { defaultReminders, reminderDays } from "@/lib/campaign-flow";
+import {
+  templateReminders,
+  withoutInlineSignature,
+} from "@/lib/campaign-sequence";
+import { CampaignSignaturePreview } from "../campaign-signature-preview";
 import { t } from "../ui";
 import {
   ProtectedForm,
@@ -41,12 +45,13 @@ export function FlowComposer({
     );
   const { requestLeave, confirmation } = useLeaveConfirmation(locale);
   const sequenceFor = (id: string) => {
-    const saved = templates.find(t => t.id === id)?.steps;
-    return (saved?.length === 4 ? saved : defaultReminders).map((s,i) => ({...s,wait_days:reminderDays[i]}));
+    const saved = templates.find((t) => t.id === id)?.steps;
+    return templateReminders(
+      saved,
+      templates.find((t) => t.id === id)?.body_format,
+    );
   };
-  const [reminders, setReminders] = useState(() =>
-      sequenceFor(templateId),
-    ),
+  const [reminders, setReminders] = useState(() => sequenceFor(templateId)),
     [preview, setPreview] = useState(0),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
@@ -64,7 +69,7 @@ export function FlowComposer({
     if (message) {
       subject = renderTemplate(message.subject, campaignPreviewValues);
       html = renderCampaignContent(
-        message.body,
+        withoutInlineSignature(message.body, template?.body_format),
         campaignPreviewValues,
         template?.body_format,
       ).html;
@@ -166,7 +171,10 @@ export function FlowComposer({
             <select
               required
               value={templateId}
-              onChange={(e) => {setTemplateId(e.target.value);setReminders(sequenceFor(e.target.value));}}
+              onChange={(e) => {
+                setTemplateId(e.target.value);
+                setReminders(sequenceFor(e.target.value));
+              }}
               disabled={busy}
             >
               <option value="">Selecciona una plantilla</option>
@@ -192,8 +200,8 @@ export function FlowComposer({
           <p className="cc-note">
             {t(
               locale,
-            "Hora de tu dispositivo. Los domingos pasan al lunes. El envío respeta el cupo de la cuenta. Los expedientes se asignarán a ti.",
-            "Your device's local time. Sundays move to Monday. Sending respects account capacity. Cases will be assigned to you.",
+              "Hora de tu dispositivo. Los domingos pasan al lunes. El envío respeta el cupo de la cuenta. Los expedientes se asignarán a ti.",
+              "Your device's local time. Sundays move to Monday. Sending respects account capacity. Cases will be assigned to you.",
             )}
           </p>
           <details className="cf-reminder-editor">
@@ -306,6 +314,7 @@ export function FlowComposer({
               }}
               dangerouslySetInnerHTML={{ __html: html }}
             />
+            <CampaignSignaturePreview account={sender} locale={locale} />
           </div>
           <p className="cc-note">
             {t(

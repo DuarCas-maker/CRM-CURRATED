@@ -13,6 +13,8 @@ import {
   controlError,
 } from "../src/lib/server/campaign-control";
 import { readFlow, launchFlow } from "../src/lib/server/campaign-flow";
+import {campaignTemplateSchema} from '../src/lib/campaign-templates';
+import {automaticSignatureTemplate} from '../src/lib/campaign-sequence';
 const f = await flowFixture();
 const { db } = f;
 await db.exec("reset role");
@@ -165,6 +167,17 @@ http
         return res.end(await fs.readFile(p));
       }
       if (u.pathname === "/qa/stats") return json(res, 200, counts);
+      if(u.pathname==='/api/campaigns/signature'){
+        const p=JSON.parse((await bytes(req)).toString());
+        const index=f.accounts.indexOf(p.account_id);
+        if(index<0)return json(res,403,{error:'Synthetic account not allowed'});
+        return json(res,200,{email:(await db.query<any>('select email from mail_accounts where id=$1',[p.account_id])).rows[0].email,html:`<b>${index===0?'Alex Example':'Jamie Example'}</b><br>Account ${index+1} · Example team`,name:index===0?'Alex Example':'Jamie Example'});
+      }
+      if(u.pathname==='/api/campaign-templates'&&req.method==='POST'){
+        const body=JSON.parse((await bytes(req)).toString());
+        const p=automaticSignatureTemplate(campaignTemplateSchema.parse(body));
+        return json(res,200,await serial(async()=>{await f.asUser(f.users.admin);return {id:(await db.query<any>('select save_campaign_template($1,$2) id',[p,body.request_key])).rows[0].id};}));
+      }
       if (u.pathname === "/qa/fail-read") {
         failRead = true;
         return json(res, 200, {});

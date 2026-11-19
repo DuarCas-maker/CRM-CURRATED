@@ -39,12 +39,6 @@ To get this started all I need is the last 4 business bank statements, latest ta
 
 Best,
 
-:::signature
-**Daniel Duarcas** | *Funding Manager*
-**Curated Financial.**
-[**daniel@curatedfinancial.com**](mailto:daniel@curatedfinancial.com)
-:::
-
 [Unsubscribe]({{unsubscribe_url}})`,
     steps: [],
     asset_ids: [],
@@ -80,12 +74,6 @@ Let me know which option works best- can set it up as a LOC.
 We can fund it quickly!
 
 Sincerely,
-
-:::signature
-**Daniel Duarcas** | *Funding Manager*
-**Curated Financial.**
-[**daniel@curatedfinancial.com**](mailto:daniel@curatedfinancial.com)
-:::
 
 [Unsubscribe]({{unsubscribe_url}})`,
     steps: [],

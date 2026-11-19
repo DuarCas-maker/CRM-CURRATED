@@ -11,7 +11,7 @@ import { renderTemplate } from "../src/lib/domain";
 import { installCampaignPresets } from "../src/lib/server/install-campaign-presets";
 import { buildMime } from "../worker/mime";
 
-test("reference templates personalize subjects and tables, retain quoted figures, signature and safe formatting", () => {
+test("reference templates personalize subjects and tables, retain quoted figures and defer signature to selected Gmail", () => {
   for (const preset of campaignPresets) {
     assert(campaignTemplateSchema.safeParse(preset).success);
     const values = {
@@ -29,10 +29,9 @@ test("reference templates personalize subjects and tables, retain quoted figures
     assert(content.html.includes("Example &amp; Sons | {{name}}"));
     assert(content.html.includes("Alex &lt;img src=x&gt;"));
     assert(!content.html.includes("<img"));
-    assert(content.html.includes("<strong>Daniel Duarcas</strong>"));
-    assert(content.html.includes("<em>Funding Manager</em>"));
-    assert(content.html.includes('data-crm-signature="true"'));
-    assert(content.html.includes("mailto:daniel@curatedfinancial.com"));
+    assert(!content.html.includes("Daniel Duarcas"));
+    assert(!content.html.includes('data-crm-signature="true"'));
+    assert(!content.html.includes("daniel@curatedfinancial.com"));
     assert(content.html.includes(values.unsubscribe_url));
     assert(content.text.includes(values.company));
     assert(!content.text.includes(":::table"));

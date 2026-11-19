@@ -14,6 +14,12 @@ import { Modal, t } from "./ui";
 import { CampaignEditor } from "./campaign-editor";
 import { renderCampaignContent } from "@/lib/campaign-content";
 import { campaignPresets } from "@/lib/campaign-presets";
+import {
+  automaticSignatureTemplate,
+  templateReminders,
+  withoutInlineSignature,
+} from "@/lib/campaign-sequence";
+import { CampaignSignaturePreview } from "./campaign-signature-preview";
 
 export function CampaignTemplates({
   data,
@@ -36,6 +42,20 @@ export function CampaignTemplates({
   const [requestKey, setRequestKey] = useState(() => crypto.randomUUID());
   const [showArchived, setShowArchived] = useState(false);
   const [history, setHistory] = useState<EmailTemplate[]>([]);
+  const [messageIndex, setMessageIndex] = useState(0);
+  const accounts = data.accounts.filter(
+    (a) => a.status === "connected" && a.brand_context?.can_campaign,
+  );
+  const [senderId, setSenderId] = useState(accounts[0]?.id || "");
+  const sender = accounts.find((a) => a.id === senderId);
+  function openTemplate(value: Partial<EmailTemplate>) {
+    setMessageIndex(0);
+    setDraft({
+      ...value,
+      body: withoutInlineSignature(value.body || "", value.body_format),
+      steps: templateReminders(value.steps, value.body_format),
+    });
+  }
   useEffect(() => {
     setTemplates(data.email_templates || []);
     setAssets(data.campaign_assets || []);
@@ -63,7 +83,7 @@ export function CampaignTemplates({
   function previewHtml(body: string) {
     try {
       return renderCampaignContent(
-        body,
+        withoutInlineSignature(body, draft?.body_format),
         campaignPreviewValues,
         draft?.body_format,
       ).html;
@@ -121,10 +141,14 @@ export function CampaignTemplates({
     setBusy(true);
     setError("");
     try {
-      const payload = campaignTemplateSchema.parse({
-        ...draft,
-        expected_version: draft?.version,
-      });
+      const payload = campaignTemplateSchema.parse(
+        automaticSignatureTemplate({
+          ...draft,
+          body: draft?.body || "",
+          steps: templateReminders(draft?.steps, draft?.body_format),
+          expected_version: draft?.version,
+        }),
+      );
       let templateId = draft?.id;
       if (data.demo) {
         templateId ||= crypto.randomUUID();
@@ -205,8 +229,8 @@ export function CampaignTemplates({
         <h2>
           {t(
             locale,
-            "Plantillas de primer contacto",
-            "First-contact templates",
+            "Plantillas y recordatorios",
+            "Email templates and reminders",
           )}
         </h2>
         {canEdit && (
@@ -215,7 +239,7 @@ export function CampaignTemplates({
             onClick={() => {
               setError("");
               setRequestKey(crypto.randomUUID());
-              setDraft({
+              openTemplate({
                 name: "",
                 subject: "Funding options for {{company}}",
                 body: "Hi {{name}},\n\nWe can explore funding for {{company}}.\n\nUnsubscribe: {{unsubscribe_url}}",
@@ -253,7 +277,7 @@ export function CampaignTemplates({
                 onClick={() => {
                   setError("");
                   setRequestKey(crypto.randomUUID());
-                  setDraft({ ...preset, id: undefined, steps: [] });
+                  openTemplate({ ...preset, id: undefined });
                 }}
               >
                 {preset.name}
@@ -298,7 +322,7 @@ export function CampaignTemplates({
                   className="button"
                   onClick={() => {
                     setError("");
-                    setDraft(template);
+                    openTemplate(template);
                   }}
                 >
                   {t(
@@ -323,9 +347,9 @@ export function CampaignTemplates({
                       onClick={() => {
                         setError("");
                         setRequestKey(crypto.randomUUID());
-                        setDraft({
+                        openTemplate({
                           ...template,
-                          steps: [],
+                          steps: template.steps,
                           id: undefined,
                           version: undefined,
                           archived_at: null,
@@ -403,6 +427,28 @@ export function CampaignTemplates({
               {error}
             </p>
           )}
+          <nav
+            className="campaign-message-tabs"
+            aria-label={t(
+              locale,
+              "Mensajes de la plantilla",
+              "Template messages",
+            )}
+          >
+            {[0, 1, 2, 3, 4].map((i) => (
+              <button
+                type="button"
+                key={i}
+                aria-pressed={messageIndex === i}
+                className={`button ${messageIndex === i ? "primary" : ""}`}
+                onClick={() => setMessageIndex(i)}
+              >
+                {i === 0
+                  ? t(locale, "Correo principal", "Initial email")
+                  : t(locale, `Recordatorio ${i}`, `Reminder ${i}`)}
+              </button>
+            ))}
+          </nav>
           <fieldset
             disabled={!canEdit || busy || !!draft.archived_at}
             style={{ border: 0, padding: 0 }}
@@ -414,18 +460,59 @@ export function CampaignTemplates({
                 onChange={(e) => update({ name: e.target.value })}
               />
             </label>
+            <h3>
+              {messageIndex === 0
+                ? t(locale, "Correo principal", "Initial email")
+                : t(
+                    locale,
+                    `Recordatorio ${messageIndex} · +${draft.steps?.[messageIndex - 1]?.wait_days} días`,
+                    `Reminder ${messageIndex} · +${draft.steps?.[messageIndex - 1]?.wait_days} days`,
+                  )}
+            </h3>
             <label className="field">
               {t(locale, "Asunto", "Subject")}
               <input
-                value={draft.subject || ""}
-                onChange={(e) => update({ subject: e.target.value })}
+                value={
+                  messageIndex === 0
+                    ? draft.subject || ""
+                    : draft.steps?.[messageIndex - 1]?.subject || ""
+                }
+                onChange={(e) =>
+                  messageIndex === 0
+                    ? update({ subject: e.target.value })
+                    : update({
+                        steps: templateReminders(
+                          draft.steps,
+                          draft.body_format,
+                        ).map((s, i) =>
+                          i === messageIndex - 1
+                            ? { ...s, subject: e.target.value }
+                            : s,
+                        ),
+                      })
+                }
               />
             </label>
             <CampaignEditor
               locale={locale}
               label={t(locale, "Mensaje", "Message")}
-              value={draft.body || ""}
-              onChange={(body) => update({ body })}
+              value={
+                messageIndex === 0
+                  ? draft.body || ""
+                  : draft.steps?.[messageIndex - 1]?.body || ""
+              }
+              onChange={(body) =>
+                messageIndex === 0
+                  ? update({ body })
+                  : update({
+                      steps: templateReminders(
+                        draft.steps,
+                        draft.body_format,
+                      ).map((s, i) =>
+                        i === messageIndex - 1 ? { ...s, body } : s,
+                      ),
+                    })
+              }
               format={draft.body_format || "plain"}
               onFormat={(body_format) => update({ body_format })}
             />
@@ -434,15 +521,13 @@ export function CampaignTemplates({
                 .map((key) => `{{${key}}}`)
                 .join(" · ")}
             </p>
-            {!!draft.steps?.length && (
-              <p className="muted">
-                {t(
-                  locale,
-                  "Los seguimientos históricos se conservan en esta plantilla. Las campañas nuevas utilizan únicamente el mensaje inicial.",
-                  "Historical follow-ups are preserved in this template. New campaigns use only the initial message.",
-                )}
-              </p>
-            )}
+            <p className="muted">
+              {t(
+                locale,
+                "Firma automática: cada mensaje usará la firma de Gmail de la cuenta elegida. No escribas aquí una firma personal fija. Los cuatro recordatorios se guardan con esta plantilla para campañas nuevas.",
+                "Automatic signature: each message uses the selected account's Gmail signature. Do not type a fixed personal signature here. The four reminders are saved with this template for new campaigns.",
+              )}
+            </p>
             <h3>{t(locale, "Adjuntos generales", "General attachments")}</h3>
             <p>
               {t(
@@ -489,24 +574,44 @@ export function CampaignTemplates({
                 "Preview with sample data",
               )}
             </h3>
+            <label className="field">
+              {t(locale, "Remitente para la vista previa", "Preview sender")}
+              <select
+                value={senderId}
+                onChange={(e) => setSenderId(e.target.value)}
+              >
+                <option value="">
+                  {t(locale, "Selecciona una cuenta", "Select an account")}
+                </option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.email}
+                  </option>
+                ))}
+              </select>
+            </label>
             {[
-              { subject: draft.subject || "", body: draft.body || "" },
-              ...(draft.steps || []),
-            ].map((message, index) => (
-              <div key={index}>
-                <strong>{preview(message.subject)}</strong>
-                {previewHtml(message.body) !== null ? (
-                  <div
-                    style={{ overflowWrap: "anywhere" }}
-                    dangerouslySetInnerHTML={{
-                      __html: previewHtml(message.body)!,
-                    }}
-                  />
-                ) : (
-                  <p className="error">{preview(message.body)}</p>
-                )}
-              </div>
-            ))}
+              messageIndex === 0
+                ? { subject: draft.subject || "", body: draft.body || "" }
+                : draft.steps?.[messageIndex - 1],
+            ]
+              .filter(Boolean)
+              .map((message) => (
+                <div key={messageIndex}>
+                  <strong>{preview(message!.subject)}</strong>
+                  {previewHtml(message!.body) !== null ? (
+                    <div
+                      style={{ overflowWrap: "anywhere" }}
+                      dangerouslySetInnerHTML={{
+                        __html: previewHtml(message!.body)!,
+                      }}
+                    />
+                  ) : (
+                    <p className="error">{preview(message!.body)}</p>
+                  )}
+                </div>
+              ))}
+            <CampaignSignaturePreview account={sender} locale={locale} />
           </section>
           {canEdit && !draft.archived_at && (
             <button

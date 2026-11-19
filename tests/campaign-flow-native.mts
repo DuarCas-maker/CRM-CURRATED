@@ -8,6 +8,7 @@ import { execFileSync, execFile } from "node:child_process";
 import { flowFixture, flowRoot } from "./fixtures/campaign-flow";
 import { exerciseLeadFunnel, funnelRoot } from "./fixtures/campaign-lead-funnel";
 import { exerciseLegacyWorkerContext, legacyWorkerRoot } from "./fixtures/legacy-worker-mail";
+import {exerciseTemplateSequence,sequenceRoot} from './fixtures/campaign-template-sequence';
 const bin =
   process.env.CAMPAIGN_TEST_PG_BIN ||
   path.resolve(".local/toolchains/postgresql-15/bin");
@@ -103,7 +104,7 @@ try {
         rest = rest.slice(m[0].length);
         continue;
       }
-      m = rest.match(/^\s*set role (authenticated|service_role)\s*;?/i);
+      m = rest.match(/^\s*set role (anon|authenticated|service_role)\s*;?/i);
       if (m) {
         role = m[1];
         rest = rest.slice(m[0].length);
@@ -198,7 +199,10 @@ try {
     return { db, users, asUser, command } as any;
   };
   const f = await flowFixture(factory as any);
-  if (process.env.CAMPAIGN_TEST_LEGACY_WORKER === "1") {
+  if(process.env.CAMPAIGN_TEST_TEMPLATE_SEQUENCE==='1'){
+    const result={...(await exerciseTemplateSequence(f)),postgres:sql('select version()'),remoteMutations:0};
+    fs.writeFileSync(sequenceRoot+'native-result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
+  } else if (process.env.CAMPAIGN_TEST_LEGACY_WORKER === "1") {
     sql(fs.readFileSync("docs/specs/pipeline-os/campaign-flow-20261117/revisions/owner-creator/up.sql", "utf8"));
     const result = { ...(await exerciseLegacyWorkerContext(f)), postgres: sql("select version()"), remoteMutations: 0 };
     fs.writeFileSync(legacyWorkerRoot + "native-result.json", JSON.stringify(result, null, 2) + "\n");

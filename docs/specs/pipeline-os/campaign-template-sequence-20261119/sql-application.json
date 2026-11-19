@@ -1,0 +1,38 @@
+{
+  "state": "applied",
+  "at": "2026-11-19T02:36:46.212Z",
+  "sqlSha256": "223cad03b11abb2544358e838027bd4606fd24cc5f423690f873af63bf526740",
+  "contentSha256": "9b476f1224b49058fde0e26b7d8936aa7c39f78a31db4541009866b1921fe55e",
+  "changedFunctions": [],
+  "addedFunctions": [
+    "public.campaign_signature_scope(uuid, jsonb)"
+  ],
+  "acl": {
+    "anon": false,
+    "service": false,
+    "authenticated": true
+  },
+  "campaignSnapshotsUnchanged": true,
+  "templates": [
+    {
+      "id": "57de6f7b-912b-4f41-b9ca-a0b1944cba01",
+      "steps": 4,
+      "format": "markdown",
+      "version": 2,
+      "archived": false,
+      "spanishSteps": false,
+      "fixedSignature": false
+    },
+    {
+      "id": "57de6f7b-912b-4f41-b9ca-a0b1944cba02",
+      "steps": 4,
+      "format": "markdown",
+      "version": 2,
+      "archived": false,
+      "spanishSteps": false,
+      "fixedSignature": false
+    }
+  ],
+  "backup": "/var/lib/postgresql/data/campaign-template-sequence-20261119T023526Z/pre-sequence.dump",
+  "agentProviderRequests": 0
+}

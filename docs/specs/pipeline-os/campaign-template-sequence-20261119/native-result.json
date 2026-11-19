@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "permissions": true,
+  "mfa": true,
+  "historyPreserved": true,
+  "activeCampaignUnchanged": true,
+  "contentReplay": true,
+  "staleRollbackDenied": true,
+  "reversalPassed": true,
+  "sqlSha256": "223cad03b11abb2544358e838027bd4606fd24cc5f423690f873af63bf526740",
+  "contentSha256": "9b476f1224b49058fde0e26b7d8936aa7c39f78a31db4541009866b1921fe55e",
+  "realProviderRequests": 0,
+  "postgres": "PostgreSQL 15.19, compiled by Visual C++ build 1944, 64-bit",
+  "remoteMutations": 0
+}

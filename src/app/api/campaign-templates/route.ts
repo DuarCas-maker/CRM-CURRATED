@@ -1,6 +1,7 @@
 import { requireCrmExtensions } from "@/lib/server/crm-readiness";
 import { z } from "zod";
 import { campaignTemplateSchema } from "@/lib/campaign-templates";
+import { automaticSignatureTemplate } from "@/lib/campaign-sequence";
 import {
   requireUser,
   checkOrigin,
@@ -38,7 +39,9 @@ export async function POST(request: Request) {
       (await readBounded(request, 450000)).toString("utf8"),
     );
     const requestKey = z.uuid().parse(body.request_key);
-    const p = campaignTemplateSchema.parse(body);
+    const p = campaignTemplateSchema.parse(
+      automaticSignatureTemplate(campaignTemplateSchema.parse(body)),
+    );
     const r = await db.rpc("save_campaign_template", {
       p,
       request_key: requestKey,

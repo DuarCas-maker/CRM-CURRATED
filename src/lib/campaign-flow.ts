@@ -2,22 +2,8 @@ import { z } from "zod";
 import { campaignTemplateSchema } from "./campaign-templates";
 import { brandPreparationSchema } from "./brand-delivery";
 
-export const reminderDays = [2, 3, 3, 5] as const;
-export const defaultReminders = reminderDays.map((wait_days, i) => ({
-  subject: [
-    "¿Podemos ayudarte?",
-    "Seguimos disponibles para {{company}}",
-    "¿Quieres continuar la conversación?",
-    "Un último mensaje de seguimiento",
-  ][i],
-  body: [
-    "Hola,\n\nTe escribimos para dar seguimiento a nuestro correo anterior sobre {{company}}. Si te interesa continuar, puedes responder directamente a este mensaje.\n\nGracias.\n\nPara dejar de recibir estos mensajes: {{unsubscribe_url}}",
-    "Hola,\n\n¿Tuviste oportunidad de revisar nuestro mensaje? Si necesitas más información o prefieres que lo retomemos en otro momento, cuéntanos respondiendo a este correo.\n\nGracias.\n\nPara dejar de recibir estos mensajes: {{unsubscribe_url}}",
-    "Hola,\n\nSeguimos disponibles para resolver tus preguntas. Si quieres continuar con la conversación sobre {{company}}, responde a este mensaje y te orientamos con los siguientes pasos.\n\nGracias.\n\nPara dejar de recibir estos mensajes: {{unsubscribe_url}}",
-    "Hola,\n\nEste es nuestro último recordatorio de esta secuencia. Si te interesa retomar la conversación más adelante, puedes responder a este correo cuando lo necesites.\n\nGracias por tu tiempo.\n\nPara dejar de recibir estos mensajes: {{unsubscribe_url}}",
-  ][i],
-  wait_days,
-}));
+import { reminderDays } from "./campaign-sequence";
+export { reminderDays, defaultReminders } from "./campaign-sequence";
 export const flowLaunchSchema = z.strictObject({
   account_id: z.uuid(),
   brand_preparation: brandPreparationSchema,

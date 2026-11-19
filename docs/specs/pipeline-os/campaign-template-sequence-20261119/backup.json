@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-19T02:35:33.815536+00:00",
+  "path": "/var/lib/postgresql/data/campaign-template-sequence-20261119T023526Z/pre-sequence.dump",
+  "bytes": 67490945,
+  "sha256": "5fb85d1190b55a7e678a6e17145cedbd2fc15f12c7c52891016e9140f3068c92",
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}
