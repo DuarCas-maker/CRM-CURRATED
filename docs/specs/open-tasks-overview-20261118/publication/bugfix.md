@@ -21,3 +21,9 @@ Se trata de la corrección del mismo alcance autorizado por el usuario; no de un
 Regresión ejecutada antes del arreglo: el caso de 4000 destinatarios pendientes falló por exceso de páginas RPC. Tras filtrar enviados, conserva 2 leads enviados únicos, el catálogo de 73 leads y exactamente tres páginas de hechos útiles. No se relajó la aserción ni se aumentó el timeout.
 
 La corrección pasa 93 pruebas, TypeScript y build Node22.23.4. Antes de publicarla se conservó bd645bb (índice de contactos importados publicado por otro frente); no cambia fuentes de aplicación y no se aplicó ni repitió SQL desde este chat. Cinco comprobaciones de índice/esquema/etapas posteriores también pasan. Los tres archivos de código propios modificados son workspace.tsx (grupo de lectura al abrir tareas), pipeline-tasks.ts (filtro y concurrencia acotada) y su regresión de lector.
+# Segunda lectura productiva — diagnóstico acotado
+
+087e951 terminó correctamente en Coolify, pero la UI aún agota los 30 s. Una consulta autenticada sin filas de detalle devolvió un resumen válido, con asOf 31.046 s después del inicio del navegador (aproximado por reloj entre hosts). No es un error de autorización ni de agregación.
+
+Hipótesis pendientes: (1) lotes secuenciales del lector canónico del tablero; (2) una consulta individual lenta del catálogo; (3) coste acumulado de hechos de campañas. Se añade observabilidad del mismo tipo que workspace_read: exclusivamente nombre fijo de recurso, cantidad de llamadas y milisegundos. Sin IDs, filtros, URL, cuerpos ni datos personales. Se publica este diagnóstico para confirmar la causa antes del siguiente cambio; timeout y datos permanecen intactos. Tipos y seis pruebas relacionadas pasan.
+

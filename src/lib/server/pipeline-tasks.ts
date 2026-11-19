@@ -48,8 +48,36 @@ async function readRows<T>(
 }
 
 export async function loadTasksOverview(query: TaskOverviewQuery) {
-  const { db, profile } = await requireUser();
-  return readTasksOverview(db, profile, query);
+  const started = performance.now();
+  const reads = new Map<string, { calls: number; max_ms: number; total_ms: number }>();
+  try {
+    const { db, profile } = await requireUser({
+      fetchImpl: async (input, init) => {
+        const url = new URL(
+          typeof input === "string" || input instanceof URL ? input : input.url,
+        );
+        // Fixed resource names and durations only: never IDs, filters, URLs or bodies.
+        const resource = url.pathname.split("/").at(-1) || "unknown";
+        const operation = /^[a-z_]+$/.test(resource) ? resource : "other";
+        const before = performance.now();
+        try {
+          return await fetch(input, init);
+        } finally {
+          const ms = Math.round(performance.now() - before);
+          const sample = reads.get(operation) || { calls: 0, max_ms: 0, total_ms: 0 };
+          sample.calls++;
+          sample.max_ms = Math.max(sample.max_ms, ms);
+          sample.total_ms += ms;
+          reads.set(operation, sample);
+        }
+      },
+    });
+    return await readTasksOverview(db, profile, query);
+  } finally {
+    const duration_ms = Math.round(performance.now() - started);
+    if (duration_ms >= 1500)
+      console.info("pipeline_tasks_read", JSON.stringify({ duration_ms, reads: Object.fromEntries(reads) }));
+  }
 }
 
 async function readVisibleCampaigns(db: SupabaseClient, profile: Profile) {
