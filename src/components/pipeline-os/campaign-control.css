@@ -302,6 +302,16 @@
   gap: 18px;
   min-width: 0;
 }
+.cc-campaign-card .cc-section-head > div {
+  min-width: 0;
+}
+.cc-campaign-senders {
+  overflow-wrap: anywhere;
+}
+.cc-campaign-senders strong {
+  color: var(--pos-accent);
+  font-weight: 500;
+}
 .cc-badge {
   display: inline-flex;
   align-items: center;

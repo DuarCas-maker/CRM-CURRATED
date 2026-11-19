@@ -365,6 +365,14 @@ export function CampaignControlPanel({
           )}
           <div className="cc-campaign-list">
             {overview?.campaigns.map((c) => {
+              const senderEmails = [
+                ...new Set(
+                  c.senders.map((sender) => sender.can_view_account
+                    ? sender.email
+                    : t(locale, "Cuenta restringida", "Restricted account"),
+                  ).filter(Boolean),
+                ),
+              ];
               const blockers = [
                 ...new Set(
                   c.senders
@@ -378,6 +386,10 @@ export function CampaignControlPanel({
                   <div className="cc-section-head">
                     <div>
                       <h3>{c.name}</h3>
+                      <p className="cc-campaign-senders" aria-label={t(locale, "Correos remitentes", "Sender email addresses")}>
+                        <span>{t(locale, "Desde:", "From:")}</span>{" "}
+                        <strong>{senderEmails.join(" · ") || t(locale, "Por asignar", "Not assigned")}</strong>
+                      </p>
                       <p>
                         {c.senders.length} {t(locale, "remitentes", "senders")}{" "}
                         ·{" "}
