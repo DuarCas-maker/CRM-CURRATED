@@ -1,0 +1,13 @@
+{
+  "revision":"087e951aa88c56de2bb83890e531cc65b7d0a98a",
+  "application":"https://crm.finlabinc.com",
+  "authenticated":true,
+  "method":"Browser GET navigation, state observation, then JSON metadata only. Navigation control timeout recovered within the same measurement when needed; not SQL or p95.",
+  "reads":[
+    {"kind":"board","query":"group=files","observed_ms":18862,"navigation_timeout":false,"json":true,"error":null,"characters":44645,"rows":50,"total":242},
+    {"kind":"master","observed_ms":24301,"navigation_timeout":true,"json":true,"error":null,"characters":4518},
+    {"kind":"tasks","observed_ms":29299,"navigation_timeout":true,"json":true,"error":null,"characters":19745,"total":1988}
+  ],
+  "entry":{"still_loading_at_observation_ms":16003,"loaded_on_later_observation":true,"timing_comparable":false,"alerts":0},
+  "client_rows_saved":false
+}

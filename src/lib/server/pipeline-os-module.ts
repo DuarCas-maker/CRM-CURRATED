@@ -11,6 +11,10 @@ import {
 import { checkDb, HttpError, requireUser } from "./supabase";
 import { campaignFlowCases } from "./campaign-flow-cases";
 import {
+  createPipelineReadQueue,
+  type PipelineReadQueue,
+} from "./pipeline-read-queue";
+import {
   approvedReportIds,
   confirmedLenderSends,
   latestConfirmation,
@@ -80,35 +84,44 @@ export async function readPipelinePages<T>(
   }
 }
 
-async function readTable<T>(
-  db: SupabaseClient,
-  table: string,
-  columns: string,
-  ids?: string[],
-  key = "opportunity_id",
-  sentOnly = false,
-) {
-  if (ids && !ids.length) return [] as T[];
-  const batches: (string[] | undefined)[] = ids
-    ? Array.from({ length: Math.ceil(ids.length / 50) }, (_, i) =>
-        ids.slice(i * 50, i * 50 + 50),
-      )
-    : [undefined];
-  const rows: T[] = [];
-  for (const batch of batches)
-    rows.push(
-      ...(await readPipelinePages<T>(async (offset) => {
-        let q = db.from(table).select(columns, { count: "exact" }).order("id");
-        if (batch) q = q.in(key, batch);
-        if (sentOnly) q = q.eq("direction", "outbound").eq("status", "sent");
-        if (table === "opportunity_workspace") q = q.is("archived_at", null);
-        if (table === "lenders") q = q.is("archived_at", null);
-        const result = await q.range(offset, offset + 499);
-        const data = checkDb(result, `pipeline_os.${table}`) || [];
-        return { rows: data as unknown as T[], total: result.count };
-      })),
+function pipelineTableReader(run: PipelineReadQueue) {
+  return async function readTable<T>(
+    db: SupabaseClient,
+    table: string,
+    columns: string,
+    ids?: string[],
+    key = "opportunity_id",
+    sentOnly = false,
+  ) {
+    if (ids && !ids.length) return [] as T[];
+    const batches: (string[] | undefined)[] = ids
+      ? Array.from({ length: Math.ceil(ids.length / 50) }, (_, i) =>
+          ids.slice(i * 50, i * 50 + 50),
+        )
+      : [undefined];
+    const pages = await Promise.all(
+      batches.map((batch) =>
+        run(() =>
+          readPipelinePages<T>(async (offset) => {
+            let q = db
+              .from(table)
+              .select(columns, { count: "exact" })
+              .order("id");
+            if (batch) q = q.in(key, batch);
+            if (sentOnly)
+              q = q.eq("direction", "outbound").eq("status", "sent");
+            if (table === "opportunity_workspace")
+              q = q.is("archived_at", null);
+            if (table === "lenders") q = q.is("archived_at", null);
+            const result = await q.range(offset, offset + 499);
+            const data = checkDb(result, `pipeline_os.${table}`) || [];
+            return { rows: data as unknown as T[], total: result.count };
+          }),
+        ),
+      ),
     );
-  return rows;
+    return pages.flat();
+  };
 }
 
 export async function loadPipelineBoard(query: Partial<PipelineQuery> = {}) {
@@ -123,19 +136,40 @@ export async function readPipelineBoard(
   pageSize = 50,
   includeCampaigns = true,
 ) {
+  const run = createPipelineReadQueue();
+  const readTable = pipelineTableReader(run);
   const raw = await readTable<Opportunity>(
     db,
     "opportunity_workspace",
     "id,company,contact,email,phone,industry,amount,stage,seller_id,closer_id,next_action,next_action_at,created_at,updated_at,application_complete,application_signed,funded_at,funded_amount,handed_off_at",
   );
-  const opportunities = await campaignFlowCases(
-    db,
-    raw.filter((o) => canSeeOpportunity(profile, o)),
+  const opportunities = await run(() =>
+    campaignFlowCases(
+      db,
+      raw.filter((o) => canSeeOpportunity(profile, o)),
+    ),
   );
   const ids = opportunities.map((o) => o.id);
   const closerIds = opportunities
     .filter((o) => canSeeArea(profile, o, "closer"))
     .map((o) => o.id);
+  const mailRead = (async () => {
+    const conversations = await readTable<SignalConversation>(
+      db,
+      "mail_conversations_visible",
+      "id,opportunity_id,submission_id,recipient_email,process_id",
+      ids,
+    );
+    const messages = await readTable<SignalMessage>(
+      db,
+      "messages",
+      "id,conversation_id,direction,status,sent_at,participants",
+      conversations.map((c) => c.id),
+      "conversation_id",
+      true,
+    );
+    return { conversations, messages };
+  })();
   const [
     profiles,
     accounts,
@@ -147,6 +181,11 @@ export async function readPipelineBoard(
     submissions,
     processes,
     campaigns,
+    mail,
+    reports,
+    analyses,
+    flowEvents,
+    mail_review_updates,
   ] = await Promise.all([
     readTable<Workspace["profiles"][number]>(
       db,
@@ -156,7 +195,7 @@ export async function readPipelineBoard(
     readTable<Workspace["accounts"][number]>(db, "mail_accounts", "id,email"),
     readTable<Workspace["lenders"][number]>(db, "lenders", "id,name,email"),
     // lender_contacts has no id; readContacts uses its stable unique email key.
-    readContacts(db),
+    readContacts(db, run),
     readTable<Workspace["tasks"][number]>(
       db,
       "tasks",
@@ -194,31 +233,7 @@ export async function readPipelineBoard(
           "id,status",
         )
       : Promise.resolve([]),
-  ]);
-  const directory = { profiles, accounts, lenders, lender_contacts };
-  // Reuse the CRM's evidence rules, but page metadata with the catalog's exact-count reader.
-  const conversations = await readTable<SignalConversation>(
-    db,
-    "mail_conversations_visible",
-    "id,opportunity_id,submission_id,recipient_email,process_id",
-    ids,
-  );
-  const messages = await readTable<SignalMessage>(
-    db,
-    "messages",
-    "id,conversation_id,direction,status,sent_at,participants",
-    conversations.map((c) => c.id),
-    "conversation_id",
-    true,
-  );
-  const opportunity_signals = summarizeOpportunities(opportunities, {
-    ...directory,
-    documents,
-    submissions,
-    conversations,
-    messages,
-  });
-  const [reports, analyses, flowEvents] = await Promise.all([
+    mailRead,
     readTable<FlowReport>(
       db,
       "underwriting_runs",
@@ -237,7 +252,18 @@ export async function readPipelineBoard(
       "id,opportunity_id,process_id,kind,occurred_at,created_at,archive_message_id,document_id,workflow_value",
       closerIds,
     ),
+    readMailReviews(db, closerIds, run),
   ]);
+  const directory = { profiles, accounts, lenders, lender_contacts };
+  // Reuse the CRM's evidence rules, but page metadata with the catalog's exact-count reader.
+  const { conversations, messages } = mail;
+  const opportunity_signals = summarizeOpportunities(opportunities, {
+    ...directory,
+    documents,
+    submissions,
+    conversations,
+    messages,
+  });
   const approved = approvedReportIds(reports, analyses),
     flow_signals: Record<string, FlowSignal> = {};
   for (const opportunity of opportunities) {
@@ -291,31 +317,6 @@ export async function readPipelineBoard(
           : confirmation.workflow_value?.decision === "confirmed",
     };
   }
-  const mail_review_updates: PipelineMailUpdate[] = [];
-  for (let offset = 0; offset < closerIds.length; offset += 50) {
-    const batch = closerIds.slice(offset, offset + 50);
-    const events = await readPipelinePages<PipelineMailUpdate>(
-      async (start) => {
-        const r = await db
-          .from("pipeline_mail_reviews")
-          .select("id,opportunity_id,message_id,approved_at,approved_value", {
-            count: "exact",
-          })
-          .eq("status", "approved")
-          .in("opportunity_id", batch)
-          .order("id")
-          .range(start, start + 499);
-        // Existing installations retain their board until the additive migration is applied.
-        if (r.error && ["42P01", "PGRST205"].includes(r.error.code || ""))
-          return { rows: [], total: 0 };
-        return {
-          rows: checkDb(r, "pipeline_os.mail_reviews") || [],
-          total: r.count,
-        };
-      },
-    );
-    mail_review_updates.push(...events);
-  }
   return buildPipelineBoard(
     {
       ...directory,
@@ -339,18 +340,57 @@ export async function readPipelineBoard(
   );
 }
 
+async function readMailReviews(
+  db: SupabaseClient,
+  closerIds: string[],
+  run: PipelineReadQueue,
+) {
+  const batches = Array.from(
+    { length: Math.ceil(closerIds.length / 50) },
+    (_, i) => closerIds.slice(i * 50, i * 50 + 50),
+  );
+  const pages = await Promise.all(
+    batches.map((batch) =>
+      run(() =>
+        readPipelinePages<PipelineMailUpdate>(async (start) => {
+          const r = await db
+            .from("pipeline_mail_reviews")
+            .select("id,opportunity_id,message_id,approved_at,approved_value", {
+              count: "exact",
+            })
+            .eq("status", "approved")
+            .in("opportunity_id", batch)
+            .order("id")
+            .range(start, start + 499);
+          // Existing installations retain their board until the additive migration is applied.
+          if (r.error && ["42P01", "PGRST205"].includes(r.error.code || ""))
+            return { rows: [], total: 0 };
+          return {
+            rows: checkDb(r, "pipeline_os.mail_reviews") || [],
+            total: r.count,
+          };
+        }),
+      ),
+    ),
+  );
+  return pages.flat();
+}
+
 async function readContacts(
   db: SupabaseClient,
+  run: PipelineReadQueue,
 ): Promise<NonNullable<Workspace["lender_contacts"]>> {
-  return readPipelinePages(async (offset) => {
-    const r = await db
-      .from("lender_contacts")
-      .select("lender_id,email,name", { count: "exact" })
-      .order("email")
-      .range(offset, offset + 499);
-    return {
-      rows: checkDb(r, "pipeline_os.lender_contacts") || [],
-      total: r.count,
-    };
-  });
+  return run(() =>
+    readPipelinePages(async (offset) => {
+      const r = await db
+        .from("lender_contacts")
+        .select("lender_id,email,name", { count: "exact" })
+        .order("email")
+        .range(offset, offset + 499);
+      return {
+        rows: checkDb(r, "pipeline_os.lender_contacts") || [],
+        total: r.count,
+      };
+    }),
+  );
 }

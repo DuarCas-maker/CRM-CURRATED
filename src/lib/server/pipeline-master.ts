@@ -17,39 +17,51 @@ import {
 import { readPipelinePages } from "./pipeline-os-module";
 import { checkDb, requireUser } from "./supabase";
 import { campaignFlowCases } from "./campaign-flow-cases";
+import {
+  createPipelineReadQueue,
+  type PipelineReadQueue,
+} from "./pipeline-read-queue";
 
-async function readRows<T>(
-  db: SupabaseClient,
-  table: string,
-  columns: string,
-  ids?: string[],
-  key = "opportunity_id",
-  since?: string,
-  pageSize = 500,
-): Promise<T[]> {
-  if (ids && !ids.length) return [];
-  const batches = ids
-    ? Array.from({ length: Math.ceil(ids.length / 50) }, (_, i) =>
-        ids.slice(i * 50, i * 50 + 50),
-      )
-    : [undefined];
-  const rows: T[] = [];
-  for (const batch of batches)
-    rows.push(
-      ...(await readPipelinePages<T>(async (offset) => {
-        let q = db.from(table).select(columns, { count: "exact" }).order("id");
-        if (batch) q = q.in(key, batch);
-        if (table === "opportunity_workspace") q = q.is("archived_at", null);
-        if (since) q = q.gte("sent_at", since);
-        const result = await q.range(offset, offset + pageSize - 1);
-        return {
-          rows: (checkDb(result, "master_pipeline." + table) ||
-            []) as unknown as T[],
-          total: result.count,
-        };
-      })),
+function masterRowReader(run: PipelineReadQueue) {
+  return async function readRows<T>(
+    db: SupabaseClient,
+    table: string,
+    columns: string,
+    ids?: string[],
+    key = "opportunity_id",
+    since?: string,
+    pageSize = 500,
+  ): Promise<T[]> {
+    if (ids && !ids.length) return [];
+    const batches = ids
+      ? Array.from({ length: Math.ceil(ids.length / 50) }, (_, i) =>
+          ids.slice(i * 50, i * 50 + 50),
+        )
+      : [undefined];
+    const pages = await Promise.all(
+      batches.map((batch) =>
+        run(() =>
+          readPipelinePages<T>(async (offset) => {
+            let q = db
+              .from(table)
+              .select(columns, { count: "exact" })
+              .order("id");
+            if (batch) q = q.in(key, batch);
+            if (table === "opportunity_workspace")
+              q = q.is("archived_at", null);
+            if (since) q = q.gte("sent_at", since);
+            const result = await q.range(offset, offset + pageSize - 1);
+            return {
+              rows: (checkDb(result, "master_pipeline." + table) ||
+                []) as unknown as T[],
+              total: result.count,
+            };
+          }),
+        ),
+      ),
     );
-  return rows;
+    return pages.flat();
+  };
 }
 
 export async function readMasterPipeline(
@@ -58,13 +70,16 @@ export async function readMasterPipeline(
   query: MasterQuery,
   now = Date.now(),
 ) {
-  const opportunities = await campaignFlowCases(db, (
+  const run = createPipelineReadQueue();
+  const readRows = masterRowReader(run);
+  const raw = (
     await readRows<Opportunity>(
       db,
       "opportunity_workspace",
       "id,company,contact,email,phone,industry,amount,stage,seller_id,closer_id,next_action,next_action_at,created_at,updated_at,application_complete,application_signed,funded_at,funded_amount,funded_lender_id,handed_off_at",
     )
-  ).filter((o) => canSeeOpportunity(profile, o)));
+  ).filter((o) => canSeeOpportunity(profile, o));
+  const opportunities = await run(() => campaignFlowCases(db, raw));
   const ids = opportunities.map((o) => o.id),
     closerIds = opportunities
       .filter((o) => canSeeArea(profile, o, "closer"))
@@ -72,6 +87,26 @@ export async function readMasterPipeline(
   const start = new Date(now);
   start.setUTCHours(0, 0, 0, 0);
   start.setUTCDate(start.getUTCDate() - query.days + 1);
+  const mailRead = (async () => {
+    const conversations = await readRows<Workspace["conversations"][number]>(
+      db,
+      "mail_conversations_visible",
+      "id,opportunity_id,submission_id,process_id,account_id,subject,area,needs_attention,updated_at",
+      ids,
+    );
+    const visibleConversations = conversations.filter((c) => {
+      const o = opportunities.find((o) => o.id === c.opportunity_id);
+      return !!o && canSeeArea(profile, o, c.area);
+    });
+    const messages = await readRows<Workspace["messages"][number]>(
+      db,
+      "messages",
+      "id,conversation_id,direction,sender,sent_at,status,area,nature,reply_intent,archive_message_id",
+      visibleConversations.map((c) => c.id),
+      "conversation_id",
+    );
+    return { conversations: visibleConversations, messages };
+  })();
   const [
     profiles,
     accounts,
@@ -82,9 +117,10 @@ export async function readMasterPipeline(
     processes,
     documents,
     events,
-    conversations,
+    mail,
     leads,
     archive,
+    reviewed,
   ] = await Promise.all([
     readRows<Profile>(db, "profiles", "id,name,email,role,active"),
     readRows<Workspace["accounts"][number] & { owner_id: string | null }>(
@@ -131,12 +167,7 @@ export async function readMasterPipeline(
       "id,opportunity_id,process_id,submission_id,archive_message_id,kind,area,evidence_type,occurred_at",
       ids,
     ),
-    readRows<Workspace["conversations"][number]>(
-      db,
-      "mail_conversations_visible",
-      "id,opportunity_id,submission_id,process_id,account_id,subject,area,needs_attention,updated_at",
-      ids,
-    ),
+    mailRead,
     isSellerRole(profile.role)
       ? readRows<Workspace["leads"][number]>(
           db,
@@ -158,28 +189,17 @@ export async function readMasterPipeline(
       start.toISOString(),
       profile.role === "superadmin" ? 1000 : 500,
     ),
+    readRows<{
+      message_id: string;
+      status: string;
+      result: { offer_id?: string } | null;
+    }>(
+      db,
+      "pipeline_mail_reviews",
+      "id,opportunity_id,message_id,status,result",
+      closerIds,
+    ),
   ]);
-  const visibleConversations = conversations.filter((c) => {
-    const o = opportunities.find((o) => o.id === c.opportunity_id);
-    return !!o && canSeeArea(profile, o, c.area);
-  });
-  const messages = await readRows<Workspace["messages"][number]>(
-    db,
-    "messages",
-    "id,conversation_id,direction,sender,sent_at,status,area,nature,reply_intent,archive_message_id",
-    visibleConversations.map((c) => c.id),
-    "conversation_id",
-  );
-  const reviewed = await readRows<{
-    message_id: string;
-    status: string;
-    result: { offer_id?: string } | null;
-  }>(
-    db,
-    "pipeline_mail_reviews",
-    "id,opportunity_id,message_id,status,result",
-    closerIds,
-  );
   const source: MasterSource = {
     profile,
     profiles,
@@ -190,8 +210,7 @@ export async function readMasterPipeline(
     processes,
     documents,
     events,
-    conversations: visibleConversations,
-    messages,
+    ...mail,
     accounts,
     lenders,
     lender_contacts: [],
