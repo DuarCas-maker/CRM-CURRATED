@@ -41,6 +41,9 @@ function fixtureDatabase(missingCount = false) {
     batch?: unknown[];
     exact: boolean;
   }[] = [];
+  const delayedTables = new Set<string>();
+  const active = new Map<string, number>();
+  const peak = new Map<string, number>();
   class Query {
     columns = "";
     exact = false;
@@ -71,6 +74,12 @@ function fixtureDatabase(missingCount = false) {
       return this;
     }
     async range(offset: number, end: number) {
+      if (delayedTables.has(this.table)) {
+        const concurrent = (active.get(this.table) || 0) + 1;
+        active.set(this.table, concurrent);
+        peak.set(this.table, Math.max(peak.get(this.table) || 0, concurrent));
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
       calls.push({
         table: this.table,
         columns: this.columns,
@@ -88,6 +97,7 @@ function fixtureDatabase(missingCount = false) {
           ]
         : tables[this.table] || [];
       const rows = sourceRows.filter((r) => this.predicates.every((p) => p(r)));
+      if (delayedTables.has(this.table)) active.set(this.table, active.get(this.table)! - 1);
       return {
         data: rows.slice(offset, Math.min(end + 1, offset + 17)),
         count: missingCount ? null : rows.length,
@@ -116,7 +126,7 @@ function fixtureDatabase(missingCount = false) {
       return q;
     },
   } as unknown as SupabaseClient;
-  return { source, calls, tables, client };
+  return { source, calls, tables, client, delayedTables, peak };
 }
 
 test("task reader reads complete catalogs and Campaign Control contact facts with bounded metadata pages", async () => {
@@ -162,6 +172,34 @@ test("task reader only counts campaigns belonging to visible campaign groups", a
     "the same contact in two senders remains one sent lead",
   );
   assert.equal(result.byRep.find((r) => r.id === "samuel")?.sent, 0);
+});
+
+test("task reader reuses one complete mail snapshot for board evidence and reply counts", async () => {
+  const f = fixtureDatabase();
+  const result = await readTasksOverview(
+    f.client,
+    f.source.profile,
+    parseTaskOverviewQuery(new URLSearchParams()),
+  );
+  assert.equal(result.totals.sent, 2);
+  assert.equal(result.totals.replied, 2);
+  const conversationReads = f.calls.filter((c) => c.table === "mail_conversations_visible");
+  assert.equal(conversationReads.length, 2, "one page per 50-case batch, without a second mail scan");
+  assert(conversationReads.every((c) => c.columns.includes("account_id") && c.columns.includes("area")));
+  assert(f.calls.filter((c) => c.table === "messages").every((c) => c.columns.includes("reply_intent")));
+});
+
+test("case metadata batches overlap with a limit of four without dropping cases", async () => {
+  const f = fixtureDatabase();
+  const seed = f.tables.opportunity_workspace[0];
+  f.tables.opportunity_workspace = Array.from({ length: 251 }, (_, i) => ({
+    ...seed, id: `bulk-case-${i}`, email: `bulk-${i}@example.invalid`,
+  }));
+  f.delayedTables.add("mail_conversations_visible");
+  const result = await readTasksOverview(f.client, f.source.profile, parseTaskOverviewQuery(new URLSearchParams()));
+  assert.equal(f.peak.get("mail_conversations_visible"), 4);
+  assert.equal(f.calls.filter((c) => c.table === "mail_conversations_visible").length, 6);
+  assert.equal(result.totals.stages.app, 251);
 });
 
 test("task overview never pages through unused unsent campaign facts", async () => {

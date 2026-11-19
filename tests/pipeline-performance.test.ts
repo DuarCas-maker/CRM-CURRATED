@@ -22,6 +22,7 @@ for (const kind of ["board", "master"] as const) {
     assert.equal(result.rows.length, 50);
     const metrics = f.metrics();
     assert(metrics.peak <= 6, `global query peak ${metrics.peak} exceeds six`);
+    assert(Object.values(metrics.byTable).every(peak => peak <= 4), "each relation retains its four-batch cap");
     assert(
       metrics.byTable.mail_conversations_visible > 1,
       "separate conversation ID batches should overlap",

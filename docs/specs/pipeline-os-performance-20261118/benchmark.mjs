@@ -11,7 +11,7 @@ import { readTasksOverview } from "../../../src/lib/server/pipeline-tasks.ts";
 import { parseMasterQuery } from "../../../src/lib/pipeline-os/master-pipeline.ts";
 import { parseTaskOverviewQuery } from "../../../src/lib/pipeline-os/tasks-overview.ts";
 
-const baseline = "087e951aa88c56de2bb83890e531cc65b7d0a98a";
+const baseline = "6ec093a83bd3aa01f3cbd1d1ee2013d882502664";
 const names = ["pipeline-os-module", "pipeline-master", "pipeline-tasks"];
 const virtual = Object.fromEntries(
   names.map((name) => [

@@ -19,6 +19,7 @@ import { checkDb, requireUser } from "./supabase";
 import { campaignFlowCases } from "./campaign-flow-cases";
 import {
   createPipelineReadQueue,
+  readPipelineBatches,
   type PipelineReadQueue,
 } from "./pipeline-read-queue";
 
@@ -38,27 +39,19 @@ function masterRowReader(run: PipelineReadQueue) {
           ids.slice(i * 50, i * 50 + 50),
         )
       : [undefined];
-    const pages = await Promise.all(
-      batches.map((batch) =>
-        run(() =>
-          readPipelinePages<T>(async (offset) => {
-            let q = db
-              .from(table)
-              .select(columns, { count: "exact" })
-              .order("id");
-            if (batch) q = q.in(key, batch);
-            if (table === "opportunity_workspace")
-              q = q.is("archived_at", null);
-            if (since) q = q.gte("sent_at", since);
-            const result = await q.range(offset, offset + pageSize - 1);
-            return {
-              rows: (checkDb(result, "master_pipeline." + table) ||
-                []) as unknown as T[],
-              total: result.count,
-            };
-          }),
-        ),
-      ),
+    const pages = await readPipelineBatches(batches, run, (batch) =>
+      readPipelinePages<T>(async (offset) => {
+        let q = db.from(table).select(columns, { count: "exact" }).order("id");
+        if (batch) q = q.in(key, batch);
+        if (table === "opportunity_workspace") q = q.is("archived_at", null);
+        if (since) q = q.gte("sent_at", since);
+        const result = await q.range(offset, offset + pageSize - 1);
+        return {
+          rows: (checkDb(result, "master_pipeline." + table) ||
+            []) as unknown as T[],
+          total: result.count,
+        };
+      }),
     );
     return pages.flat();
   };

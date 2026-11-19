@@ -21,9 +21,15 @@ Se trata de la corrección del mismo alcance autorizado por el usuario; no de un
 Regresión ejecutada antes del arreglo: el caso de 4000 destinatarios pendientes falló por exceso de páginas RPC. Tras filtrar enviados, conserva 2 leads enviados únicos, el catálogo de 73 leads y exactamente tres páginas de hechos útiles. No se relajó la aserción ni se aumentó el timeout.
 
 La corrección pasa 93 pruebas, TypeScript y build Node22.23.4. Antes de publicarla se conservó bd645bb (índice de contactos importados publicado por otro frente); no cambia fuentes de aplicación y no se aplicó ni repitió SQL desde este chat. Cinco comprobaciones de índice/esquema/etapas posteriores también pasan. Los tres archivos de código propios modificados son workspace.tsx (grupo de lectura al abrir tareas), pipeline-tasks.ts (filtro y concurrencia acotada) y su regresión de lector.
-# Segunda lectura productiva — diagnóstico acotado
+
+## Segunda lectura productiva — diagnóstico acotado
 
 087e951 terminó correctamente en Coolify, pero la UI aún agota los 30 s. Una consulta autenticada sin filas de detalle devolvió un resumen válido, con asOf 31.046 s después del inicio del navegador (aproximado por reloj entre hosts). No es un error de autorización ni de agregación.
 
 Hipótesis pendientes: (1) lotes secuenciales del lector canónico del tablero; (2) una consulta individual lenta del catálogo; (3) coste acumulado de hechos de campañas. Se añade observabilidad del mismo tipo que workspace_read: exclusivamente nombre fijo de recurso, cantidad de llamadas y milisegundos. Sin IDs, filtros, URL, cuerpos ni datos personales. Se publica este diagnóstico para confirmar la causa antes del siguiente cambio; timeout y datos permanecen intactos. Tipos y seis pruebas relacionadas pasan.
 
+La medición productiva de fea58d0 confirma H1: duración de petición 30039 ms; mail_conversations_visible acumula 10 llamadas, máximo 4463 ms y suma 36715 ms; cinco llamadas canónicas secuenciales y otras cinco del resumen. lead_workspace acumula 10813 ms (cuatro páginas) en paralelo; campaign_contact_facts solo 1138 ms (siete llamadas). La suma de lecturas concurrentes no equivale al tiempo de pared. La duplicación y serialización del correo dominan el camino crítico, no los hechos de campañas.
+
+Corrección: el lector canónico ofrece una captura interna opcional de metadatos mínimos del correo; el resumen reutiliza esa misma lectura para respuestas/gestión. El HTTP del tablero nunca recibe esa captura. Sin captura se conserva la proyección anterior y solo outbound sent. Al capturar se incluyen inbound y los campos mínimos, mientras las reglas de señales/etapas siguen exigiendo outbound sent. El resumen vuelve a filtrar por casos visibles y área/rol antes de agregar. Los lotes de hasta 50 IDs se procesan de cuatro en cuatro, manteniendo paginación ordenada, conteo exacto y fallo ante cambios/incompletitud. Se elimina la instrumentación temporal.
+
+Regresión vista fallar antes de corregir: una sola lectura de conversaciones por lote, con respuestas humanas preservadas. Nueva prueba de 251 casos observa exactamente seis lotes, máximo cuatro concurrentes y 251 casos contados. 95 pruebas relevantes pasan; tipos y build se vuelven a verificar. No hay SQL, timeout ampliado ni credenciales/configuración modificadas.

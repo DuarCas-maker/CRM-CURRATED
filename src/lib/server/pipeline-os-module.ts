@@ -1,6 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { underwritingReadiness } from "../underwriting-status";
-import type { Opportunity, Profile, Workspace } from "../domain";
+import type {
+  Conversation,
+  Message,
+  Opportunity,
+  Profile,
+  Workspace,
+} from "../domain";
 import { canSeeOpportunity, canSeeArea } from "../domain";
 import {
   buildPipelineBoard,
@@ -12,6 +18,7 @@ import { checkDb, HttpError, requireUser } from "./supabase";
 import { campaignFlowCases } from "./campaign-flow-cases";
 import {
   createPipelineReadQueue,
+  readPipelineBatches,
   type PipelineReadQueue,
 } from "./pipeline-read-queue";
 import {
@@ -27,6 +34,14 @@ import {
   type SignalConversation,
   type SignalMessage,
 } from "../opportunity-signals";
+
+/** Optional internal metadata snapshot; it is never included in the board HTTP response. */
+export type PipelineBoardMail = {
+  conversations: (SignalConversation &
+    Pick<Conversation, "account_id" | "area">)[];
+  messages: (SignalMessage &
+    Pick<Message, "id" | "sender" | "nature" | "reply_intent">)[];
+};
 
 /** Follow the actual returned count, including installations with a smaller REST page cap. */
 export async function readPipelinePages<T>(
@@ -99,26 +114,17 @@ function pipelineTableReader(run: PipelineReadQueue) {
           ids.slice(i * 50, i * 50 + 50),
         )
       : [undefined];
-    const pages = await Promise.all(
-      batches.map((batch) =>
-        run(() =>
-          readPipelinePages<T>(async (offset) => {
-            let q = db
-              .from(table)
-              .select(columns, { count: "exact" })
-              .order("id");
-            if (batch) q = q.in(key, batch);
-            if (sentOnly)
-              q = q.eq("direction", "outbound").eq("status", "sent");
-            if (table === "opportunity_workspace")
-              q = q.is("archived_at", null);
-            if (table === "lenders") q = q.is("archived_at", null);
-            const result = await q.range(offset, offset + 499);
-            const data = checkDb(result, `pipeline_os.${table}`) || [];
-            return { rows: data as unknown as T[], total: result.count };
-          }),
-        ),
-      ),
+    const pages = await readPipelineBatches(batches, run, (batch) =>
+      readPipelinePages<T>(async (offset) => {
+        let q = db.from(table).select(columns, { count: "exact" }).order("id");
+        if (batch) q = q.in(key, batch);
+        if (sentOnly) q = q.eq("direction", "outbound").eq("status", "sent");
+        if (table === "opportunity_workspace") q = q.is("archived_at", null);
+        if (table === "lenders") q = q.is("archived_at", null);
+        const result = await q.range(offset, offset + 499);
+        const data = checkDb(result, `pipeline_os.${table}`) || [];
+        return { rows: data as unknown as T[], total: result.count };
+      }),
     );
     return pages.flat();
   };
@@ -135,6 +141,7 @@ export async function readPipelineBoard(
   query: Partial<PipelineQuery> = {},
   pageSize = 50,
   includeCampaigns = true,
+  captureMail?: (mail: PipelineBoardMail) => void,
 ) {
   const run = createPipelineReadQueue();
   const readTable = pipelineTableReader(run);
@@ -154,19 +161,25 @@ export async function readPipelineBoard(
     .filter((o) => canSeeArea(profile, o, "closer"))
     .map((o) => o.id);
   const mailRead = (async () => {
-    const conversations = await readTable<SignalConversation>(
+    const conversations = await readTable<
+      PipelineBoardMail["conversations"][number]
+    >(
       db,
       "mail_conversations_visible",
-      "id,opportunity_id,submission_id,recipient_email,process_id",
+      captureMail
+        ? "id,opportunity_id,submission_id,recipient_email,process_id,account_id,area"
+        : "id,opportunity_id,submission_id,recipient_email,process_id",
       ids,
     );
-    const messages = await readTable<SignalMessage>(
+    const messages = await readTable<PipelineBoardMail["messages"][number]>(
       db,
       "messages",
-      "id,conversation_id,direction,status,sent_at,participants",
+      captureMail
+        ? "id,conversation_id,direction,status,sent_at,participants,sender,nature,reply_intent"
+        : "id,conversation_id,direction,status,sent_at,participants",
       conversations.map((c) => c.id),
       "conversation_id",
-      true,
+      !captureMail,
     );
     return { conversations, messages };
   })();
@@ -257,6 +270,7 @@ export async function readPipelineBoard(
   const directory = { profiles, accounts, lenders, lender_contacts };
   // Reuse the CRM's evidence rules, but page metadata with the catalog's exact-count reader.
   const { conversations, messages } = mail;
+  captureMail?.({ conversations, messages });
   const opportunity_signals = summarizeOpportunities(opportunities, {
     ...directory,
     documents,
@@ -349,29 +363,25 @@ async function readMailReviews(
     { length: Math.ceil(closerIds.length / 50) },
     (_, i) => closerIds.slice(i * 50, i * 50 + 50),
   );
-  const pages = await Promise.all(
-    batches.map((batch) =>
-      run(() =>
-        readPipelinePages<PipelineMailUpdate>(async (start) => {
-          const r = await db
-            .from("pipeline_mail_reviews")
-            .select("id,opportunity_id,message_id,approved_at,approved_value", {
-              count: "exact",
-            })
-            .eq("status", "approved")
-            .in("opportunity_id", batch)
-            .order("id")
-            .range(start, start + 499);
-          // Existing installations retain their board until the additive migration is applied.
-          if (r.error && ["42P01", "PGRST205"].includes(r.error.code || ""))
-            return { rows: [], total: 0 };
-          return {
-            rows: checkDb(r, "pipeline_os.mail_reviews") || [],
-            total: r.count,
-          };
-        }),
-      ),
-    ),
+  const pages = await readPipelineBatches(batches, run, (batch) =>
+    readPipelinePages<PipelineMailUpdate>(async (start) => {
+      const r = await db
+        .from("pipeline_mail_reviews")
+        .select("id,opportunity_id,message_id,approved_at,approved_value", {
+          count: "exact",
+        })
+        .eq("status", "approved")
+        .in("opportunity_id", batch)
+        .order("id")
+        .range(start, start + 499);
+      // Existing installations retain their board until the additive migration is applied.
+      if (r.error && ["42P01", "PGRST205"].includes(r.error.code || ""))
+        return { rows: [], total: 0 };
+      return {
+        rows: checkDb(r, "pipeline_os.mail_reviews") || [],
+        total: r.count,
+      };
+    }),
   );
   return pages.flat();
 }

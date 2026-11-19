@@ -27,3 +27,11 @@ Suite ampliada: **111/111 correctas**, cero fallos/omisiones,26 archivos, con No
 Después se detectó el avance remoto fea58d0 (observabilidad segura de Tareas, dos archivos), incorporado fast-forward sin conflicto y sin editar su contenido. No se accedió a sus registros privados. La comparación sintética vuelve a confirmar JSON y alcance idénticos; se repiten los checks afectados y el build sobre esta base final.
 
 Revisión del diff: filtros/columnas/roles iguales; snippets de correo continúan después de paginar, sin credenciales o cuerpos adicionales. readPipelinePages no cambió. Promesas observadas por Promise.all; primer fallo rechaza trabajos en espera y una invocación posterior crea una cola nueva. Prueba de fallo y aislamiento nueva correcta.
+
+## Conciliación de6ec093a
+
+Main avanzó otra vez con reutilización de mail snapshot y cap4 por relación. Conciliación explícita del único archivo en conflicto: conservar tipos/firma/callback y columnas condicionales de6ec; aplicar la cola global y la reordenación propia. Se mantiene el cap4 de6ec y su aserción original sin relajar. pipeline-tasks.ts, prueba y documento de ese frente se incorporan íntegros.
+
+La comparación final en synthetic.json usa6ec093a: Board309→316ms (95 queries), Master450→281ms (79), Tareas314→301ms (99). Mismo JSON completo y mismo alcance exacto por escenario. No se atribuye mejora sintética adicional relevante de Board/Tareas frente a6ec; su pico baja25/24→6 y el solapamiento ya recibido se conserva. Master reduce la espera y pico12→6. Los números anteriores contra087 son históricos de la primera versión local y no se presentan como benchmark del candidato conciliado. La publicación medirá el conjunto frente al baseline real087.
+
+Combinación final conciliada: **113/113 pruebas correctas**, cero fallos/omisiones,26 archivos. Cap4 original del frente Tareas y cap6 global propios pasan simultáneamente. TypeScript correcto y build público aislado Node22 completo,60/60 páginas. No quedan marcadores de conflicto; whitespace y revisión del delta contra6ec correctos. Fuentes web sin cambios de UI o protocolo; no se necesita repetir QA visual de diseño para esta modificación de servidor.
