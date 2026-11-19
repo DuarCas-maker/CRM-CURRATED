@@ -1,0 +1,19 @@
+{
+  "target": "https://supabase.finlabinc.com",
+  "database": "postgres",
+  "postgres_version": "15.8",
+  "authorization": "Explicit backup, index and production verification approval after read-only diagnosis",
+  "index": "workspace_import_rows_imported_contact_idx",
+  "sql_sha256": "7b5b24d31d13de5ad2121c48e5ab74888f594a84d5ef048b168a6a86d7576224",
+  "backup": {"server_only": true, "verified": true, "bytes": 69927076, "sha256": "eb4fa9668b66308f20c5ca161c10a37f6ffc31982cc97a2fd70b4221e81d08ed", "complete_disaster_restore_tested": false},
+  "index_valid": true,
+  "index_ready": true,
+  "functions_policies_table_grants_unchanged": true,
+  "reports": [
+    {"observed_ms":5627,"stats_present":true,"error":null},
+    {"observed_ms":5913,"stats_present":true,"error":null},
+    {"observed_ms":5729,"stats_present":true,"error":null}
+  ],
+  "indicators_ui": {"loaded":true,"loading":false,"nonempty_alerts":0,"new_console_errors_or_warnings":0},
+  "client_rows_saved": false
+}

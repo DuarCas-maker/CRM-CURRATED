@@ -89,3 +89,9 @@ Corrección siguiente, FR-006/007: no leer estadísticas legacy cuando no se ren
 8866e84: web8jvfclxnseoxzwrvoxporib1 finalizada, healthy y rolling update completo. GET autenticados overview11881ms, pipeline7102ms, leads3947ms, sin error y sin estadísticas legacy/revisiones administrativas; comparables al baseline observado. Tres entradas SSR10555/9393/9411ms sin errores ni React418. La navegación reveló Illegal invocation en WorkspaceReader, por receptor incorrecto de fetch; no se marcó el postflight de UI como aprobado.
 
 Corrección del receptor: regresión nueva falla antes y pasa después. Fixture real `preview-fetch.mjs`, en loopback3219 y sin mock de window.fetch, muestra Lectura correcta y consola vacía. Servidor temporal detenido. **87/87 pruebas correctas**, typecheck y nuevo build Node22 completos correctos. La siguiente publicación debe confirmar la navegación real, no solo GET directos.
+
+## Cierre productivo y base de datos
+
+7dde2e8 fue publicado y verificado: navegación real a Oportunidades/Leads sin carga bloqueada, alertas ni errores nuevos. Índice de Reportes autorizado posteriormente, respaldado y aplicado concurrentemente con huellas de funciones/políticas/grants intactas. Tres GET reales con stats presentes, sin timeout, y pantalla Indicadores completa. Detalle en production-results.md y database/verification.md.
+
+Integrado por fast-forward el avance remoto fed1e49, sin editar sus fuentes de Tareas. La migración canónica058 queda versionada junto al SQL concurrente aplicado. Suite final: **98/98 correctas**, cero fallos/omisiones,23 archivos, Node22.23.4, guardia offline y loader CSS indicado. TypeScript correcto. No se necesita repetir build local por documentos/SQL/test; el pipeline existente compilará el mismo producto que main al publicar la evidencia. Los límites históricos “no publicado/no SQL autorizado” de secciones anteriores quedan superados por las autorizaciones explícitas y evidencias posteriores.
