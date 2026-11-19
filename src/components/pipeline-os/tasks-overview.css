@@ -61,7 +61,7 @@
 .pipeline-os .pos-tasks-selected th:first-child {
   box-shadow: inset 3px 0 var(--pos-accent);
 }
-.pipeline-os .pos-tasks-owner {
+.pipeline-os .pos-tasks-email {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -72,6 +72,7 @@
   color: var(--pos-ink);
   font-weight: 600;
   min-height: 32px;
+  overflow-wrap: anywhere;
 }
 .pipeline-os .pos-tasks-avatar {
   display: grid;
@@ -84,36 +85,12 @@
   color: var(--pos-soft-ink);
   font-size: 11px;
 }
-.pipeline-os .pos-tasks-accounts {
-  display: grid;
-  gap: 9px;
-  margin: 8px 0 0 38px;
-}
-.pipeline-os .pos-tasks-account {
-  display: grid;
-  text-align: left;
-  gap: 2px;
-  padding: 4px 0;
-  border: 0;
-  background: none;
-  color: var(--pos-muted);
-  font-size: 11px;
-  min-height: 32px;
-}
-.pipeline-os .pos-tasks-account > span {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  overflow-wrap: anywhere;
-}
-.pipeline-os .pos-tasks-account small {
-  font-size: 10px;
-  padding-left: 17px;
-}
-.pipeline-os .pos-tasks-account:hover,
-.pipeline-os .pos-tasks-account[aria-pressed="true"] {
+.pipeline-os .pos-tasks-email:hover {
   color: var(--pos-accent);
   text-decoration: underline;
+}
+.pipeline-os .pos-tasks-stage-filter {
+  margin-bottom: 12px;
 }
 .pipeline-os .pos-tasks-number {
   border: 0;

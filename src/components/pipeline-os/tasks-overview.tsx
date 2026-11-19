@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, type ReactNode } from "react";
-import { ArrowUpRight, Check, Mail, RefreshCw, Users, X } from "lucide-react";
+import { ArrowUpRight, Check, Mail, RefreshCw, X } from "lucide-react";
 import type { Locale, Workspace } from "@/lib/domain";
 import { WorkspaceReader } from "@/lib/workspace-reader";
 import {
@@ -12,7 +12,7 @@ import {
   buildTasksOverview,
   taskLeadStatuses,
   type TaskOverviewQuery,
-  type TaskRep,
+  type TaskAccountSummary,
   type TasksOverview,
   type TaskStage,
 } from "@/lib/pipeline-os/tasks-overview";
@@ -40,27 +40,27 @@ type Props = {
   data: Workspace;
   processes: PipelineProcess[];
   locale: Locale;
-  owner: string;
   query: string;
-  onOwner(id: string): void;
+  onSelect(): void;
   open(id: string): void;
-  onStage(owner: string, stage: TaskStage): void;
-  renderStages?(counts: Record<TaskStage, number> | null): ReactNode;
+  renderStages?(
+    counts: Record<TaskStage, number> | null,
+    selectStage: (stage: TaskStage) => void,
+  ): ReactNode;
 };
 
 export function OpenTasksOverview({
   data,
   processes,
   locale,
-  owner,
   query,
-  onOwner,
+  onSelect,
   open,
-  onStage,
   renderStages,
 }: Props) {
   const [account, setAccount] = useState("all"),
     [status, setStatus] = useState<TaskOverviewQuery["status"]>("all"),
+    [stage, setStage] = useState<TaskOverviewQuery["stage"]>("all"),
     [page, setPage] = useState(0),
     [revision, setRevision] = useState(0);
   const [overview, setOverview] = useState<TasksOverview | null>(null),
@@ -68,15 +68,16 @@ export function OpenTasksOverview({
     [error, setError] = useState("");
   const [reader] = useState(() => new WorkspaceReader<TasksOverview>());
   const key = new URLSearchParams({
-    owner,
+    owner: "all",
     q: query,
     account,
     status,
+    stage,
     page: String(page),
   }).toString();
   useEffect(() => {
     setPage(0);
-  }, [owner, query]);
+  }, [query]);
   useEffect(() => {
     let disposed = false;
     setError("");
@@ -108,7 +109,7 @@ export function OpenTasksOverview({
                     ?.seller_id || null,
               })),
             },
-            { owner, q: query, account, status, page },
+            { q: query, account, status, stage, page },
           );
         } else {
           const body = await reader.read(`/api/pipeline-os/tasks?${key}`, true);
@@ -133,31 +134,43 @@ export function OpenTasksOverview({
     revision,
     data,
     processes,
-    owner,
     query,
     account,
     status,
+    stage,
     page,
     locale,
     reader,
   ]);
-  function selectOwner(id: string, accountId = "all") {
-    setAccount(accountId);
+  function selectAccount(id: string) {
+    setAccount(id);
+    setStatus("all");
+    setStage("all");
+    setPage(0);
+    onSelect();
+  }
+  function selectStage(id: string, value: TaskStage) {
+    setAccount(id);
+    setStage(value);
     setStatus("all");
     setPage(0);
-    onOwner(id);
+    onSelect();
   }
   return (
     <>
       <TasksOverviewView
         overview={overview}
         locale={locale}
-        owner={owner}
         account={account}
         status={status}
+        stage={stage}
         loading={loadedKey !== key || !overview}
         error={error}
-        selectOwner={selectOwner}
+        selectAccount={selectAccount}
+        changeStage={(value) => {
+          setStage(value);
+          setPage(0);
+        }}
         changeStatus={(value) => {
           setStatus(value);
           setPage(0);
@@ -168,14 +181,15 @@ export function OpenTasksOverview({
           setRevision((n) => n + 1);
         }}
         open={open}
-        onStage={onStage}
+        onStage={selectStage}
       />
       {renderStages?.(
         !error && loadedKey === key && overview
-          ? owner === "all"
+          ? account === "all"
             ? overview.totals.stages
-            : overview.byRep.find((r) => r.id === owner)?.stages || null
+            : overview.byAccount.find((r) => r.id === account)?.stages || null
           : null,
+        (value) => selectStage(account, value),
       )}
     </>
   );
@@ -184,35 +198,37 @@ export function OpenTasksOverview({
 type ViewProps = {
   overview: TasksOverview | null;
   locale: Locale;
-  owner: string;
   account: string;
   status: TaskOverviewQuery["status"];
+  stage: TaskOverviewQuery["stage"];
   loading: boolean;
   error: string;
-  selectOwner(id: string, account?: string): void;
+  selectAccount(id: string): void;
+  changeStage(stage: TaskOverviewQuery["stage"]): void;
   changeStatus(status: TaskOverviewQuery["status"]): void;
   changePage(page: number): void;
   refresh(): void;
   open(id: string): void;
-  onStage(owner: string, stage: TaskStage): void;
+  onStage(account: string, stage: TaskStage): void;
 };
 
 export function TasksOverviewView({
   overview,
   locale,
-  owner,
   account,
   status,
+  stage,
   loading,
   error,
-  selectOwner,
+  selectAccount,
+  changeStage,
   changeStatus,
   changePage,
   refresh,
   open,
   onStage,
 }: ViewProps) {
-  const selected = overview?.byRep.find((r) => r.id === owner);
+  const selected = overview?.byAccount.find((r) => r.id === account);
   const metric = (n: number | null) => number(n, locale);
   const date = (at: string | null) =>
     at
@@ -223,8 +239,8 @@ export function TasksOverviewView({
           timeZone: "UTC",
         }).format(new Date(at))
       : "—";
-  function summaryRow(rep: TaskRep, total = false) {
-    const active = owner === rep.id && account === "all";
+  function summaryRow(rep: TaskAccountSummary, total = false) {
+    const active = account === rep.id;
     return (
       <tr
         key={rep.id}
@@ -232,67 +248,26 @@ export function TasksOverviewView({
       >
         <th scope="row">
           <button
-            className="pos-tasks-owner"
-            onClick={() => selectOwner(rep.id)}
+            className="pos-tasks-email"
+            onClick={() => selectAccount(rep.id)}
             aria-pressed={active}
           >
             <span className="pos-tasks-avatar" aria-hidden="true">
-              {total ? (
-                <Users size={17} />
-              ) : (
-                rep.name
-                  .trim()
-                  .split(/\s+/)
-                  .slice(0, 2)
-                  .map((s) => s[0])
-                  .join("")
-              )}
+              <Mail size={17} />
             </span>
             <span>
               {total
-                ? t(locale, "Todos los responsables", "All reps")
-                : rep.name}
+                ? t(locale, "Todos los correos", "All email accounts")
+                : rep.email}
             </span>
             {active && <Check size={14} aria-hidden="true" />}
           </button>
-          {!total && (
-            <div className="pos-tasks-accounts">
-              {rep.accounts.length ? (
-                rep.accounts.map((a) => (
-                  <button
-                    key={a.id}
-                    className="pos-tasks-account"
-                    aria-pressed={owner === rep.id && account === a.id}
-                    onClick={() => selectOwner(rep.id, a.id)}
-                  >
-                    <span>
-                      <Mail size={12} aria-hidden="true" />
-                      {a.email ||
-                        t(
-                          locale,
-                          "Cuenta no disponible",
-                          "Account unavailable",
-                        )}
-                    </span>
-                    <small>
-                      {metric(a.sent)} {t(locale, "enviados", "sent")} ·{" "}
-                      {metric(a.replied)} {t(locale, "contestados", "replied")}
-                    </small>
-                  </button>
-                ))
-              ) : (
-                <small className="pos-muted">
-                  {t(locale, "Sin cuenta vinculada", "No linked account")}
-                </small>
-              )}
-            </div>
-          )}
         </th>
         <td>
           <button
             className="pos-tasks-number"
-            onClick={() => selectOwner(rep.id)}
-            aria-label={`${rep.name}: ${metric(rep.leads)} leads`}
+            onClick={() => selectAccount(rep.id)}
+            aria-label={`${rep.email}: ${metric(rep.leads)} leads`}
           >
             {metric(rep.leads)}
           </button>
@@ -319,7 +294,7 @@ export function TasksOverviewView({
               <button
                 className="pos-tasks-number"
                 onClick={() => onStage(rep.id, s)}
-                aria-label={`${rep.name}: ${t(locale, ...stageNames[s])}, ${metric(rep.stages[s])}`}
+                aria-label={`${rep.email}: ${t(locale, ...stageNames[s])}, ${metric(rep.stages[s])}`}
               >
                 {metric(rep.stages[s])}
               </button>
@@ -332,22 +307,16 @@ export function TasksOverviewView({
   return (
     <section
       className="pos-tasks-overview"
-      aria-label={t(
-        locale,
-        "Resumen de responsables y correos",
-        "Rep and email overview",
-      )}
+      aria-label={t(locale, "Resumen por correo", "Email account overview")}
     >
       <div className="pos-tasks-heading">
         <div>
-          <h3>
-            {t(locale, "Responsables y correos", "Reps & email accounts")}
-          </h3>
+          <h3>{t(locale, "Correos del CRM", "CRM email accounts")}</h3>
           <p>
             {t(
               locale,
-              "Todo el historial · selecciona un responsable para ver sus leads.",
-              "All recorded history · select a rep to view their leads.",
+              "Todo el historial · selecciona un correo para ver sus leads.",
+              "All recorded history · select an email account to view its leads.",
             )}
           </p>
         </div>
@@ -377,8 +346,8 @@ export function TasksOverviewView({
           <div className="pos-card pos-empty" role="status">
             {t(
               locale,
-              "Cargando responsables, correos y leads…",
-              "Loading reps, email accounts and leads…",
+              "Cargando correos y leads…",
+              "Loading email accounts and leads…",
             )}
           </div>
         )
@@ -389,21 +358,19 @@ export function TasksOverviewView({
               className="pos-scroll"
               tabIndex={0}
               role="region"
-              aria-label={t(locale, "Tabla de responsables", "Rep table")}
+              aria-label={t(locale, "Tabla de correos", "Email account table")}
             >
               <table className="pos-table pos-tasks-table">
                 <caption className="pos-sr-only">
                   {t(
                     locale,
-                    "Resumen de todo el historial por responsable y cuenta de correo",
-                    "All recorded history by rep and email account",
+                    "Resumen de todo el historial por dirección de correo, sin duplicados",
+                    "All recorded history by unique email address",
                   )}
                 </caption>
                 <thead>
                   <tr>
-                    <th scope="col">
-                      {t(locale, "Responsable / correo", "Rep / email")}
-                    </th>
+                    <th scope="col">{t(locale, "Correo", "Email account")}</th>
                     <th scope="col">Leads</th>
                     <th scope="col">
                       {t(locale, "Enviados · campañas", "Sent · campaigns")}
@@ -421,19 +388,22 @@ export function TasksOverviewView({
                     {
                       ...overview.totals,
                       id: "all",
-                      name: t(locale, "Todos", "All"),
-                      accounts: [],
+                      email: t(
+                        locale,
+                        "Todos los correos",
+                        "All email accounts",
+                      ),
                     },
                     true,
                   )}
-                  {overview.byRep.map((r) => summaryRow(r))}
-                  {!overview.byRep.length && (
+                  {overview.byAccount.map((r) => summaryRow(r))}
+                  {!overview.byAccount.length && (
                     <tr>
                       <td colSpan={9}>
                         {t(
                           locale,
-                          "No hay responsables ni correos disponibles.",
-                          "No reps or email accounts available.",
+                          "No hay correos disponibles.",
+                          "No email accounts available.",
                         )}
                       </td>
                     </tr>
@@ -444,8 +414,8 @@ export function TasksOverviewView({
             <p className="pos-tasks-note">
               {t(
                 locale,
-                "Enviados: leads únicos con envío confirmado en Campañas. Un lead en varias cuentas cuenta una vez en el total. Contestados: leads con respuesta recibida. Etapas: responsable actual del expediente.",
-                "Sent: unique leads with a confirmed campaign send. A lead in multiple accounts counts once in the total. Replied: leads with a received reply. Stages: the file's current rep.",
+                "Leads: enviados y pendientes vinculados a cada correo. Enviados: leads únicos enviados en Campañas. Contestados: leads que respondieron a ese correo. Un lead compartido cuenta una vez por correo y una vez en el total general; los leads aún sin correo vinculado solo aparecen en el total.",
+                "Leads: sent and pending recipients linked to each email account. Sent: unique leads sent in Campaigns. Replied: leads that replied to that account. Shared leads count once per account and once overall; leads without an account link appear only in the overall total.",
               )}
             </p>
           </div>
@@ -454,12 +424,16 @@ export function TasksOverviewView({
               <div>
                 <h3>
                   {selected
-                    ? `${t(locale, "Leads de", "Leads for")} ${selected.name}`
+                    ? `${t(locale, "Leads de", "Leads for")} ${selected.email}`
                     : t(locale, "Todos los leads", "All leads")}
                 </h3>
                 <p>
                   {account !== "all"
-                    ? selected?.accounts.find((a) => a.id === account)?.email
+                    ? t(
+                        locale,
+                        "Actividad registrada en este correo.",
+                        "Activity recorded on this email account.",
+                      )
                     : t(
                         locale,
                         "Gestionado = al menos un correo enviado registrado.",
@@ -467,16 +441,26 @@ export function TasksOverviewView({
                       )}
                 </p>
               </div>
-              {(owner !== "all" || account !== "all") && (
+              {account !== "all" && (
                 <button
                   className="pos-text-btn"
-                  onClick={() => selectOwner("all")}
+                  onClick={() => selectAccount("all")}
                 >
                   {t(locale, "Ver todos", "View all")}
                   <X size={13} />
                 </button>
               )}
             </div>
+            {stage !== "all" && (
+              <button
+                className="pos-text-btn pos-tasks-stage-filter"
+                onClick={() => changeStage("all")}
+              >
+                {t(locale, ...stageNames[stage])} ·{" "}
+                {t(locale, "Ver todas las etapas", "View all stages")}{" "}
+                <X size={13} />
+              </button>
+            )}
             <div
               className="pos-tasks-status"
               role="group"
@@ -531,7 +515,13 @@ export function TasksOverviewView({
                       <th scope="col">
                         {t(locale, "Lead / empresa", "Lead / business")}
                       </th>
-                      <th scope="col">{t(locale, "Responsable", "Rep")}</th>
+                      <th scope="col">
+                        {t(
+                          locale,
+                          "Correos vinculados",
+                          "Linked email accounts",
+                        )}
+                      </th>
                       <th scope="col">{t(locale, "Gestión", "Management")}</th>
                       <th scope="col">
                         {t(locale, "Último envío", "Last sent")}
@@ -563,21 +553,23 @@ export function TasksOverviewView({
                           <span className="pos-tasks-line pos-muted">
                             {r.email}
                           </span>
-                          {r.accountIds.length > 0 && (
-                            <small className="pos-tasks-line pos-muted">
-                              {r.accountIds
+                        </td>
+                        <td>
+                          {r.accountIds.length
+                            ? r.accountIds
                                 .map(
                                   (id) =>
-                                    overview.byRep
-                                      .flatMap((rep) => rep.accounts)
-                                      .find((a) => a.id === id)?.email,
+                                    overview.byAccount.find((a) => a.id === id)
+                                      ?.email,
                                 )
                                 .filter(Boolean)
-                                .join(" · ")}
-                            </small>
-                          )}
+                                .join(" · ")
+                            : t(
+                                locale,
+                                "Sin correo vinculado",
+                                "No linked email account",
+                              )}
                         </td>
-                        <td>{r.ownerName}</td>
                         <td>
                           <span
                             className={`pos-pill ${r.replied ? "pos-tasks-replied" : ""}`}
@@ -612,8 +604,8 @@ export function TasksOverviewView({
                         <td colSpan={6} className="pos-empty">
                           {t(
                             locale,
-                            "No hay leads con estos filtros. Prueba otro estado o responsable.",
-                            "No leads match these filters. Try another status or rep.",
+                            "No hay leads con estos filtros. Prueba otro estado o correo.",
+                            "No leads match these filters. Try another status or email account.",
                           )}
                         </td>
                       </tr>

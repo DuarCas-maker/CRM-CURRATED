@@ -19,18 +19,15 @@ test("task overview renders accessible selection, per-account counts and all lea
   hook.deregister();
   for (const locale of ["es", "en"] as const) {
     const props = {
-      overview: buildTasksOverview(
-        tasksOverviewFixture(),
-        { owner: "santino" },
-        overviewNow,
-      ),
+      overview: buildTasksOverview(tasksOverviewFixture(), {}, overviewNow),
       locale,
-      owner: "santino",
       account: "all",
       status: "all" as const,
+      stage: "all" as const,
       loading: false,
       error: "",
-      selectOwner() {},
+      selectAccount() {},
+      changeStage() {},
       changeStatus() {},
       changePage() {},
       refresh() {},
@@ -38,7 +35,18 @@ test("task overview renders accessible selection, per-account counts and all lea
       onStage() {},
     };
     const html = renderToStaticMarkup(createElement(TasksOverviewView, props));
-    assert(html.includes("Santino Ejemplo"));
+    assert(!html.includes("Santino Ejemplo"));
+    assert(!html.includes("Responsable"));
+    assert(!html.includes("Sin responsable"));
+    const summary = html.split("<tbody>")[1].split("</tbody>")[0];
+    assert.equal(
+      (summary.match(/<tr/g) || []).length,
+      props.overview.byAccount.length + 1,
+    );
+    assert.equal(
+      (summary.match(/class="pos-tasks-email"/g) || []).length,
+      props.overview.byAccount.length + 1,
+    );
     assert(html.includes("santino@team-two.example.test"));
     assert(html.includes('aria-pressed="true"'));
     assert(html.includes('scope="col"'));

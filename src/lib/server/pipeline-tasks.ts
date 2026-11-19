@@ -63,7 +63,7 @@ async function readVisibleCampaigns(db: SupabaseClient, profile: Profile) {
     readRows<TaskOverviewSource["campaigns"][number]>(
       db,
       "campaigns",
-      "id,seller_id,account_id",
+      "id,seller_id,account_id,first_contact,selected_contact_ids",
     ),
     readPipelinePages<{ id: string }>(async (offset) => {
       const result = await db
@@ -125,6 +125,41 @@ async function readCampaignFacts(
   return facts;
 }
 
+async function readTaskAudience(
+  db: SupabaseClient,
+  campaigns: TaskOverviewSource["campaigns"],
+) {
+  // Membership only. Keep the expensive contact-facts RPC restricted to sent evidence.
+  const enrollments = await readRows<{
+    id: string;
+    campaign_id: string;
+    contact_id: string;
+    opportunity_id: string;
+  }>(
+    db,
+    "campaign_enrollments",
+    "id,campaign_id,contact_id,opportunity_id",
+    campaigns.map((c) => c.id),
+    "campaign_id",
+  );
+  return [
+    ...enrollments.map((e) => ({
+      campaignId: e.campaign_id,
+      contact_id: e.contact_id,
+      opportunity_id: e.opportunity_id,
+    })),
+    ...campaigns.flatMap((c) =>
+      c.first_contact
+        ? (c.selected_contact_ids || []).map((contact_id) => ({
+            campaignId: c.id,
+            contact_id,
+            opportunity_id: null,
+          }))
+        : [],
+    ),
+  ];
+}
+
 function visibleCaseMail(
   profile: Profile,
   board: PipelineBoard,
@@ -137,11 +172,14 @@ function visibleCaseMail(
     );
   const visibleCases = new Set(board.rows.map((r) => r.id));
   const conversations = mail.conversations.filter(
-    (c) => visibleCases.has(c.opportunity_id) &&
+    (c) =>
+      visibleCases.has(c.opportunity_id) &&
       (c.area !== "closer" || isCloserRole(profile.role)),
   );
   const conversationIds = new Set(conversations.map((c) => c.id));
-  const messages = mail.messages.filter((m) => conversationIds.has(m.conversation_id));
+  const messages = mail.messages.filter((m) =>
+    conversationIds.has(m.conversation_id),
+  );
   return { conversations, messages };
 }
 
@@ -157,17 +195,26 @@ export async function readTasksOverview(
     { group: "files" },
     100000,
     false,
-    (mail) => { mailSnapshot = mail; },
+    (mail) => {
+      mailSnapshot = mail;
+    },
   );
   const campaignsRead = readVisibleCampaigns(db, profile);
   const factsRead = campaignsRead.then((campaigns) =>
     readCampaignFacts(db, campaigns),
   );
+  const audienceRead = campaignsRead.then((campaigns) =>
+    readTaskAudience(db, campaigns),
+  );
   const mailRead = boardRead.then((board) => {
-    if (!mailSnapshot) throw new HttpError(503, "No se pudo comprobar el correo / Mail snapshot unavailable");
+    if (!mailSnapshot)
+      throw new HttpError(
+        503,
+        "No se pudo comprobar el correo / Mail snapshot unavailable",
+      );
     return visibleCaseMail(profile, board, mailSnapshot);
   });
-  const [board, profiles, accounts, leads, campaigns, facts, mail] =
+  const [board, profiles, accounts, leads, campaigns, facts, mail, audience] =
     await Promise.all([
       boardRead,
       readRows<Profile>(db, "profiles", "id,name,email,role,active"),
@@ -186,6 +233,7 @@ export async function readTasksOverview(
       campaignsRead,
       factsRead,
       mailRead,
+      audienceRead,
     ]);
   return buildTasksOverview(
     {
@@ -196,6 +244,7 @@ export async function readTasksOverview(
       leads,
       cases: board.rows,
       facts,
+      audience,
       ...mail,
     },
     query,

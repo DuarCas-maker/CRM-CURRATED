@@ -14,6 +14,9 @@ import {
 import { tasksOverviewFixture, overviewNow } from "./tasks-overview";
 
 const source = tasksOverviewFixture();
+source.accounts.push({ id: "account-a-alias", email: " SANTINO@TEAM-ONE.EXAMPLE.TEST ", owner_id: null });
+source.audience = source.leads.map((lead) => ({ campaignId: "campaign-a", contact_id: lead.contact_id!, opportunity_id: lead.opportunity_id }));
+source.facts = source.facts.map((fact) => fact.campaignId === "campaign-b" ? { ...fact, reply_at: null } : fact);
 const { data } = pipelineModuleDemo();
 data.demo = false;
 data.profile = source.profile;

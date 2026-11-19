@@ -97,7 +97,8 @@ function fixtureDatabase(missingCount = false) {
           ]
         : tables[this.table] || [];
       const rows = sourceRows.filter((r) => this.predicates.every((p) => p(r)));
-      if (delayedTables.has(this.table)) active.set(this.table, active.get(this.table)! - 1);
+      if (delayedTables.has(this.table))
+        active.set(this.table, active.get(this.table)! - 1);
       return {
         data: rows.slice(offset, Math.min(end + 1, offset + 17)),
         count: missingCount ? null : rows.length,
@@ -174,6 +175,58 @@ test("task reader only counts campaigns belonging to visible campaign groups", a
   assert.equal(result.byRep.find((r) => r.id === "samuel")?.sent, 0);
 });
 
+test("email rows include selected and enrolled pending leads using minimal membership metadata", async () => {
+  const f = fixtureDatabase();
+  f.tables.campaign_enrollments = [
+    {
+      id: "enrollment-six",
+      campaign_id: "campaign-b",
+      contact_id: "contact-6",
+      opportunity_id: "case-6",
+    },
+    {
+      id: "enrollment-zero",
+      campaign_id: "campaign-b",
+      contact_id: "contact-0",
+      opportunity_id: "case-0",
+    },
+    {
+      id: "foreign",
+      campaign_id: "invisible-campaign",
+      contact_id: "contact-7",
+      opportunity_id: "case-7",
+    },
+  ];
+  const result = await readTasksOverview(
+    f.client,
+    f.source.profile,
+    parseTaskOverviewQuery(
+      new URLSearchParams("account=account-b&status=pending"),
+    ),
+  );
+  assert.deepEqual(
+    result.rows.map((r) => r.id),
+    ["contact-6"],
+  );
+  assert.equal(
+    result.byAccount.find((a) => a.email === "santino@team-two.example.test")
+      ?.leads,
+    2,
+  );
+  assert.equal(
+    result.byAccount.find((a) => a.email === "santino@team-one.example.test")
+      ?.leads,
+    3,
+  );
+  const membership = f.calls.filter((c) => c.table === "campaign_enrollments");
+  assert.equal(membership.length, 1);
+  assert.equal(
+    membership[0].columns,
+    "id,campaign_id,contact_id,opportunity_id",
+  );
+  assert(membership[0].exact);
+});
+
 test("task reader reuses one complete mail snapshot for board evidence and reply counts", async () => {
   const f = fixtureDatabase();
   const result = await readTasksOverview(
@@ -183,22 +236,45 @@ test("task reader reuses one complete mail snapshot for board evidence and reply
   );
   assert.equal(result.totals.sent, 2);
   assert.equal(result.totals.replied, 2);
-  const conversationReads = f.calls.filter((c) => c.table === "mail_conversations_visible");
-  assert.equal(conversationReads.length, 2, "one page per 50-case batch, without a second mail scan");
-  assert(conversationReads.every((c) => c.columns.includes("account_id") && c.columns.includes("area")));
-  assert(f.calls.filter((c) => c.table === "messages").every((c) => c.columns.includes("reply_intent")));
+  const conversationReads = f.calls.filter(
+    (c) => c.table === "mail_conversations_visible",
+  );
+  assert.equal(
+    conversationReads.length,
+    2,
+    "one page per 50-case batch, without a second mail scan",
+  );
+  assert(
+    conversationReads.every(
+      (c) => c.columns.includes("account_id") && c.columns.includes("area"),
+    ),
+  );
+  assert(
+    f.calls
+      .filter((c) => c.table === "messages")
+      .every((c) => c.columns.includes("reply_intent")),
+  );
 });
 
 test("one complete mail projection replaces case batches without dropping cases", async () => {
   const f = fixtureDatabase();
   const seed = f.tables.opportunity_workspace[0];
   f.tables.opportunity_workspace = Array.from({ length: 251 }, (_, i) => ({
-    ...seed, id: `bulk-case-${i}`, email: `bulk-${i}@example.invalid`,
+    ...seed,
+    id: `bulk-case-${i}`,
+    email: `bulk-${i}@example.invalid`,
   }));
   f.delayedTables.add("mail_conversations_visible");
-  const result = await readTasksOverview(f.client, f.source.profile, parseTaskOverviewQuery(new URLSearchParams()));
+  const result = await readTasksOverview(
+    f.client,
+    f.source.profile,
+    parseTaskOverviewQuery(new URLSearchParams()),
+  );
   assert.equal(f.peak.get("mail_conversations_visible"), 1);
-  assert.equal(f.calls.filter((c) => c.table === "mail_conversations_visible").length, 1);
+  assert.equal(
+    f.calls.filter((c) => c.table === "mail_conversations_visible").length,
+    1,
+  );
   assert.equal(result.totals.stages.app, 251);
 });
 

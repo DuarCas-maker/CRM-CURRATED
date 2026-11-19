@@ -504,12 +504,13 @@ export function PipelineOSWorkspace({
     unit: string,
     target: Page,
     level: number,
+    select?: () => void,
   ) {
     const Icon = icon;
     return (
       <button
         className={`pos-tile ${path[level] === target ? "pos-chosen" : ""}`}
-        onClick={() => push(target, level)}
+        onClick={select || (() => push(target, level))}
       >
         <span className="pos-tile-icon">
           <Icon size={22} />
@@ -531,6 +532,7 @@ export function PipelineOSWorkspace({
       PipelineBoard["counts"],
       (typeof pipelineStages)[number]
     > = board.counts,
+    select?: (stage: (typeof pipelineStages)[number]) => void,
   ) {
     return (
       <div className="pos-stage-strip">
@@ -538,7 +540,7 @@ export function PipelineOSWorkspace({
           <button
             key={g}
             className={current === g ? "pos-chosen" : ""}
-            onClick={() => go(["tasks", g])}
+            onClick={() => (select ? select(g) : go(["tasks", g]))}
           >
             <b>{counts[g]}</b>
             <span>{pipelineLabel(g, locale)}</span>
@@ -660,20 +662,15 @@ export function PipelineOSWorkspace({
             data={data}
             processes={processes}
             locale={locale}
-            owner={owner}
             query={query}
-            onOwner={(id) => {
-              changeOwner(id);
+            onSelect={() => {
+              changeOwner("all");
               if (current !== "tasks") go(["tasks"]);
             }}
             open={rowOpen}
-            onStage={(id, stage) => {
-              changeOwner(id);
-              go(["tasks", stage]);
-            }}
-            renderStages={(counts) => (
+            renderStages={(counts, selectStage) => (
               <>
-                {counts && stageStrip(counts)}
+                {counts && stageStrip(counts, selectStage)}
                 {!counts ? (
                   <div className="pos-card pos-empty" role="status">
                     {t(locale, "Actualizando etapas…", "Updating stages…")}
@@ -692,6 +689,7 @@ export function PipelineOSWorkspace({
                       t(locale, "expedientes", "files"),
                       "app",
                       level,
+                      () => selectStage("app"),
                     )}
                     {tile(
                       Landmark,
@@ -705,6 +703,7 @@ export function PipelineOSWorkspace({
                       t(locale, "expedientes", "files"),
                       "need",
                       level,
+                      () => selectStage("need"),
                     )}
                     {tile(
                       Sparkles,
@@ -718,6 +717,7 @@ export function PipelineOSWorkspace({
                       t(locale, "expedientes", "files"),
                       "offers",
                       level,
+                      () => selectStage("offers"),
                     )}
                     {tile(
                       Send,
@@ -731,6 +731,7 @@ export function PipelineOSWorkspace({
                       t(locale, "expedientes", "files"),
                       "docsout",
                       level,
+                      () => selectStage("docsout"),
                     )}
                     {tile(
                       CircleCheck,
@@ -744,6 +745,7 @@ export function PipelineOSWorkspace({
                       t(locale, "expedientes", "files"),
                       "signed",
                       level,
+                      () => selectStage("signed"),
                     )}
                   </div>
                 )}

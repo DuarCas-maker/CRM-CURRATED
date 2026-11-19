@@ -60,9 +60,27 @@ export function tasksOverviewFixture(count = 73): TaskOverviewSource {
     groups: ["files", "tasks", pipelineStages[i % 5]] as typeof seed.groups,
   }));
   const campaigns = [
-    { id: "campaign-a", account_id: "account-a", seller_id: "santino" },
-    { id: "campaign-b", account_id: "account-b", seller_id: "santino" },
-    { id: "campaign-c", account_id: "account-c", seller_id: "samuel" },
+    {
+      id: "campaign-a",
+      account_id: "account-a",
+      seller_id: "santino",
+      first_contact: true,
+      selected_contact_ids: ["contact-0", "contact-2"],
+    },
+    {
+      id: "campaign-b",
+      account_id: "account-b",
+      seller_id: "santino",
+      first_contact: true,
+      selected_contact_ids: ["contact-0"],
+    },
+    {
+      id: "campaign-c",
+      account_id: "account-c",
+      seller_id: "samuel",
+      first_contact: true,
+      selected_contact_ids: ["contact-1", "contact-3"],
+    },
   ];
   const fact = (
     index: number,

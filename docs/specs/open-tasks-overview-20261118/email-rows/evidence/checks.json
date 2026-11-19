@@ -1,0 +1,66 @@
+{
+  "responsive": [
+    {
+      "label": "desktop-1280",
+      "target": 1280,
+      "cssWidth": 1280,
+      "documentWidth": 1280,
+      "regionWidth": 1226,
+      "tableWidth": 1226,
+      "uniqueRows": 5
+    },
+    {
+      "label": "tablet-768",
+      "target": 768,
+      "cssWidth": 768,
+      "documentWidth": 768,
+      "regionWidth": 726,
+      "tableWidth": 1150,
+      "uniqueRows": 5
+    },
+    {
+      "label": "mobile-360",
+      "target": 360,
+      "cssWidth": 360,
+      "documentWidth": 360,
+      "regionWidth": 330,
+      "tableWidth": 1149,
+      "uniqueRows": 5
+    }
+  ],
+  "scopedReplies": {
+    "count": "0 leads",
+    "empty": true
+  },
+  "pagination": {
+    "pagination": "51–73 / 73",
+    "rows": 23
+  },
+  "pending": {
+    "allPending": true,
+    "boardReads": "0",
+    "count": "71 leads"
+  },
+  "stage": {
+    "boardReads": "0",
+    "count": "30 leads",
+    "selected": "santino@team-one.example.test",
+    "stage": "Aplicación pendiente · Ver todas las etapas "
+  },
+  "error": {
+    "alert": true,
+    "staleLeads": false
+  },
+  "race": {
+    "count": "1 leads",
+    "rows": 1,
+    "selected": [
+      "santino@team-two.example.test"
+    ]
+  },
+  "empty": {
+    "count": "0 leads",
+    "empty": true
+  },
+  "realCalls": 0
+}

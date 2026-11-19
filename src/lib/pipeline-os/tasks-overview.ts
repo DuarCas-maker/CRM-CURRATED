@@ -4,6 +4,7 @@ import type { Conversation, Lead, Message, Profile } from "../domain";
 import { isCloserRole, isSellerRole } from "../domain";
 import { automatedSender } from "../mail-interest";
 import { pipelineStages, type PipelineRow } from "./module";
+import { summarizeTaskAccounts } from "./task-accounts";
 
 export const taskLeadStatuses = [
   "all",
@@ -14,7 +15,8 @@ export const taskLeadStatuses = [
 const querySchema = z.strictObject({
   q: z.string().trim().max(200).default(""),
   owner: z.string().min(1).max(100).default("all"),
-  account: z.string().min(1).max(100).default("all"),
+  account: z.string().min(1).max(320).default("all"),
+  stage: z.enum(["all", ...pipelineStages]).default("all"),
   status: z.enum(taskLeadStatuses).default("all"),
   page: z.coerce.number().int().min(0).max(100000).default(0),
 });
@@ -40,6 +42,7 @@ export type TaskRep = TaskCounts & {
   name: string;
   accounts: TaskAccount[];
 };
+export type TaskAccountSummary = TaskCounts & { id: string; email: string };
 export type TaskLead = {
   id: string;
   caseId: string | null;
@@ -59,6 +62,7 @@ export type TaskLead = {
 export type TasksOverview = {
   asOf: string;
   byRep: TaskRep[];
+  byAccount: TaskAccountSummary[];
   totals: TaskCounts;
   financial: boolean;
   campaignsAvailable: boolean;
@@ -82,8 +86,19 @@ export type TaskOverviewSource = {
     | "seller_id"
     | "opportunity_id"
   >[];
-  campaigns: { id: string; seller_id: string; account_id: string }[];
+  campaigns: {
+    id: string;
+    seller_id: string;
+    account_id: string;
+    first_contact?: boolean;
+    selected_contact_ids?: string[];
+  }[];
   facts: (CampaignContact & { campaignId: string })[];
+  audience?: {
+    campaignId: string;
+    contact_id: string;
+    opportunity_id: string | null;
+  }[];
   conversations: Pick<
     Conversation,
     | "id"
@@ -399,11 +414,24 @@ export function buildTasksOverview(
   };
   for (const r of byRep)
     for (const s of pipelineStages) totals.stages[s] += r.stages[s];
+  const accountOverview = summarizeTaskAccounts({
+    source,
+    campaigns,
+    all,
+    byContact,
+    byCase,
+    byEmail,
+    campaignsAvailable,
+    admin,
+    now,
+  });
   const filtered = all
+    .map((row) => accountOverview.project(row, query.account))
+    .filter((row): row is TaskLead => row !== null)
     .filter(
       (r) =>
         (query.owner === "all" || r.ownerId === query.owner) &&
-        (query.account === "all" || r.accountIds.includes(query.account)) &&
+        (query.stage === "all" || r.groups.includes(query.stage)) &&
         (query.status === "all" ||
           (query.status === "managed"
             ? r.managed
@@ -421,6 +449,7 @@ export function buildTasksOverview(
   return {
     asOf: new Date(now).toISOString(),
     byRep,
+    byAccount: accountOverview.byAccount,
     totals,
     financial,
     campaignsAvailable,
