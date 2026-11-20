@@ -40,8 +40,8 @@
   font-size: 12px;
 }
 .conversations-workspace.embedded {
-  height: min(820px, 85dvh);
-  min-height: 560px;
+  height: min(960px, calc(100dvh - 80px));
+  min-height: 640px;
   flex: none;
   padding: 12px;
 }
@@ -963,7 +963,7 @@
   border-top: 1px solid var(--line);
   padding: 8px 14px 10px;
   flex: none;
-  max-height: min(390px, 45dvh);
+  max-height: min(320px, 40dvh);
   overflow: auto;
   background: #fff;
 }
@@ -1004,17 +1004,27 @@
   display: none;
 }
 .compact-mail-editor > form {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
 }
-.compact-mail-editor .cw-reply-options {
-  grid-column: auto;
+.compact-mail-editor .compact-mail-layout,
+.compact-mail-editor .mail-composer-fields {
+  display: contents;
+}
+.compact-mail-editor details.cw-reply-options {
+  flex: 0 1 auto;
+  min-width: 0;
   margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 .cw-reply-options > summary {
   cursor: pointer;
-  font-size: 9px;
+  min-height: 24px;
+  font-size: 10px;
   color: var(--muted);
   list-style: none;
   display: flex;
@@ -1024,8 +1034,8 @@
 .cw-reply-options > summary::after {
   content: "⌄";
 }
-.cw-reply-options[open] {
-  grid-column: 1 / -1;
+.compact-mail-editor details.cw-reply-options[open] {
+  flex-basis: 100%;
 }
 .cw-reply-options > div {
   display: grid;
@@ -1035,7 +1045,8 @@
   padding: 9px;
   margin: 5px 0;
 }
-.compact-mail-editor .field {
+.compact-mail-editor .field,
+.compact-mail-editor .mail-composer-fields > .field {
   margin: 0;
   gap: 4px;
   font-size: 10px;
@@ -1048,7 +1059,8 @@
   font-size: 10px;
 }
 .compact-mail-editor .mail-editor-body {
-  grid-column: 1 / -1;
+  flex: 1 0 100%;
+  min-width: 0;
 }
 .compact-mail-editor .mail-editor-body > span {
   position: absolute;
@@ -1059,7 +1071,7 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
-.compact-mail-editor textarea {
+.compact-mail-editor .mail-editor-body textarea {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 9px 11px;
@@ -1071,7 +1083,7 @@
   resize: vertical;
 }
 .compact-mail-editor .mail-editor-footer {
-  grid-column: 2;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -1099,7 +1111,7 @@
   font-size: 9px;
 }
 .compact-mail-editor > form > small.muted {
-  grid-column: 1 / -1;
+  flex: 1 0 100%;
 }
 .compact-mail-editor .cw-reply-options > div .field.mail-editor-evaluation {
   display: grid;

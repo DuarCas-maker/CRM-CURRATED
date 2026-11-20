@@ -404,6 +404,25 @@ export function MailEditor({
     checked: boolean,
     set: (fn: (old: string[]) => string[]) => void,
   ) => set((old) => (checked ? [...old, id] : old.filter((x) => x !== id)));
+  const messageField = (
+    <label className="field mail-editor-body">
+      <span>{t(locale, "Mensaje", "Message")}</span>
+      <textarea
+        ref={messageInput}
+        required
+        maxLength={10000}
+        rows={compact ? 2 : inline ? 4 : 7}
+        placeholder={
+          inline
+            ? t(locale, "Escribe tu respuesta…", "Write your reply…")
+            : undefined
+        }
+        disabled={locked}
+        value={body}
+        onChange={(e) => setBody(e.target.value)}
+      />
+    </label>
+  );
   const localPreviews = Object.entries(targets).map(([lender_id, email]) => {
     const lender_name =
       data.lenders.find((l) => l.id === lender_id)?.name || lender_id;
@@ -421,8 +440,7 @@ export function MailEditor({
   const unresolvedMessage =
     mode === "lenders" &&
     localPreviews.some((p) => p.missing.length || p.error);
-  const unresolvedOther =
-    mode === "compose" && /{{|}}/.test(subject + body);
+  const unresolvedOther = mode === "compose" && /{{|}}/.test(subject + body);
   return (
     <MailEditorFrame
       locale={locale}
@@ -546,8 +564,17 @@ export function MailEditor({
           }
         }}
       >
-        <div className={mode === "lenders" ? "mail-composer-grid" : ""}>
+        <div
+          className={
+            compact
+              ? "compact-mail-layout"
+              : mode === "lenders"
+                ? "mail-composer-grid"
+                : ""
+          }
+        >
           <div className="mail-composer-fields">
+            {compact && messageField}
             {!inline && (
               <div className="mail-section-title">
                 <span className="mail-section-icon">
@@ -558,46 +585,59 @@ export function MailEditor({
                 </h3>
               </div>
             )}
-            <label className="field">
-              {t(
-                locale,
-                "Marca revisada del remitente",
-                "Reviewed sender brand",
-              )}
-              <select
-                required
-                disabled={locked}
-                value={brandCurrent ? brandPreparation?.brand_id || "" : ""}
-                onChange={(e) =>
-                  setBrandPreparation(e.target.value ? expectedBrand : null)
-                }
-              >
-                <option value="">
-                  {t(
-                    locale,
-                    "Revisa y selecciona la marca",
-                    "Review and select the brand",
-                  )}
-                </option>
-                {expectedBrand && (
-                  <option value={expectedBrand.brand_id}>
-                    {
-                      accounts.find((a) => a.id === accountId)?.brand_context
-                        ?.brand_name
-                    }
-                  </option>
+            <EditorOptions
+              compact={compact}
+              title={
+                brandCurrent
+                  ? `${t(locale, "Marca", "Brand")} · ${accounts.find((a) => a.id === accountId)?.brand_context?.brand_name || ""}`
+                  : t(
+                      locale,
+                      "Marca · Revisar remitente",
+                      "Brand · Review sender",
+                    )
+              }
+            >
+              <label className="field">
+                {t(
+                  locale,
+                  "Marca revisada del remitente",
+                  "Reviewed sender brand",
                 )}
-              </select>
-              {!brandCurrent && (
-                <small>
-                  {t(
-                    locale,
-                    "Revisa la marca y sus permisos antes de consultar la firma o enviar.",
-                    "Review the brand and permissions before reading the signature or sending.",
+                <select
+                  required
+                  disabled={locked}
+                  value={brandCurrent ? brandPreparation?.brand_id || "" : ""}
+                  onChange={(e) =>
+                    setBrandPreparation(e.target.value ? expectedBrand : null)
+                  }
+                >
+                  <option value="">
+                    {t(
+                      locale,
+                      "Revisa y selecciona la marca",
+                      "Review and select the brand",
+                    )}
+                  </option>
+                  {expectedBrand && (
+                    <option value={expectedBrand.brand_id}>
+                      {
+                        accounts.find((a) => a.id === accountId)?.brand_context
+                          ?.brand_name
+                      }
+                    </option>
                   )}
-                </small>
-              )}
-            </label>
+                </select>
+                {!brandCurrent && (
+                  <small>
+                    {t(
+                      locale,
+                      "Revisa la marca y sus permisos antes de consultar la firma o enviar.",
+                      "Review the brand and permissions before reading the signature or sending.",
+                    )}
+                  </small>
+                )}
+              </label>
+            </EditorOptions>
             {(!legacyReply || lenderReply) && (
               <EditorOptions
                 compact={compact}
@@ -979,37 +1019,22 @@ export function MailEditor({
                 </label>
               </EditorOptions>
             )}
-            {mode === "lenders" ? (
-              <CampaignEditor
-                value={body}
-                onChange={setBody}
-                format={bodyFormat}
-                onFormat={setBodyFormat}
-                fields={lenderMergeFields}
-                maxLength={10000}
-                required
-                disabled={locked}
-                locale={locale}
-              />
-            ) : (
-              <label className="field mail-editor-body">
-                <span>{t(locale, "Mensaje", "Message")}</span>
-                <textarea
-                  ref={messageInput}
-                  required
-                  maxLength={10000}
-                  rows={compact ? 2 : inline ? 4 : 7}
-                  placeholder={
-                    inline
-                      ? t(locale, "Escribe tu respuesta…", "Write your reply…")
-                      : undefined
-                  }
-                  disabled={locked}
+            {!compact &&
+              (mode === "lenders" ? (
+                <CampaignEditor
                   value={body}
-                  onChange={(e) => setBody(e.target.value)}
+                  onChange={setBody}
+                  format={bodyFormat}
+                  onFormat={setBodyFormat}
+                  fields={lenderMergeFields}
+                  maxLength={10000}
+                  required
+                  disabled={locked}
+                  locale={locale}
                 />
-              </label>
-            )}
+              ) : (
+                messageField
+              ))}
             {!legacyReply && (
               <EditorOptions
                 compact={compact}
