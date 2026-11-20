@@ -1,13 +1,14 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { serviceClient, checkDb, HttpError } from "./supabase";
 import { decrypt } from "./crypto";
-import { gmail } from "./google";
+import { readAuthorizedGmailAttachment } from "./authorized-gmail-attachment";
 import type { MailSnapshot } from "../gmail-history";
 export async function readArchiveAttachment(
   db: SupabaseClient,
   messageId: string,
   partId: string,
   storedPath?: string | null,
+  authorize?: () => Promise<void>,
 ) {
   const service = serviceClient();
   const archive = checkDb(
@@ -51,9 +52,27 @@ export async function readArchiveAttachment(
       part.data ||
       (part.attachment_id
         ? (
-            await gmail<{ data: string }>(
+            await readAuthorizedGmailAttachment(
               archive.account_id,
-              `messages/${archive.gmail_message_id}/attachments/${part.attachment_id}`,
+              archive.gmail_message_id,
+              part.attachment_id,
+              async () => {
+                await authorize?.();
+                const current = checkDb(
+                  await db
+                    .from("mail_archive_visible")
+                    .select("account_id,gmail_message_id,encrypted_payload")
+                    .eq("id", messageId)
+                    .maybeSingle(),
+                );
+                if (!current) throw new HttpError(404, "Attachment not found");
+                if (
+                  current.account_id !== archive.account_id ||
+                  current.gmail_message_id !== archive.gmail_message_id ||
+                  current.encrypted_payload !== archive.encrypted_payload
+                )
+                  throw new HttpError(409, "Attachment changed; reopen it.");
+              },
             )
           ).data
         : "");

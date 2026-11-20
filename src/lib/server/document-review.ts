@@ -7,7 +7,7 @@ import {
 } from "../document-review";
 import { checkDb, HttpError, serviceClient } from "./supabase";
 import { readArchiveAttachment } from "./gmail-attachment-preview";
-import { gmail } from "./google";
+import { readAuthorizedGmailAttachment } from "./authorized-gmail-attachment";
 import { uploadDocument } from "./documents";
 
 export async function documentSource(
@@ -66,6 +66,22 @@ export async function documentBytes(
 ) {
   const context = await documentSource(db, source, id);
   const row = context.row;
+  if (source !== "document" && row.size > 20 * 1024 * 1024)
+    throw new HttpError(413, "Attachment exceeds 20 MB");
+  const authorizeSource = async () => {
+    const current = await documentSource(db, source, id);
+    if (
+      current.opportunityId !== context.opportunityId ||
+      [
+        "archive_message_id",
+        "part_id",
+        "storage_path",
+        "message_id",
+        "gmail_attachment_id",
+      ].some((key) => current.row[key] !== row[key])
+    )
+      throw new HttpError(409, "Attachment changed; reopen it.");
+  };
   let bytes: Buffer;
   if (source === "document") {
     if (!row.storage_path) throw new HttpError(404, "Document file pending");
@@ -82,11 +98,10 @@ export async function documentBytes(
         row.archive_message_id,
         row.part_id,
         row.storage_path,
+        authorizeSource,
       )
     ).bytes;
   } else {
-    if (row.size > 20 * 1024 * 1024)
-      throw new HttpError(413, "Attachment exceeds 20 MB");
     const msg = checkDb(
       await db
         .from("messages")
@@ -101,9 +116,33 @@ export async function documentBytes(
         .eq("id", msg.conversation_id)
         .single(),
     )!;
-    const file = await gmail<{ data: string }>(
+    const file = await readAuthorizedGmailAttachment(
       co.account_id,
-      `messages/${msg.gmail_message_id}/attachments/${row.gmail_attachment_id}`,
+      msg.gmail_message_id,
+      row.gmail_attachment_id,
+      async () => {
+        await authorizeSource();
+        const currentMessage = checkDb(
+          await db
+            .from("messages")
+            .select("gmail_message_id,conversation_id")
+            .eq("id", row.message_id)
+            .single(),
+        )!;
+        const currentConversation = checkDb(
+          await db
+            .from("mail_conversations_visible")
+            .select("account_id")
+            .eq("id", currentMessage.conversation_id)
+            .single(),
+        )!;
+        if (
+          currentMessage.gmail_message_id !== msg.gmail_message_id ||
+          currentMessage.conversation_id !== msg.conversation_id ||
+          currentConversation.account_id !== co.account_id
+        )
+          throw new HttpError(409, "Attachment changed; reopen it.");
+      },
     );
     bytes = Buffer.from(file.data, "base64url");
   }
