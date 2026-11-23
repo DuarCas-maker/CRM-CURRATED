@@ -22,12 +22,19 @@ function database(
     columns = "";
     filters: { key: string; values: unknown[] }[] = [];
     since: { key: string; value: string } | null = null;
+    after: { key: string; value: string } | null = null;
+    orderedBy?: string;
     constructor(readonly table: string) {}
     select(columns: string) {
       this.columns = columns;
       return this;
     }
-    order() {
+    order(key: string) {
+      this.orderedBy = key;
+      return this;
+    }
+    gt(key: string, value: string) {
+      this.after = { key, value };
       return this;
     }
     in(key: string, values: unknown[]) {
@@ -52,8 +59,19 @@ function database(
       const rows = (tables[this.table] || []).filter(
         (r) =>
           this.filters.every((f) => f.values.includes(r[f.key])) &&
+          (!this.after || String(r[this.after.key]) > this.after.value) &&
           (!this.since || String(r[this.since.key]) >= this.since.value),
       );
+      if (this.orderedBy) {
+        const key = this.orderedBy;
+        rows.sort((a, b) =>
+          String(a[key]) < String(b[key])
+            ? -1
+            : String(a[key]) > String(b[key])
+              ? 1
+              : 0,
+        );
+      }
       return {
         data: rows.slice(start, Math.min(end + 1, start + cap)),
         count: missingCount ? null : rows.length,
@@ -63,7 +81,10 @@ function database(
   }
   return {
     client: {
-      rpc: async (name: string) => { assert.equal(name,"campaign_flow_cases"); return {data:[],error:null}; },
+      rpc: async (name: string) => {
+        assert.equal(name, "campaign_flow_cases");
+        return { data: [], error: null };
+      },
       from: (table: string) => new Query(table),
     } as unknown as SupabaseClient,
     calls,
@@ -182,7 +203,9 @@ test("Master seller reads exclude financial IDs and bodies outside the visible p
   f.data.profile = { ...f.data.profile, role: "seller" };
   // 055 grants flow management to the assigned case owner. This scenario
   // explicitly belongs to another closer, so financial projections stay hidden.
-  f.opportunities.forEach(o => { o.closer_id = "other-closer"; });
+  f.opportunities.forEach((o) => {
+    o.closer_id = "other-closer";
+  });
   f.tables.opportunity_workspace.push({
     ...f.opportunities[0],
     id: "foreign",

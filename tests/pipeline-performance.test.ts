@@ -33,7 +33,13 @@ for (const kind of ["board", "master"] as const) {
     assert.equal(metrics.active, 0);
     assert(f.calls.every((c) => !c.batch || c.batch.length <= 50));
     assert(
-      f.calls.filter((c) => !c.table.startsWith("rpc:")).every((c) => c.exact),
+      f.calls
+        .filter(
+          (c) =>
+            !c.table.startsWith("rpc:") &&
+            c.table !== "mail_conversations_visible",
+        )
+        .every((c) => c.exact),
     );
     assert(!f.calls.some((c) => c.columns.includes("encrypted_payload")));
   });
@@ -47,7 +53,7 @@ test("a failed catalog read propagates instead of returning partial successful t
   );
 });
 
-test("case-scoped mail batches exclude unrelated cases before message reads", async () => {
+test("one complete mail stream excludes unrelated cases before message reads", async () => {
   const f = pipelinePerformanceFixture();
   f.tables.mail_conversations_visible.push({
     id: "archived-thread",
@@ -57,8 +63,8 @@ test("case-scoped mail batches exclude unrelated cases before message reads", as
   const board = await readPipelineBoard(f.client, f.profile);
   assert.equal(board.total, 351);
   const reads = f.calls.filter((c) => c.table === "mail_conversations_visible");
-  assert.equal(reads.length, 8);
-  assert(reads.every((c) => !!c.batch?.length && c.batch.length <= 50));
+  assert.equal(reads.length, 2);
+  assert(reads.every((c) => !c.exact));
   assert(
     f.calls
       .filter((c) => c.table === "messages")
@@ -66,7 +72,7 @@ test("case-scoped mail batches exclude unrelated cases before message reads", as
   );
 });
 
-test("a large mailbox never adds an unbounded probe before scoped batches", async () => {
+test("a large mailbox follows every metadata page and excludes unrelated messages", async () => {
   const f = pipelinePerformanceFixture();
   f.tables.mail_conversations_visible.push(
     ...Array.from({ length: 1001 }, (_, i) => ({
@@ -78,8 +84,8 @@ test("a large mailbox never adds an unbounded probe before scoped batches", asyn
   const board = await readPipelineBoard(f.client, f.profile);
   assert.equal(board.total, 351);
   const reads = f.calls.filter((c) => c.table === "mail_conversations_visible");
-  assert.equal(reads.length, 8);
-  assert.equal(reads.filter((c) => !c.batch).length, 0);
+  assert.equal(reads.length, 4);
+  assert(reads.every((c) => !c.exact));
   assert(
     f.calls
       .filter((c) => c.table === "messages")
@@ -87,11 +93,10 @@ test("a large mailbox never adds an unbounded probe before scoped batches", asyn
   );
 });
 
-test("a missing count, duplicate identity or permission error in scoped pages fails closed", async () => {
+test("a missing catalog count, duplicate mail identity or permission error fails closed", async () => {
   for (const kind of ["count", "duplicate", "permission"]) {
     const f = pipelinePerformanceFixture({
-      missingCountTable:
-        kind === "count" ? "mail_conversations_visible" : undefined,
+      missingCountTable: kind === "count" ? "tasks" : undefined,
       failTable:
         kind === "permission" ? "mail_conversations_visible" : undefined,
     });

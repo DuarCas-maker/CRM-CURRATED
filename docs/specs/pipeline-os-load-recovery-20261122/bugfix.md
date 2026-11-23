@@ -1,5 +1,7 @@
 # Recuperación de entrada a Pipeline OS — STANDARD
 
+Estado vigente: el intento original no cerró producción. REC-CR001(database/change-request.md) amplía a STRICT para la función;059 autorizado/aplicado. REC-CR002(reader-change-request.md) sustituye lotes/count por una secuencia completa sin COUNT. Ver evidencia posterior; este diagnóstico original no es recuperación final.
+
 Base2d4c6fa. El usuario informa que no puede entrar a crm.finlabinc.com/pipeline-os y adjunta el error boundary. Continúa la autorización de corregir/publicar de esta conversación. Contexto confirmado en la captura, reproducción y clarificaciones previas: aplicación publicada, restaurar acceso, conservar datos/permisos y funcionalidades. No hay una decisión de negocio nueva pendiente; solo se solicitó acceso al log, y el usuario inició sesión en Coolify.
 
 FR-001: recuperar la entrada sin consultar una proyección de correo global no filtrada. AC-001: Board y Master leen mail_conversations_visible únicamente con IDs de expedientes elegibles, lotes≤50, páginas completas y conteos exactos.

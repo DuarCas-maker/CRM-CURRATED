@@ -58,7 +58,13 @@ function fixtureDatabase(missingCount = false) {
       this.exact = options?.count === "exact";
       return this;
     }
-    order() {
+    orderedBy?: string;
+    order(key: string) {
+      this.orderedBy = key;
+      return this;
+    }
+    gt(key: string, value: string) {
+      this.predicates.push((r) => String(r[key]) > value);
       return this;
     }
     eq(key: string, value: unknown) {
@@ -97,6 +103,16 @@ function fixtureDatabase(missingCount = false) {
           ]
         : tables[this.table] || [];
       const rows = sourceRows.filter((r) => this.predicates.every((p) => p(r)));
+      if (this.orderedBy) {
+        const key = this.orderedBy;
+        rows.sort((a, b) =>
+          String(a[key]) < String(b[key])
+            ? -1
+            : String(a[key]) > String(b[key])
+              ? 1
+              : 0,
+        );
+      }
       if (delayedTables.has(this.table))
         active.set(this.table, active.get(this.table)! - 1);
       return {
@@ -242,7 +258,7 @@ test("task reader reuses one complete mail snapshot for board evidence and reply
   assert.equal(
     conversationReads.length,
     2,
-    "one page per 50-case batch, without a second mail scan",
+    "one metadata page and its empty completion page, reused for all sections",
   );
   assert(
     conversationReads.every(
@@ -256,7 +272,7 @@ test("task reader reuses one complete mail snapshot for board evidence and reply
   );
 });
 
-test("case-scoped mail batches overlap within the four-batch limit without dropping cases", async () => {
+test("mail metadata uses a single sequential stream without dropping cases", async () => {
   const f = fixtureDatabase();
   const seed = f.tables.opportunity_workspace[0];
   f.tables.opportunity_workspace = Array.from({ length: 251 }, (_, i) => ({
@@ -270,12 +286,16 @@ test("case-scoped mail batches overlap within the four-batch limit without dropp
     f.source.profile,
     parseTaskOverviewQuery(new URLSearchParams()),
   );
-  assert.equal(f.peak.get("mail_conversations_visible"), 4);
+  assert.equal(f.peak.get("mail_conversations_visible"), 1);
   assert.equal(
     f.calls.filter((c) => c.table === "mail_conversations_visible").length,
-    6,
+    2,
   );
-  assert(f.calls.filter(c => c.table === "mail_conversations_visible").every(c => !!c.batch?.length && c.batch.length <= 50));
+  assert(
+    f.calls
+      .filter((c) => c.table === "mail_conversations_visible")
+      .every((c) => !c.exact),
+  );
   assert.equal(result.totals.stages.app, 251);
 });
 

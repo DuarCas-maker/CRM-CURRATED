@@ -1,0 +1,11 @@
+{
+  "target": "https://supabase.finlabinc.com",
+  "mode": "apply",
+  "object": "s01_i02.visible_conversations()",
+  "before": "084a8b1c0f058da519cfbfa5e1e1f762",
+  "after": "5aec37664aba3b60375426679e39929b",
+  "duration_ms": 1152,
+  "backupVerified": true,
+  "attributesUnchanged": true,
+  "clientRowsWritten": false
+}

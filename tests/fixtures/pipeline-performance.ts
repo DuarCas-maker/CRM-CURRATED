@@ -10,6 +10,7 @@ export function pipelinePerformanceFixture(
     failTable?: string;
     missingCountTable?: string;
     rejectUnscopedMail?: boolean;
+    rejectCountedMail?: boolean;
   } = {},
 ) {
   const { data } = pipelineModuleDemo();
@@ -110,7 +111,9 @@ export function pipelinePerformanceFixture(
       this.exact = options?.count === "exact";
       return this;
     }
-    order() {
+    orderedBy?: string;
+    order(key: string) {
+      this.orderedBy = key;
       return this;
     }
     is() {
@@ -129,6 +132,10 @@ export function pipelinePerformanceFixture(
       this.predicates.push((r) => String(r[key]) >= value);
       return this;
     }
+    gt(key: string, value: string) {
+      this.predicates.push((r) => String(r[key]) > value);
+      return this;
+    }
     async range(offset: number, end: number) {
       calls.push({
         table: this.table,
@@ -139,9 +146,9 @@ export function pipelinePerformanceFixture(
       });
       return request(this.table, () => {
         if (
-          options.rejectUnscopedMail &&
           this.table === "mail_conversations_visible" &&
-          !this.batch
+          ((options.rejectUnscopedMail && !this.batch) ||
+            (options.rejectCountedMail && this.exact))
         )
           return {
             data: null,
@@ -160,6 +167,16 @@ export function pipelinePerformanceFixture(
         const rows = (tables[this.table] ?? []).filter((r) =>
           this.predicates.every((p) => p(r)),
         );
+        if (this.orderedBy) {
+          const key = this.orderedBy;
+          rows.sort((a, b) =>
+            String(a[key]) < String(b[key])
+              ? -1
+              : String(a[key]) > String(b[key])
+                ? 1
+                : 0,
+          );
+        }
         return {
           data: rows.slice(offset, Math.min(end + 1, offset + cap)),
           count: this.table === options.missingCountTable ? null : rows.length,
