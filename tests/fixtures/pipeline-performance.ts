@@ -8,7 +8,8 @@ export function pipelinePerformanceFixture(
     cap?: number;
     delay?: number;
     failTable?: string;
-  missingCountTable?: string;
+    missingCountTable?: string;
+    rejectUnscopedMail?: boolean;
   } = {},
 ) {
   const { data } = pipelineModuleDemo();
@@ -137,6 +138,19 @@ export function pipelinePerformanceFixture(
         exact: this.exact,
       });
       return request(this.table, () => {
+        if (
+          options.rejectUnscopedMail &&
+          this.table === "mail_conversations_visible" &&
+          !this.batch
+        )
+          return {
+            data: null,
+            count: null,
+            error: {
+              code: "57014",
+              message: "canceling statement due to statement timeout",
+            },
+          };
         if (this.table === options.failTable)
           return {
             data: null,

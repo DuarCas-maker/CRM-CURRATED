@@ -47,7 +47,7 @@ test("a failed catalog read propagates instead of returning partial successful t
   );
 });
 
-test("one complete visible-mail page is reused while excluded case IDs never reach message reads", async () => {
+test("case-scoped mail batches exclude unrelated cases before message reads", async () => {
   const f = pipelinePerformanceFixture();
   f.tables.mail_conversations_visible.push({
     id: "archived-thread",
@@ -57,7 +57,8 @@ test("one complete visible-mail page is reused while excluded case IDs never rea
   const board = await readPipelineBoard(f.client, f.profile);
   assert.equal(board.total, 351);
   const reads = f.calls.filter((c) => c.table === "mail_conversations_visible");
-  assert.equal(reads.length, 1);
+  assert.equal(reads.length, 8);
+  assert(reads.every((c) => !!c.batch?.length && c.batch.length <= 50));
   assert(
     f.calls
       .filter((c) => c.table === "messages")
@@ -65,7 +66,7 @@ test("one complete visible-mail page is reused while excluded case IDs never rea
   );
 });
 
-test("a mailbox larger than one page falls back to complete scoped batches", async () => {
+test("a large mailbox never adds an unbounded probe before scoped batches", async () => {
   const f = pipelinePerformanceFixture();
   f.tables.mail_conversations_visible.push(
     ...Array.from({ length: 1001 }, (_, i) => ({
@@ -77,8 +78,8 @@ test("a mailbox larger than one page falls back to complete scoped batches", asy
   const board = await readPipelineBoard(f.client, f.profile);
   assert.equal(board.total, 351);
   const reads = f.calls.filter((c) => c.table === "mail_conversations_visible");
-  assert.equal(reads.length, 9);
-  assert.equal(reads.filter((c) => !c.batch).length, 1);
+  assert.equal(reads.length, 8);
+  assert.equal(reads.filter((c) => !c.batch).length, 0);
   assert(
     f.calls
       .filter((c) => c.table === "messages")
@@ -86,7 +87,7 @@ test("a mailbox larger than one page falls back to complete scoped batches", asy
   );
 });
 
-test("a missing count, duplicate identity or permission error in the single page fails closed", async () => {
+test("a missing count, duplicate identity or permission error in scoped pages fails closed", async () => {
   for (const kind of ["count", "duplicate", "permission"]) {
     const f = pipelinePerformanceFixture({
       missingCountTable:

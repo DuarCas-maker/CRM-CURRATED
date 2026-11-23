@@ -1,0 +1,13 @@
+{
+  "baseline":"2d4c6fa2170fad2b0747a6cfe1c29ede46d907c1",
+  "reported_path":"https://crm.finlabinc.com/pipeline-os",
+  "reproduced_error_boundary":true,
+  "authenticated_api":[
+    {"kind":"board","error":"canceling statement due to statement timeout","observed_browser_ms":9535},
+    {"kind":"workspace_pipeline","error":null,"opportunities":100,"observed_browser_ms":15991}
+  ],
+  "server_log":{"operation":"pipeline_os.mail_metadata","code":"57014","occurrences_observed":2},
+  "local_regression_before":{"board":"same operation/code failure","master":"same operation/code failure"},
+  "client_rows_saved":false,
+  "credentials_saved":false
+}

@@ -256,7 +256,7 @@ test("task reader reuses one complete mail snapshot for board evidence and reply
   );
 });
 
-test("one complete mail projection replaces case batches without dropping cases", async () => {
+test("case-scoped mail batches overlap within the four-batch limit without dropping cases", async () => {
   const f = fixtureDatabase();
   const seed = f.tables.opportunity_workspace[0];
   f.tables.opportunity_workspace = Array.from({ length: 251 }, (_, i) => ({
@@ -270,11 +270,12 @@ test("one complete mail projection replaces case batches without dropping cases"
     f.source.profile,
     parseTaskOverviewQuery(new URLSearchParams()),
   );
-  assert.equal(f.peak.get("mail_conversations_visible"), 1);
+  assert.equal(f.peak.get("mail_conversations_visible"), 4);
   assert.equal(
     f.calls.filter((c) => c.table === "mail_conversations_visible").length,
-    1,
+    6,
   );
+  assert(f.calls.filter(c => c.table === "mail_conversations_visible").every(c => !!c.batch?.length && c.batch.length <= 50));
   assert.equal(result.totals.stages.app, 251);
 });
 
