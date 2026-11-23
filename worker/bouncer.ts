@@ -1,6 +1,20 @@
 import { db, checked, alertAdmins } from "./db";
 import { mapVerification } from "../src/lib/domain";
 const base = "https://api.usebouncer.com/v1.1/email/verify/batch";
+// UUID filters live in the PostgREST URL. Keep them below proxy URI limits.
+async function updateVerifications(
+  client: ReturnType<typeof db>,
+  ids: string[],
+  values: { state: string; reason?: string; provider_batch_id?: string },
+) {
+  for (let i = 0; i < ids.length; i += 100)
+    checked(
+      await client
+        .from("verifications")
+        .update(values)
+        .in("id", ids.slice(i, i + 100)),
+    );
+}
 function headers() {
   if (!process.env.BOUNCER_API_KEY) throw new Error("MISSING_BOUNCER");
   return {
@@ -27,17 +41,10 @@ export async function startScrub() {
     });
     if (!res.ok) {
       if ([400, 401, 402, 403, 429].includes(res.status))
-        checked(
-          await client
-            .from("verifications")
-            .update({
-              state: "technical_error",
-              reason: `provider_http_${res.status}`,
-            })
-            .in(
-              "id",
-              contacts.map((c) => c.id),
-            ),
+        await updateVerifications(
+          client,
+          contacts.map((c) => c.id),
+          { state: "technical_error", reason: `provider_http_${res.status}` },
         );
       throw new Error("BOUNCER_REQUEST_FAILED");
     }
@@ -52,14 +59,10 @@ export async function startScrub() {
     );
     return;
   }
-  checked(
-    await client
-      .from("verifications")
-      .update({ state: "submitted", provider_batch_id: batchId })
-      .in(
-        "id",
-        contacts.map((c) => c.id),
-      ),
+  await updateVerifications(
+    client,
+    contacts.map((c) => c.id),
+    { state: "submitted", provider_batch_id: batchId },
   );
   checked(
     await client.from("jobs").upsert(
