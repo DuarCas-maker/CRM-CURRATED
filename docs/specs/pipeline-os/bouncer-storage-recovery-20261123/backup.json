@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-23T23:45:49.643329+00:00",
+  "path": "/var/lib/postgresql/data/bouncer-results-recovery-20261123T234540Z/pre-recovery.dump",
+  "bytes": 95534079,
+  "sha256": "a2a34b8ba4d272bb114be80867fede07a61d6239ef8ee7d9e4abe59c8c9b78a9",
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}

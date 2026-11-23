@@ -1,0 +1,32 @@
+{
+  "at": "2026-11-23T23:46:57.755Z",
+  "planSha256": "70514e0e2c91b0cd8487bcab37cd649b616aee198b2a3fd4213acf4498cc3372",
+  "workerSourceSha256": "b1c82259ba90c195622485d7c0d934ba25c5ba5816199c64dc46b6259c09b04b",
+  "providerVerificationPosts": 0,
+  "batches": [
+    {"id":"6b048a409cc3326739fccf46","total":52,"deliverable":46,"risky":2,"undeliverable":3,"unknown":1,"alreadyCompleted":52,"recovered":0},
+    {"id":"6b048a3f9cc3326739fccf31","total":1000,"deliverable":898,"risky":41,"undeliverable":37,"unknown":24,"alreadyCompleted":0,"recovered":1000},
+    {"id":"6b04890c0b2a81a3ff3c94be","total":502,"deliverable":374,"risky":34,"undeliverable":78,"unknown":16,"alreadyCompleted":0,"recovered":502}
+  ],
+  "uniqueEmails":1554,
+  "uniqueVerificationIds":1554,
+  "uniqueMatchedContacts":1554,
+  "postflight":{
+    "at":"2026-11-23T23:47:24.624499+00:00",
+    "all1554Completed":true,
+    "contactResultMismatches":0,
+    "allContacts":4040,
+    "uniqueContactEmails":4040,
+    "allLeads":4030,
+    "uniqueLeadContacts":4030,
+    "totalValidLeadEmails":2088,
+    "remainingUncertainOutsideThreeBatches":1000,
+    "historical402Preserved":423
+  },
+  "authenticatedCrmFunnel":{
+    "total":4030,"review":1592,"pending":0,"running":0,"campaign":1,"excluded":350,"available":1318,"contacted":769,"restricted":0
+  },
+  "applicationSchemaChanges":0,
+  "campaignsActivated":0,
+  "agentEmailsSent":0
+}
