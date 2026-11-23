@@ -1,0 +1,10 @@
+{
+  "target": "https://supabase.finlabinc.com",
+  "object": "s01_i02.visible_conversations()",
+  "before": "084a8b1c0f058da519cfbfa5e1e1f762",
+  "after": "5aec37664aba3b60375426679e39929b",
+  "migration": "docs/specs/pipeline-os-load-recovery-20261122/database/059_visible_mail_projection_performance.sql",
+  "rollback": "docs/specs/pipeline-os-load-recovery-20261122/database/rollback.sql",
+  "changesClientRows": false,
+  "changesFunctionAttributes": false
+}

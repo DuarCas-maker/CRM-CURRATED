@@ -1,0 +1,2 @@
+# SQL source hashes and the exact rollback preserve mixed/explicit line endings.
+*.sql -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
