@@ -14,6 +14,8 @@ import {
   type PipelineBoardMail,
 } from "./pipeline-os-module";
 import { checkDb, HttpError, requireUser } from "./supabase";
+import { observeTasksRead } from "./pipeline-tasks-observation";
+import { readTaskLeads } from "./task-leads";
 
 async function readRows<T>(
   db: SupabaseClient,
@@ -53,8 +55,10 @@ async function readRows<T>(
 }
 
 export async function loadTasksOverview(query: TaskOverviewQuery) {
-  const { db, profile } = await requireUser();
-  return readTasksOverview(db, profile, query);
+  return observeTasksRead(async (fetchImpl) => {
+    const { db, profile } = await requireUser({ fetchImpl });
+    return readTasksOverview(db, profile, query);
+  });
 }
 
 async function readVisibleCampaigns(db: SupabaseClient, profile: Profile) {
@@ -225,11 +229,7 @@ export async function readTasksOverview(
         "id,email,owner_id",
       ),
       isSellerRole(profile.role)
-        ? readRows<TaskOverviewSource["leads"][number]>(
-            db,
-            "lead_workspace",
-            "id,contact_id,company,contact,email,seller_id,opportunity_id",
-          )
+        ? readTaskLeads(db)
         : [],
       campaignsRead,
       factsRead,

@@ -185,14 +185,15 @@ export function OpenTasksOverview({
         open={open}
         onStage={selectStage}
       />
-      {renderStages?.(
-        !error && loadedKey === key && overview
-          ? account === "all"
-            ? overview.totals.stages
-            : overview.byAccount.find((r) => r.id === account)?.stages || null
-          : null,
-        (value) => selectStage(account, value),
-      )}
+      {!error &&
+        renderStages?.(
+          !error && loadedKey === key && overview
+            ? account === "all"
+              ? overview.totals.stages
+              : overview.byAccount.find((r) => r.id === account)?.stages || null
+            : null,
+          (value) => selectStage(account, value),
+        )}
     </>
   );
 }
