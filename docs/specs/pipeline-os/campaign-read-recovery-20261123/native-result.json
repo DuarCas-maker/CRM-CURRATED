@@ -1,0 +1,25 @@
+{
+  "postgres": "PostgreSQL 15.19, compiled by Visual C++ build 1944, 64-bit",
+  "semantic": {
+    "comparisons": 24,
+    "roles": 4,
+    "mfaDenied": true,
+    "privateHelperDenied": true,
+    "rollback": true
+  },
+  "leads": 4004,
+  "groups": 19,
+  "recipients": 804,
+  "beforeMs": 2653,
+  "afterMs": 1675,
+  "identical": true,
+  "rollback": true,
+  "providerRequests": 0,
+  "remoteMutations": 0,
+  "passed": true,
+  "sqlSha256": "4cd2ebb2e789fa6c8acb2bb360ff4f87e410f0275900f56cf2a7f4d0fa27cead",
+  "at": "2026-11-24T01:36:22.183Z",
+  "priorSqlSha256": "6b7e1df3d0a8ac63586f046233176d724b4295c6527fa747deff67656502c48d",
+  "guardNormalizationRetested": true,
+  "identicalFunctionBodies": true
+}

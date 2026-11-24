@@ -1,0 +1,35 @@
+{
+  "at": "2026-11-24T01:44:56.680533+00:00",
+  "role_timeouts": {
+    "authenticated": [
+      "statement_timeout=8s"
+    ],
+    "authenticator": [
+      "session_preload_libraries=safeupdate",
+      "statement_timeout=8s",
+      "lock_timeout=8s"
+    ]
+  },
+  "helper_execute": {
+    "anon": false,
+    "service_role": false,
+    "authenticated": false
+  },
+  "bouncer_completed": 1554,
+  "health": 200,
+  "authenticatedOverview": {
+    "navigationMs": 4032,
+    "campaigns": 18,
+    "leads": 4030,
+    "errorBanner": false
+  },
+  "screen": {
+    "campaigns": 18,
+    "active": 17,
+    "available": 1218,
+    "pending": 51,
+    "sent": 817,
+    "replied": 0,
+    "resultButtons": 18
+  }
+}

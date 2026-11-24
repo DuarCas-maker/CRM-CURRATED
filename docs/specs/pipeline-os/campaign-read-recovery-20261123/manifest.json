@@ -1,0 +1,17 @@
+{
+  "target": "https://supabase.finlabinc.com",
+  "signatures": [
+    "campaign_control_v1.summary(uuid)",
+    "public.campaign_control_read(text,uuid,uuid,text,text,integer)"
+  ],
+  "before": [
+    "7a949cb46f8cc81c5966f7dcd7a1b495",
+    "a44a2e3471700029555244fdd71a528f"
+  ],
+  "after": [
+    "6824d593d0aa604b669d36565aca0989",
+    "42d89f1a804cb2a8ea3dfcbc47d6f7fa"
+  ],
+  "sqlSha256": "4cd2ebb2e789fa6c8acb2bb360ff4f87e410f0275900f56cf2a7f4d0fa27cead",
+  "helper": "campaign_control_v1.summary_with_context(uuid,jsonb,jsonb,jsonb)"
+}

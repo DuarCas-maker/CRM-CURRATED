@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-24T01:36:32.010192+00:00",
+  "sqlSha256": "4cd2ebb2e789fa6c8acb2bb360ff4f87e410f0275900f56cf2a7f4d0fa27cead",
+  "attributesPreserved": true,
+  "timeoutsPreserved": true,
+  "leads": 4030,
+  "recovered": 1554,
+  "functions": {
+    "campaign_control_v1.summary(uuid)": "6824d593d0aa604b669d36565aca0989",
+    "campaign_control_read(text,uuid,uuid,text,text,integer)": "42d89f1a804cb2a8ea3dfcbc47d6f7fa"
+  },
+  "helper": "campaign_control_v1.summary_with_context(uuid,jsonb,jsonb,jsonb)",
+  "clientRowsWritten": 0,
+  "providerRequests": 0
+}

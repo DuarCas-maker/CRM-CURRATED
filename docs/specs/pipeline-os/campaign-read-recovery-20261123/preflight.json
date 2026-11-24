@@ -1,0 +1,115 @@
+{
+  "at": "2026-11-24T01:32:24.334687+00:00",
+  "leads": 4030,
+  "helper": null,
+  "database": "postgres",
+  "timeouts": {
+    "authenticated": [
+      "statement_timeout=8s"
+    ],
+    "authenticator": [
+      "session_preload_libraries=safeupdate",
+      "statement_timeout=8s",
+      "lock_timeout=8s"
+    ]
+  },
+  "functions": {
+    "campaign_control_v1.summary(uuid)": {
+      "hash": "7a949cb46f8cc81c5966f7dcd7a1b495",
+      "attributes": {
+        "oid": "362753",
+        "proacl": [
+          "supabase_admin=X/supabase_admin"
+        ],
+        "probin": null,
+        "procost": 100,
+        "prokind": "f",
+        "prolang": "13565",
+        "proname": "summary",
+        "prorows": 0,
+        "pronargs": 1,
+        "proowner": "10",
+        "proconfig": [
+          "search_path=\"\""
+        ],
+        "proretset": false,
+        "prosecdef": true,
+        "prorettype": "3802",
+        "prosqlbody": null,
+        "prosupport": "-",
+        "proargmodes": null,
+        "proargnames": [
+          "group_id"
+        ],
+        "proargtypes": [
+          "2950"
+        ],
+        "proisstrict": false,
+        "proparallel": "u",
+        "protrftypes": null,
+        "provariadic": "0",
+        "provolatile": "s",
+        "proleakproof": false,
+        "pronamespace": "362696",
+        "proallargtypes": null,
+        "proargdefaults": null,
+        "pronargdefaults": 0
+      }
+    },
+    "campaign_control_read(text,uuid,uuid,text,text,integer)": {
+      "hash": "a44a2e3471700029555244fdd71a528f",
+      "attributes": {
+        "oid": "362755",
+        "proacl": [
+          "supabase_admin=X/supabase_admin",
+          "postgres=X/supabase_admin",
+          "authenticated=X/supabase_admin"
+        ],
+        "probin": null,
+        "procost": 100,
+        "prokind": "f",
+        "prolang": "13565",
+        "proname": "campaign_control_read",
+        "prorows": 0,
+        "pronargs": 6,
+        "proowner": "10",
+        "proconfig": [
+          "search_path=\"\""
+        ],
+        "proretset": false,
+        "prosecdef": true,
+        "prorettype": "3802",
+        "prosqlbody": null,
+        "prosupport": "-",
+        "proargmodes": null,
+        "proargnames": [
+          "mode",
+          "batch",
+          "campaign",
+          "filter",
+          "search_text",
+          "page_number"
+        ],
+        "proargtypes": [
+          "25",
+          "2950",
+          "2950",
+          "25",
+          "25",
+          "23"
+        ],
+        "proisstrict": false,
+        "proparallel": "u",
+        "protrftypes": null,
+        "provariadic": "0",
+        "provolatile": "s",
+        "proleakproof": false,
+        "pronamespace": "2200",
+        "proallargtypes": null,
+        "proargdefaults": "({CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 17015 :constvalue 12 [ 48 0 0 0 111 118 101 114 118 105 101 119 ]} {CONST :consttype 2950 :consttypmod -1 :constcollid 0 :constlen 16 :constbyval false :constisnull true :location 17045 :constvalue <>} {CONST :consttype 2950 :consttypmod -1 :constcollid 0 :constlen 16 :constbyval false :constisnull true :location 17072 :constvalue <>} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 17097 :constvalue 7 [ 28 0 0 0 97 108 108 ]} {CONST :consttype 25 :consttypmod -1 :constcollid 100 :constlen -1 :constbyval false :constisnull false :location 17128 :constvalue 4 [ 16 0 0 0 ]} {CONST :consttype 23 :consttypmod -1 :constcollid 0 :constlen 4 :constbyval true :constisnull false :location 17155 :constvalue 4 [ 0 0 0 0 0 0 0 0 ]})",
+        "pronargdefaults": 6
+      }
+    }
+  },
+  "recovered": 1554
+}

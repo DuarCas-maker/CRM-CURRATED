@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-24T01:32:33.40662+00:00",
+  "path": "/var/lib/postgresql/data/campaign-read-recovery-20261124T013224Z/pre-read.dump",
+  "bytes": 96677289,
+  "sha256": "86bfeeb04279ceea1370dd243473a0f733ee20b702faf82d535b16f7ae87c801",
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}
