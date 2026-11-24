@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-24T14:06:50.802065+00:00",
+  "acl": {
+    "anonRecord": false,
+    "userRecord": false,
+    "workerRecord": true,
+    "workerUnlock": false
+  },
+  "rls": true,
+  "events": 4,
+  "reasons": {
+    "mailbox_full": 2
+  },
+  "cancelled": 0,
+  "recipients": 2,
+  "activeBlocks": 2,
+  "pendingBlocked": 0,
+  "activeSequencesBlocked": 0
+}

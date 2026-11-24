@@ -1,0 +1,21 @@
+{
+  "verifiedAt": "2026-11-24T14:07:20.263Z",
+  "planSha256": "48a51a8a4519108b115a81a908321f20b0d558f32f1f597245647848b7826095",
+  "originalPlanRevalidated": true,
+  "candidates": 4,
+  "matched": 4,
+  "duplicates": 0,
+  "recipients": 2,
+  "reason": "mailbox_full",
+  "activeBlocks": 2,
+  "suppressions": 2,
+  "sequencesStopped": 2,
+  "pendingOutboxBefore": 0,
+  "queuedMessagesCancelled": 0,
+  "pendingOutboxAfter": 0,
+  "activeSequencesAfter": 0,
+  "inFlightAfter": 0,
+  "manualUnlocksPerformed": 0,
+  "providerRequests": 0,
+  "testEmailsSent": 0
+}

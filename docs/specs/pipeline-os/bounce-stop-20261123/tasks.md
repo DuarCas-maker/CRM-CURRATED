@@ -6,6 +6,6 @@
 - [x] T-004 / FR-002/003/005: SQL aditivo de evidencia/bloqueo y cancelación idempotente; permisos, desbloqueo auditado y reversa.
 - [x] T-005 / FR-001/003: integrar recepción continua y antigua; completar partes DSN ausentes y cerrar la comprobación antes del despacho.
 - [x] T-006 / FR-006: extender proyección/agregados, columna Rebotados y detalle con el diseño existente y paginación completa.
-- [ ] T-007 / FR-007: informe histórico de solo lectura y aplicación acotada de casos confirmados.
+- [x] T-007 / FR-007: informe histórico de solo lectura y aplicación acotada de los cuatro casos confirmados para dos direcciones; history-application.json y recovery-postflight.json.
 - [x] T-008 / NFR-001/002: pruebas funcionales, adversas, concurrencia, permisos y rendimiento en PostgreSQL nativo; TypeScript/build.
-- [ ] T-009: publicar SQL y aplicación coordinados con respaldo y comprobar bloqueo real de los casos conciliados sin generar nuevos envíos.
+- [x] T-009: SQL/aplicación publicados; revisión thread-correlation aplicada tras respaldo fresco, cuatro eventos y dos bloqueos comprobados, sin nuevos envíos de prueba.

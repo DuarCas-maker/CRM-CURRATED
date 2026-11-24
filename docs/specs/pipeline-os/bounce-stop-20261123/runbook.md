@@ -3,7 +3,7 @@
 1. Completar código y pruebas offline/nativas, revisar fuente productiva y medir agregados sin repetir el problema de timeout del resumen de campañas. Leer las guías Next vigentes antes de tocar frontend/rutas.
 2. Conciliar catálogo y respaldar producción. Preparar informe de rebotes históricos, con evidencia y conteos agregados. No cambiar datos durante el informe.
 3. Publicar esquema expansivo y controles de envío primero; después receptor/parser y UI compatibles. Comprobar estados inciertos, locking y workers antes de conciliar historial.
-   En una instalación nueva, aplicar en orden `up.sql`, `correlation.sql`, `thread-correlation.sql`; las revisiones tienen guardas del catálogo esperado. La versión ya publicada tiene aplicados los dos primeros; comprobar el catálogo antes de repetir cualquier operación con resultado de red incierto.
+   En una instalación nueva, aplicar en orden `up.sql`, `correlation.sql`, `thread-correlation.sql`; las revisiones tienen guardas del catálogo esperado. Producción tiene las tres aplicadas; comprobar el catálogo antes de repetir cualquier operación con resultado de red incierto.
 4. Aplicar únicamente rebotes históricos correlacionados; cancelar pendientes comerciales afectados. No activar ni enviar campañas durante el postflight.
 5. Verificar desde sesión real columna/detalle, denegaciones y control de selección/despacho usando evidencia histórica y pruebas sin POST a Gmail. No enviar correos deliberadamente a direcciones inválidas.
 

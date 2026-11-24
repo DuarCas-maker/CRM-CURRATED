@@ -1,8 +1,8 @@
 {
-  "at": "2026-11-24T04:05:20.440586+00:00",
-  "path": "/var/lib/postgresql/data/bounce-stop-20261124T040511Z/before.dump",
-  "bytes": 99058191,
-  "sha256": "7846feac0ade8d9ded352f5a6b7cffe56e9249ca9c30b208c8897e7f65608e7d",
+  "at": "2026-11-24T14:04:51.752465+00:00",
+  "path": "/var/lib/postgresql/data/bounce-stop-20261124T140441Z/before.dump",
+  "bytes": 100965802,
+  "sha256": "9ad7923a7af09d735dd3cb24bfba9686210a3c61ff1c8f6363249efb8fec8a7e",
   "decodeVerified": true,
   "archiveListVerified": true,
   "fullDisasterRestoreTested": false
