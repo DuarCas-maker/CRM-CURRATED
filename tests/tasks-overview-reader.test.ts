@@ -158,7 +158,13 @@ test("task reader reads complete catalogs and Campaign Control contact facts wit
   assert.equal(result.total, 2);
   assert.equal(result.totals.stages.app, 73);
   assert(!f.calls.some((c) => c.table === "campaign_workspace"));
-  assert(f.calls.some((c) => c.table === "lead_workspace" && c.offset === 17));
+  const leadReads = f.calls.filter((c) => c.table === "lead_workspace");
+  assert.equal(
+    leadReads.length,
+    6,
+    "follow the REST cap through the final empty page",
+  );
+  assert(leadReads.every((c) => !c.exact && c.offset === 0));
   assert(
     f.calls
       .filter((c) => c.table === "rpc:campaign_contact_facts")

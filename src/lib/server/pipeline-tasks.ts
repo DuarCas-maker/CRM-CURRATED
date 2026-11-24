@@ -15,6 +15,7 @@ import {
 } from "./pipeline-os-module";
 import { checkDb, HttpError, requireUser } from "./supabase";
 import { observeTasksRead } from "./pipeline-tasks-observation";
+import { readTaskLeads } from "./task-leads";
 
 async function readRows<T>(
   db: SupabaseClient,
@@ -227,11 +228,7 @@ export async function readTasksOverview(
         "id,email,owner_id",
       ),
       isSellerRole(profile.role)
-        ? readRows<TaskOverviewSource["leads"][number]>(
-            db,
-            "lead_workspace",
-            "id,contact_id,company,contact,email,seller_id,opportunity_id",
-          )
+        ? readTaskLeads(db)
         : [],
       campaignsRead,
       factsRead,
