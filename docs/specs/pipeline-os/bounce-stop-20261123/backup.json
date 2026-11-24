@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-24T04:05:20.440586+00:00",
+  "path": "/var/lib/postgresql/data/bounce-stop-20261124T040511Z/before.dump",
+  "bytes": 99058191,
+  "sha256": "7846feac0ade8d9ded352f5a6b7cffe56e9249ca9c30b208c8897e7f65608e7d",
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}

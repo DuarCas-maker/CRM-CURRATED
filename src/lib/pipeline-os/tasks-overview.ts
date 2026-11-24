@@ -11,6 +11,7 @@ export const taskLeadStatuses = [
   "managed",
   "pending",
   "replied",
+  "bounced",
 ] as const;
 const querySchema = z.strictObject({
   q: z.string().trim().max(200).default(""),
@@ -25,6 +26,7 @@ export const parseTaskOverviewQuery = (params: URLSearchParams) =>
   querySchema.parse(Object.fromEntries(params));
 export type TaskStage = (typeof pipelineStages)[number];
 export type TaskCounts = {
+  bounced?: number;
   leads: number;
   managed: number;
   sent: number | null;
@@ -44,6 +46,7 @@ export type TaskRep = TaskCounts & {
 };
 export type TaskAccountSummary = TaskCounts & { id: string; email: string };
 export type TaskLead = {
+  bounces?: TaskBounce[];
   id: string;
   caseId: string | null;
   company: string;
@@ -72,6 +75,7 @@ export type TasksOverview = {
   hasMore: boolean;
 };
 export type TaskOverviewSource = {
+  bounces?: TaskBounce[];
   profile: Profile;
   profiles: Profile[];
   accounts: { id: string; email: string; owner_id: string | null }[];
@@ -120,6 +124,19 @@ export type TaskOverviewSource = {
     | "reply_intent"
     | "participants"
   >[];
+};
+
+export type TaskBounce = {
+  account_email?: string;
+  id: string;
+  account_id: string;
+  contact_id: string | null;
+  recipient: string;
+  reason: string;
+  smtp_status: string;
+  occurred_at: string;
+  active: boolean;
+  blockReason: string;
 };
 
 const emailKey = (email: string) =>
@@ -383,6 +400,10 @@ export function buildTasksOverview(
     }
   }
   const all = [...leads.values()];
+  for (const event of source.bounces || []) {
+    const row = (event.contact_id && byContact.get(event.contact_id)) || byEmail.get(emailKey(event.recipient));
+    if (row) (row.bounces ||= []).push({...event,account_email:source.accounts.find(a=>a.id===event.account_id)?.email});
+  }
   for (const row of all) {
     const owner = rep(row.ownerId);
     owner.leads++;
@@ -406,6 +427,7 @@ export function buildTasksOverview(
       a.id.localeCompare(b.id),
   );
   const totals: TaskCounts = {
+    bounced: new Set(all.filter(r => r.bounces?.length).map(r => emailKey(r.email))).size,
     leads: all.length,
     managed: all.filter((r) => r.managed).length,
     sent: campaignsAvailable ? sentContacts.size : null,
@@ -437,7 +459,7 @@ export function buildTasksOverview(
             ? r.managed
             : query.status === "pending"
               ? !r.managed
-              : r.replied)) &&
+              : query.status === "bounced" ? !!r.bounces?.length : r.replied)) &&
         `${r.company} ${r.contact} ${r.email} ${r.ownerName}`
           .toLowerCase()
           .includes(query.q.toLowerCase()),

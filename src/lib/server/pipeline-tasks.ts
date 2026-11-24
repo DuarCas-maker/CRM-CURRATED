@@ -21,6 +21,7 @@ async function readRows<T>(
   columns: string,
   ids?: string[],
   key = "opportunity_id",
+  orderKey = "id",
 ) {
   const batches = ids
     ? Array.from({ length: Math.ceil(ids.length / 50) }, (_, i) =>
@@ -35,7 +36,7 @@ async function readRows<T>(
           let q = db
             .from(table)
             .select(columns, { count: "exact" })
-            .order("id");
+            .order(orderKey);
           if (batch) q = q.in(key, batch);
           const result = await q.range(offset, offset + 499);
           return {
@@ -214,7 +215,7 @@ export async function readTasksOverview(
       );
     return visibleCaseMail(profile, board, mailSnapshot);
   });
-  const [board, profiles, accounts, leads, campaigns, facts, mail, audience] =
+  const [board, profiles, accounts, leads, campaigns, facts, mail, audience, bounceEvents, bounceBlocks] =
     await Promise.all([
       boardRead,
       readRows<Profile>(db, "profiles", "id,name,email,role,active"),
@@ -234,6 +235,8 @@ export async function readTasksOverview(
       factsRead,
       mailRead,
       audienceRead,
+      readRows<NonNullable<TaskOverviewSource["bounces"]>[number]>(db,"mail_bounce_events","id,account_id,contact_id,recipient,reason,smtp_status,occurred_at"),
+      readRows<{email:string;active:boolean;reason:string}>(db,"mail_bounce_blocks","email,active,reason",undefined,"opportunity_id","email"),
     ]);
   return buildTasksOverview(
     {
@@ -245,6 +248,7 @@ export async function readTasksOverview(
       cases: board.rows,
       facts,
       audience,
+      bounces: bounceEvents.map(e => ({...e,active:bounceBlocks.find(b => b.email===e.recipient)?.active || false,blockReason:bounceBlocks.find(b => b.email===e.recipient)?.reason || e.reason})),
       ...mail,
     },
     query,

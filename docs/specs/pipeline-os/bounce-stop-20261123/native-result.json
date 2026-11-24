@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "semantic": {
+    "matched": true,
+    "idempotent": true,
+    "crossAccountCancelled": true,
+    "mfa": true,
+    "optOutPreserved": true,
+    "unlockNeverResumes": true,
+    "oldNoticeDoesNotRelock": true,
+    "rollbackPreservesBlocks": true
+  },
+  "concurrencyIdempotent": true,
+  "volumeContacts": 4004,
+  "guardQueryMs": 64,
+  "providerRequests": 0,
+  "sqlSha256": "1e9f2a4cb929891de6614c4548928df01a8238943436bc7646c833b403331c5c"
+}

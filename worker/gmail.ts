@@ -5,6 +5,7 @@ import { hash, encrypt } from "../src/lib/server/crypto";
 import { gmailHistoryEnabled } from "../src/lib/gmail-feature";
 import { gmailPushEnabled } from "../src/lib/gmail-sync";
 import { recordReplyIntent } from "./gmail-engagement";
+import { ingestBounce } from "./mail-bounce";
 import { isGmailQuotaError } from "../src/lib/gmail-errors";
 import { decrypt } from "../src/lib/server/crypto";
 import {
@@ -213,6 +214,7 @@ async function ingestMessage(
     await ingestLiveMessage(account, msg);
     return;
   }
+  await ingestBounce(account, msg);
   const client = db();
   const nature = snapshotMessage(msg, account.email).nature;
   const h = (name: string) =>
@@ -462,22 +464,15 @@ async function ingestMessage(
     if (
       conversation.area === "seller" &&
       !teamSender &&
-      (nature === "personal" || nature === "permanent_bounce")
+      nature === "personal"
     ) {
       checked(
         await client.rpc("stop_contact_sequence", {
           contact: opportunity.contact_id,
-          why: bounce ? "bounced" : "replied",
+          why: "replied",
         }),
       );
-      if (nature === "permanent_bounce")
-        checked(
-          await client.rpc("suppress_contact", {
-            contact: opportunity.contact_id,
-            reason: "bounce",
-          }),
-        );
-      else if (
+      if (
         /^\s*(unsubscribe|remove me|stop emailing|stop sending|please remove|please unsubscribe)\b/i.test(
           body,
         )
@@ -522,6 +517,8 @@ export async function ingestLiveMessage(
   msg: GmailMessage,
 ) {
   if (excludedGmailMessage(msg)) return;
+  // Delivery failures must stop sequences even when association/linking returns null.
+  await ingestBounce(account, msg);
   const client = db();
   const snapshot = snapshotMessage(msg, account.email);
   if (snapshot.direction === "outbound" && snapshot.internet_message_id) {

@@ -1,0 +1,46 @@
+{
+  "at": "2026-11-24T04:03:24.172571+00:00",
+  "database": "postgres",
+  "functions": {
+    "admit_brand_dispatch(uuid,uuid)": {
+      "hash": "3e3934d794660b1785008228bf2ffb1c",
+      "definition": "CREATE OR REPLACE FUNCTION public.admit_brand_dispatch(message uuid, claim_token uuid)\n RETURNS uuid\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\r\ndeclare observed public.outbox;m public.outbox;permit uuid;seq integer;\r\nbegin\r\n select * into observed from public.outbox where id=message;\r\n if observed.id is null or not brand_b2.delivery_allowed(observed) then\r\n  update public.outbox set status='paused',last_error='BRAND_PREPARATION_STALE' where id=message and status in ('queued','sending') and brand_admission_id is null;return null;\r\n end if;\r\n select * into m from public.outbox where id=message for update;\r\n if m.status<>'sending' or m.brand_claim_token is distinct from claim_token or claim_token is null or m.brand_snapshot is distinct from observed.brand_snapshot or m.brand_admission_id is not null\r\n  or exists(select 1 from public.mail_brand_dispatch_admissions where outbox_id=m.id and (outcome in ('admitted','uncertain','accepted') or mail_brand_dispatch_admissions.claim_token=admit_brand_dispatch.claim_token)) then return null;end if;\r\n if not public.recheck_outbox_delivery_before_brand_b2(m.id) then return null;end if;\r\n select coalesce(max(sequence),0)+1 into seq from public.mail_brand_dispatch_admissions where outbox_id=m.id;\r\n insert into public.mail_brand_dispatch_admissions(outbox_id,claim_token,sequence,snapshot) values(m.id,claim_token,seq,m.brand_snapshot) returning id into permit;\r\n update public.outbox set brand_admission_id=permit where id=m.id;return permit;\r\nend$function$\n"
+    },
+    "recheck_outbox_delivery_before_brand_b2(uuid)": {
+      "hash": "4397ce831719ab0750151bedf960f4f8",
+      "definition": "CREATE OR REPLACE FUNCTION public.recheck_outbox_delivery_before_brand_b2(message uuid)\n RETURNS boolean\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$\ndeclare m public.outbox;e public.campaign_enrollments;c public.campaigns;op public.opportunities;\nbegin\n select * into m from public.outbox where id=message;\n select * into e from public.campaign_enrollments where id=m.enrollment_id;\n if exists(select 1 from public.campaign_flows where campaign_id=e.campaign_id) then\n  select * into c from public.campaigns where id=e.campaign_id;\n  select * into op from public.opportunities where id=e.opportunity_id;\n  if e.status<>'active' or op.handed_off_at is not null or op.archived_at is not null or op.application_complete or op.stage not in ('new','contacting') or not e.contact_id=any(c.selected_contact_ids)\n   or m.request_key is distinct from ('campaign:'||e.id||':'||e.step)\n   or (e.step=0 and (op.last_contact is not null or exists(select 1 from public.outbox x where x.opportunity_id=op.id and x.status='sent' and not x.campaign_test))) then\n   update public.outbox set status='cancelled',last_error='CF_SEQUENCE_STOPPED' where id=m.id and status in ('sending','queued');\n   update public.campaign_enrollments set status='goal_met' where id=e.id and status='active';return false;\n  end if;\n  if greatest(c.scheduled_at,e.next_at)>now() then\n   update public.outbox set status='queued',sending_at=null,brand_claim_token=null,send_attempts=greatest(0,send_attempts-1),available_at=greatest(c.scheduled_at,e.next_at),last_error='CF_SCHEDULED' where id=m.id and status='sending' and brand_admission_id is null;return false;\n  end if;\n  if extract(isodow from now() at time zone c.timezone)=7 then\n   update public.outbox set status='queued',sending_at=null,brand_claim_token=null,send_attempts=greatest(0,send_attempts-1),available_at=campaign_flow_v1.next_date(now(),0,c.timezone),last_error='CF_SUNDAY' where id=m.id and status='sending' and brand_admission_id is null;return false;\n  end if;\n end if;\n return campaign_flow_v1.recheck_outbox_delivery_before_brand_b2(message);\nend$function$\n"
+    }
+  },
+  "outboxCounts": {
+    "sent": 2132,
+    "failed": 2,
+    "queued": 211,
+    "uncertain": 2
+  },
+  "archiveColumns": [
+    "id",
+    "account_id",
+    "gmail_message_id",
+    "gmail_thread_id",
+    "internet_message_id",
+    "subject",
+    "sent_at",
+    "direction",
+    "nature",
+    "participants",
+    "attachment_index",
+    "encrypted_payload",
+    "created_at",
+    "references_header",
+    "is_live",
+    "reply_intent",
+    "reply_evaluated_at"
+  ],
+  "archiveDelivery": [
+    {
+      "count": 1421,
+      "nature": "delivery_report"
+    }
+  ],
+  "priorInstallation": null
+}

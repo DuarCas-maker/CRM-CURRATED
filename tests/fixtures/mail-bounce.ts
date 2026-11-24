@@ -1,0 +1,56 @@
+import assert from "node:assert/strict";
+import {readFile} from "node:fs/promises";
+import {randomUUID} from "node:crypto";
+import {controlFixture,queueFixture} from "./campaign-control";
+import {queueFixtureMail} from "./pipeline-os-s02-brand-delivery";
+export const bounceRoot="docs/specs/pipeline-os/bounce-stop-20261123/";
+export async function exerciseBounce(f:Awaited<ReturnType<typeof controlFixture>>) {
+ const {db,users}=f;
+ const g=await f.command("create",{...f.payload,daily_limit:100});await f.command("activate",{id:g.id,senders:f.payload.senders});await queueFixture(f,g.id);
+ await db.exec("reset role");await db.exec(await readFile(bounceRoot+"up.sql","utf8"));
+ await db.exec("set role service_role");
+ const m=(await db.query<any>("select * from claim_outbox()" )).rows[0];assert(m);
+ assert((await db.query<any>("select admit_brand_dispatch($1,$2) id",[m.id,m.brand_claim_token])).rows[0].id);
+ await db.query("select mark_sent($1,$2,$3)",[m.id,"accepted-fixture","thread-fixture"]);
+ await db.exec("reset role");
+ // Another account/manual draft to this address must also stop; don't touch sent history.
+ const manual=await queueFixtureMail(f as any,f.accounts.find(a=>a!==m.account_id)!,users.admin,m.opportunity_id,f.prep,{recipient:m.to_email});
+ const manualWaiting=await queueFixtureMail(f as any,m.account_id,users.admin,m.opportunity_id,f.prep,{recipient:m.to_email});
+ await db.query("update outbox set status='sending',sending_at=now(),brand_claim_token=gen_random_uuid() where id=$1",[manual]);
+ const inFlight=(await db.query<any>('select * from outbox where id=$1',[manual])).rows[0];assert(inFlight);
+ const event={recipient:m.to_email,status:"5.2.2",action:"failed",reason:"mailbox_full",references:[m.message_id_header]};
+ const record=async(n:string,report=event,account=m.account_id,at=new Date().toISOString())=>(await db.query<any>("select record_mail_bounce($1,$2,$3,$4,$5) r",[account,n,"thread-fixture",at,report])).rows[0].r;
+ assert.equal((await record("wrong-account",event,f.accounts.find(a=>a!==m.account_id))).matched,false);
+ assert.equal((await record("wrong-recipient",{...event,recipient:"unknown@example.test"})).matched,false);
+ assert.equal((await record("wrong-rfc",{...event,references:["<wrong@fixture.test>"]})).matched,false);
+ const r=await record("notice-one");assert(r.matched);assert(r.cancelled>=1);assert(r.stopped>=1);
+ await db.exec('set role service_role');
+ assert.equal((await db.query<any>('select admit_brand_dispatch($1,$2) permit',[inFlight.id,inFlight.brand_claim_token])).rows[0].permit,null,'last wire admission rejects a bounce received after claim');
+ await db.exec('reset role');
+ assert.equal((await record("notice-one")).duplicate,true);
+ assert.equal((await db.query<any>("select count(*)::int n from mail_bounce_events")).rows[0].n,1);
+ assert.equal((await db.query<any>("select status from outbox where id=$1",[m.id])).rows[0].status,"sent");
+ assert.equal((await db.query<any>("select count(*)::int n from outbox where lower(to_email)=$1 and status in('queued','paused')",[m.to_email])).rows[0].n,0);
+ await db.query("update contacts set verification='valid' where email=$1",[m.to_email]);
+ assert.equal((await db.query<any>("select active from mail_bounce_blocks where email=$1",[m.to_email])).rows[0].active,true);
+ assert.equal((await db.query<any>("select recheck_outbox_delivery_before_brand_b2($1) ok",[m.id])).rows[0].ok,false);
+ await f.asUser(users.seller);await assert.rejects(db.query("select unlock_full_mailbox($1,'Mailbox reviewed and emptied')",[m.to_email]),/BOUNCE_FORBIDDEN/);
+ await f.asUser(users.outsider);assert.equal((await db.query<any>('select count(*)::int n from mail_bounce_events')).rows[0].n,0,'unrelated account is private');
+ await f.asUser(users.admin,"aal1");await assert.rejects(db.query("select unlock_full_mailbox($1,'Mailbox reviewed and emptied')",[m.to_email]),/BOUNCE_FORBIDDEN/);
+ await f.asUser(users.admin);await assert.rejects(db.query("select record_mail_bounce($1,'unauthorized','thread-fixture',now(),$2)",[m.account_id,event]),/permission denied/);
+ // An opt-out attempted while the bounce row already exists must remain after unlock.
+ await db.exec("reset role");await db.query("insert into suppressions(email,reason) values($1,'email_unsubscribe') on conflict do nothing",[m.to_email]);
+ await f.asUser(users.admin);await db.query("select unlock_full_mailbox($1,'Mailbox reviewed and emptied')",[m.to_email]);
+ await db.exec("reset role");
+ assert.equal((await db.query<any>("select reason from suppressions where email=$1",[m.to_email])).rows[0].reason,"email_unsubscribe");
+ assert.equal((await db.query<any>("select count(*)::int n from campaign_enrollments where contact_id=(select id from contacts where email=$1) and status='active'",[m.to_email])).rows[0].n,0);
+ const prior=new Date(Date.now()-60000).toISOString();assert.equal((await record("old-notice",event,m.account_id,prior)).historical_only,true);
+ await record("new-permanent",{...event,status:"5.1.1",reason:"address_not_found"});
+ await f.asUser(users.admin);await assert.rejects(db.query("select unlock_full_mailbox($1,'Mailbox reviewed and emptied')",[m.to_email]),/BOUNCE_NOT_UNLOCKABLE/);
+ await db.exec("reset role;set role anon");await assert.rejects(db.query("select * from mail_bounce_events"),/permission denied/);
+ await db.exec("reset role");
+ const before=(await db.query<any>("select count(*)::int n from mail_bounce_events")).rows[0].n;
+ await db.exec(await readFile(bounceRoot+"rollback.sql","utf8"));
+ assert.equal((await db.query<any>("select count(*)::int n from mail_bounce_events")).rows[0].n,before,"rollback retains durable protections and evidence");
+ return {matched:true,idempotent:true,crossAccountCancelled:true,mfa:true,optOutPreserved:true,unlockNeverResumes:true,oldNoticeDoesNotRelock:true,rollbackPreservesBlocks:true};
+}

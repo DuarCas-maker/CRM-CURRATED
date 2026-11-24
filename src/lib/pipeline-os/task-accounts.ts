@@ -10,7 +10,7 @@ const emailKey = (email: string) =>
   (email.match(/<([^<>]+)>/)?.[1] || email).trim().toLowerCase();
 type Activity = Pick<
   TaskLead,
-  "managed" | "campaignSent" | "replied" | "lastSentAt" | "lastReplyAt"
+  "managed" | "campaignSent" | "replied" | "lastSentAt" | "lastReplyAt" | "bounces"
 >;
 const blankActivity = (): Activity => ({
   managed: false,
@@ -18,6 +18,7 @@ const blankActivity = (): Activity => ({
   replied: false,
   lastSentAt: null,
   lastReplyAt: null,
+  bounces: [],
 });
 const latest = (a: string | null, b: string | null) =>
   b && Number.isFinite(Date.parse(b)) && (!a || Date.parse(b) > Date.parse(a))
@@ -66,6 +67,7 @@ export function summarizeTaskAccounts(input: {
         managed: 0,
         sent: campaignsAvailable ? 0 : null,
         replied: 0,
+        bounced: 0,
         stages: Object.fromEntries(
           pipelineStages.map((s) => [s, 0]),
         ) as TaskAccountSummary["stages"],
@@ -184,11 +186,16 @@ export function summarizeTaskAccounts(input: {
       own.value.lastReplyAt = latest(own.value.lastReplyAt, message.sent_at);
   }
   for (const row of all) {
+    for (const event of row.bounces || []) {
+      const own = link(event.account_id, row);
+      if (own) (own.value.bounces ||= []).push(event);
+    }
     for (const [key, value] of activity.get(row.id) || []) {
       const summary = summaries.get(key)!;
       summary.leads++;
       if (value.managed) summary.managed++;
       if (value.replied) summary.replied++;
+      if (value.bounces?.length) summary.bounced = (summary.bounced || 0) + 1;
       for (const stage of new Set(row.groups)) summary.stages[stage]++;
     }
   }

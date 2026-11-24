@@ -31,6 +31,7 @@ const statusNames = {
   managed: ["Gestionados", "Managed"],
   pending: ["Sin gestionar", "Not contacted"],
   replied: ["Contestados", "Replied"],
+  bounced: ["Rebotados", "Bounced"],
 } as const;
 const number = (n: number | null, locale: Locale) =>
   n === null
@@ -159,6 +160,7 @@ export function OpenTasksOverview({
   return (
     <>
       <TasksOverviewView
+        canUnlock={["superadmin","seller_admin"].includes(data.profile.role) && !data.demo}
         overview={overview}
         locale={locale}
         account={account}
@@ -196,6 +198,7 @@ export function OpenTasksOverview({
 }
 
 type ViewProps = {
+  canUnlock?: boolean;
   overview: TasksOverview | null;
   locale: Locale;
   account: string;
@@ -213,6 +216,7 @@ type ViewProps = {
 };
 
 export function TasksOverviewView({
+  canUnlock = false,
   overview,
   locale,
   account,
@@ -228,6 +232,20 @@ export function TasksOverviewView({
   open,
   onStage,
 }: ViewProps) {
+  const [unlock, setUnlock] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
+  const [unlockError, setUnlockError] = useState("");
+  const [unlocking, setUnlocking] = useState(false);
+  async function unlockFullMailbox() {
+    setUnlocking(true);setUnlockError("");
+    try {
+      const response = await fetch("/api/pipeline-os/mail-bounces", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:unlock,reason})});
+      if (!response.ok) throw new Error("UNLOCK_FAILED");
+      setUnlock(null);setReason("");refresh();
+    } catch {setUnlockError(t(locale,"No se pudo desbloquear. Revisa tu sesión MFA y el estado del correo.","Could not unlock. Check MFA and the mailbox state."));}
+    finally {setUnlocking(false);}
+  }
+  const bounceLabel = (value:string) => ({mailbox_full:t(locale,"Buzón lleno","Mailbox full"),address_not_found:t(locale,"Dirección inexistente","Address not found"),policy_rejected:t(locale,"Rechazo del servidor","Server policy rejection"),delivery_failed:t(locale,"Fallo de entrega","Delivery failed")}[value] || value);
   const selected = overview?.byAccount.find((r) => r.id === account);
   const metric = (n: number | null) => number(n, locale);
   const date = (at: string | null) =>
@@ -276,6 +294,11 @@ export function TasksOverviewView({
           <b>{metric(rep.sent)}</b>
         </td>
         <td>
+          <button className="pos-tasks-number" onClick={() => {selectAccount(rep.id);changeStatus("bounced");}} aria-label={`${rep.email}: ${metric(rep.bounced || 0)} ${t(locale,"rebotados","bounced")}`}>
+            {metric(rep.bounced || 0)}
+          </button>
+        </td>
+        <td>
           <b>{metric(rep.replied)}</b>
         </td>
         {pipelineStages.map((s) => (
@@ -309,6 +332,14 @@ export function TasksOverviewView({
       className="pos-tasks-overview"
       aria-label={t(locale, "Resumen por correo", "Email account overview")}
     >
+      {unlock && <form className="pos-card" onSubmit={event=>{event.preventDefault();void unlockFullMailbox();}}>
+        <h4>{t(locale,"Revisar buzón lleno","Review full mailbox")}</h4>
+        <p>{unlock}</p><p>{t(locale,"Confirma que el buzón puede recibir correo. Los recordatorios cancelados no se reactivarán y se conservarán otras exclusiones.","Confirm the mailbox can receive mail. Cancelled reminders stay stopped and other suppressions remain.")}</p>
+        <label>{t(locale,"Motivo de desbloqueo","Unlock reason")}<textarea className="pos-input" required minLength={10} maxLength={500} value={reason} onChange={e=>setReason(e.target.value)} /></label>
+        {unlockError && <p role="alert">{unlockError}</p>}
+        <button className="pos-btn pos-primary" disabled={unlocking || reason.trim().length<10}>{t(locale,"Desbloquear correo","Unlock mailbox")}</button>
+        <button type="button" className="pos-btn" disabled={unlocking} onClick={()=>{setUnlock(null);setReason("");setUnlockError("");}}>{t(locale,"Cancelar","Cancel")}</button>
+      </form>}
       <div className="pos-tasks-heading">
         <div>
           <h3>{t(locale, "Correos del CRM", "CRM email accounts")}</h3>
@@ -375,6 +406,7 @@ export function TasksOverviewView({
                     <th scope="col">
                       {t(locale, "Enviados · campañas", "Sent · campaigns")}
                     </th>
+                    <th scope="col">{t(locale, "Rebotados", "Bounced")}</th>
                     <th scope="col">{t(locale, "Contestados", "Replied")}</th>
                     {pipelineStages.map((s) => (
                       <th scope="col" key={s}>
@@ -399,7 +431,7 @@ export function TasksOverviewView({
                   {overview.byAccount.map((r) => summaryRow(r))}
                   {!overview.byAccount.length && (
                     <tr>
-                      <td colSpan={9}>
+                      <td colSpan={10}>
                         {t(
                           locale,
                           "No hay correos disponibles.",
@@ -589,6 +621,11 @@ export function TasksOverviewView({
                               )}
                             </small>
                           )}
+                          {!!r.bounces?.length && <div className="pos-tasks-line">
+                            <b>{r.bounces.some(b=>b.active) ? t(locale,"Correo bloqueado","Email blocked") : t(locale,"Rebote histórico · desbloqueado","Historical bounce · unlocked")}</b>
+                            {[...r.bounces].sort((a,b)=>b.occurred_at.localeCompare(a.occurred_at)).slice(0,1).map(b=><small className="pos-tasks-line" key={b.id}>{bounceLabel(b.reason)} · {b.smtp_status} · {date(b.occurred_at)} · {b.account_email || t(locale,"Cuenta vinculada","Linked account")}</small>)}
+                            {canUnlock && r.bounces.some(b=>b.active && b.blockReason==="mailbox_full") && <button className="pos-text-btn" onClick={()=>{setUnlock(r.email);setReason("");setUnlockError("");}}>{t(locale,"Revisar y desbloquear","Review and unlock")}</button>}
+                          </div>}
                         </td>
                         <td>{date(r.lastSentAt)}</td>
                         <td>{date(r.lastReplyAt)}</td>
