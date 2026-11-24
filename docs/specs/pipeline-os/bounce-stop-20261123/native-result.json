@@ -12,7 +12,9 @@
   },
   "concurrencyIdempotent": true,
   "volumeContacts": 4004,
-  "guardQueryMs": 64,
+  "guardQueryMs": 72,
   "providerRequests": 0,
-  "sqlSha256": "1e9f2a4cb929891de6614c4548928df01a8238943436bc7646c833b403331c5c"
+  "sqlSha256": "1e9f2a4cb929891de6614c4548928df01a8238943436bc7646c833b403331c5c",
+  "correlationSha256": "2bc8456e0d1acdb99666ae332167c3b86e50c191bcfd2206475fb775057ee721",
+  "threadSha256": "6609822a5e34c24c26b7bdd6dd3959cb4da322ab91eae83131d1bb8ef8327ddc"
 }

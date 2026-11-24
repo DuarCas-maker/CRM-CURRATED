@@ -50,6 +50,6 @@ try{
  assert.equal((await db.query<any>("select count(*)::int n from mail_bounce_events where gmail_message_id='concurrent-notice'")).rows[0].n,1);
  await db.exec("insert into contacts(email,name,verification) select 'volume'||i||'@example.test','Volume','valid' from generate_series(1,4000) i");
  const began=performance.now();await db.query('select count(*) from contacts c where not exists(select 1 from suppressions s where s.email=c.email) and not exists(select 1 from mail_bounce_blocks b where b.email=c.email and b.active)');const elapsedMs=Math.round(performance.now()-began);assert(elapsedMs<1000);
- const result={passed:true,semantic,concurrencyIdempotent:true,volumeContacts:4004,guardQueryMs:elapsedMs,providerRequests:0,sqlSha256:createHash('sha256').update(fs.readFileSync(root+'up.sql')).digest('hex')};
+ const result={passed:true,semantic,concurrencyIdempotent:true,volumeContacts:4004,guardQueryMs:elapsedMs,providerRequests:0,sqlSha256:createHash('sha256').update(fs.readFileSync(root+'up.sql')).digest('hex'),correlationSha256:createHash('sha256').update(fs.readFileSync(root+'correlation.sql')).digest('hex'),threadSha256:createHash('sha256').update(fs.readFileSync(root+'thread-correlation.sql')).digest('hex')};
  fs.writeFileSync(root+'native-result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }finally{if(started)run('pg_ctl',['-D',data,'-m','fast','-w','stop']);}

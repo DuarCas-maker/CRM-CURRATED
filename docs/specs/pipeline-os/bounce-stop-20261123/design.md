@@ -16,6 +16,8 @@ Implementación: se guarda el código enhanced SMTP y motivo normalizado; el arc
 
 No se confía solo en remitente, asunto o correos citados. Cada resultado debe vincularse con evidencia de outbox de la misma cuenta y destinatario, usando Message-ID/referencias originales y, cuando sea inequívoco, el hilo. Los reportes con varios destinatarios se procesan individualmente. Una notificación positiva de entrega no es rebote; un mensaje personal que cite un error tampoco lo es.
 
+La lectura real confirmó que Gmail reemplaza algunos Message-ID enviados por el CRM: los cuatro avisos con coincidencia de cuenta/destinatario/hilo de la muestra usan el RFC real archivado, no message_id_header del outbox. `correlation.sql` une la referencia real a través del gmail_message_id exacto del outbox. `thread-correlation.sql` cubre el orden de llegada inverso del archivo saliente, únicamente si el hilo Gmail de esa cuenta no contiene otro destinatario aceptado. Ambas revisiones se ensayan con la cadena completa; no se edita silenciosamente el SQL ya aplicado.
+
 ## Persistencia y control
 
 Propuesta aditiva: eventos de entrega con clave única de cuenta/aviso/destinatario, y un bloqueo comercial activo por dirección. Registrar tipo, evidencia, fecha y desbloqueo. Preservar suppressions existentes: un desbloqueo por buzón lleno no puede eliminar una baja voluntaria u otro impedimento independiente.
