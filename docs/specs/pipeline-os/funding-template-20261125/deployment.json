@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-11-25T21:13:28.820Z",
+  "functionalCommits": [
+    "da776aae86cf789e639c7c23198189f53e0ef552",
+    "bb21a7ba27f83504ffb8a43022836af981d7cb4b"
+  ],
+  "web": {
+    "status": "Success",
+    "runtime": "Running"
+  },
+  "worker": {
+    "status": "Success",
+    "runtime": "Running"
+  },
+  "pipelineEntry": true,
+  "campaignLibrary": true,
+  "incomeLabelsVisible": 30,
+  "confirmedFundingCampaigns": 0,
+  "confirmedFinancialOutbox": 0,
+  "bouncerRequestsFromRecovery": 0,
+  "knownLimitation": "Historical mail board may still time out; campaigns and their refreshes load independently."
+}
