@@ -12,3 +12,5 @@ Clarificaciones: el usuario eligió cálculo por lead usando Monthly Income; del
 - FR-006: reimportaciones futuras pueden actualizar el ingreso del correo existente, preservando unicidad, verificación y supresión.
 
 No se deducen capacidad de pago, elegibilidad financiera o aprobación a partir del ingreso. No se cambia ningún estado financiero del expediente ni se reactivan secuencias.
+
+FR-007 / corrección de acceso descubierta en postflight: la lectura del tablero histórico no debe impedir entrar a Campañas, importar o abrir plantillas. Los datos del tablero no disponibles se muestran como pendientes (—), conservando permisos, MFA y errores por vista. Sin cambios SQL adicionales ni aumento de timeout.

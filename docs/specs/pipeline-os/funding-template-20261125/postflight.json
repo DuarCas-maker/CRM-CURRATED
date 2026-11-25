@@ -1,0 +1,45 @@
+{
+  "at": "2026-11-25T20:56:05.851184+00:00",
+  "leads": 4030,
+  "contacts": 4040,
+  "template": {
+    "id": "6cde6605-3c0d-40f7-8809-06fcc920ae59",
+    "name": "Curated · Funding options · Monthly Income",
+    "model": {
+      "options": [
+        {
+          "weeks": 26,
+          "factor": 1.3,
+          "months": 6,
+          "multiplier": 1
+        },
+        {
+          "weeks": 39,
+          "factor": 1.35,
+          "months": 9,
+          "multiplier": 2
+        },
+        {
+          "weeks": 52,
+          "factor": 1.4,
+          "months": 12,
+          "multiplier": 3
+        }
+      ],
+      "version": 1
+    },
+    "format": "markdown",
+    "version": 1,
+    "reminders": 4,
+    "senderCTA": true,
+    "unsubscribe": true,
+    "dynamicSubject": true
+  },
+  "bounceBlocks": 2,
+  "templateCount": 1,
+  "incomeContacts": 2052,
+  "duplicateEmails": 0,
+  "financialOutbox": 0,
+  "fundingCampaigns": 0,
+  "auditedIncomeUpdates": 2052
+}

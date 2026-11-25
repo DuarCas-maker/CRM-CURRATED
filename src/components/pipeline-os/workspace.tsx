@@ -116,11 +116,11 @@ export function PipelineOSWorkspace({
   processes = noProcesses,
 }: {
   initial: Workspace;
-  initialBoard: PipelineBoard;
+  initialBoard?: PipelineBoard;
   processes?: PipelineProcess[];
 }) {
   const [data, setData] = useState(initial),
-    [board, setBoard] = useState(initialBoard);
+    [board, setBoard] = useState(() => initialBoard ?? buildPipelineBoard(initial, processes));
   const [locale, setLocale] = useState<Locale>(initial.preferences.locale);
   const [ready, setReady] = useState(false);
   const [path, setPath] = useState<Page[]>([]),
@@ -164,15 +164,16 @@ export function PipelineOSWorkspace({
     page: String(page),
     hours: String(hours),
   }).toString();
-  const [boardKey, setBoardKey] = useState(params);
+  const [boardKey, setBoardKey] = useState(initialBoard ? params : "");
   const [boardReader] = useState(() => new WorkspaceReader<PipelineBoard>());
-  const loadedBoardParams = useRef(params);
+  const loadedBoardParams = useRef(initialBoard ? params : "");
   const currentBoardParams = useRef(params);
   currentBoardParams.current = params;
   const currentCaseId = useRef(caseId);
   currentCaseId.current = caseId;
   useEffect(() => () => boardReader.cancel(), [boardReader]);
   const boardReady = data.demo || boardKey === params;
+  const needsBoard = !current || (isGroup(current) && current !== "tasks") || ["stats", "updates", "recap"].includes(current);
   const l = (p: Page) => pageNames[p][locale === "es" ? 0 : 1];
   const manageCampaigns = ["superadmin", "seller_admin"].includes(
     data.profile.role,
@@ -223,7 +224,7 @@ export function PipelineOSWorkspace({
     if (initial.demo) return;
     // The task overview already reads complete stage counts; a second board read
     // on every owner/search change repeats the same expensive mail catalog.
-    if (current === "tasks") {
+    if (!needsBoard) {
       setLoading(false);
       setError("");
       return;
@@ -255,7 +256,7 @@ export function PipelineOSWorkspace({
       disposed = true;
       boardReader.cancel();
     };
-  }, [params, current, initial.demo, boardReader]);
+  }, [params, current, needsBoard, initial.demo, boardReader]);
 
   async function readWorkspace(id?: string) {
     const res = await fetch(
@@ -282,14 +283,16 @@ export function PipelineOSWorkspace({
     const requestParams = currentBoardParams.current;
     const selectedCase = currentCaseId.current;
     const result = await Promise.all([
-      boardReader.read(`/api/pipeline-os?${requestParams}`, true),
+      needsBoard ? boardReader.read(`/api/pipeline-os?${requestParams}`, true) : Promise.resolve(null),
       readWorkspace(),
       selectedCase ? readWorkspace(selectedCase) : Promise.resolve(null),
     ]);
-    if (!result[0] || currentBoardParams.current !== requestParams) return;
-    setBoard(result[0]);
-    setBoardKey(requestParams);
-    loadedBoardParams.current = requestParams;
+    if (currentBoardParams.current !== requestParams) return;
+    if (result[0]) {
+      setBoard(result[0]);
+      setBoardKey(requestParams);
+      loadedBoardParams.current = requestParams;
+    }
     setData(result[1]);
     if (result[2] && currentCaseId.current === selectedCase)
       setCaseData(result[2]);
@@ -521,7 +524,7 @@ export function PipelineOSWorkspace({
         </span>
         <span className="pos-tile-description">{desc}</span>
         <span className="pos-tile-number">
-          {value}
+          {boardReady || target === "templates" ? value : "—"}
           <small>{unit}</small>
         </span>
       </button>
@@ -1115,7 +1118,7 @@ export function PipelineOSWorkspace({
                       <Icon size={15} />
                       {l(id)}
                       <span>
-                        {id === "tasks"
+                        {!boardReady ? "—" : id === "tasks"
                           ? board.counts.tasks
                           : board.campaigns.total}
                       </span>
@@ -1140,7 +1143,7 @@ export function PipelineOSWorkspace({
                           onClick={() => go([id, p])}
                         >
                           {l(p)}
-                          {isGroup(p) && <span>{board.counts[p]}</span>}
+                          {isGroup(p) && <span>{boardReady ? board.counts[p] : "—"}</span>}
                         </button>
                       ))}
                     </div>
@@ -1153,7 +1156,7 @@ export function PipelineOSWorkspace({
                   >
                     <Icon size={15} />
                     {l(id)}
-                    {isGroup(id) && <span>{board.counts[id]}</span>}
+                    {isGroup(id) && <span>{boardReady ? board.counts[id] : "—"}</span>}
                   </button>
                 ),
               )}
@@ -1366,7 +1369,7 @@ export function PipelineOSWorkspace({
                 0,
               )}
             </div>
-            {!current && (
+            {!current && boardReady && (
               <div className="pos-home-bottom">
                 <section className="pos-card">
                   <div className="pos-card-head">

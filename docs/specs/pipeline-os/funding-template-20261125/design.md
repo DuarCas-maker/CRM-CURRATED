@@ -7,3 +7,5 @@ El renderizador limitado mantiene plain/markdown; se agregan presentación de ta
 Importación: detección opcional de Monthly Income, parser de USD estricto, actualización por correo exacto en transacciones acotadas. Recuperación: leer el archivo existente en memoria, agrupar por correo, preparar informe agregado, respaldar y aplicar solo coincidencias verificadas; datos de clientes fuera de logs y Git.
 
 Cambios SQL aditivos y revisiones guardadas con hashes del catálogo; ensayos locales con roles/MFA, compatibilidad, snapshots y reversa. El rollback no borra ingresos ni evidencia recuperada y no reactiva campañas.
+
+La entrada de Pipeline OS carga el workspace autenticado; el tablero de historial se consulta aparte cuando una vista lo necesita. Campañas y sus refrescos no esperan ese tablero. Un tablero ausente conserva un estado no disponible y contadores —, sin presentar ceros ficticios. Esto evita que un timeout de correo cierre el módulo de campañas.
