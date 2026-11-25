@@ -5,7 +5,7 @@ import { campaignControlAction } from "@/lib/campaign-control-client";
 import { markFormSaved, useNativeChanges } from "./unsaved-changes";
 import { renderTemplate, type Workspace, type Locale } from "@/lib/domain";
 import type { EmailTemplate } from "@/lib/campaign-templates";
-import { campaignPreviewValues } from "@/lib/campaign-templates";
+import { templatePreviewValues } from "@/lib/campaign-templates";
 import {
   audienceReasons,
   type CampaignAudience,
@@ -149,10 +149,11 @@ export function CampaignComposer({
   let previewError = false;
   try {
     if (template) {
-      previewSubject = renderTemplate(template.subject, campaignPreviewValues);
+      const previewValues = templatePreviewValues(template.funding_model, data.accounts.find((a) => a.id === account)?.email);
+      previewSubject = renderTemplate(template.subject, previewValues);
       preview = renderCampaignContent(
         template.body,
-        campaignPreviewValues,
+        previewValues,
         template.body_format,
       ).html;
     }

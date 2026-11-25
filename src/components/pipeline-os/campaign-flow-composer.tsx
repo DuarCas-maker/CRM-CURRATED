@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, CalendarDays } from "lucide-react";
 import type { Locale, Workspace } from "@/lib/domain";
 import { renderTemplate } from "@/lib/domain";
 import { accountPreparation } from "@/lib/brand-delivery";
-import { campaignPreviewValues } from "@/lib/campaign-templates";
+import { templatePreviewValues } from "@/lib/campaign-templates";
 import { renderCampaignContent } from "@/lib/campaign-content";
 import {
   templateReminders,
@@ -63,14 +63,15 @@ export function FlowComposer({
     root.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
   const message = preview === 0 ? template : reminders[preview - 1];
+  const previewValues = templatePreviewValues(template?.funding_model, sender?.email);
   let subject = "",
     html = "";
   try {
     if (message) {
-      subject = renderTemplate(message.subject, campaignPreviewValues);
+      subject = renderTemplate(message.subject, previewValues);
       html = renderCampaignContent(
         withoutInlineSignature(message.body, template?.body_format),
-        campaignPreviewValues,
+        previewValues,
         template?.body_format,
       ).html;
     }

@@ -1,6 +1,7 @@
 import { db, checked, alertAdmins } from "./db";
 import { renderTemplate } from "../src/lib/domain";
 import { renderCampaignContent } from "../src/lib/campaign-content";
+import { withFundingValues } from "../src/lib/funding-options";
 import { token, hash, encrypt, decrypt } from "../src/lib/server/crypto";
 export async function scheduleCampaigns() {
   const client = db();
@@ -156,7 +157,11 @@ export async function scheduleCampaigns() {
       )!;
     }
     try {
-      const values = {
+      const frozen = campaign.funding_model ? checked(await client.from("campaign_enrollments")
+        .select("funding_income_snapshot").eq("id", enrollment.id).single()) : null;
+      const sender = campaign.funding_model ? checked(await client.from("mail_accounts")
+        .select("email").eq("id", campaign.account_id).single()) : null;
+      const values = withFundingValues({
         name: contact.name,
         company: opportunity.company,
         amount: String(opportunity.amount),
@@ -166,7 +171,7 @@ export async function scheduleCampaigns() {
           ? `${process.env.APP_ORIGIN}/apply/${decrypt(application.encrypted_token)}`
           : "",
         unsubscribe_url: `${process.env.APP_ORIGIN}/unsubscribe/${decrypt(unsubscribe.encrypted_token)}`,
-      };
+      }, campaign.funding_model, frozen?.funding_income_snapshot, sender?.email || "");
       const subject = renderTemplate(message.subject, values);
       const content = renderCampaignContent(
         message.body,

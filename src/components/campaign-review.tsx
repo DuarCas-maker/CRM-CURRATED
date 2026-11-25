@@ -11,7 +11,8 @@ import {
 import { renderCampaignContent } from "@/lib/campaign-content";
 import type { Action } from "./crm";
 import { t } from "./ui";
-import { campaignPreviewValues } from "@/lib/campaign-templates";
+import { templatePreviewValues } from "@/lib/campaign-templates";
+import { withFundingValues } from "@/lib/funding-options";
 import {
   accountPreparation,
   snapshotPreparation,
@@ -253,7 +254,7 @@ export function CampaignReview({
   const messages: { subject: string; html: string }[] = [];
   if (contact)
     try {
-      const vals = audienceValues(contact);
+      const vals = withFundingValues(audienceValues(contact), campaign.funding_model, contact.monthly_income, data.accounts.find((a) => a.id === campaign.account_id)?.email || "");
       for (const message of [campaign, ...campaign.steps])
         messages.push({
           subject: renderTemplate(message.subject, vals),
@@ -277,12 +278,12 @@ export function CampaignReview({
           try {
             return (
               <div key={i}>
-                <h4>{renderTemplate(m.subject, campaignPreviewValues)}</h4>
+                <h4>{renderTemplate(m.subject, templatePreviewValues(campaign.funding_model))}</h4>
                 <div
                   dangerouslySetInnerHTML={{
                     __html: renderCampaignContent(
                       m.body,
-                      campaignPreviewValues,
+                      templatePreviewValues(campaign.funding_model),
                       campaign.body_format,
                     ).html,
                   }}

@@ -183,6 +183,7 @@ export interface MailAccount {
   sent_today: number;
 }
 export interface Campaign {
+  funding_model?: import("./funding-options").FundingModel | null;
   brand_snapshot?: import("./brand-delivery").BrandSnapshot | null;
   first_contact?: boolean;
   selected_contact_ids?: string[];

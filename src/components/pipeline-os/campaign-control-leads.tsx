@@ -282,6 +282,7 @@ export function CampaignControlLeads({
                       <strong>{row.company || row.name}</strong>
                       <span>
                         {row.name} · {row.email}
+                        {row.monthly_income != null && <><br />Ingreso mensual: {Number(row.monthly_income).toLocaleString("en-US", { style: "currency", currency: "USD" })}</>}
                       </span>
                     </span>
                     <span className="cc-contact-note">

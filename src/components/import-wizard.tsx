@@ -274,8 +274,8 @@ export function ImportWizard({
               <div className="info-banner">
                 {t(
                   locale,
-                  "Los correos existentes se vinculan al lote sin sobrescribir el contacto ni su historial.",
-                  "Existing emails are linked to the batch without overwriting the contact or history.",
+                  "Los correos existentes se vinculan sin duplicarse. Solo se actualiza el ingreso mensual válido; nombres, validaciones e historial se conservan. Importes contradictorios para un mismo correo no se actualizan.",
+                  "Existing emails are linked without duplicates. Only valid monthly income is updated; names, verification and history stay unchanged. Conflicting income for the same email is not updated.",
                 )}
               </div>
               <div className="modal-footer">

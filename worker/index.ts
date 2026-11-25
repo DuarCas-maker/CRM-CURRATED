@@ -3,6 +3,7 @@ import { workerErrorCode } from "./errors";
 import { withLegacyWorkerJob } from "../src/lib/server/mail-transport/legacy-worker-context";
 import { parseImport } from "../src/lib/server/parse-import";
 import { normalizeRow, type Mapping } from "../src/lib/imports";
+import { groupIncomeRows } from "../src/lib/funding-options";
 import { startScrub, pollScrub } from "./bouncer";
 import {
   syncMailbox,
@@ -63,11 +64,12 @@ async function importBatch(batchId: string) {
     await client.storage.from("imports").download(batch.storage_path),
   )!;
   const parsed = await parseImport(new File([blob], batch.name), batch.sheet);
+  const normalized = parsed.rows.map((r, index) => ({ ...normalizeRow(r, batch.mapping as Mapping), row_number: index + 2 }));
+  const income = groupIncomeRows(normalized.filter((r) => r.valid).map((r) => ({ email: r.email!, income: r.monthly_income })));
+  const conflicts = new Set(income.conflicts);
+  const safeRows = normalized.map((r) => r.valid && conflicts.has(r.email) ? { ...r, monthly_income: null } : r);
   for (let offset = 0; offset < parsed.rows.length; offset += 250) {
-    const rows = parsed.rows.slice(offset, offset + 250).map((r, index) => ({
-      ...normalizeRow(r, batch.mapping as Mapping),
-      row_number: offset + index + 2,
-    }));
+    const rows = safeRows.slice(offset, offset + 250);
     checked(
       await client.rpc("ingest_import_chunk", { batch_id: batchId, rows }),
     );

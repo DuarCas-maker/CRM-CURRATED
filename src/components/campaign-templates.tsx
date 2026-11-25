@@ -4,6 +4,7 @@ import type { Workspace, Locale } from "@/lib/domain";
 import { renderTemplate } from "@/lib/domain";
 import {
   campaignPreviewValues,
+  templatePreviewValues,
   campaignTemplateSchema,
   type EmailTemplate,
   type CampaignAsset,
@@ -13,13 +14,14 @@ import { useUnsavedChanges } from "./unsaved-changes";
 import { Modal, t } from "./ui";
 import { CampaignEditor } from "./campaign-editor";
 import { renderCampaignContent } from "@/lib/campaign-content";
-import { campaignPresets } from "@/lib/campaign-presets";
+import { campaignPresets, fundingPreset } from "@/lib/campaign-presets";
 import {
   automaticSignatureTemplate,
   templateReminders,
   withoutInlineSignature,
 } from "@/lib/campaign-sequence";
 import { CampaignSignaturePreview } from "./campaign-signature-preview";
+import { FundingSettings } from "./funding-settings";
 
 export function CampaignTemplates({
   data,
@@ -75,7 +77,7 @@ export function CampaignTemplates({
   };
   const preview = (text: string) => {
     try {
-      return renderTemplate(text, campaignPreviewValues);
+      return renderTemplate(text, templatePreviewValues(draft?.funding_model, sender?.email));
     } catch (e) {
       return (e as Error).message;
     }
@@ -84,7 +86,7 @@ export function CampaignTemplates({
     try {
       return renderCampaignContent(
         withoutInlineSignature(body, draft?.body_format),
-        campaignPreviewValues,
+        templatePreviewValues(draft?.funding_model, sender?.email),
         draft?.body_format,
       ).html;
     } catch (e) {
@@ -269,7 +271,7 @@ export function CampaignTemplates({
             )}
           </summary>
           <div className="card-actions" style={{ marginTop: 8 }}>
-            {campaignPresets.map((preset) => (
+            {[...campaignPresets, fundingPreset].map((preset) => (
               <button
                 type="button"
                 className="button"
@@ -493,6 +495,7 @@ export function CampaignTemplates({
                 }
               />
             </label>
+            {draft.funding_model && <FundingSettings value={draft.funding_model} change={(funding_model) => update({ funding_model })} />}
             <CampaignEditor
               locale={locale}
               label={t(locale, "Mensaje", "Message")}

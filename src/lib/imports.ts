@@ -1,8 +1,9 @@
 import { normalizeEmail, validEmail } from "./domain";
+import { parseMonthlyIncome } from "./funding-options";
 export type Mapping = Record<
   "email" | "contact" | "company" | "phone" | "industry",
   string
->;
+> & { monthly_income?: string };
 const aliases: Record<keyof Mapping, string[]> = {
   email: [
     "email",
@@ -32,6 +33,7 @@ const aliases: Record<keyof Mapping, string[]> = {
   ],
   phone: ["phone", "phonenumber", "telefono", "mobile", "cell"],
   industry: ["industry", "sector", "industria", "business type"],
+  monthly_income: ["monthlyincome", "monthlyrevenue", "ingresomensual", "ingresosmensuales"],
 };
 const headerKey = (s: string) =>
   s
@@ -48,7 +50,7 @@ export function detectMapping(headers: string[]): Mapping {
   ) as Mapping;
 }
 export function normalizeRow(row: Record<string, unknown>, mapping: Mapping) {
-  const field = (key: keyof Mapping) => String(row[mapping[key]] ?? "").trim();
+  const field = (key: keyof Mapping) => String(row[mapping[key] || ""] ?? "").trim();
   const email = normalizeEmail(field("email"));
   if (!validEmail(email))
     return {
@@ -62,5 +64,6 @@ export function normalizeRow(row: Record<string, unknown>, mapping: Mapping) {
     company: field("company"),
     phone: field("phone"),
     industry: field("industry"),
+    ...(mapping.monthly_income ? { monthly_income: parseMonthlyIncome(field("monthly_income")) } : {}),
   };
 }

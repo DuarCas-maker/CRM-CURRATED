@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "semantic": {
+    "recovered": 4,
+    "idempotent": true,
+    "uniquePreserved": true,
+    "mfa": true,
+    "snapshotsFrozen": true,
+    "reimportUpdatesOnlyIncome": true,
+    "missingIncomeBlocked": true,
+    "providerRequests": 0
+  },
+  "providerRequests": 0,
+  "sqlSha256": "4c2391984c84668d215b2b4e37246f7934846e14f6f119a1c313a99847f24899"
+}

@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-25T20:29:32.87113+00:00",
+  "functions": {
+    "campaign_audience_v42(uuid)": "4783dee37ad230de65fcfa32f0dfb1ae",
+    "ingest_import_chunk(uuid,jsonb)": "8e1076d7a3e9110b5ff8e8be6f8b0062",
+    "campaign_flow_launch(jsonb,uuid)": "6fbcf6f4bd995f3fbb8804ec5c8a713f",
+    "due_campaign_enrollments(boolean)": "b77fee53f44b455c305e3f4b6bca6e93",
+    "save_campaign_template(jsonb,uuid)": "6ba66397c341c1e556322dcd0d770356",
+    "save_campaign_template_v37(jsonb,uuid)": "6c998b6eae8fb141e30526a1d3e6e2b6",
+    "save_lender_email_template(jsonb,uuid)": "46332e2e8bef433fb518603b533adf1d",
+    "campaign_prepared_leads(text,text,uuid)": "ceb166b84b06a251a670e8b71f978e33",
+    "campaign_missing_fields(text,text,jsonb,jsonb)": "a9b31751dbc7455682341d1babed06cb"
+  },
+  "counts": {
+    "leads": 4030,
+    "contacts": 4040,
+    "bounceBlocks": 2
+  }
+}

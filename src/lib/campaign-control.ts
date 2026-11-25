@@ -70,6 +70,7 @@ export function campaignUsageBlocked(c: ControlCampaign) {
   return ["active", "scheduled"].includes(c.status) && c.metrics.pending > 0 && pendingSenders.length > 0 && pendingSenders.every(s => s.blockers.includes("usage_unknown"));
 }
 export interface ControlLead {
+  monthly_income?: number | null;
   contact_id: string;
   name: string;
   email: string;

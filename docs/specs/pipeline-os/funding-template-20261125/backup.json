@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-25T20:47:08.62028+00:00",
+  "path": "/var/lib/postgresql/data/funding-20261125T204656Z/before.dump",
+  "bytes": 114865743,
+  "sha256": "5f97876f3f8a77c1f94fc8157a20bccf1977baf15c237b55bbbf0eaa57557874",
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}

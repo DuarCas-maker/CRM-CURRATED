@@ -9,6 +9,10 @@ export const mergeFields = [
   "phone",
   "application_url",
   "unsubscribe_url",
+  "monthly_income", "sender_email",
+  "funding_amount_6", "funding_amount_9", "funding_amount_12",
+  "funding_payment_6", "funding_payment_9", "funding_payment_12",
+  "funding_weeks_6", "funding_weeks_9", "funding_weeks_12",
 ] as const;
 const escapeHtml = (s: string) =>
   s
@@ -101,9 +105,9 @@ export function renderCampaignContent(
       plainLines.push(...signature.map(plain));
       continue;
     }
-    const directive = line.trim().match(/^:::table (black|blue)$/);
+    const directive = line.trim().match(/^:::table (black|blue|funding)$/);
     if (line.trim().startsWith(":::table") && !directive)
-      throw new Error("El color de tabla debe ser black o blue.");
+      throw new Error("El color de tabla debe ser black, blue o funding.");
     const headingIndex = directive ? index + 1 : index;
     const heading = cells(sourceLines[headingIndex] || "");
     const separator = cells(sourceLines[headingIndex + 1] || "");
@@ -111,18 +115,19 @@ export function renderCampaignContent(
       closeList();
       if (heading.length !== separator.length || heading.length > 8)
         throw new Error("Revisa las columnas de la tabla.");
+      const funding = directive?.[1] === "funding";
       const blue = directive?.[1] === "blue",
-        color = blue ? "#214784" : "#000000";
-      const border = blue ? "border:0;" : "border:1px solid #000000;";
+        color = funding ? "#d9a441" : blue ? "#214784" : "#000000";
+      const border = funding ? "border-bottom:1px solid #dbe4ed;" : blue ? "border:0;" : "border:1px solid #000000;";
       const rowCells = (row: string[], header = false) =>
         row
           .map((cell, i) => {
             const tag = header ? "th" : "td";
-            return `<${tag} style="${border}padding:${header ? "4px" : "2px 3px"};text-align:${header ? "center" : separator![i].endsWith(":") ? "right" : "left"};vertical-align:top;${header ? `background-color:${color};color:#ffffff;font-weight:bold;` : "color:#111111;background-color:#ffffff;"}">${inline(cell)}</${tag}>`;
+            return `<${tag} style="${border}padding:${funding ? "12px" : header ? "4px" : "2px 3px"};text-align:${header ? "center" : separator![i].endsWith(":") ? "right" : "left"};vertical-align:top;${header ? `background-color:${color};color:${funding ? "#102d4d" : "#ffffff"};font-weight:bold;` : "color:#111111;background-color:#ffffff;"}">${inline(cell)}</${tag}>`;
           })
           .join("");
       const merged = heading.length === 2 && !heading[1];
-      let html = `<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid ${color};width:${blue ? 212 : 238}px;max-width:100%;margin:0 0 ${blue ? 18 : 0}px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;"><thead><tr>${merged ? `<th colspan="2" style="padding:4px;background-color:${color};color:#ffffff;font-weight:bold;text-align:center;">${inline(heading[0])}</th>` : rowCells(heading, true)}</tr></thead><tbody>`;
+      let html = `<table cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid ${color};width:${funding ? "100%" : (blue ? 212 : 238) + "px"};max-width:100%;margin:0 0 ${blue || funding ? 18 : 0}px;font-family:Arial,Helvetica,sans-serif;font-size:${funding ? 14 : 12}px;line-height:18px;"><thead><tr>${merged ? `<th colspan="2" style="padding:4px;background-color:${color};color:#ffffff;font-weight:bold;text-align:center;">${inline(heading[0])}</th>` : rowCells(heading, true)}</tr></thead><tbody>`;
       plainLines.push(plain(heading.filter(Boolean).join(" | ")));
       index = headingIndex + 2;
       let rows = 0;
@@ -155,7 +160,9 @@ export function renderCampaignContent(
     plainLines.push(plain(line));
   }
   if (inList) lines.push("</ul>");
-  return { text: plainLines.join("\n"), html: lines.join("") };
+  const html = lines.join("");
+  return { text: plainLines.join("\n"), html: /^:::table funding$/m.test(body)
+    ? `<div style="background:#f2f5f8;padding:24px 12px;"><div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #dbe4ed;border-radius:12px;overflow:hidden;"><div style="background:#102d4d;color:white;padding:20px 24px;font:700 22px Arial,Helvetica,sans-serif;">Curated Financial</div><div style="padding:24px;font:14px/1.6 Arial,Helvetica,sans-serif;color:#243746;">${html}</div></div></div>` : html };
 }
 
 export function missingCampaignFields(

@@ -1,6 +1,8 @@
+import { defaultFundingModel } from "./funding-options";
 // Transcribed from the two reference emails. Financial wording and sample
 // figures are user-provided content, not values calculated or approved by CRM.
 export const campaignPresets = [
+
   {
     id: "57de6f7b-912b-4f41-b9ca-a0b1944cba01",
     name: "Curated · OFFER · SBA 7(a)",
@@ -80,3 +82,34 @@ Sincerely,
     asset_ids: [],
   },
 ];
+
+export const fundingPreset = {
+    id: "57de6f7b-912b-4f41-b9ca-a0b1944cba03",
+    name: "Curated · Funding options · Monthly Income",
+    subject: "How does {{funding_amount_9}} sound for {{company}}?",
+    body_format: "markdown" as const,
+    funding_model: defaultFundingModel,
+    body: `Hi {{name}},
+
+**Prepared for: {{company}}**
+
+Based on your monthly revenue of {{monthly_income}}, here are sample funding options we can put together for you:
+
+:::table funding
+| Amount | Term | Est. weekly payment |
+| ---: | :--- | ---: |
+| {{funding_amount_6}} | 6 months · {{funding_weeks_6}} weeks | {{funding_payment_6}} |
+| {{funding_amount_9}} | 9 months · {{funding_weeks_9}} weeks | {{funding_payment_9}} |
+| {{funding_amount_12}} | 12 months · {{funding_weeks_12}} weeks | {{funding_payment_12}} |
+:::
+
+To move forward, please reply with your last 4 months of business bank statements.
+
+[Send my statements](mailto:{{sender_email}})
+
+*Sample figures for illustration only. Final offers depend on review. These estimates are not a credit approval; repayment factors are not APRs.*
+
+[Unsubscribe]({{unsubscribe_url}})`,
+    steps: [],
+    asset_ids: [],
+  };

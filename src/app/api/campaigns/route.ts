@@ -10,6 +10,7 @@ import { readBounded } from "@/lib/server/body";
 import { renderCampaignContent } from "@/lib/campaign-content";
 import { audienceValues } from "@/lib/campaign-delivery";
 import { renderTemplate } from "@/lib/domain";
+import { withFundingValues } from "@/lib/funding-options";
 import { brandPreparationSchema } from "@/lib/brand-delivery";
 import { deliveryJsonError } from "@/lib/server/brand-delivery";
 
@@ -58,7 +59,8 @@ export async function POST(request: Request) {
     const campaign = campaignDb(
       await db.from("campaigns").select("*").eq("id", p.campaign_id).single(),
     );
-    const values = audienceValues(contact);
+    const sender = campaign.funding_model ? campaignDb(await db.from("mail_accounts").select("email").eq("id", campaign.account_id).single()) : null;
+    const values = withFundingValues(audienceValues(contact), campaign.funding_model, contact.monthly_income, sender?.email || "");
     const message = renderCampaignContent(
       campaign.body,
       values,

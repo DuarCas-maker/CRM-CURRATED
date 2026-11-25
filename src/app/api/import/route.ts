@@ -32,6 +32,7 @@ export async function POST(request: Request) {
         company: z.string(),
         phone: z.string(),
         industry: z.string(),
+        monthly_income: z.string().optional(),
       })
       .parse(JSON.parse(String(form.get("mapping"))));
     const service = serviceClient();

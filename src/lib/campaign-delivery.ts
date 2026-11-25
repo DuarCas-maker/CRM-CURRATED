@@ -1,4 +1,5 @@
 export interface CampaignAudience {
+  monthly_income?: number | null;
   contact_id: string;
   opportunity_id: string | null;
   name: string;

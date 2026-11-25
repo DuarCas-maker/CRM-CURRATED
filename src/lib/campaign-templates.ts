@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { renderTemplate, templateVariables } from "./domain";
 import { renderCampaignContent, type CampaignFormat } from "./campaign-content";
+import { fundingModelSchema, withFundingValues, type FundingModel } from "./funding-options";
+export const templatePreviewValues = (model: unknown, senderEmail = "sender@example.test") =>
+  withFundingValues(campaignPreviewValues, model, 100000, senderEmail);
 export const campaignPreviewValues = {
   name: "Alex",
   company: "Example Business",
@@ -23,6 +26,7 @@ export const campaignTemplateSchema = z
       .refine((v) => !/[\r\n]/.test(v)),
     body: z.string().trim().min(1).max(20000),
     body_format: z.enum(["plain", "markdown"]).default("plain"),
+    funding_model: fundingModelSchema.nullable().optional(),
     steps: z
       .array(
         z.object({
@@ -48,10 +52,11 @@ export const campaignTemplateSchema = z
           message: "Cada mensaje necesita {{unsubscribe_url}}.",
         });
       try {
-        renderTemplate(message.subject + message.body, campaignPreviewValues);
+        const values = templatePreviewValues(p.funding_model);
+        renderTemplate(message.subject + message.body, values);
         renderCampaignContent(
           message.body,
-          campaignPreviewValues,
+          values,
           p.body_format,
         );
       } catch {
@@ -77,6 +82,7 @@ export interface CampaignAsset {
   created_at: string;
 }
 export interface EmailTemplate {
+  funding_model?: FundingModel | null;
   body_format?: CampaignFormat;
   id: string;
   name: string;

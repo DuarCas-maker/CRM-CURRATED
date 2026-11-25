@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-25T20:43:51.849Z",
+  "sourceBatch": "9f607b9a-e4fc-4ec9-bce5-6218ae063d7f",
+  "sourceSha256": "90932711b1730590afab86d454eea1e44069d1ee4f3225a4111a39906a3c7b70",
+  "sourceRows": 2122,
+  "parsedRows": 2122,
+  "uniqueAccepted": 2072,
+  "conflictingEmails": 0,
+  "invalidRows": 0,
+  "readOnly": true,
+  "providerRequests": 0
+}
