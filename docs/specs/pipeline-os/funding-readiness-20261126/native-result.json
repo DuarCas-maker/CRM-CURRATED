@@ -1,0 +1,19 @@
+{
+  "syntheticLeads": 4048,
+  "poolMs": 1183,
+  "leadsMs": 1415,
+  "passed": true,
+  "semantic": {
+    "mixedBatch": true,
+    "missingNamesAndCompanies": true,
+    "incomeOptionalForOtherTemplates": true,
+    "filteringBeforePaging": true,
+    "mfaAndScope": true,
+    "previousFunctionsUnchanged": true,
+    "rollback": true,
+    "campaignWrites": 0,
+    "providerRequests": 0
+  },
+  "providerRequests": 0,
+  "sqlSha256": "724c2ad85bddc77e7155ea878428ebaefd4d0640f8aa5e4e70344a78d147a3ed"
+}

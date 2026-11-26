@@ -12,6 +12,8 @@ export interface LeadFunnelRow extends ControlLead {
   funnel_reason: string;
 }
 export interface LeadFunnelPage {
+  income_summary?: import("./campaign-readiness").IncomeSummary;
+  income_scope?: import("./campaign-readiness").IncomeCounts;
   funnel: Record<LeadFunnelState | "total", number>;
   total: number;
   rows: LeadFunnelRow[];
@@ -31,7 +33,7 @@ const descriptions: Record<LeadFunnelFilter, [string, string]> = {
   all: ["Todos los contactos únicos de tu pool.", "All unique contacts in your pool."],
   pending: ["Pendientes de autorizar una verificación; sin una solicitud en curso.", "Awaiting verification authorization; no request in progress."],
   running: ["Verificación autorizada: en cola o procesándose en Bouncer.", "Authorized verification: queued or being processed by Bouncer."],
-  available: ["Correos verificados y contactos libres para iniciar una campaña.", "Verified emails and contacts ready to start a campaign."],
+  available: ["Correos verificados y contactos libres para una campaña. Cada plantilla puede requerir otros datos, como el ingreso mensual.", "Verified emails and contacts available for a campaign. Each template may require other data, such as monthly income."],
   campaign: ["Reservados en una campaña; todavía sin envío confirmado.", "Reserved in a campaign; no confirmed send yet."],
   contacted: ["Gmail confirmó al menos un envío real. Las respuestas se siguen en Campañas y resultados.", "Gmail confirmed at least one real send. Track replies in Campaigns and results."],
   review: ["Errores técnicos, resultados inciertos o correos dudosos. Revisa el motivo antes de reintentar.", "Technical errors, unknown outcomes or uncertain emails. Review the reason before retrying."],

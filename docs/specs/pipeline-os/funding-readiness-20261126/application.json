@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-26T19:03:18.970891+00:00",
+  "leads": 4030,
+  "contacts": 4040,
+  "newReaders": 3,
+  "bounceBlocks": 2,
+  "incomeContacts": 2052,
+  "functionsPreserved": true,
+  "sqlSha256": "724c2ad85bddc77e7155ea878428ebaefd4d0640f8aa5e4e70344a78d147a3ed",
+  "customerWrites": 0,
+  "providerRequests": 0
+}

@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-26T18:59:34.323195+00:00",
+  "path": "/var/lib/postgresql/data/readiness-20261126T185923Z/before.dump",
+  "bytes": 121615329,
+  "sha256": "41133427c014665597107c55bffb9436d863ba9022d0d14ba47db935a5fe4f43",
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}

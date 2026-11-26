@@ -14,7 +14,7 @@ test("Lead funnel: HTTP reader bounds, admin gate and missing-schema failure", a
   const context: any = { profile: { role: "superadmin" }, db: { rpc: async (name: string, args: any) => { calls.push({ name, args }); return { data: { total: 0, rows: [] }, error: null }; } } };
   const url = (query = "") => new URL("https://example.test/api/campaigns/flow?mode=leads" + query);
   await readFlow(url("&filter=running&search=example&page=2&size=20"), context);
-  assert.deepEqual(calls.pop(), { name: "campaign_flow_leads", args: { filter: "running", search_text: "example", page_number: 2, page_size: 20 } });
+  assert.deepEqual(calls.pop(), { name: "campaign_income_leads", args: { filter: "running", search_text: "example", page_number: 2, page_size: 20, income_filter: "all" } });
   for (const query of ["&filter=valid", "&page=-1", "&size=25", "&search=" + "a".repeat(201)])
     assert.equal(controlError(await readFlow(url(query), context).catch(e => e)).status, 400);
   await assert.rejects(readFlow(url(), { ...context, profile: { role: "seller" } }), /MFA/);

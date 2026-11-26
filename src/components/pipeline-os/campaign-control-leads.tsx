@@ -9,6 +9,8 @@ import {
 import { verificationReason } from "@/lib/campaign-import-review";
 import { requestLeadFunnel, leadFunnelDescription, leadFunnelLabel, leadFunnelReason, type LeadFunnelFilter, type LeadFunnelRow } from "@/lib/campaign-lead-funnel";
 import { Modal, t } from "../ui";
+import { IncomeStatus } from "./campaign-income";
+import type { IncomeFilter } from "@/lib/campaign-readiness";
 export function CampaignControlLeads({
   batch,
   filter,
@@ -17,6 +19,7 @@ export function CampaignControlLeads({
   changed,
   funnelFilter,
   refreshKey = 0,
+  incomeFilter = "all",
 }: {
   batch: string;
   filter: string;
@@ -25,6 +28,7 @@ export function CampaignControlLeads({
   changed: () => void;
   funnelFilter?: LeadFunnelFilter;
   refreshKey?: number;
+  incomeFilter?: IncomeFilter;
 }) {
   const [query, setQuery] = useState(""),
     [page, setPage] = useState(0),
@@ -48,7 +52,7 @@ export function CampaignControlLeads({
   useEffect(() => {
     setPage(0);
     setSelected([]);
-  }, [batch, filter, query]);
+  }, [batch, filter, query, incomeFilter]);
   useEffect(() => {
     setSelected([]);
     setConfirm(false);
@@ -62,7 +66,7 @@ export function CampaignControlLeads({
     const timer = setTimeout(
       () =>
         void (funnelFilter ? requestLeadFunnel(
-          new URLSearchParams({ filter: funnelFilter, search: query, page: String(page), size: "50" }),
+          new URLSearchParams({ filter: funnelFilter, search: query, page: String(page), size: "50", income: incomeFilter }),
           abort.signal,
         ) : campaignControlRequest<{ rows: ControlLead[]; total: number }>(
           new URLSearchParams({
@@ -98,7 +102,7 @@ export function CampaignControlLeads({
       abort.abort();
       clearTimeout(timer);
     };
-  }, [batch, filter, query, page, revision, funnelFilter, refreshKey, pauseRefresh]);
+  }, [batch, filter, query, page, revision, funnelFilter, refreshKey, pauseRefresh, incomeFilter]);
   const selectable =
     result?.rows
       .filter((x) => x.retryable && !x.suppressed)
@@ -282,7 +286,7 @@ export function CampaignControlLeads({
                       <strong>{row.company || row.name}</strong>
                       <span>
                         {row.name} · {row.email}
-                        {row.monthly_income != null && <><br />Ingreso mensual: {Number(row.monthly_income).toLocaleString("en-US", { style: "currency", currency: "USD" })}</>}
+                        {funnelFilter && <IncomeStatus value={row.monthly_income} locale={locale} />}
                       </span>
                     </span>
                     <span className="cc-contact-note">

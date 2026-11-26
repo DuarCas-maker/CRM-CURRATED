@@ -11,6 +11,8 @@ import {
   withoutInlineSignature,
 } from "@/lib/campaign-sequence";
 import { CampaignSignaturePreview } from "../campaign-signature-preview";
+import { CampaignTemplateReadiness } from "./campaign-template-readiness";
+import type { TemplateReadiness } from "@/lib/campaign-readiness";
 import { t } from "../ui";
 import {
   ProtectedForm,
@@ -59,6 +61,24 @@ export function FlowComposer({
     root = useRef<HTMLElement>(null);
   const template = templates.find((t) => t.id === templateId),
     sender = accounts.find((a) => a.id === account);
+  const checkKey = JSON.stringify({ account_id: account, template_id: template?.id, template_version: template?.version, contact_ids: [...contactIds].sort(), reminders });
+  const [check, setCheck] = useState<{ key: string; result?: TemplateReadiness; error?: string }>({ key: "" });
+  const [checkRevision, setCheckRevision] = useState(0);
+  const checkToken = JSON.stringify([checkKey, checkRevision]);
+  const reviewed = check.key === checkToken ? check.result : undefined;
+  const checkError = check.key === checkToken ? check.error : undefined;
+  const readyToSchedule = !!reviewed && reviewed.checked_count === contactIds.length && reviewed.rows.length === contactIds.length && reviewed.attention_count === 0 && reviewed.ready_count === contactIds.length;
+  useEffect(() => {
+    const abort = new AbortController();
+    setCheck({ key: checkToken });
+    if (!template || !sender || !contactIds.length) return () => abort.abort();
+    const timer = setTimeout(() => {
+      void fetch("/api/campaigns/flow/check", { method: "POST", headers: { "Content-Type": "application/json" }, body: checkKey, signal: abort.signal })
+        .then(async response => { const body = await response.json(); if (!response.ok) throw Error(body.error || "No se pudo revisar el lote."); if (!abort.signal.aborted) setCheck({ key: checkToken, result: body }); })
+        .catch(e => { if (!abort.signal.aborted) setCheck({ key: checkToken, error: e.message }); });
+    }, 250);
+    return () => { clearTimeout(timer); abort.abort(); };
+  }, [checkToken]);
   useEffect(() => {
     root.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
@@ -85,7 +105,7 @@ export function FlowComposer({
   async function send(e: React.FormEvent) {
     const form = e.currentTarget as HTMLFormElement;
     e.preventDefault();
-    if (busy || !template || !sender) return;
+    if (busy || !template || !sender || !readyToSchedule) return;
     setBusy(true);
     setError("");
     try {
@@ -125,6 +145,7 @@ export function FlowComposer({
       await done(r.id);
     } catch (e) {
       setError((e as Error).message);
+      setCheckRevision(n => n + 1);
     } finally {
       setBusy(false);
     }
@@ -186,6 +207,7 @@ export function FlowComposer({
               ))}
             </select>
           </label>
+          <CampaignTemplateReadiness review={reviewed} error={checkError} retry={() => setCheckRevision(n => n + 1)} locale={locale} />
           <label className="cc-field">
             <span>
               <CalendarDays size={14} />{" "}
@@ -269,7 +291,7 @@ export function FlowComposer({
           <button
             className="pos-btn pos-primary"
             type="submit"
-            disabled={busy || !template || !account || !contactIds.length}
+            disabled={busy || !template || !account || !contactIds.length || !readyToSchedule}
           >
             {busy
               ? t(locale, "Programando…", "Scheduling…")

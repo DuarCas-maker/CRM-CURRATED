@@ -23,6 +23,16 @@
 .cf-workspace {
   gap: 24px;
 }
+.cf-income-overview { display:flex; flex-wrap:wrap; gap:8px 24px; font-size:12px; color:var(--pos-muted); }
+.cf-income-overview > strong { color:var(--pos-text); }
+.cf-income-selector { width:min(100%,320px); }
+.cf-income-status { display:block; margin-top:4px; font-size:12px; color:var(--pos-muted); }
+.cf-income-status[data-income="missing"] { display:inline-block; padding:2px 8px; border-radius:8px; font-weight:600; background:#faf0d9; color:#79501c; }
+.cf-data-review { border:1px solid var(--pos-line); border-radius:12px; padding:16px; font-size:13px; }
+.cf-data-review p { margin:8px 0; }
+.cf-data-review summary { cursor:pointer; font-weight:600; }
+.cf-missing-list { max-height:280px; overflow:auto; list-style:none; margin:12px 0; padding:0; }
+.cf-missing-list li { display:grid; gap:4px; padding:12px 0; border-bottom:1px solid var(--pos-line); overflow-wrap:anywhere; }
 .cf-heading {
   display: flex;
   align-items: center;

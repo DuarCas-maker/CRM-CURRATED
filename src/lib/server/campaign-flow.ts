@@ -5,6 +5,7 @@ import { leadFunnelFilters } from "../campaign-lead-funnel";
 import { campaignTemplateSchema } from "../campaign-templates";
 import { deliveryContext, deliveryResult } from "./brand-delivery";
 import { HttpError } from "./supabase";
+import { incomeFilterSchema } from "../campaign-readiness";
 type Context = { db: SupabaseClient; profile: { role: string } };
 function allowed(c: Context) {
   if (!["superadmin", "seller_admin"].includes(c.profile.role))
@@ -39,21 +40,16 @@ export async function readFlow(url: URL, ctx: Context) {
   allowed(ctx);
   if (url.searchParams.has("mode")) {
     z.literal("leads").parse(url.searchParams.get("mode"));
-    const result = await rpc(ctx, "campaign_flow_leads", {
+    return rpc(ctx, "campaign_income_leads", {
       filter: z.enum(leadFunnelFilters).parse(url.searchParams.get("filter") || "all"),
       search_text: z.string().max(200).parse(url.searchParams.get("search") || ""),
       page_number: z.coerce.number().int().min(0).max(1000000).parse(url.searchParams.get("page") || 0),
       page_size: z.coerce.number().refine((v) => [20, 50, 100].includes(v)).parse(url.searchParams.get("size") || 50),
+      income_filter: incomeFilterSchema.parse(url.searchParams.get("income") || "all"),
     });
-    if (Array.isArray(result?.rows) && result.rows.length) {
-      const income = await ctx.db.from("contacts").select("id,monthly_income").in("id", result.rows.map((r: { contact_id: string }) => r.contact_id));
-      if (income.error) throw new HttpError(503, "No se pudo cargar el ingreso mensual.");
-      const values = new Map((income.data || []).map((r) => [r.id, r.monthly_income]));
-      result.rows = result.rows.map((r: { contact_id: string }) => ({ ...r, monthly_income: values.get(r.contact_id) ?? null }));
-    }
-    return result;
   }
-  return rpc(ctx, "campaign_flow_pool", {
+  return rpc(ctx, "campaign_income_pool", {
+    income_filter: incomeFilterSchema.parse(url.searchParams.get("income") || "all"),
     search_text: z
       .string()
       .max(200)
@@ -69,6 +65,11 @@ export async function readFlow(url: URL, ctx: Context) {
       .refine((v) => [20, 50, 100].includes(v))
       .parse(url.searchParams.get("size") || 20),
   });
+}
+export async function checkFlowTemplate(body: unknown, ctx: Context) {
+  allowed(ctx);
+  const p = flowLaunchSchema.pick({ account_id: true, template_id: true, template_version: true, contact_ids: true, reminders: true }).strict().parse(body);
+  return rpc(ctx, "campaign_template_readiness", { template: p.template_id, template_version: p.template_version, contact_ids: [...p.contact_ids].sort(), account: p.account_id, reminders: p.reminders });
 }
 export async function launchFlow(body: unknown, ctx: Context) {
   allowed(ctx);

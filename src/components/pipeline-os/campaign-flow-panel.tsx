@@ -18,6 +18,8 @@ import { CampaignControlLeads } from "./campaign-control-leads";
 import { t } from "../ui";
 import { useLeaveConfirmation } from "../unsaved-changes";
 import { FlowComposer } from "./campaign-flow-composer";
+import { IncomeOverview, IncomeSelector, IncomeStatus } from "./campaign-income";
+import type { IncomeFilter } from "@/lib/campaign-readiness";
 import "./campaign-control.css";
 import "./campaign-flow.css";
 async function flowRead<T>(query: string, signal?: AbortSignal): Promise<T> {
@@ -61,6 +63,7 @@ export function CampaignFlowPanel({
     [loading, setLoading] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
+  const [incomeFilter, setIncomeFilter] = useState<IncomeFilter>("all");
   const manage =
     ["superadmin", "seller_admin"].includes(data.profile.role) && !data.demo;
   const { requestLeave, confirmation } = useLeaveConfirmation(locale);
@@ -74,7 +77,7 @@ export function CampaignFlowPanel({
     setPage(0);
     setSelected([]);
     setComposing(false);
-  }, [filter, query, size]);
+  }, [filter, query, size, incomeFilter]);
   useEffect(() => {
     setSelected([]);
   }, [page]);
@@ -95,6 +98,7 @@ export function CampaignFlowPanel({
           search: query,
           page: String(page),
           size: String(size),
+          income: incomeFilter,
         }).toString(),
         abort.signal,
       ),
@@ -116,7 +120,7 @@ export function CampaignFlowPanel({
         if (!abort.signal.aborted) setLoading(false);
       });
     return () => abort.abort();
-  }, [view, query, page, size, revision, data.demo, manage]);
+  }, [view, query, page, size, revision, data.demo, manage, incomeFilter]);
   const number = (n: number | undefined) =>
     n === undefined
       ? "—"
@@ -245,6 +249,8 @@ export function CampaignFlowPanel({
               )}
             </p>
           )}
+          <IncomeOverview summary={overview?.income_summary} locale={locale} />
+          <IncomeSelector value={incomeFilter} change={setIncomeFilter} disabled={composing} locale={locale} />
           {error && (
             <p role="alert" className="pos-alert">
               {error}
@@ -350,6 +356,7 @@ export function CampaignFlowPanel({
                         <small>
                           {x.name} · {x.email}
                         </small>
+                        <IncomeStatus value={x.monthly_income} locale={locale} />
                       </span>
                       <span className="cf-valid">
                         <Check size={13} />
@@ -424,6 +431,7 @@ export function CampaignFlowPanel({
               changed={refresh}
               funnelFilter={filter}
               refreshKey={revision}
+              incomeFilter={incomeFilter}
             />
           )}
           {composing && (

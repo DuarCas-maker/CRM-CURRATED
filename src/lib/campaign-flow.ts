@@ -41,6 +41,7 @@ export const flowLaunchSchema = z.strictObject({
     }),
 });
 export interface FlowPool {
+  income_scope?: import("./campaign-readiness").IncomeCounts;
   total: number;
   rows: {
     contact_id: string;
@@ -48,6 +49,7 @@ export interface FlowPool {
     name: string;
     email: string;
     company: string;
+    monthly_income?: number | null;
   }[];
 }
 export interface FlowProgress {
