@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-26T19:49:03.503582+00:00",
+  "path": "/var/lib/postgresql/data/launch-batch-20261126T194851Z/before.dump",
+  "bytes": 121767690,
+  "sha256": "d6156bbbff1409cc55ae8a2ee01e299d96b569de438bc6280366ef8d89d0eccd",
+  "decodeVerified": true,
+  "archiveListVerified": true,
+  "fullDisasterRestoreTested": false
+}

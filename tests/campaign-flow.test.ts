@@ -365,6 +365,11 @@ test("CF SQL: Sunday final boundary defers without an admission, charge attempt 
     const r = await f.launch();
     await queueFixture(f, r.id);
     await f.db.exec("reset role");
+    // Keep the fixture schedule consistent with the fixed Sunday clock below.
+    await f.db.query("select set_config('pipeline_os.brand_context',(select brand_snapshot::text from campaigns where id=$1),false)", [r.id]);
+    await f.db.query("update campaigns set scheduled_at=null where id=$1", [r.id]);
+    await f.db.exec("set pipeline_os.brand_context=''");
+    await f.db.query("update campaign_enrollments set next_at='2026-11-22 15:30Z' where campaign_id=$1", [r.id]);
     const o = (
       await f.db.query<any>("select * from outbox order by id limit 1")
     ).rows[0];

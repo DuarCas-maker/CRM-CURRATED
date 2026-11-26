@@ -13,6 +13,11 @@ function allowed(c: Context) {
 }
 async function rpc(c: Context, name: string, args: Record<string, unknown>) {
   const r = await c.db.rpc(name, args);
+  if (r.error?.code === "57014")
+    throw new HttpError(
+      503,
+      "La consulta de campañas fue cancelada por tiempo de espera. Actualiza los datos y revisa el estado antes de volver a intentarlo. / Campaign query timed out. Refresh and check its status before trying again.",
+    );
   if (r.error?.message === "CF_STALE")
     throw new HttpError(
       409,

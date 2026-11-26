@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "syntheticContacts": 4004,
+  "selected": 100,
+  "budgetMs": 8000,
+  "beforeTimeoutMs": 8115,
+  "afterLaunchMs": 1268,
+  "semantic": {
+    "negativeCases": true,
+    "readerEquivalent": true,
+    "privateReader": true,
+    "receipts": true,
+    "fundingSnapshots": true,
+    "creator": true,
+    "grantsPreserved": true,
+    "rollback": true,
+    "providerRequests": 0,
+    "outboxWrites": 0
+  },
+  "noPartialCampaign": true,
+  "replaySameCampaign": true,
+  "providerRequests": 0,
+  "sqlSha256": "cc2aeaef02eb0b900de82789507572dd9477b3fddbdb923c3a20296d690c5a1f"
+}
