@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-26T19:12:33.054045+00:00",
+  "commit": "4fd31a37e1c42ed297720d7bebb37470c43bbeea",
+  "web": "Success / Running",
+  "worker": "Success / Running",
+  "leads": 4030,
+  "withIncome": 2052,
+  "withoutIncome": 1978,
+  "available": 518,
+  "availableWithIncome": 373,
+  "availableWithoutIncome": 145,
+  "ui": {
+    "allAndAvailableFilterVerified": true,
+    "missingBatchChecked": 50,
+    "fundingTemplateReady": 0,
+    "missingIncomeIdentitiesShown": 50,
+    "fundingSubmitDisabled": true,
+    "normalTemplateReadySameBatch": 50,
+    "normalSubmitEnabled": true,
+    "leftWithoutSaving": true,
+    "originalUserSelectionRecovered": false
+  },
+  "bounceBlocks": 2,
+  "campaignsActivatedByVerification": 0,
+  "emailsSentByVerification": 0,
+  "bouncerVerificationsRequested": 0
+}

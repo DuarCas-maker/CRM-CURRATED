@@ -10,4 +10,10 @@ Respaldo productivo del 26/11 a las 18:59 UTC: archivo de 121.615.329 bytes, lis
 
 A las 19:03 UTC se aplicaron las tres RPC aditivas de lectura, con guardia de hashes del catálogo y versión SQL igual al ensayo nativo. Las funciones previas quedaron intactas; permanecen 4.040 contactos, 4.030 leads, 2.052 contactos con ingreso y dos bloqueos de rebotes activos. Sin mutaciones de datos de clientes. Evidencia: application.json.
 
-Pendiente: publicación web/worker y comprobación visual/autenticada del filtro y del lote en el CRM, sin activar campañas.
+Publicado en crm.finlabinc.com: commit 4fd31a37e1c42ed297720d7bebb37470c43bbeea. Coolify mostró Success para web y worker, ambos Running. No se modificaron configuración, límites, proveedores ni firmas.
+
+Postflight desde sesión humana existente: el funnel mostró 4.030 leads y 518 disponibles. El resumen de ingreso mostró 2.052/1.978 con/sin ingreso en el total y 373/145 en los disponibles. El filtro Sin ingreso mensual funcionó en Total y Disponibles; mostró solo filas sin ingreso, sin alterar los totales del funnel. Inspección visual en el viewport existente: resumen compacto y selector legibles, sin solapamiento.
+
+Se seleccionó un lote nuevo de 50 disponibles sin ingreso, solo en la interfaz. La revisión de la plantilla Monthly Income mostró exactamente 50 revisados, cero listos y 50 por revisar, con 50 identidades y motivo Ingreso mensual; Enviar campaña permaneció deshabilitado. Al cambiar a OFFER SBA 7(a), que no exige ingreso, los mismos 50 quedaron listos y el botón se habilitó. Se salió sin guardar y se dejó el filtro Sin ingreso mensual en Disponibles. No se pulsó Enviar campaña ni se consumió Bouncer. La selección original de la captura del usuario no está persistida y no se afirma que sea este lote nuevo.
+
+Lectura agregada final, 19:12 UTC: 4.040 contactos, 4.030 leads, 2.052 leads con ingreso, 1.978 sin ingreso y dos bloqueos de rebotes. Los ingresos antiguos faltantes no se inventaron ni rellenaron: permanecen disponibles para otras plantillas. Los datos de ejemplo de la vista previa no se confunden con la revisión del lote real. Evidencia sin identidades de clientes: postflight.json.
